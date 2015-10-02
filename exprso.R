@@ -1808,10 +1808,14 @@ setGeneric("pipeFilter",
            }
 )
 
-# NOTE: if .01 < how < 1: define threshold equal to 'how'
-# NOTE: if 1 < how < 100: define threshold equal to 'how' as a quantile
+# NOTE: IF is.vector(col.accBy), use product of accuracy measures
+# NOTE: Increase weight of col.accBy elements with multiple mentions
+# NOTE: IF how = 0: do not impose any threshold filter
+# NOTE: IF .01 < how < 1: define threshold equal to 'how'
+# NOTE: IF 1 < how < 100: define threshold equal to 'how' as a quantile
+# NOTE: IF top.N = 0, include ALL @machs when building ensemble
 setMethod("pipeFilter", "ExprsPipeline",
-          function(object, col.accBy, how = "median"){
+          function(object, col.accBy, how = 0, top.N = 0){
             
             # Check if ExprsPipeline contains all col.accBy
             if(!all(col.accBy %in% colnames(object@summary))){
@@ -1823,7 +1827,7 @@ setMethod("pipeFilter", "ExprsPipeline",
             accMeasures <- apply(object@summary[col.accBy], MARGIN = 1, prod)
             
             # Set threshold equal to 'how'
-            if(0 < how & how <= 1){ threshold <- how
+            if(0 <= how & how <= 1){ threshold <- how
             
             # Set threshold equal to 'how' as a quantile
             }else if(1 < how & how <= 100){ threshold <- quantile(accMeasures, how / 100)
@@ -1839,6 +1843,59 @@ setMethod("pipeFilter", "ExprsPipeline",
             # Filter ExprsPipeline object
             object@summary <- object@summary[accMeasures >= threshold, ]
             object@machs <- object@machs[accMeasures >= threshold]
+            
+            # Filter top accuracy measure as product of col.accBy columns
+            accMeasures <- accMeasures[accMeasures >= threshold]
+            
+            # If ExprsPipeline comes from plBoot
+            if("boot" %in% colnames(object@summary)){
+              
+              # For each B boot, select 'top.N' @machs
+              index <- unlist(
+                
+                lapply(unique(object@summary$boot),
+                       function(boot){
+                         
+                         # Calculate total number of gridpoints for this boot
+                         if(top.N > sum(object@summary$boot == boot)){
+                           
+                           warning("Provided 'top.N' too large for boot ", boot, ". Using all gridpoints instead.")
+                           top.N <- 0
+                         }
+                         
+                         if(top.N == 0) top.N <- sum(object@summary$boot == boot)
+                         
+                         # Order 'top.N' accMeasures for this boot
+                         topMachs <- order(accMeasures[object@summary$boot == boot], decreasing = TRUE)[1:top.N]
+                         
+                         # Index by rowname for this boot
+                         rownames(object@summary[object@summary$boot == boot,])[topMachs]
+                       }
+                )
+              )
+              
+            }else{
+              
+              # Calculate total number of gridpoints for ExprsPipeline object
+              if(top.N > nrow(object@summary)){
+                
+                warning("Provided 'top.N' too large for this ExprsPipeline object. Using all gridpoints instead.")
+                top.N <- 0
+              }
+              
+              if(top.N == 0) top.N <- nrow(object@summary)
+              
+              # Order 'top.N' accMeasures for entire object
+              topMachs <- order(accMeasures, decreasing = TRUE)[1:top.N]
+              
+              # Index by rowname
+              index <- rownames(object@summary)[topMachs]
+            }
+            
+            # Filter ExprsPipeline object
+            final <- rownames(object@summary) %in% index # 'final' depends on initial object@summary definition
+            object@summary <- object@summary[final, ]
+            object@machs <- object@machs[final]
             
             return(object)
           }
@@ -1867,65 +1924,13 @@ setMethod("buildEnsemble", "ExprsMachine",
 )
 
 # Build ExprsEnsemble from an ExprsPipeline object
-# NOTE: ExprsEnsemble will include 'top.N' @machs from each bootstrap
-# NOTE: IF top.N = 0, include ALL @machs when building ensemble
-# NOTE: IF is.vector(col.accBy), use product of accuracy measures
 setMethod("buildEnsemble", "ExprsPipeline",
-          function(object, top.N, col.accBy, ...){
+          function(object, col.accBy, how = 0, top.N = 0){
             
-            # Check if ExprsPipeline contains all col.accBy
-            if(!all(col.accBy %in% colnames(object@summary))){
-              
-              stop("Uh oh! This ExprsPipeline does not contain all provided 'col.accBy' accuracy measures.")
-            }
-            
-            # Calculate emergent top accuracy measure as product of col.accBy columns
-            accMeasures <- apply(object@summary[col.accBy], MARGIN = 1, prod)
-            
-            # If ExprsPipeline comes from plBoot
-            if("boot" %in% colnames(object@summary)){
-              
-              # For each B boot, select 'top.N' @machs
-              machs <- lapply(unique(object@summary$boot),
-                              function(boot){
-                                
-                                # Calculate total number of gridpoints for this boot
-                                if(top.N > sum(object@summary$boot == boot)){
-                                  
-                                  warning("Provided 'top.N' too large for boot ", boot, ". Using all gridpoints instead.")
-                                  top.N <- 0
-                                }
-                                
-                                if(top.N == 0) top.N <- sum(object@summary$boot == boot)
-                                
-                                # Extract accMeasures for this boot
-                                accBoot <- accMeasures[object@summary$boot == boot]
-                                
-                                # Extract @machs for this boot
-                                machsBoot <- object@machs[object@summary$boot == boot]
-                                
-                                # Select top.N @machs for this boot
-                                machsBoot[order(accBoot, decreasing = TRUE)][1:top.N]
-                              }
-              )
-              
-            }else{
-              
-              # Calculate total number of gridpoints for ExprsPipeline object
-              if(top.N > nrow(object@summary)){
-                
-                warning("Provided 'top.N' too large for this ExprsPipeline object. Using all gridpoints instead.")
-                top.N <- 0
-              }
-              
-              if(top.N == 0) top.N <- nrow(object@summary)
-              
-              # Simply select 'top.N' @machs
-              machs <- object@machs[order(accMeasures, decreasing = TRUE)][1:top.N]
-            }
+            pf <- pipeFilter(object, col.accBy = col.accBy, how = how, top.N = top.N)
             
             new("ExprsEnsemble",
-                machs = unlist(machs)
+                machs = unlist(pf@machs)
             )
           }
 )
