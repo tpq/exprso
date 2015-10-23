@@ -749,100 +749,6 @@ modNormalize <- function(array, MARGIN = c(1, 2), displayAll = FALSE){
   return(array)
 }
 
-# Experimental function to mutate case subjects into noisy positives, false positives, or fixed out-groups
-modMutate <- function(array, percent = 10, how = "fp", theta = 1){
-  
-  if(percent < 1 | percent > 100) stop("You must choose an inclusion percentage between 1-100!")
-  
-  # Mutate a percent of case subjects
-  cases <- array@annot$defineCase %in% "Case"
-  mut.size <- round(ncol(array@exprs[, cases]) * percent/100)
-  mut.name <- sample(colnames(array@exprs[, cases]), size = mut.size, replace = FALSE)
-  temp1 <- fsPrcomp(array, probes = 0, n.comp = 3)
-  
-  if(how == "rp.1"){
-    
-    for(mut.col in mut.name){
-      
-      # Randomize the per-subject expression values to create "subject noise"
-      array@exprs[, mut.col] <- sample(array@exprs[, mut.col])
-    }
-    
-  }else if(how == "rp.2"){
-    
-    # Weigh probability of noise contribution by CASE/CONTROL ratio
-    probs <- ifelse(cases, 1/(2*ncol(array@exprs[, cases])), 1/(2*ncol(array@exprs[, !cases])))
-    
-    for(mut.col in mut.name){
-      
-      # For each probe, draw a random expression value as expressed by any subject
-      array@exprs[, mut.col] <- apply(array@exprs, MARGIN = 1, sample, size = 1, prob = probs)
-    }
-    
-  }else if(how == "fp"){
-    
-    for(mut.col in mut.name){
-      
-      # For each probe, draw a random expression value as expressed by a control subject
-      array@exprs[, mut.col] <- apply(array@exprs[, !cases], MARGIN = 1, sample, size = 1)
-    }
-    
-  }else if(how == "ng"){
-    
-    # Calculate per-probe case means and sds
-    means <- apply(array@exprs[, cases], MARGIN = 1, mean)
-    sds <- apply(array@exprs[, cases], MARGIN = 1, sd)
-    
-    # Calculate fixed "third group" per-probe means and sds as falling on a distrubtion of case means and sds
-    # By this method, the mean of means remains the same while still imposing "third group" differences
-    ng.means <- unlist(lapply(1:length(means), function(i) rnorm(1, mean = means[i], sd = sds[i]/theta)))
-    
-    # For every mutant
-    for(mut.col in mut.name){
-      
-      # For each probe, draw a random value based on the per-probe "third group" means and case sds
-      array@exprs[, mut.col] <- unlist(lapply(1:length(ng.means), function(i) rnorm(1, mean = ng.means[i], sd = sds[i])))
-    }
-    
-  }else if(how == "tg"){
-    
-    # Weigh third group mean contribution by CASE/CONTROL ratio
-    probs <- ifelse(cases, 1/(2*ncol(array@exprs[, cases])), 1/(2*ncol(array@exprs[, !cases])))
-    
-    # Calculate per-probe means and sds using ALL subjects
-    means <- apply(array@exprs, MARGIN = 1, weighted.mean, w = probs)
-    sds <- apply(array@exprs, MARGIN = 1, sd)
-    
-    # Calculate fixed "third group" per-probe means and sds as falling on a distrubtion of case means and sds
-    # By this method, the mean of means remains the same while still imposing "third group" differences
-    tg.means <- unlist(lapply(1:length(means), function(i) rnorm(1, mean = means[i], sd = sds[i]/theta)))
-    
-    # For every mutant
-    for(mut.col in mut.name){
-      
-      # For each probe, draw a random value based on the per-probe "third group" means and case sds
-      array@exprs[, mut.col] <- unlist(lapply(1:length(tg.means), function(i) rnorm(1, mean = tg.means[i], sd = sds[i])))
-    }
-    
-  }else{
-    
-    stop("Provided how not recognized. Select from 'rp.1', 'rp.2', 'fp', 'ng', or 'tg'.\n")
-  }
-  
-  # Store Boolean index of mutated subjects in @annot
-  array@annot$mutated <- rownames(array@annot) %in% mut.name
-  
-  # Visualize results
-  temp2 <- fsPrcomp(array, probes = 0, n.comp = 3)
-  layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))
-  plot(temp1@exprs[1, ], temp1@exprs[2, ], col = ifelse(cases, "red", "black"), pch = ifelse(array@annot$mutated, 22, 16), main = "Before", xlab = "PCA1", ylab = "PCA2")
-  plot(temp2@exprs[1, ], temp2@exprs[2, ], col = ifelse(cases, "red", "black"), pch = ifelse(array@annot$mutated, 22, 16), main = "After", xlab = "PCA1", ylab = "PCA2")
-  plot(temp1@exprs[1, ], temp1@exprs[3, ], col = ifelse(cases, "red", "black"), pch = ifelse(array@annot$mutated, 22, 16), main = "Before", xlab = "PCA1", ylab = "PCA3")
-  plot(temp2@exprs[1, ], temp2@exprs[3, ], col = ifelse(cases, "red", "black"), pch = ifelse(array@annot$mutated, 22, 16), main = "After", xlab = "PCA1", ylab = "PCA3")
-  
-  return(array)
-}
-
 ###########################################################
 ### Feature selection methods for ExprsArray objects
 
@@ -1179,7 +1085,7 @@ buildSVM <- function(array, probes, ...){ # args to svm
     
     cat("Setting 'cross' to 10 (default behavior, override explicitly)...\n")
     args <- append(args, list("cross" = 10))
-  }  
+  }
   
   if(!"probability" %in% names(args)){
     
@@ -1814,8 +1720,9 @@ setGeneric("pipeFilter",
 # NOTE: IF .01 < how < 1: define threshold equal to 'how'
 # NOTE: IF 1 < how < 100: define threshold equal to 'how' as a quantile
 # NOTE: IF top.N = 0, include ALL @machs when building ensemble
+# NOTE: IF gate != 0: impose a max filter analogous to 'how'
 setMethod("pipeFilter", "ExprsPipeline",
-          function(object, col.accBy, how = 0, top.N = 0){
+          function(object, col.accBy, how = 0, gate = 0, top.N = 0){
             
             # Check if ExprsPipeline contains all col.accBy
             if(!all(col.accBy %in% colnames(object@summary))){
@@ -1826,28 +1733,57 @@ setMethod("pipeFilter", "ExprsPipeline",
             # Calculate emergent top accuracy measure as product of col.accBy columns
             accMeasures <- apply(object@summary[col.accBy], MARGIN = 1, prod)
             
-            # Set threshold equal to 'how'
-            if(0 <= how & how <= 1){ threshold <- how
+            # Impose threshold filter if how != 0
+            if(how != 0){
+              
+              # Set threshold equal to 'how'
+              if(0 < how & how <= 1){ threshold <- how
+              
+              # Set threshold equal to 'how' as a quantile
+              }else if(1 < how & how <= 100){ threshold <- quantile(accMeasures, how / 100)
+              
+              }else if(how == "midrange"){ threshold <- (max(accMeasures) + min(accMeasures)) / 2
+              
+              }else if(how == "median"){ threshold <- median(accMeasures)
+              
+              }else if(how == "mean"){ threshold <- mean(accMeasures)
+              
+              }else{ stop("Uh oh! Selected 'how' not recognized!")}
+              
+              # Filter ExprsPipeline object
+              object@summary <- object@summary[accMeasures >= threshold, ]
+              object@machs <- object@machs[accMeasures >= threshold]
+              
+              # Filter top accuracy measure as product of col.accBy columns
+              accMeasures <- accMeasures[accMeasures >= threshold]
+            }
             
-            # Set threshold equal to 'how' as a quantile
-            }else if(1 < how & how <= 100){ threshold <- quantile(accMeasures, how / 100)
+            # Impose ceiling filter if gate != 0
+            if(gate != 0){
+              
+              # Set ceiling equal to 'gate'
+              if(0 < gate & gate <= 1){ ceiling <- gate
+              
+              # Set ceiling equal to 'gate' as a quantile
+              }else if(1 < gate & gate <= 100){ ceiling <- quantile(accMeasures, gate / 100)
+              
+              }else if(gate == "midrange"){ ceiling <- (max(accMeasures) + min(accMeasures)) / 2
+              
+              }else if(gate == "median"){ ceiling <- median(accMeasures)
+              
+              }else if(gate == "mean"){ ceiling <- mean(accMeasures)
+              
+              }else{ stop("Uh oh! Selected 'gate' not recognized!")}
+              
+              # Filter ExprsPipeline object
+              object@summary <- object@summary[accMeasures <= ceiling, ]
+              object@machs <- object@machs[accMeasures <= ceiling]
+              
+              # Filter top accuracy measure as product of col.accBy columns
+              accMeasures <- accMeasures[accMeasures <= ceiling]
+            }
             
-            }else if(how == "midrange"){ threshold <- (max(accMeasures) + min(accMeasures)) / 2
-            
-            }else if(how == "median"){ threshold <- median(accMeasures)
-            
-            }else if(how == "mean"){ threshold <- mean(accMeasures)
-            
-            }else{ stop("Uh oh! Selected 'how' not recognized!")}
-            
-            # Filter ExprsPipeline object
-            object@summary <- object@summary[accMeasures >= threshold, ]
-            object@machs <- object@machs[accMeasures >= threshold]
-            
-            # Filter top accuracy measure as product of col.accBy columns
-            accMeasures <- accMeasures[accMeasures >= threshold]
-            
-            # If ExprsPipeline comes from plBoot
+            # Select top.N based on presence of a boot column
             if("boot" %in% colnames(object@summary)){
               
               # For each B boot, select 'top.N' @machs
