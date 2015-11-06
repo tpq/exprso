@@ -1,6 +1,7 @@
 # Before using Exprso, you must install the following packages:
 
 source("https://bioconductor.org/biocLite.R")
+biocLite("affy")
 biocLite("Biobase")
 biocLite("limma")
 
