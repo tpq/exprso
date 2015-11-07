@@ -317,7 +317,7 @@ setMethod("conjoin", "ExprsPipeline",
           }
 )
 
-setMethod("conjoin", "ExprsPipeline",
+setMethod("conjoin", "ExprsEnsemble",
           function(object, ...){
             
             args <- list(...)
@@ -501,6 +501,78 @@ splitStrat <- function(array, percent.include = 67, col.stratBy = NULL, bin, bre
                      n.comp = array@n.comp)
   
   return(list("array.train" = array.train, "array.valid" = array.valid))
+}
+
+# Add replace = FALSE to sample training set WITHOUT replacement
+# Add replace = TRUE to sample training set WITH replacement (will likely include less than percent.include)
+#   NOTE: The validation set will contain all subjects not randomly sampled
+# Set percent.include = 100 to return a NULL demi-holdout array
+splitSample <- function(array, percent.include = 67, ...){ # args to sample
+  
+  warning("This method is not truly random; at least one case and one control will always appear in demi-holdout!")
+  
+  if(percent.include < 1 | percent.include > 100){
+    
+    stop("You must choose an inclusion percentage between 1-100!")
+  }
+  
+  if(!"Case" %in% array@annot$defineCase & "Control" %in% array@annot$defineCase){
+    
+    stop("Provided ExprsArray object must contain both 'Case' and 'Control' subjects!")
+  }
+  
+  # Calculate size of bootstrap set
+  size <- round((ncol(array@exprs) * percent.include)/100, digits = 0)
+  
+  at.least.1 <- FALSE # Set at.least.1 to FALSE by default
+  counter <- 1
+  while(!at.least.1){ # If there is not at least one CASE and at least one CONTROL...
+    
+    # Terminate after 10 iterations
+    counter <- counter + 1
+    if(counter > 10) stop("splitRandom could not find a solution. Check the supplied parameters.")
+    
+    # Attempt a simple random sample with or without replacement depending on '...' arguments
+    boot <- sample(colnames(array@exprs), size = size, ...)
+    
+    # Check whether to terminate the while loop
+    if("Case" %in% array@annot[boot, "defineCase"] & "Control" %in% array@annot[boot, "defineCase"]){
+      
+      at.least.1 <- TRUE
+      
+    }else{
+      
+      at.least.1 <- FALSE
+    }
+  }
+  
+  # Build bootstrap set
+  cat("\nBuilding the random training set...\n\n")
+  array.boot <- new("ExprsArray",
+                    exprs = array@exprs[, boot], # as.matrix not needed because always at least 2 columns
+                    annot = array@annot[boot, ],
+                    preFilter = array@preFilter,
+                    reductionModel = array@reductionModel,
+                    n.comp = array@n.comp)
+  
+  # Build demi-holdout set based on the size of the bootstrap set
+  if(ncol(array.boot@exprs) < ncol(array@exprs)){
+    
+    cat("\nBuilding a validation set with remaining samples...\n\n")
+    array.demi <- new("ExprsArray",
+                      exprs = as.matrix(array@exprs[, !colnames(array@exprs) %in% boot]),
+                      annot = array@annot[!rownames(array@annot) %in% boot, ],
+                      preFilter = array@preFilter,
+                      reductionModel = array@reductionModel,
+                      n.comp = array@n.comp)
+    
+  }else{
+    
+    cat("\nBuilding a NULL validation set...\n\n")
+    array.demi <- NULL
+  }
+  
+  return(list("array.train" = array.boot, "array.valid" = array.demi))
 }
 
 # Set bag = FALSE to sample training set WITHOUT replacement
@@ -969,13 +1041,22 @@ fsEbayes <- function(array, probes, ...){ # args to ebayes
 }
 
 # NOTE: mRMR.classic is prone to crashing when supplied a very large 'feature_count' argument
-fsMrmre <- function(array, probes, feature_count, ...){ # args to mRMR.classic
+fsMrmre <- function(array, probes, ...){ # args to mRMR.classic
   
   require(mRMRe)
   
-  if(missing(feature_count)){
+  args <- as.list(substitute(list(...)))[-1]
+  
+  if(!"target_indices" %in% names(args)){
     
-    feature_count <- 64
+    cat("Setting 'target_indices' to 1 (default behavior, override explicitly)...\n")
+    args <- append(args, list("target_indices" = 1))
+  }
+  
+  if(!"feature_count" %in% names(args)){
+    
+    cat("Setting 'feature_count' to 64 (default behavior, override explicitly)...\n")
+    args <- append(args, list("feature_count" = 64))
   }
   
   # Convert 'numeric' probe argument to 'character' probe vector
@@ -995,7 +1076,8 @@ fsMrmre <- function(array, probes, feature_count, ...){ # args to mRMR.classic
   # Set up and perform mRMR
   labels <- as.numeric(array@annot$defineCase == "Case")
   mRMRdata <- mRMR.data(data = data.frame(labels, data))
-  mRMRout <- mRMR.classic(data = mRMRdata, target_indices = 1, feature_count = feature_count, ...)
+  args <- append(list("data" = mRMRdata), args)
+  mRMRout <- do.call(mRMR.classic, args)
   
   # Sort probes
   final <- as.vector(apply(solutions(mRMRout)[[1]], 2, function(x, y) { return(y[x]) }, y = mRMRe::featureNames(mRMRdata)))
@@ -1861,9 +1943,12 @@ setMethod("buildEnsemble", "ExprsMachine",
 
 # Build ExprsEnsemble from an ExprsPipeline object
 setMethod("buildEnsemble", "ExprsPipeline",
-          function(object, col.accBy, how = 0, top.N = 0){
+          function(object, col.accBy = 0, how = 0, gate = 0, top.N = 0){
             
-            pf <- pipeFilter(object, col.accBy = col.accBy, how = how, top.N = top.N)
+            if(col.accBy != 0){
+              
+              pf <- pipeFilter(object, col.accBy = col.accBy, how = how, gate = gate, top.N = top.N)
+            }
             
             new("ExprsEnsemble",
                 machs = unlist(pf@machs)
