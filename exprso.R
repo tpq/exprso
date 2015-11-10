@@ -5,15 +5,13 @@ setClass("ExprsArray",
          slots = c(exprs = "matrix", # Stores most current expression matrix
                    annot = "data.frame", # Stores most current annotation data.frame
                    preFilter = "ANY", # Catalogs a history of changes
-                   reductionModel = "ANY", # Catalogs a history of changes
-                   n.comp = "ANY" # Catalogs a history of changes
+                   reductionModel = "ANY" # Catalogs a history of changes
          )
 )
 
 setClass("ExprsMachine",
          slots = c(preFilter = "ANY",
                    reductionModel = "ANY",
-                   n.comp = "ANY",
                    mach = "ANY"
          )
 )
@@ -49,8 +47,6 @@ setMethod("show", "ExprsArray",
             
             cat("@reductionModel summary:",
                 unlist(lapply(object@reductionModel, class)), "\n")
-            
-            cat("@n.comp summary:", unlist(object@n.comp), "\n")
           }
 )
 
@@ -62,8 +58,6 @@ setMethod("show", "ExprsMachine",
             
             cat("@reductionModel summary:",
                 unlist(lapply(object@reductionModel, class)), "\n")
-            
-            cat("@n.comp summary:", unlist(object@n.comp), "\n")
             
             cat("@mach class:", class(object@mach), "\n")
           }
@@ -96,7 +90,7 @@ setMethod("show", "ExprsPipeline",
               
             }else{
               
-              show(object@machs[[1]])
+              lapply(object@machs, show)
               cat("\n")
             }
           }
@@ -115,7 +109,7 @@ setMethod("show", "ExprsEnsemble",
               
             }else{
               
-              show(object@machs[[1]])
+              lapply(object@machs, show)
               cat("\n")
             }
           }
@@ -215,8 +209,7 @@ getCases <- function(array){
                exprs = as.matrix(array@exprs[, array@annot$defineCase %in% "Case"]),
                annot = array@annot[array@annot$defineCase %in% "Case", ],
                preFilter = array@preFilter,
-               reductionModel = array@reductionModel,
-               n.comp = array@n.comp)
+               reductionModel = array@reductionModel)
   
   return(array)
 }
@@ -227,8 +220,7 @@ getConts <- function(array){
                exprs = as.matrix(array@exprs[, array@annot$defineCase %in% "Control"]),
                annot = array@annot[array@annot$defineCase %in% "Control", ],
                preFilter = array@preFilter,
-               reductionModel = array@reductionModel,
-               n.comp = array@n.comp)
+               reductionModel = array@reductionModel)
   
   return(array)
 }
@@ -343,8 +335,11 @@ arrayEset <- function(eSet, col.defineBy, case.include, cont.include){
                exprs = exprs(eSet),
                annot = eSet@phenoData@data,
                preFilter = NULL,
-               reductionModel = NULL,
-               n.comp = NULL)
+               reductionModel = NULL)
+  
+  # Force @annot rownames to mirror proper @exprs colnames
+  colnames(array@exprs) <- make.names(colnames(array@exprs), unique = TRUE)
+  rownames(array@annot) <- colnames(array@exprs)
   
   # Filter out samples in @annot not matching case.include or cont.include
   array@annot <- array@annot[array@annot[, col.defineBy] %in% c(case.include, cont.include), ]
@@ -354,9 +349,6 @@ arrayEset <- function(eSet, col.defineBy, case.include, cont.include){
   
   # Subset @exprs to filter samples no longer found in @annot
   array@exprs <- array@exprs[, rownames(array@annot)]
-  
-  # Change hyphens for underscores as necessary for some downstream functions
-  rownames(array@exprs) <- gsub("-", "_", rownames(array@exprs))
   
   return(array)
 }
@@ -366,16 +358,15 @@ arrayRead <- function(file, probes.begin, col.subjectID, col.defineBy, case.incl
   # Pass any additional arguments to read.delim
   table <- read.delim(file, stringsAsFactors = FALSE, ...)
   
-  # Label table by subject ID
-  rownames(table) <- table[, col.subjectID]
+  # Label table by proper subject ID names
+  rownames(table) <- make.names(table[, col.subjectID], unique = TRUE)
   
   # Separate the expression data from annotation data
   array <- new("ExprsArray",
                exprs = t(table[, probes.begin:ncol(table)]),
                annot = table[, 1:(probes.begin-1)],
                preFilter = NULL,
-               reductionModel = NULL,
-               n.comp = NULL)
+               reductionModel = NULL)
   
   # Filter out samples in @annot not matching case.include or cont.include
   array@annot <- array@annot[array@annot[, col.defineBy] %in% c(case.include, cont.include), ]
@@ -385,9 +376,6 @@ arrayRead <- function(file, probes.begin, col.subjectID, col.defineBy, case.incl
   
   # Subset @exprs to filter samples no longer found in @annot
   array@exprs <- array@exprs[, rownames(array@annot)]
-  
-  # Change hyphens for underscores as necessary for some downstream functions
-  rownames(array@exprs) <- gsub("-", "_", rownames(array@exprs))
   
   return(array)
 }
@@ -488,8 +476,7 @@ splitStrat <- function(array, percent.include = 67, col.stratBy = NULL, bin, bre
                      exprs = array@exprs[, rownames(s)],
                      annot = array@annot[rownames(s), ],
                      preFilter = array@preFilter,
-                     reductionModel = array@reductionModel,
-                     n.comp = array@n.comp)
+                     reductionModel = array@reductionModel)
   
   # Dump remaining samples into array.valid
   cat("\nBuilding a validation set with remaining samples...\n\n")
@@ -497,8 +484,7 @@ splitStrat <- function(array, percent.include = 67, col.stratBy = NULL, bin, bre
                      exprs = array@exprs[, !colnames(array@exprs) %in% colnames(array.train@exprs)],
                      annot = array@annot[!rownames(array@annot) %in% rownames(array.train@annot), ],
                      preFilter = array@preFilter,
-                     reductionModel = array@reductionModel,
-                     n.comp = array@n.comp)
+                     reductionModel = array@reductionModel)
   
   return(list("array.train" = array.train, "array.valid" = array.valid))
 }
@@ -552,8 +538,7 @@ splitSample <- function(array, percent.include = 67, ...){ # args to sample
                     exprs = array@exprs[, boot], # as.matrix not needed because always at least 2 columns
                     annot = array@annot[boot, ],
                     preFilter = array@preFilter,
-                    reductionModel = array@reductionModel,
-                    n.comp = array@n.comp)
+                    reductionModel = array@reductionModel)
   
   # Build demi-holdout set based on the size of the bootstrap set
   if(ncol(array.boot@exprs) < ncol(array@exprs)){
@@ -563,80 +548,7 @@ splitSample <- function(array, percent.include = 67, ...){ # args to sample
                       exprs = as.matrix(array@exprs[, !colnames(array@exprs) %in% boot]),
                       annot = array@annot[!rownames(array@annot) %in% boot, ],
                       preFilter = array@preFilter,
-                      reductionModel = array@reductionModel,
-                      n.comp = array@n.comp)
-    
-  }else{
-    
-    cat("\nBuilding a NULL validation set...\n\n")
-    array.demi <- NULL
-  }
-  
-  return(list("array.train" = array.boot, "array.valid" = array.demi))
-}
-
-# Set bag = FALSE to sample training set WITHOUT replacement
-# Set bag = TRUE to sample training set WITH replacement (will likely include less than percent.include)
-#   NOTE: The demi-holdout will contain all subjects not randomly sampled
-# Set percent.include = 100 to return a NULL demi-holdout array
-splitBag <- function(array, percent.include = 67, bag = TRUE){
-  
-  warning("This method is not truly random; at least one case and one control will always appear in demi-holdout!")
-  
-  if(percent.include < 1 | percent.include > 100){
-    
-    stop("You must choose an inclusion percentage between 1-100!")
-  }
-  
-  if(!"Case" %in% array@annot$defineCase & "Control" %in% array@annot$defineCase){
-    
-    stop("Provided ExprsArray object must contain both 'Case' and 'Control' subjects!")
-  }
-  
-  # Calculate size of bootstrap set
-  size <- round((ncol(array@exprs) * percent.include)/100, digits = 0)
-  
-  at.least.1 <- FALSE # Set at.least.1 to FALSE by default
-  counter <- 1
-  while(!at.least.1){ # If there is not at least one CASE and at least one CONTROL...
-    
-    # Terminate after 10 iterations
-    counter <- counter + 1
-    if(counter > 10) stop("splitRandom could not find a solution. Check the supplied parameters.")
-    
-    # Attempt a simple random sample with or without replacement depending on 'bag' argument
-    boot <- sample(colnames(array@exprs), size = size, replace = bag)
-    
-    # Check whether to terminate the while loop
-    if("Case" %in% array@annot[boot, "defineCase"] & "Control" %in% array@annot[boot, "defineCase"]){
-      
-      at.least.1 <- TRUE
-      
-    }else{
-      
-      at.least.1 <- FALSE
-    }
-  }
-  
-  # Build bootstrap set
-  cat("\nBuilding the random training set...\n\n")
-  array.boot <- new("ExprsArray",
-                    exprs = array@exprs[, boot], # as.matrix not needed because always at least 2 columns
-                    annot = array@annot[boot, ],
-                    preFilter = array@preFilter,
-                    reductionModel = array@reductionModel,
-                    n.comp = array@n.comp)
-  
-  # Build demi-holdout set based on the size of the bootstrap set
-  if(ncol(array.boot@exprs) < ncol(array@exprs)){
-    
-    cat("\nBuilding a validation set with remaining samples...\n\n")
-    array.demi <- new("ExprsArray",
-                      exprs = as.matrix(array@exprs[, !colnames(array@exprs) %in% boot]),
-                      annot = array@annot[!rownames(array@annot) %in% boot, ],
-                      preFilter = array@preFilter,
-                      reductionModel = array@reductionModel,
-                      n.comp = array@n.comp)
+                      reductionModel = array@reductionModel)
     
   }else{
     
@@ -830,7 +742,7 @@ modNormalize <- function(array, MARGIN = c(1, 2), displayAll = FALSE){
 # NOTE: IF probes is a character vector, include only these probes when building data
 # NOTE: 'probes' argument refers to what you feed INTO the function, not what you expect OUT
 
-fsPrcomp <- function(array, probes, n.comp, ...){ # args to prcomp
+fsPrcomp <- function(array, probes, ...){ # args to prcomp
   
   # Convert 'numeric' probe argument to 'character' probe vector
   if(class(probes) == "numeric"){
@@ -854,14 +766,12 @@ fsPrcomp <- function(array, probes, n.comp, ...){ # args to prcomp
   
   # ATTENTION: The value of predict(reductionModel, data) equals $x
   # @preFilter stores probes used to build reductionModel (i.e. as passed on by 'probes' argument)
-  # @n.comp stores the number of top components to include after building reductionModel
   # This information will automatically distill the data when calling svmPredict
   array <- new("ExprsArray",
-               exprs = t(reductionModel$x[, 1:n.comp]),
+               exprs = t(reductionModel$x),
                annot = array@annot,
                preFilter = append(array@preFilter, list(probes)),
-               reductionModel = append(array@reductionModel, list(reductionModel)),
-               n.comp = append(array@n.comp, list(n.comp))
+               reductionModel = append(array@reductionModel, list(reductionModel))
   )
   
   return(array)
@@ -926,8 +836,7 @@ fsStats <- function(array, probes, how, ...){ # args to ks.test, ks.boot, or t-t
                exprs = array@exprs[final,],
                annot = array@annot,
                preFilter = append(array@preFilter, list(final)),
-               reductionModel = append(array@reductionModel, list(NA)),
-               n.comp = append(array@n.comp, list(0))
+               reductionModel = append(array@reductionModel, list(NA))
   )
   
   return(array)
@@ -963,8 +872,7 @@ fsPenalizedSVM <- function(array, probes, ...){ # args to svm.fs
                exprs = array@exprs[final, ],
                annot = array@annot,
                preFilter = append(array@preFilter, list(final)),
-               reductionModel = append(array@reductionModel, list(NA)),
-               n.comp = append(array@n.comp, list(0))
+               reductionModel = append(array@reductionModel, list(NA))
   )
   
   return(array)
@@ -1001,8 +909,7 @@ fsPathClassRFE <- function(array, probes, ...){ # args to fit.rfe
                exprs = array@exprs[final, ],
                annot = array@annot,
                preFilter = append(array@preFilter, list(final)),
-               reductionModel = append(array@reductionModel, list(NA)),
-               n.comp = append(array@n.comp, list(0))
+               reductionModel = append(array@reductionModel, list(NA))
   )
   
   return(array)
@@ -1033,8 +940,7 @@ fsEbayes <- function(array, probes, ...){ # args to ebayes
                exprs = array@exprs[final,],
                annot = array@annot,
                preFilter = append(array@preFilter, list(final)),
-               reductionModel = append(array@reductionModel, list(NA)),
-               n.comp = append(array@n.comp, list(0))
+               reductionModel = append(array@reductionModel, list(NA))
   )
   
   return(array)
@@ -1089,8 +995,7 @@ fsMrmre <- function(array, probes, ...){ # args to mRMR.classic
                exprs = array@exprs[final,],
                annot = array@annot,
                preFilter = append(array@preFilter, list(final)),
-               reductionModel = append(array@reductionModel, list(NA)),
-               n.comp = append(array@n.comp, list(0))
+               reductionModel = append(array@reductionModel, list(NA))
   )
   
   return(array)
@@ -1144,8 +1049,7 @@ fsLmerTest <- function(array, probes, col.modelBy = colnames(array@annot), ...){
                exprs = array@exprs[final,],
                annot = array@annot,
                preFilter = append(array@preFilter, list(final)),
-               reductionModel = append(array@reductionModel, list(NA)),
-               n.comp = append(array@n.comp, list(0))
+               reductionModel = append(array@reductionModel, list(NA))
   )
   
   return(array)
@@ -1155,7 +1059,7 @@ fsLmerTest <- function(array, probes, col.modelBy = colnames(array@annot), ...){
 ### Build and deploy individual classifiers
 
 # NOTE: User has one more opportunity to subset the probe set before building machine
-# NOTE: @preFilter, @reductionModel, and @n.comp data will get passed to ExprsMachine object
+# NOTE: @preFilter and @reductionModel data will get passed to ExprsMachine object
 # NOTE: Once predict is called, validation set will get processed accordingly
 buildSVM <- function(array, probes, ...){ # args to svm
   
@@ -1193,7 +1097,7 @@ buildSVM <- function(array, probes, ...){ # args to svm
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform SVM via ~ method (permits plotting)
-  df <- data.frame(data, "defineCase" = labels)
+  df <- cbind(as.data.frame(data), "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(svm, args)
     
@@ -1202,7 +1106,6 @@ buildSVM <- function(array, probes, ...){ # args to svm
   machine <- new("ExprsMachine",
                  preFilter = append(array@preFilter, list(probes)),
                  reductionModel = append(array@reductionModel, list(NA)),
-                 n.comp = append(array@n.comp, list(0)),
                  mach = model
   )
   
@@ -1258,7 +1161,7 @@ buildANN <- function(array, probes, ...){
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform ANN via ~ method
-  df <- data.frame(data, "defineCase" = labels)
+  df <- cbind(as.data.frame(data), "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(nnet, args)
     
@@ -1267,7 +1170,6 @@ buildANN <- function(array, probes, ...){
   machine <- new("ExprsMachine",
                  preFilter = append(array@preFilter, list(probes)),
                  reductionModel = append(array@reductionModel, list(NA)),
-                 n.comp = append(array@n.comp, list(0)),
                  mach = model
   )
   
@@ -1298,7 +1200,7 @@ buildRF <- function(array, probes, ...){
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform RF via ~ method
-  df <- data.frame(data, "defineCase" = labels)
+  df <- cbind(as.data.frame(data), "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(randomForest, args)
   
@@ -1307,7 +1209,6 @@ buildRF <- function(array, probes, ...){
   machine <- new("ExprsMachine",
                  preFilter = append(array@preFilter, list(probes)),
                  reductionModel = append(array@reductionModel, list(NA)),
-                 n.comp = append(array@n.comp, list(0)),
                  mach = model
   )
   
@@ -1350,8 +1251,7 @@ modHistory <- function(object, reference){
                     exprs = object@exprs[reference@preFilter[[i]], ], # Update @exprs
                     annot = object@annot, # Preserve @annot
                     preFilter = append(object@preFilter, list(reference@preFilter[[i]])), # Append history
-                    reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])),
-                    n.comp = append(object@n.comp, list(reference@n.comp[[i]])))
+                    reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])))
       
     }else{
       
@@ -1363,11 +1263,10 @@ modHistory <- function(object, reference){
       
       # Build new object
       object <- new("ExprsArray",
-                    exprs = t(comps[, 1:reference@n.comp[[i]]]), # Update @exprs
+                    exprs = t(comps), # Update @exprs
                     annot = object@annot, # Preserve @annot
                     preFilter = append(object@preFilter, list(reference@preFilter[[i]])), # Append history
-                    reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])),
-                    n.comp = append(object@n.comp, list(reference@n.comp[[i]])))
+                    reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])))
     }
   }
   
@@ -1768,6 +1667,25 @@ plBoot <- function(array, B, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
 ###########################################################
 ### Build functions for modifying ExprsPipeline objects
 
+setGeneric("pipeUnboot",
+           function(object, ...){
+             standardGeneric("pipeUnboot")
+           }
+)
+
+setMethod("pipeUnboot", "ExprsPipeline",
+          function(object){
+            
+            if("boot" %in% colnames(object@summary)){
+              
+              # Rename 'boot' column to 'unboot'
+              colnames(object@summary)[colnames(object@summary) == "boot"] <- "unboot"
+            }
+            
+            return(object)
+          }
+)
+
 setGeneric("pipeSubset",
            function(object, ...){
              standardGeneric("pipeSubset")
@@ -1947,11 +1865,11 @@ setMethod("buildEnsemble", "ExprsPipeline",
             
             if(col.accBy != 0){
               
-              pf <- pipeFilter(object, col.accBy = col.accBy, how = how, gate = gate, top.N = top.N)
+              object <- pipeFilter(object, col.accBy = col.accBy, how = how, gate = gate, top.N = top.N)
             }
             
             new("ExprsEnsemble",
-                machs = unlist(pf@machs)
+                machs = unlist(object@machs)
             )
           }
 )
