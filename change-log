@@ -13,5 +13,19 @@
 # fsMrmre: changed how function handles default arguments
 # buildEnsemble: set 'col.accBy' = 0 to skip pipeFilter
 #
+# ``2015 Nov 9
+# arrayRead: coerces 'col.subjectID' through make.names()
+# arrayEset: coerces @annot rownames to mirror @exprs colnames
+# pipeUnboot: new function renames ExprsPipeline 'boot' column
+# buildEnsemble: fixed 'col.accBy' = 0 bug
+# buildSVM: used 'cbind' to prevent row.name warning
+# buildANN: used 'cbind' to prevent row.name warning
+# buildRF: used 'cbind' to prevent row.name warning
+# show.ExprsPipeline: fixed error with empty @machs slot
+# show.ExprsEnsemble: fixed error with empty @machs slot
+# ExprsArray class: removed @n.comp slot
+# ExprsMachine class: removed @n.comp slot
+# fsPrcomp: removed 'n.comp' argument
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
