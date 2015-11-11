@@ -300,8 +300,45 @@ setMethod("conjoin", "ExprsPipeline",
             args.summary <- append(list(object@summary), lapply(args[index], function(pl) pl@summary))
             args.machs <- append(list(object@machs), lapply(args[index], function(pl) pl@machs))
             
+            # Initialize the conjoin boot counter
+            b <- 1
+            
+            # Apply conjoin boot counter to each ExprsPipeline object
+            pls <- lapply(args.summary,
+                          function(pl){
+                            
+                            # Initialize the conjoin boot container
+                            pl <- cbind("join" = 0, pl)
+                            
+                            if(!"boot" %in% colnames(pl)){
+                              
+                              # Add conjoin boot counter
+                              pl$join <- b
+                              b <<- b + 1
+                              
+                            }else{
+                              
+                              # For each boot in $boot
+                              for(i in 1:length(unique(pl$boot))){
+                                
+                                # Change each unique boot to conjoin boot counter
+                                pl$join[pl$boot == i] <- b
+                                b <<- b + 1
+                              }
+                              
+                              # Rename $boot to $unboot
+                              colnames(pl)[colnames(pl) == "boot"] <- "unboot"
+                            }
+                            
+                            # Rename $join to $boot
+                            colnames(pl)[colnames(pl) == "join"] <- "boot"
+                            
+                            return(pl)
+                          }
+            )
+            
             pl <- new("ExprsPipeline",
-                      summary = do.call(rbind, args.summary),
+                      summary = do.call(rbind.fill, pls),
                       machs = unlist(args.machs)
             )
             
