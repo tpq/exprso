@@ -363,6 +363,94 @@ setMethod("conjoin", "ExprsEnsemble",
 ###########################################################
 ### Read, subset, and split ExprsArray objects
 
+# NOTE: retrieve GSE object with getGEO("GSExxxxx", GSEMatrix = FALSE)
+GSE2eSet <- function(gse, col.idBy = "ID_REF", col.valBy = "VALUE"){
+  
+  require(GEOquery)
+  require(Biobase)
+  
+  # Check for non-unique platforms
+  gsms <- unlist(lapply(GSMList(gse), function(g){ Meta(g)$platform}))
+  
+  # Check for non-unique platforms
+  if(length(unique(gsms)) > 1) stop("GSE contains non-unique platforms!")
+  
+  # Provide an opportunity for user to select a new platform ID column
+  if(is.null(col.idBy)){
+    
+    cat("The columns available for platform ID include:\n")
+    print(Columns(GSMList(gse)[[1]]))
+    cat("\n")
+    col.idBy <- readline(prompt = "Which column will you use for platform ID?\n")
+  }
+  
+  # Provide an opportunity for user to select a new platform VALUE column
+  if(is.null(col.valBy)){
+    
+    cat("The columns available for platform VALUE include:\n")
+    print(Columns(GSMList(gse)[[1]]))
+    cat("\n")
+    col.valBy <- readline(prompt = "Which column will you use for platform VALUE?\n")
+  }
+  
+  # Establish a template for all probes
+  probesets <- Table(GPLList(gse)[[1]])$ID
+  
+  # Retrieve probe values for each sample
+  vals <- lapply(GSMList(gse), function(g){ as.numeric(Table(g)[match(probesets, Table(g)[, col.idBy]), col.valBy])})
+  
+  # Combine samples into data.frame
+  exprs <- data.frame(vals, row.names = probesets)
+  
+  # Retrieve annotations for each sample
+  pdata <- lapply(GSMList(gse),
+                  function(g){
+                    
+                    # Retrieve all columns containing "characteristics_ch" in name
+                    annotSlots <- names(Meta(g))[grepl("characteristics_ch", names(Meta(g)))]
+                    
+                    # If there is any comma delimitation
+                    grepl(",", unlist(Meta(g)[annotSlots])) &
+                      unlist(lapply(Meta(g)[annotSlots], function(x) length(x) == 1))
+                    
+                    # If there is any comma delimitation
+                    if(any(grepl(",", unlist(Meta(g)[annotSlots])) & # IF ANY commas AND...
+                           unlist(lapply(Meta(g)[annotSlots], function(x) length(x) == 1)))){ # ...!length > 1
+                      
+                      # Split comma containing annotations
+                      characteristics <- unlist(strsplit(unlist(Meta(g)[annotSlots]), ",\\s*"))
+                      
+                    }else{
+                      
+                      # Pass along annotations unsplit
+                      characteristics <- unlist(Meta(g)[annotSlots])
+                    }
+                    
+                    # Retrieve substance of "characteristics" without characteristic name
+                    annots <- lapply(strsplit(characteristics, ":\\s*"), function(split) split[2])
+                    
+                    # Prepare annotations in AnnotatedDataFrame format
+                    annots <- data.frame(annots, row.names = Meta(g)$geo_accession)
+                    
+                    # Rename columns based on "characteristics" name
+                    colnames(annots) <- unlist(lapply(strsplit(characteristics, ":\\s*"), function(x) x[1]))
+                    
+                    # Add a "sample" column
+                    cbind(data.frame("sample" = Meta(g)$geo_accession), annots)
+                  })
+  
+  # Combine annotations into data.frame
+  phenoData <- do.call("rbind.fill", pdata)
+  
+  # Set row.names to "sample" column
+  rownames(phenoData) <- phenoData$sample
+  
+  # Build eSet object
+  eset <- new("ExpressionSet", exprs = as.matrix(exprs), phenoData = as(phenoData, "AnnotatedDataFrame"))
+  
+  return(eset)
+}
+
 arrayEset <- function(eSet, col.defineBy, case.include, cont.include){
   
   require(Biobase)
