@@ -31,5 +31,8 @@
 # ``2015 Nov 11
 # conjoin: improved handling of plBoot results
 #
+# ``2015 Nov 25
+# GSE2eSet: new function for converting a GSE object into an eSet object
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
