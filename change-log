@@ -34,5 +34,10 @@
 # ``2015 Nov 25
 # GSE2eSet: new function for converting GSE object into eSet object
 #
+# ``2015 Dec 3
+# compare: new function for comparing ExprsArray annotations
+# GSE2eSet: added missing dependency
+# conjoin: added missing dependency
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
