@@ -294,6 +294,8 @@ setGeneric("conjoin",
 setMethod("conjoin", "ExprsPipeline",
           function(object, ...){
             
+            require(plyr)
+            
             args <- list(...)
             index <- unlist(lapply(args, function(arg) class(arg) == "ExprsPipeline"))
             
@@ -368,6 +370,7 @@ GSE2eSet <- function(gse, col.idBy = "ID_REF", col.valBy = "VALUE"){
   
   require(GEOquery)
   require(Biobase)
+  require(plyr)
   
   # Check for non-unique platforms
   gsms <- unlist(lapply(GSMList(gse), function(g){ Meta(g)$platform}))
@@ -856,6 +859,163 @@ modNormalize <- function(array, MARGIN = c(1, 2), displayAll = FALSE){
   boxplot(v, horizontal = TRUE, main = "Box Plot (After)", xlab = "Expression Values")
   
   return(array)
+}
+
+###########################################################
+### Functions for comparing ExprsArray annotations
+
+# NOTE: Use arraySubset to define new 'array.train' and 'array.valid' objects for pairwise comparisons
+# NOTE: Provided 'col.compareBy' determines categorical variable used for "internal" comparisons
+# NOTE: This function will always perform "internal" comparisons whether or not 'array.valid' is provided
+# NOTE: IF 'array.valid' is provided, function will also compare 'array.train' against 'array.valid'
+compare <- function(array.train, array.valid = NULL, col.compareBy = "defineCase", set.include = c("Case", "Control"), cutoff = .05){
+  
+  # Check for ExprsArray class
+  if(!"ExprsArray" %in% class(array.train)) stop("Uh oh! You can only compare ExprsArray objects.")
+  
+  # Subset the first ExprsArray object
+  arrays <- list(arraySubset(array.train, col.subsetBy = col.compareBy, set.include = set.include))
+  
+  # Subset second object if provided
+  if(!is.null(array.valid)){
+    
+    # Check for ExprsArray class
+    if(!"ExprsArray" %in% class(array.valid)) stop("Uh oh! You can only compare ExprsArray objects.")
+    
+    arrays <- append(arrays, arraySubset(array.valid, col.subsetBy = col.compareBy, set.include = set.include))
+  }
+  
+  # Perform ANOVA or chi-square across each provided array
+  annots.each <- lapply(arrays,
+                        function(array){
+                          
+                          cat("\nPerforming ANOVA or chi-square analysis for each annotation...\n")
+                          
+                          # Make sure col.compareBy contains nominal data
+                          if(!class(array@annot[, col.compareBy]) %in% c("character", "factor")){
+                            
+                            cat("Expect strange results when 'col.compareBy' does not contain categorical data!\n")
+                          }
+                          
+                          # Prepare the annotations to test as independent variables
+                          annots <- colnames(array@annot)[!colnames(array@annot) %in% col.compareBy]
+                          
+                          # For each independent variable...
+                          index.each <- lapply(annots,
+                                               function(annot){
+                                                 
+                                                 if(class(array@annot[, annot]) %in% c("character", "factor")){
+                                                   
+                                                   # Build contingency table for one independent variable
+                                                   compare <- table(array@annot[, c(annot, col.compareBy)])
+                                                   
+                                                   # Perform chi-square test and concatenate results
+                                                   chisq.p <- chisq.test(compare)$p.value
+                                                   cat("\t", "Annotation ", annot, ": ", chisq.p, "\n", sep = "")
+                                                   
+                                                   # Return statistical significance as boolean
+                                                   ifelse(is.na(chisq.p), return(FALSE), return(chisq.p < cutoff))
+                                                   
+                                                 }else{
+                                                   
+                                                   # Prepare data for ANOVA
+                                                   df <- data.frame("y" = array@annot[, annot], "x" = as.factor(array@annot[, col.compareBy]))
+                                                   
+                                                   # Check if ANOVA will work after removing NA values
+                                                   if(length(unique(na.omit(df)$x)) > 1){
+                                                     
+                                                     # Fit linear model to independent variable
+                                                     fit <- lm(y ~ x, data = df, na.action = na.omit)
+                                                     
+                                                     # Perform ANOVA test and concatenate results
+                                                     anova.p <- anova(fit)$Pr[1]
+                                                     cat("\t", "Annotation ", annot, ": ", anova.p, "\n", sep = "")
+                                                     
+                                                     # Return statistical significance as boolean
+                                                     return(anova.p < cutoff)
+                                                     
+                                                   }else{
+                                                     
+                                                     # ANOVA fails
+                                                     cat("\t", "Annotation ", annot, ": insufficient measurements \n", sep = "")
+                                                     return(FALSE)
+                                                   }
+                                                 }
+                                               })
+                          
+                          # Return statistically significant annotations
+                          return(annots[unlist(index.each)])
+                        })
+  
+  if(!is.null(array.valid)){
+    
+    cat("\nPerforming ANOVA or chi-square analysis between ExprsArray objects for each annotation...\n")
+    
+    # Prepare the annotations to test as independent variables
+    annots <- colnames(array.train@annot)[colnames(array.train@annot) %in% colnames(array.valid@annot)]
+    
+    # For each independent variable...
+    index.both <- lapply(annots,
+                         function(annot){
+                           
+                           # Build a data.frame to use in ExprsArray object comparisons
+                           df <- rbind(data.frame("array" = "array.train", "annot" = array.train@annot[, annot]),
+                                       data.frame("array" = "array.valid", "annot" = array.valid@annot[, annot]))
+                           
+                           if(class(array.train@annot[, annot]) %in% c("character", "factor")){
+                             
+                             # Build contingency table for one independent variable
+                             compare <- table(df)
+                             
+                             # Perform chi-square test and concatenate results
+                             chisq.p <- chisq.test(compare)$p.value
+                             cat("\t", "Annotation ", annot, ": ", chisq.p, "\n", sep = "")
+                             
+                             # Return statistical significance as boolean
+                             ifelse(is.na(chisq.p), return(FALSE), return(chisq.p < cutoff))
+                             
+                           }else{
+                             
+                             # Check if ANOVA will work after removing NA values
+                             if(length(unique(na.omit(df)$array)) > 1){
+                               
+                               # Fit linear model to independent variable
+                               fit <- lm(annot ~ array, data = df, na.action = na.omit)
+                               
+                               # Perform ANOVA test and concatenate results
+                               anova.p <- anova(fit)$Pr[1]
+                               cat("\t", "Annotation ", annot, ": ", anova.p, "\n", sep = "")
+                               
+                               # Return statistical significance as boolean
+                               return(anova.p < cutoff)
+                               
+                             }else{
+                               
+                               # ANOVA fails
+                               cat("\t", "Annotation ", annot, ": insufficient measurements \n", sep = "")
+                               return(FALSE)
+                             }
+                           }
+                         })
+    
+    # Return statistically significant annotations
+    annots.both <- annots[unlist(index.both)]
+    
+    # Prepare result
+    result <- append(annots.each, list(annots.both))
+    names(result) <- c("differences.within.train", "differences.within.valid", "differences.between")
+    
+  }else{
+    
+    # Set index.both = NULL if array.valid = NULL
+    annots.both <- NULL
+    
+    # Prepare result
+    result <- annots.each
+    names(result) <- c("differences.train")
+  }
+  
+  return(result)
 }
 
 ###########################################################
