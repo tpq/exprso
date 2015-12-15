@@ -211,6 +211,9 @@ getCases <- function(array){
                preFilter = array@preFilter,
                reductionModel = array@reductionModel)
   
+  # Clean up 1-subject artifact
+  colnames(array@exprs) <- rownames(array@annot)
+  
   return(array)
 }
 
@@ -221,6 +224,9 @@ getConts <- function(array){
                annot = array@annot[array@annot$defineCase %in% "Control", ],
                preFilter = array@preFilter,
                reductionModel = array@reductionModel)
+  
+  # Clean up 1-subject artifact
+  colnames(array@exprs) <- rownames(array@annot)
   
   return(array)
 }
@@ -443,7 +449,7 @@ GSE2eSet <- function(gse, col.idBy = "ID_REF", col.valBy = "VALUE"){
                   })
   
   # Combine annotations into data.frame
-  phenoData <- do.call("rbind.fill", pdata)
+  phenoData <- do.call(rbind.fill, pdata)
   
   # Set row.names to "sample" column
   rownames(phenoData) <- phenoData$sample
@@ -477,6 +483,13 @@ arrayEset <- function(eSet, col.defineBy, case.include, cont.include){
   
   # Subset @exprs to filter samples no longer found in @annot
   array@exprs <- array@exprs[, rownames(array@annot)]
+  
+  # Remove probes with missing values
+  if(any(is.na(array@exprs))){
+    
+    cat("Removing probes with missing values...\n")
+    array@exprs <- array@exprs[apply(array@exprs, 1, function(x) !any(is.na(x))), ]
+  }
   
   return(array)
 }
@@ -1184,12 +1197,20 @@ fsPathClassRFE <- function(array, probes, ...){ # args to fit.rfe
   # Set labels as factor
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
+  # Set up "make.names" key for improper @exprs row.names
+  key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
+  
   # NOTE: RFE as assembled by pathClass is via a linear kernel only
   # NOTE: By default, fit.rfe iterates through C = 10^c(-3:3)
   # Run fit.rfe()
   rfe <- fit.rfe(x = data, y = labels, ...)
   
+  # Sort probes
   final <- rfe$features
+  
+  # Use "make.names" key to return to original row.names
+  final <- merge(data.frame("new" = final), key)$old
+  
   array <- new("ExprsArray",
                exprs = array@exprs[final, ],
                annot = array@annot,
@@ -1264,6 +1285,9 @@ fsMrmre <- function(array, probes, ...){ # args to mRMR.classic
     data <- t(array@exprs[probes, ])
   }
   
+  # Set up "make.names" key for improper @exprs row.names
+  key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
+  
   # Set up and perform mRMR
   labels <- as.numeric(array@annot$defineCase == "Case")
   mRMRdata <- mRMR.data(data = data.frame(labels, data))
@@ -1273,8 +1297,8 @@ fsMrmre <- function(array, probes, ...){ # args to mRMR.classic
   # Sort probes
   final <- as.vector(apply(solutions(mRMRout)[[1]], 2, function(x, y) { return(y[x]) }, y = mRMRe::featureNames(mRMRdata)))
   
-  # Remove the X appended by the mRMRe::featureNames function to all features named with a number
-  final[!final %in% rownames(array@exprs)] <- unlist(lapply(final[!final %in% rownames(array@exprs)], function(id) substr(id, start = 2, stop = nchar(id))))
+  # Use "make.names" key to return to original row.names
+  final <- merge(data.frame("new" = final), key)$old
   
   array <- new("ExprsArray",
                exprs = array@exprs[final,],
@@ -1533,7 +1557,7 @@ modHistory <- function(object, reference){
       
       # Build new object
       object <- new("ExprsArray",
-                    exprs = object@exprs[reference@preFilter[[i]], ], # Update @exprs
+                    exprs = as.matrix(object@exprs[reference@preFilter[[i]], ]), # Update @exprs
                     annot = object@annot, # Preserve @annot
                     preFilter = append(object@preFilter, list(reference@preFilter[[i]])), # Append history
                     reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])))
@@ -1577,9 +1601,6 @@ setMethod("predict", "ExprsMachine",
             # Build data from modHistory output
             data <- t(array@exprs)
             
-            # Set labels as factor
-            labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-            
             if("svm" %in% class(object@mach)){
               
               require(e1071)
@@ -1599,12 +1620,12 @@ setMethod("predict", "ExprsMachine",
               }
               
               # Predict SVM via ~ method (permits plotting)
-              df <- data.frame(data, "defineCase" = labels)
-              args <- append(list("object" = object@mach, "newdata" = df), args)
+              args <- append(list("object" = object@mach, "newdata" = data), args)
               pred <- do.call(predict, args)
               
               # Extract 'probabilities' attribute
               px <- attr(pred, "probabilities")
+              px <- as.data.frame(px)
               px <- px[, c("Control", "Case")]
               
               # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
@@ -1628,16 +1649,16 @@ setMethod("predict", "ExprsMachine",
               require(nnet)
               
               # Predict ANN via ~ method
-              df <- data.frame(data, "defineCase" = labels)
-              pred <- predict(object@mach, df, type = "class")
+              pred <- predict(object@mach, data, type = "class")
               
               # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
-              px <- predict(object@mach, df, type = "raw")
+              px <- predict(object@mach, data, type = "raw")
               if(px[which.min(px)] > .5){ labMin <- ifelse(pred[which.min(px)] == "Case", "Control", "Case")
               }else{ labMin <- pred[which.min(px)] }
               if(px[which.max(px)] < .5){ labMax <- ifelse(pred[which.max(px)] == "Case", "Control", "Case")
               }else{ labMax <- pred[which.max(px)] }
               px <- cbind(1 - px, px)
+              px <- as.data.frame(px)
               colnames(px) <- c(labMin, labMax)
               px <- px[, c("Control", "Case")] # order columns
               dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
@@ -1645,7 +1666,7 @@ setMethod("predict", "ExprsMachine",
               
               # Clean up pred
               pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-              names(pred) <- rownames(df)
+              names(pred) <- rownames(data)
             }
             
             if("randomForest" %in% class(object@mach)){
@@ -1653,21 +1674,21 @@ setMethod("predict", "ExprsMachine",
               require(randomForest)
               
               # Predict RF via ~ method
-              df <- data.frame(data, "defineCase" = labels)
-              pred <- predict(object@mach, df, type = "response")
+              pred <- predict(object@mach, data, type = "response")
               
               # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
-              px <- unclass(predict(object@mach, df, type = "prob"))
+              px <- unclass(predict(object@mach, data, type = "prob"))
+              px <- as.data.frame(px)
               px <- px[, c("Control", "Case")] # order columns
               dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
               colnames(dv) <- "Case/Control"
               
               # Clean up pred
               pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-              names(pred) <- rownames(df)
+              names(pred) <- rownames(data)
             }
             
-            final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = px)
+            final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = as.matrix(px))
             
             # NOTE: validated to work on 2015/06/30
             # NOTE: rebuilt on 2015/08/12
@@ -1685,47 +1706,152 @@ calcStats <- function(pred, array, aucSkip = FALSE){
   layout(matrix(c(1), 1, 1, byrow = TRUE))
   
   # Build 'actual' object as binary
-  actual <- ifelse(array@annot$defineCase == "Case", 1, 0)
+  actual <- as.numeric(array@annot$defineCase == "Case")
   
-  # If pred contains decision.values and aucSkip = FALSE
-  if(!is.null(pred@probability) & !aucSkip){
+  # Build 'predicted' object as binary
+  predicted <- as.numeric(pred@pred == "Case")
+  
+  # If pred contains more than one class
+  if(length(unique(predicted)) > 1 & length(unique(actual)) > 1){
     
-    p <- prediction(pred@probability[, "Case"], as.numeric(actual))
-    
-    # Plot AUC curve
-    perf <- performance(p, measure = "tpr", x.measure = "fpr")
-    plot(perf, col = rainbow(10))
-    
-    # Index optimal cutoff based on Euclidean distance
-    index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
-    
-    # Calculate performance metrics
-    acc <- performance(p, "acc")@y.values[[1]][index]
-    sens <- performance(p, "sens")@y.values[[1]][index]
-    spec <- performance(p, "spec")@y.values[[1]][index]
-    auc <- performance(p, "auc")@y.values[[1]]
-    
-    return(data.frame(acc, sens, spec, auc))
+    # If pred contains decision.values and aucSkip = FALSE
+    if(!is.null(pred@probability) & !aucSkip){
+      
+      cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+      p <- prediction(pred@probability[, "Case"], actual)
+      
+      # Plot AUC curve
+      perf <- performance(p, measure = "tpr", x.measure = "fpr")
+      plot(perf, col = rainbow(10))
+      
+      # Index optimal cutoff based on Euclidean distance
+      index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
+      
+      # Calculate performance metrics
+      acc <- performance(p, "acc")@y.values[[1]][index]
+      sens <- performance(p, "sens")@y.values[[1]][index]
+      spec <- performance(p, "spec")@y.values[[1]][index]
+      auc <- performance(p, "auc")@y.values[[1]]
+      
+      return(data.frame(acc, sens, spec, auc))
+      
+    }else{
+      
+      cat("Calculating accuracy using ROCR based on raw votes...\n")
+      p <- prediction(predicted, actual)
+      
+      # Plot AUC curve
+      perf <- performance(p, measure = "tpr", x.measure = "fpr")
+      plot(perf, col = rainbow(10))
+      
+      # Index optimal cutoff based on Euclidean distance
+      index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
+      
+      # Calculate performance metrics
+      acc <- performance(p, "acc")@y.values[[1]][index]
+      sens <- performance(p, "sens")@y.values[[1]][index]
+      spec <- performance(p, "spec")@y.values[[1]][index]
+      
+      return(data.frame(acc, sens, spec))
+    }
     
   }else{
     
-    # Build 'p' object as binary
-    p <- prediction(as.numeric(pred@pred == "Case"), as.numeric(actual))
+    cat("Predictions include only one class. Calculating accuracy outside of ROCR...\n")
+    table <- matrix(0, nrow = 2, ncol = 2)
     
-    # Plot AUC curve
-    perf <- performance(p, measure = "tpr", x.measure = "fpr")
-    plot(perf, col = rainbow(10))
-    
-    # Index optimal cutoff based on Euclidean distance
-    index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
+    # Fill in the 2 x 2 table
+    for(i in 1:nrow(array@annot)){
+      
+      if(predicted[i] == 1 & actual[i] == 1) table[1, 1] <- table[1, 1] + 1
+      if(predicted[i] == 1 & actual[i] == 0) table[1, 2] <- table[1, 2] + 1
+      if(predicted[i] == 0 & actual[i] == 1) table[2, 1] <- table[2, 1] + 1
+      if(predicted[i] == 0 & actual[i] == 0) table[2, 2] <- table[2, 2] + 1
+    }
     
     # Calculate performance metrics
-    acc <- performance(p, "acc")@y.values[[1]][index]
-    sens <- performance(p, "sens")@y.values[[1]][index]
-    spec <- performance(p, "spec")@y.values[[1]][index]
+    acc <- (table[1, 1] + table[2, 2]) / sum(table)
+    sens <- (table[1, 1]) / (table[1, 1] + table[2, 1])
+    spec <- (table[2, 2]) / (table[1, 2] + table[2, 2])
     
     return(data.frame(acc, sens, spec))
   }
+}
+
+###########################################################
+### Build plCV
+
+# Calculates v-fold or leave-one-out cross-validation
+# NOTE: set 'fold' = 0 to perform leave-one-out cross-validation
+# NOTE: set 'fold' = v to perform v-fold cross-validation
+plCV <- function(array, probes, how, fold, ...){ # args to get(how)
+  
+  # Extract args from ...
+  args <- as.list(substitute(list(...)))[-1]
+  
+  # Perform LOOCV if 0 fold
+  if(fold == 0) fold <- nrow(array@annot)
+  
+  # Prepare list to receive per-fold subject IDs
+  subjects <- vector("list", fold)
+  
+  # Randomly sample subject IDs
+  ids <- sample(rownames(array@annot))
+  
+  # Initialize while loop
+  i <- 1
+  
+  # Add the ith subject ID to the vth fold
+  while(i <= nrow(array@annot)){
+    
+    subjects[[i %% fold + 1]] <- c(subjects[[i %% fold + 1]], ids[i])
+    i <- i + 1
+  }
+  
+  # Prepare vector to receive cv accs
+  accs <- vector("numeric", fold)
+  
+  # Build a machine against the vth fold
+  for(v in 1:length(subjects)){
+    
+    # The leave one out
+    array.train <- new("ExprsArray",
+                       exprs = as.matrix(array@exprs[, !colnames(array@exprs) %in% subjects[[v]]]),
+                       annot = array@annot[!rownames(array@annot) %in% subjects[[v]], ],
+                       preFilter = array@preFilter,
+                       reductionModel = array@reductionModel)
+    
+    # Clean up 1-subject artifact
+    colnames(array.train@exprs) <- rownames(array.train@annot)
+    
+    # The left out one
+    array.valid <- new("ExprsArray",
+                       exprs = as.matrix(array@exprs[, colnames(array@exprs) %in% subjects[[v]]]),
+                       annot = array@annot[rownames(array@annot) %in% subjects[[v]], ],
+                       preFilter = array@preFilter,
+                       reductionModel = array@reductionModel)
+    
+    # Clean up 1-subject artifact
+    colnames(array.valid@exprs) <- rownames(array.valid@annot)
+    
+    # Prepare args for do.call
+    args.v <- append(list("array" = array.train, "probes" = probes), args)
+    
+    # Build machine
+    mach <- do.call(what = how, args = args.v)
+    
+    # Deploy
+    pred <- predict(mach, array.valid)
+    
+    # Save accuracy
+    accs[v] <- calcStats(pred, array.valid, aucSkip = TRUE)$acc
+    
+    cat(v, "fold accuracy:", accs[v])
+  }
+  
+  acc <- mean(accs)
+  
+  return(acc)
 }
 
 ###########################################################
@@ -1735,7 +1861,9 @@ calcStats <- function(pred, array, aucSkip = FALSE){
 # NOTE: SVM predicted class membership does seem to differ slightly when 'probability' = TRUE
 #   "On the one hand, when probability=FALSE, predict() uses the signs of the decision values.
 #   On the other hand, when probability=TRUE, predict() uses a fitted logistic model."
-plGrid <- function(array.train, array.valid = NULL, probes, how, ...){ # args to how function
+# NOTE: set 'fold' = 0 to perform leave-one-out cross-validation
+# NOTE: set 'fold' = v to perform v-fold cross-validation
+plGrid <- function(array.train, array.valid = NULL, probes, how, fold = NULL, ...){ # args to how function
   
   require(plyr)
   
@@ -1818,6 +1946,15 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, ...){ # args to
                        # Predict class labels using the provided validation set and calculate accuracy
                        pred.valid <- predict(model, array.valid)
                        acc <- data.frame(acc, "valid" = calcStats(pred.valid, array.valid))
+                     }
+                     
+                     # If 'fold' argument is provided
+                     if(!is.null(fold)){
+                       
+                       # Perform leave-one-out or v-fold cross-validation
+                       args <- append(list("how" = how, "fold" = fold), args)
+                       cv <- do.call(what = plCV, args = args[!is.na(args)])
+                       acc <- data.frame("fold" = fold, "plCV.acc" = cv, acc)
                      }
                      
                      df <- data.frame(gridpoint, acc)
@@ -1915,7 +2052,7 @@ plBoot <- function(array, B, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
                   ###
                   # (III) Run GridSearch via provided ctrlGS
                   
-                  # Perform some gridsearch function (e.g. plSVM)
+                  # Perform some gridsearch function (e.g. plGrid)
                   func <- ctrlGS$func
                   args <- append(list("array.train" = array.boot, "array.valid" = array.demi), ctrlGS[!ctrlGS %in% func])
                   pl <- do.call(what = func, args = args)
