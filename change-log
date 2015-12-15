@@ -39,5 +39,18 @@
 # GSE2eSet: added missing dependency
 # conjoin: added missing dependency
 #
+# ``2015 Dec 15
+# arrayEset: now removes probes with missing values
+# fsPathClassRFE: fixed handling of improper probe IDs
+# fsMrmre: fixed handling of improper probe IDs
+# plCV: added function to perform v-fold and LOO cv
+# plGrid: added 'fold' argument to call plCV
+# modHistory: fixed error occurring during LOOCV
+# predict: removed superfluous 'labels' object
+# predict: fixed error occurring during LOOCV
+# calcStats: now allows "1-subject prediction"
+# getCases: fixed "1-subject artifact"
+# getConts: fixed "1-subject artifact"
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
