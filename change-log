@@ -52,5 +52,15 @@
 # getCases: fixed "1-subject artifact"
 # getConts: fixed "1-subject artifact"
 #
+# ``2015 Dec 22
+# buildNB: new function for building Naive Bayes classifiers
+# buildLDA: new function for building LDA classifiers
+# predict: now accomodates NB and LDA classifiers
+# speakEasy: new function for facilitating cross-platform analyses
+# adjoin: new function for "cleaning" multiple speakEasy results
+# conjoin: added method for ExprsArray objects
+# conjoin: added method for ExprsMachine objects
+# calcStats: fixed "1-subject prediction" bug
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
