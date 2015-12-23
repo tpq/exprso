@@ -62,5 +62,18 @@
 # conjoin: added method for ExprsMachine objects
 # calcStats: fixed "1-subject prediction" bug
 #
+# ``2015 Dec 23
+# fsStats: renamed 'how' arguments to "ks.test", "ks.boot", and "t.test"
+# fsStats: removed 'plyr' dependency with significant performance gain
+# buildSVM: removed default setting 'cross' = 10
+# plGrid: added 'aucSkip' argument with default setting 'aucSkip' = FALSE
+# plGrid: added default setting 'fold' = 10
+# plGrid: removed 'plyr' dependency with slight performance gain
+# plMonteCarlo: replaces plBoot to promote Monte Carlo cross-validation
+# calcMonteCarlo: new function calculates accuracy for plMonteCarlo result
+# plNested: new function performs nested cross-validation
+# calcNested: new function calculates accuracy for plNested result
+# plBoot: removed deprecated function
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
