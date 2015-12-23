@@ -1350,67 +1350,48 @@ compare <- function(array.train, array.valid = NULL, col.compareBy = "defineCase
 ###########################################################
 ### Feature selection methods for ExprsArray objects
 
-# NOTE: @preFilter stores probe selection history and exists to recreate fs during svmPredict
+# NOTE: @preFilter stores feature selection history and exists to recreate fs during svmPredict
 # NOTE: IF probes = 0, include ALL probes when building data; otherwise, select top N occurring first
-# NOTE: The function fsStats() will auto-sort array@exprs by p-value before supplying output
 # NOTE: IF probes is a character vector, include only these probes when building data
 # NOTE: 'probes' argument refers to what you feed INTO the function, not what you expect OUT
 
-fsStats <- function(array, probes, how, ...){ # args to ks.test, ks.boot, or t-test
-  
-  require(plyr)
+fsStats <- function(array, probes, how, ...){ # args to ks.test, ks.boot, or t.test
   
   # Convert 'numeric' probe argument to 'character' probe vector
   if(class(probes) == "numeric"){
     
     if(probes == 0) probes <- nrow(array@exprs)
     probes <- rownames(array@exprs[1:probes, ])
+    data <- t(array@exprs[probes, ])
   }
   
-  # Retrieve case subjectIDs
-  cases <- array@annot$defineCase %in% "Case"
+  # Build data using supplied 'character' probe vector
+  if(class(probes) == "character"){
+    
+    data <- t(array@exprs[probes, ])
+  }
   
-  # Retrieve control subjectIDs
+  # Retrieve case and control subjectIDs
+  cases <- array@annot$defineCase %in% "Case"
   conts <- array@annot$defineCase %in% "Control"
   
-  if(how == "ks"){
+  # Load dependencies for ks.boot
+  if(how == "ks.boot") require(Matching)
+  
+  # Initialize p-value container
+  p <- vector("numeric", length(probes))
+  
+  for(i in 1:length(probes)){
     
-    # Perform KS pre-filter and return p-values as a data.frame
-    vals <- ldply(probes,
-                  function(probe){
-                    
-                    result <- ks.test(array@exprs[probe, cases], array@exprs[probe, conts], ...)
-                    data.frame(probe, "p.value" = result$p.value)
-                  }
-    )
-  }else if(how == "ks.boot"){
-    
-    require(Matching)
-    
-    # Perform KS pre-filter and return p-values as a data.frame
-    vals <- ldply(probes,
-                  function(probe){
-                    
-                    result <- ks.boot(array@exprs[probe, cases], array@exprs[probe, conts], ...)
-                    data.frame(probe, "p.value" = result$ks.boot.pvalue)
-                  }
-    )
-  }else if(how == "t-test"){
-    
-    # Perform t-test pre-filter and return p-values as a data.frame
-    vals <- ldply(probes,
-                  function(probe){
-                    
-                    result <- t.test(array@exprs[probe, cases], array@exprs[probe, conts], ...)
-                    data.frame(probe, "p.value" = result$p.value)
-                  }
-    )
-  }else{
-    
-    stop("Selected 'how' argument not found. See ?fsStats for available methods.")
+    if(how == "ks.test"){ p[i] <- ks.test(array@exprs[i, cases], array@exprs[i, conts], ...)$p.value
+    }else if(how == "ks.boot"){ p[i] <- ks.boot(array@exprs[i, cases], array@exprs[i, conts], ...)$ks.boot.pvalue
+    }else if(how == "t.test"){ p[i] <- t.test(array@exprs[i, cases], array@exprs[i, conts], ...)$p.value
+    }else{ stop("Provided 'how' argument not recognized.")}
   }
   
-  final <- as.character(vals[order(vals$p.value), "probe"])
+  # Order probes by p-value
+  final <- probes[order(p)]
+  
   array <- new("ExprsArray",
                exprs = array@exprs[final,],
                annot = array@annot,
@@ -1568,7 +1549,7 @@ fsEbayes <- function(array, probes, ...){ # args to ebayes
   return(array)
 }
 
-# NOTE: mRMR.classic is prone to crashing when supplied a very large 'feature_count' argument
+# NOTE: mRMR.classic crashes when supplied a very large 'feature_count' argument
 fsMrmre <- function(array, probes, ...){ # args to mRMR.classic
   
   require(mRMRe)
@@ -1626,62 +1607,8 @@ fsMrmre <- function(array, probes, ...){ # args to mRMR.classic
   return(array)
 }
 
-# NOTE: col.modelBy is a character string of columns to use in the model (i.e. between '+' signs)
-# NOTE: the column defineCase is AUTOMATICALLY included in model
-# NOTE: to denote random-effects, include "|" or "||" in string element
-# e.g. if you want lmer(probe ~ Days + (Days | Subject), sleepstudy)
-#   let col.modelBy = c("Days", "(Days | Subject)", "sleepstudy")
-fsLmerTest <- function(array, probes, col.modelBy = colnames(array@annot), ...){ # args to lmer
-  
-  require(lmerTest)
-  
-  # Convert 'numeric' probe argument to 'character' probe vector
-  if(class(probes) == "numeric"){
-    
-    if(probes == 0) probes <- nrow(array@exprs)
-    probes <- rownames(array@exprs[1:probes, ])
-    data <- t(array@exprs[probes, ])
-  }
-  
-  # Build data using supplied 'character' probe vector
-  if(class(probes) == "character"){
-    
-    data <- t(array@exprs[probes, ])
-  }
-  
-  # Join annotations with prepared data
-  if(identical(rownames(array@annot), rownames(data))){ df <- cbind(array@annot, data)
-  }else{ stop("Uh oh! We have a mismatch between annotations and prepared data!")}
-  
-  # Prepare col.modelBy for formula
-  x <- paste(unique(c("defineCase", col.modelBy)), collapse = " + ")
-  
-  # Build a model for each element of probes
-  models <- lapply(probes, function(y) lmerTest::lmer(formula(paste(y, "~", x)), df, ...))
-  
-  # Retrieve coefficients
-  results <- lapply(models, summary)
-  finals <- lapply(results, coef)
-  
-  # Retrieve p-values
-  px <- unlist(lapply(finals, function(final) final[grepl("defineCase", rownames(final)), "Pr(>|t|)"]))
-  
-  # Sort probes
-  vals <- data.frame("probe" = probes, "p.value" = px)
-  final <- as.character(vals[order(vals$p.value), "probe"])
-  
-  array <- new("ExprsArray",
-               exprs = array@exprs[final,],
-               annot = array@annot,
-               preFilter = append(array@preFilter, list(final)),
-               reductionModel = append(array@reductionModel, list(NA))
-  )
-  
-  return(array)
-}
-
 ###########################################################
-### Functions to build and deploy individual classifiers
+### Functions for building individual classifiers
 
 # NOTE: User has one more opportunity to subset the probe set before building machine
 # NOTE: @preFilter and @reductionModel data will get passed to ExprsMachine object
@@ -1770,12 +1697,6 @@ buildSVM <- function(array, probes, ...){ # args to svm
   require(e1071)
   
   args <- as.list(substitute(list(...)))[-1]
-  
-  if(!"cross" %in% names(args)){
-    
-    cat("Setting 'cross' to 10 (default behavior, override explicitly)...\n")
-    args <- append(args, list("cross" = 10))
-  }
   
   if(!"probability" %in% names(args)){
     
@@ -1918,6 +1839,9 @@ buildRF <- function(array, probes, ...){ # args to randomForest
   
   return(machine)
 }
+
+###########################################################
+### Functions for deploying individual classifiers
 
 modHistory <- function(object, reference){
   
@@ -2129,13 +2053,14 @@ setMethod("predict", "ExprsMachine",
             # NOTE: validated to work on 2015/06/30
             # NOTE: rebuilt on 2015/08/12
             cat("Individual classifier performance:\n")
-            print(calcStats(final, array))
+            cat("(NOTE: This is a preview! Actual performances may differ!)\n")
+            print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
             
             return(final)
           }
 )
 
-calcStats <- function(pred, array, aucSkip = FALSE){
+calcStats <- function(pred, array, aucSkip = FALSE, plotSkip = FALSE){
   
   require(ROCR)
   
@@ -2158,7 +2083,7 @@ calcStats <- function(pred, array, aucSkip = FALSE){
       
       # Plot AUC curve
       perf <- performance(p, measure = "tpr", x.measure = "fpr")
-      plot(perf, col = rainbow(10))
+      if(!plotSkip) plot(perf, col = rainbow(10))
       
       # Index optimal cutoff based on Euclidean distance
       index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
@@ -2178,7 +2103,7 @@ calcStats <- function(pred, array, aucSkip = FALSE){
       
       # Plot AUC curve
       perf <- performance(p, measure = "tpr", x.measure = "fpr")
-      plot(perf, col = rainbow(10))
+      if(!plotSkip) plot(perf, col = rainbow(10))
       
       # Index optimal cutoff based on Euclidean distance
       index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
@@ -2215,7 +2140,7 @@ calcStats <- function(pred, array, aucSkip = FALSE){
 }
 
 ###########################################################
-### Build plCV
+### Build simple cross-validation wrapper
 
 # Calculates v-fold or leave-one-out cross-validation
 # NOTE: set 'fold' = 0 to perform leave-one-out cross-validation
@@ -2280,9 +2205,9 @@ plCV <- function(array, probes, how, fold, ...){ # args to get(how)
     pred <- predict(mach, array.valid)
     
     # Save accuracy
-    accs[v] <- calcStats(pred, array.valid, aucSkip = TRUE)$acc
+    accs[v] <- calcStats(pred, array.valid, aucSkip = TRUE, plotSkip = TRUE)$acc
     
-    cat(v, "fold accuracy:", accs[v])
+    cat(v, "fold accuracy:", accs[v], "\n")
   }
   
   acc <- mean(accs)
@@ -2291,7 +2216,7 @@ plCV <- function(array, probes, how, fold, ...){ # args to get(how)
 }
 
 ###########################################################
-### Build plGrid
+### Build simple high-throughput classification wrapper
 
 # NOTE: buildSVM will automatically calculate AUC unless 'probability' argument is explicitly FALSE
 # NOTE: SVM predicted class membership does seem to differ slightly when 'probability' = TRUE
@@ -2299,9 +2224,8 @@ plCV <- function(array, probes, how, fold, ...){ # args to get(how)
 #   On the other hand, when probability=TRUE, predict() uses a fitted logistic model."
 # NOTE: set 'fold' = 0 to perform leave-one-out cross-validation
 # NOTE: set 'fold' = v to perform v-fold cross-validation
-plGrid <- function(array.train, array.valid = NULL, probes, how, fold = NULL, ...){ # args to how function
-  
-  require(plyr)
+# NOTE: set 'fold' = NULL to skip cross-validation
+plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucSkip = FALSE, ...){ # args to how function
   
   args <- as.list(substitute(list(...)))[-1]
   
@@ -2326,9 +2250,6 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = NULL, ..
     # Turn character vector into single list entry
     probes <- as.list(probes)
   }
-  
-  # Initialize ExprsMachine container
-  models <- NULL
   
   # Build grid
   grid <- expand.grid(append(list("probes" = probes), lapply(args, eval)), stringsAsFactors = FALSE)
@@ -2355,50 +2276,55 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = NULL, ..
     grid <- unique(grid)
   }
   
-  summary <- ddply(grid,
-                   .variables = colnames(grid),
-                   .fun = function(gridpoint){
-                     
-                     cat("Now building machine at gridpoint:\n")
-                     print(gridpoint)
-                     
-                     # Format gridpoint args to pass along to build do.call
-                     args <- append(list("array" = array.train), as.list(gridpoint))
-                     
-                     # Build model then add to machs container
-                     model <- do.call(what = how, args = args[!is.na(args)])
-                     models <<- append(models, list(model))
-                     
-                     # Predict class labels using the provided training set and calculate accuracy
-                     pred.train <- predict(model, array.train)
-                     acc <- data.frame("train" = calcStats(pred.train, array.train))
-                     
-                     # Extract cross-validation accuracy if available (should work even if how = "buildANN"?)
-                     if(!is.null(model@mach$tot.accuracy)) acc <- data.frame("cv.train.acc" = model@mach$tot.accuracy / 100, acc)
-                     
-                     # If a validation set is provided
-                     if(!is.null(array.valid)){
-                       
-                       # Predict class labels using the provided validation set and calculate accuracy
-                       pred.valid <- predict(model, array.valid)
-                       acc <- data.frame(acc, "valid" = calcStats(pred.valid, array.valid))
-                     }
-                     
-                     # If 'fold' argument is provided
-                     if(!is.null(fold)){
-                       
-                       # Perform leave-one-out or v-fold cross-validation
-                       args <- append(list("how" = how, "fold" = fold), args)
-                       cv <- do.call(what = plCV, args = args[!is.na(args)])
-                       acc <- data.frame("fold" = fold, "plCV.acc" = cv, acc)
-                     }
-                     
-                     df <- data.frame(gridpoint, acc)
-                   }
-  )
+  # Initialize ExprsPipeline summary container
+  statistics <- vector("list", nrow(grid))
+  
+  # Initialize ExprsPipeline machs container
+  models <- vector("list", nrow(grid))
+  
+  # For each gridpoint in grid
+  for(i in 1:nrow(grid)){
+    
+    cat("Now building machine at gridpoint:\n")
+    print(grid[i, ])
+    
+    # Format gridpoint args to pass along to build do.call
+    args <- append(list("array" = array.train), as.list(grid[i, ]))
+    
+    # Build and save model
+    model <- do.call(what = how, args = args[!is.na(args)])
+    models[[i]] <- model
+    
+    # Predict class labels using the provided training set and calculate accuracy
+    pred.train <- predict(model, array.train)
+    acc <- data.frame("train" = calcStats(pred.train, array.train, aucSkip = aucSkip, plotSkip = TRUE))
+    
+    # Extract cross-validation accuracy if available (should work even if how = "buildANN"?)
+    if(!is.null(model@mach$tot.accuracy)) acc <- data.frame("cv.train.acc" = model@mach$tot.accuracy / 100, acc)
+    
+    # If a validation set is provided
+    if(!is.null(array.valid)){
+      
+      # Predict class labels using the provided validation set and calculate accuracy
+      pred.valid <- predict(model, array.valid)
+      acc <- data.frame(acc, "valid" = calcStats(pred.valid, array.valid, aucSkip = aucSkip, plotSkip = TRUE))
+    }
+    
+    # If 'fold' argument is provided
+    if(!is.null(fold)){
+      
+      # Perform leave-one-out or v-fold cross-validation
+      args <- append(list("how" = how, "fold" = fold), args)
+      cv <- do.call(what = plCV, args = args[!is.na(args)])
+      acc <- data.frame("fold" = fold, "plCV.acc" = cv, acc)
+    }
+    
+    # Save summary statistics
+    statistics[[i]] <- data.frame(grid[i,], acc)
+  }
   
   pl <- new("ExprsPipeline",
-            summary = summary,
+            summary = do.call(rbind, statistics),
             machs = models
   )
   
@@ -2406,7 +2332,7 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = NULL, ..
 }
 
 ###########################################################
-### Build plBoot
+### Build complex cross-validation and ensemble wrappers
 
 ctrlSplitSet <- function(func, percent.include, ...){
   
@@ -2430,9 +2356,10 @@ ctrlGridSearch <- function(func, probes, ...){
        ...)
 }
 
-plBoot <- function(array, B, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
-  
-  require(plyr)
+# Performs a sophisticated Monte Carlo style cross-validation
+# Function returns a single ExprsPipeline object result
+# For single accuracy statistic, call calcMonteCarlo
+plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
   
   # Perform check to make sure the supplied array has enough cases and controls to work meaningfully well
   if(sum(array@annot$defineCase == "Case") < 5 | sum(array@annot$defineCase == "Control") < 5){
@@ -2467,8 +2394,8 @@ plBoot <- function(array, B, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
                   # Save files
                   if(save){
                     
-                    save(array.boot, file = paste0("plBoot ", boot, " (", gsub(":", ".", Sys.time()), ") bootstrap.RData"))
-                    save(array.demi, file = paste0("plBoot ", boot, " (", gsub(":", ".", Sys.time()), ") demi-holdout.RData"))
+                    save(array.boot, file = paste0("plMonteCarlo ", boot, " (", gsub(":", ".", Sys.time()), ") bootstrap.RData"))
+                    save(array.demi, file = paste0("plMonteCarlo ", boot, " (", gsub(":", ".", Sys.time()), ") demi-holdout.RData"))
                   }
                   
                   ###
@@ -2499,8 +2426,8 @@ plBoot <- function(array, B, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
                   # Calculate the percent of cases in the bootstrap and demi-holdout cohorts
                   tab.boot <- table(array.boot@annot$defineCase)
                   tab.demi <- table(array.demi@annot$defineCase)
-                  cohort.stats <- data.frame("boot.cases" = as.vector(tab.boot["Case"] / (tab.boot["Case"] + tab.boot["Control"])),
-                                             "demi.cases" = as.vector(tab.demi["Case"] / (tab.demi["Case"] + tab.demi["Control"])))
+                  cohort.stats <- data.frame("train.cases" = as.vector(tab.boot["Case"] / (tab.boot["Case"] + tab.boot["Control"])),
+                                             "valid.cases" = as.vector(tab.demi["Case"] / (tab.demi["Case"] + tab.demi["Control"])))
                   
                   # Append pl@summary
                   pl@summary <- cbind(cohort.stats, pl@summary)
@@ -2514,13 +2441,242 @@ plBoot <- function(array, B, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
   # (V) Build ExprsPipeline
   
   pl <- new("ExprsPipeline",
-            summary = ldply(pls, function(obj) obj@summary),
+            summary = do.call(rbind, lapply(pls, function(obj) obj@summary)),
             machs = unlist(lapply(pls, function(obj) obj@machs))
   )
   
   return(pl)
 }
 
+# Returns a single accuracy statistic based on plMonteCarlo output
+calcMonteCarlo <- function(pl, colBy = "valid.acc"){
+  
+  if("boot" %in% colnames(pl@summary)){
+    
+    if("plCV.acc" %in% colnames(pl@summary)){
+      
+      # Prepare container to store validation accuracy
+      acc <- vector("numeric", length(unique(pl@summary$boot)))
+      
+      for(b in 1:length(unique(pl@summary$boot))){
+        
+        cat("Retrieving best accuracy for boot", b, "...\n")
+        
+        # Subset only boot 'b'
+        boot <- pl@summary[pl@summary$boot == b, ]
+        
+        # Select best model based on cross-validation accuracy
+        best <- boot[which.max(boot$plCV.acc), ]
+        
+        # Save validation accuracy as colBy product
+        acc[b] <- apply(best[colBy], MARGIN = 1, prod)
+      }
+      
+    }else{
+      
+      stop("Uh oh! Supplied data not in expected format. Cannot calculate this cross-validation accuracy.")
+    }
+    
+  }else{
+    
+    stop("Uh oh! Supplied data not in expected format. Cannot calculate this cross-validation accuracy.")
+  }
+  
+  # Return average validation accuracy
+  cat("Averaging best accuracies across all boots...\n")
+  return(mean(acc))
+}
+
+# Performs a v-fold or leave-one-out nested cross-validation
+# NOTE: set 'fold' = 0 to perform leave-one-out cross-validation
+# NOTE: set 'fold' = v to perform v-fold cross-validation
+# Function returns a single ExprsPipeline object result
+# For single accuracy statistic, call calcNested
+# NOTE: will not allow a NULL 'fold' in ctrlGS
+# NOTE: will not allow FALSE calcAuc in ctrlGS
+plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
+  
+  # Perform check to make sure the supplied array has enough cases and controls to work meaningfully well
+  if(sum(array@annot$defineCase == "Case") < 5 | sum(array@annot$defineCase == "Control") < 5){
+    
+    stop("Use at least 5 cases and at least 5 controls!\n")
+  }
+  
+  # Perform LOOCV if 0 fold
+  if(fold == 0) fold <- nrow(array@annot)
+  
+  # Prepare list to receive per-fold subject IDs
+  subjects <- vector("list", fold)
+  
+  # Randomly sample subject IDs
+  ids <- sample(rownames(array@annot))
+  
+  # Initialize while loop
+  i <- 1
+  
+  # Add the ith subject ID to the vth fold
+  while(i <= nrow(array@annot)){
+    
+    subjects[[i %% fold + 1]] <- c(subjects[[i %% fold + 1]], ids[i])
+    i <- i + 1
+  }
+  
+  # Prepare list to receive ExprsPipeline objects
+  pls <- vector("list", fold)
+  
+  # Perform nested cross-validation
+  for(v in 1:length(subjects)){
+    
+    ###
+    # (I) For each fold, index the demi-holdout
+    
+    array.boot <- new("ExprsArray",
+                      exprs = as.matrix(array@exprs[, !colnames(array@exprs) %in% subjects[[v]]]),
+                      annot = array@annot[!rownames(array@annot) %in% subjects[[v]], ],
+                      preFilter = array@preFilter,
+                      reductionModel = array@reductionModel)
+    
+    # Clean up 1-subject artifact
+    colnames(array.boot@exprs) <- rownames(array.boot@annot)
+    
+    # The left out one
+    array.demi <- new("ExprsArray",
+                      exprs = as.matrix(array@exprs[, colnames(array@exprs) %in% subjects[[v]]]),
+                      annot = array@annot[rownames(array@annot) %in% subjects[[v]], ],
+                      preFilter = array@preFilter,
+                      reductionModel = array@reductionModel)
+    
+    # Clean up 1-subject artifact
+    colnames(array.demi@exprs) <- rownames(array.demi@annot)
+    
+    # ERROR CHECK: Does array.demi overlap with array.boot?
+    if(sum(colnames(array.demi@exprs) %in% colnames(array.boot@exprs)) > 0){
+      
+      stop("Uh oh, it seems that the demi-holdout contains at least one non-unique subject! Contact developer to debug.\n")
+    }
+    
+    # Save files
+    if(save){
+      
+      save(array.boot, file = paste0("plNested ", boot, " (", gsub(":", ".", Sys.time()), ") bootstrap.RData"))
+      save(array.demi, file = paste0("plNested ", boot, " (", gsub(":", ".", Sys.time()), ") demi-holdout.RData"))
+    }
+    
+    ###
+    # (II) Process array.boot via each ctrlFS in ctrlFS
+    
+    # If ctrlFS is not a list, make it a list
+    if(!"list" %in% lapply(ctrlFS, class)) ctrlFS <- list(ctrlFS)
+    
+    # Perform fs_ function for each argument set in ctrlFS
+    for(i in 1:length(ctrlFS)){
+      
+      func <- ctrlFS[[i]]$func
+      args <- append(list("array" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
+      array.boot <- do.call(what = func, args = args)
+    }
+    
+    ###
+    # (III) Run GridSearch via provided ctrlGS
+    
+    # Perform some gridsearch function (e.g. plGrid)
+    func <- ctrlGS$func
+    args <- append(list("array.train" = array.boot, "array.valid" = array.demi), ctrlGS[!ctrlGS %in% func])
+    
+    # Mandate v-fold or leave-one-out cross-validation
+    if(!"fold" %in% names(args)){
+      
+      cat("Setting 'fold' to 10 (default behavior, override explicitly)...\n")
+      args <- append(args, list("fold" = 10))
+    }
+    
+    # Mandate v-fold or leave-one-out cross-validation
+    if(is.null(args$fold)){
+      
+      cat("Uh oh! This function requires non-NULL 'fold'. Setting 'fold' to 10...\n")
+      args$fold <- 10
+    }
+    
+    # Mandate skipping AUC performance estimates
+    if(!"aucSkip" %in% names(args)){
+      
+      cat("Setting 'aucSkip' to TRUE (default behavior, override explicitly)...\n")
+      args <- append(args, list("aucSkip" = TRUE))
+    }
+    
+    # Mandate skipping AUC performance estimates
+    if(!args$aucSkip){
+      
+      cat("Uh oh! This function requires TRUE 'aucSkip'. Setting 'aucSkip' to TRUE...\n")
+      args$aucSkip <- TRUE
+    }
+    
+    pl <- do.call(what = func, args = args)
+    
+    ###
+    # (IV) Append pl@summary with additional information
+    
+    # Calculate the percent of cases in the bootstrap and demi-holdout cohorts
+    tab.boot <- table(array.boot@annot$defineCase)
+    tab.demi <- table(array.demi@annot$defineCase)
+    cohort.stats <- data.frame("train.cases" = as.vector(tab.boot["Case"] / (tab.boot["Case"] + tab.boot["Control"])),
+                               "valid.cases" = as.vector(tab.demi["Case"] / (tab.demi["Case"] + tab.demi["Control"])))
+    
+    # Append pl@summary
+    pl@summary <- cbind(cohort.stats, pl@summary)
+    pl@summary <- cbind(v, pl@summary)
+    
+    # Save pl object
+    pls[[v]] <- pl
+  }
+  
+  ###
+  # (V) Build ExprsPipeline
+  
+  pl <- new("ExprsPipeline",
+            summary = do.call(rbind, lapply(pls, function(obj) obj@summary)),
+            machs = unlist(lapply(pls, function(obj) obj@machs))
+  )
+}
+
+# Returns a single accuracy statistic based on plNested output
+calcNested <- function(pl, colBy = "valid.acc"){
+  
+  if("v" %in% colnames(pl@summary)){
+    
+    if("plCV.acc" %in% colnames(pl@summary)){
+      
+      # Prepare container to store validation accuracy
+      acc <- vector("numeric", length(unique(pl@summary$v)))
+      
+      for(b in 1:length(unique(pl@summary$v))){
+        
+        cat("Retrieving best accuracy for fold", b, "...\n")
+        
+        # Subset only fold 'b'
+        fold <- pl@summary[pl@summary$v == b, ]
+        
+        # Select best model based on cross-validation accuracy
+        best <- fold[which.max(fold$plCV.acc), ]
+        
+        # Save validation accuracy as colBy product
+        acc[b] <- apply(best[colBy], MARGIN = 1, prod)
+      }
+      
+    }else{
+      
+      stop("Uh oh! Supplied data not in expected format. Cannot calculate this cross-validation accuracy.")
+    }
+    
+  }else{
+    
+    stop("Uh oh! Supplied data not in expected format. Cannot calculate this cross-validation accuracy.")
+  }
+  
+  # Return average validation accuracy
+  cat("Averaging best accuracies across all folds...\n")
+  return(mean(acc))
+}
 
 ###########################################################
 ### Functions for modifying ExprsPipeline objects
@@ -2784,7 +2940,8 @@ setMethod("predict", "ExprsEnsemble",
             final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = px)
             
             cat("Ensemble classifier performance:\n")
-            print(calcStats(final, array))
+            cat("(NOTE: This is a preview! Actual performances may differ!)\n")
+            print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
             
             return(final)
           }
