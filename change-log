@@ -75,5 +75,10 @@
 # calcNested: new function calculates accuracy for plNested result
 # plBoot: removed deprecated function
 #
+# ``2015 Dec 30
+# plCV: added warning when calling after prior feature selection
+# plMonteCarlo: added warning when calling after prior feature selection
+# plNested: added warning when calling after prior feature selection
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
