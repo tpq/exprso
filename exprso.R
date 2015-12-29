@@ -1725,7 +1725,7 @@ buildSVM <- function(array, probes, ...){ # args to svm
   df <- cbind(as.data.frame(data), "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(svm, args)
-    
+  
   # Carry through and append fs history as stored in the ExprsArray object
   # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
   machine <- new("ExprsMachine",
@@ -1789,7 +1789,7 @@ buildANN <- function(array, probes, ...){ # args to nnet
   df <- cbind(as.data.frame(data), "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(nnet, args)
-    
+  
   # Carry through and append fs history as stored in the ExprsArray object
   # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
   machine <- new("ExprsMachine",
@@ -2147,6 +2147,11 @@ calcStats <- function(pred, array, aucSkip = FALSE, plotSkip = FALSE){
 # NOTE: set 'fold' = v to perform v-fold cross-validation
 plCV <- function(array, probes, how, fold, ...){ # args to get(how)
   
+  if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
+    
+    warning("Prior use of feature selection may result in overly optimistic cross-validation accuracies!")
+  }
+  
   # Extract args from ...
   args <- as.list(substitute(list(...)))[-1]
   
@@ -2361,6 +2366,11 @@ ctrlGridSearch <- function(func, probes, ...){
 # For single accuracy statistic, call calcMonteCarlo
 plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
   
+  if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
+    
+    warning("Prior use of feature selection may result in overly optimistic cross-validation accuracies!")
+  }
+  
   # Perform check to make sure the supplied array has enough cases and controls to work meaningfully well
   if(sum(array@annot$defineCase == "Case") < 5 | sum(array@annot$defineCase == "Control") < 5){
     
@@ -2495,6 +2505,11 @@ calcMonteCarlo <- function(pl, colBy = "valid.acc"){
 # NOTE: will not allow a NULL 'fold' in ctrlGS
 # NOTE: will not allow FALSE calcAuc in ctrlGS
 plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
+  
+  if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
+    
+    warning("Prior use of feature selection may result in overly optimistic cross-validation accuracies!")
+  }
   
   # Perform check to make sure the supplied array has enough cases and controls to work meaningfully well
   if(sum(array@annot$defineCase == "Case") < 5 | sum(array@annot$defineCase == "Control") < 5){
