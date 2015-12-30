@@ -2259,8 +2259,8 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
   # Build grid
   grid <- expand.grid(append(list("probes" = probes), lapply(args, eval)), stringsAsFactors = FALSE)
   
-  # Refine grid for svmBuild
-  if(how == "svmBuild"){
+  # Refine grid for buildSVM
+  if(how == "buildSVM"){
     
     if(!"kernel" %in% names(args)) stop("Uh oh! 'kernel' argument missing!")
     if(!"cost" %in% names(args)) stop("Uh oh! 'cost' argument missing!")
