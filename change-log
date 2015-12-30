@@ -79,6 +79,7 @@
 # plCV: added warning when calling after prior feature selection
 # plMonteCarlo: added warning when calling after prior feature selection
 # plNested: added warning when calling after prior feature selection
+# plGrid: fixed classifier redundancy when using SVM
 #
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
