@@ -81,5 +81,19 @@
 # plNested: added warning when calling after prior feature selection
 # plGrid: fixed classifier redundancy when using SVM
 #
+# ``2015 Dec 31
+# calcStats: changed placement of 'aucSkip' argument
+# predict: added 'verbose' argument to toggle output
+# plGrid: added 'verbose' argument to toggle output
+# plCV: set 'verbose' = FALSE for predict calls
+# fsPrcomp: improved handling of invalid names
+# modHistory: improved handling of invalid names
+# buildNB: improved handling of invalid names
+# buildLDA: improved handling of invalid names
+# buildSVM: improved handling of invalid names
+# buildANN: improved handling of invalid names
+# buildRF: improved handling of invalid names
+# predict: improved handling of invalid names
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
