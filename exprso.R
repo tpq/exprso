@@ -1418,6 +1418,9 @@ fsPrcomp <- function(array, probes, ...){ # args to prcomp
     data <- t(array@exprs[probes, ])
   }
   
+  # NOTE: as.data.frame will not rename columns
+  data <- data.frame(data)
+  
   # ATTENTION: We want dependent variables as columns
   reductionModel <- prcomp(data, ...)
   
@@ -1426,7 +1429,7 @@ fsPrcomp <- function(array, probes, ...){ # args to prcomp
   
   # ATTENTION: The value of predict(reductionModel, data) equals $x
   # @preFilter stores probes used to build reductionModel (i.e. as passed on by 'probes' argument)
-  # This information will automatically distill the data when calling svmPredict
+  # This information will automatically distill the data when calling modHistory
   array <- new("ExprsArray",
                exprs = t(reductionModel$x),
                annot = array@annot,
@@ -1638,7 +1641,7 @@ buildNB <- function(array, probes, ...){ # args to naiveBayes
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform naiveBayes via ~ method
-  df <- cbind(as.data.frame(data), "defineCase" = labels)
+  df <- data.frame(data, "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(naiveBayes, args)
   
@@ -1677,7 +1680,7 @@ buildLDA <- function(array, probes, ...){ # args to lda
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform linear discriminant analysis via ~ method
-  df <- cbind(as.data.frame(data), "defineCase" = labels)
+  df <- data.frame(data, "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(lda, args)
   
@@ -1722,7 +1725,7 @@ buildSVM <- function(array, probes, ...){ # args to svm
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform SVM via ~ method (permits plotting)
-  df <- cbind(as.data.frame(data), "defineCase" = labels)
+  df <- data.frame(data, "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(svm, args)
   
@@ -1786,7 +1789,7 @@ buildANN <- function(array, probes, ...){ # args to nnet
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform ANN via ~ method
-  df <- cbind(as.data.frame(data), "defineCase" = labels)
+  df <- data.frame(data, "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(nnet, args)
   
@@ -1825,7 +1828,7 @@ buildRF <- function(array, probes, ...){ # args to randomForest
   labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   
   # Perform RF via ~ method
-  df <- cbind(as.data.frame(data), "defineCase" = labels)
+  df <- data.frame(data, "defineCase" = labels)
   args <- append(list("formula" = defineCase ~ ., "data" = df), args)
   model <- do.call(randomForest, args)
   
@@ -1886,6 +1889,9 @@ modHistory <- function(object, reference){
       # Build data according to the i-th probe set
       data <- t(object@exprs[reference@preFilter[[i]], ])
       
+      # NOTE: as.data.frame will not rename columns
+      data <- data.frame(data)
+      
       # Then, apply the i-th reduction model
       comps <- predict(reference@reductionModel[[i]], data)
       
@@ -1907,7 +1913,7 @@ modHistory <- function(object, reference){
 # NOTE: predict.nnet class predictions match @decision.values, but differ when using ROCR
 # NOTE: predict.svm class predictions do not match @decision.values, but match ROCR
 setMethod("predict", "ExprsMachine",
-          function(object, array, ...){ # args to predict(ExprsMachine, array, ...)
+          function(object, array, verbose = TRUE, ...){ # args to predict(ExprsMachine, array, ...)
             
             if(class(array) != "ExprsArray"){
               
@@ -1919,6 +1925,9 @@ setMethod("predict", "ExprsMachine",
             
             # Build data from modHistory output
             data <- t(array@exprs)
+            
+            # NOTE: as.data.frame will not rename columns
+            data <- data.frame(data)
             
             if("naiveBayes" %in% class(object@mach)){
               
@@ -1944,7 +1953,7 @@ setMethod("predict", "ExprsMachine",
               require(MASS)
               
               # Predict linear discriminant analysis via ~ method
-              prediction <- predict(object@mach, as.data.frame(data))
+              prediction <- predict(object@mach, data)
               
               # Retrieve binary 'pred' class predictions
               pred <- as.character(prediction$class)
@@ -2050,19 +2059,18 @@ setMethod("predict", "ExprsMachine",
             
             final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = as.matrix(px))
             
-            # NOTE: validated to work on 2015/06/30
-            # NOTE: rebuilt on 2015/08/12
-            cat("Individual classifier performance:\n")
-            cat("(NOTE: This is a preview! Actual performances may differ!)\n")
-            print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
+            if(verbose){
+              
+              cat("Individual classifier performance:\n")
+              cat("(NOTE: This is a preview! Actual performances may differ!)\n")
+              print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
+            }
             
             return(final)
           }
 )
 
 calcStats <- function(pred, array, aucSkip = FALSE, plotSkip = FALSE){
-  
-  require(ROCR)
   
   layout(matrix(c(1), 1, 1, byrow = TRUE))
   
@@ -2072,11 +2080,13 @@ calcStats <- function(pred, array, aucSkip = FALSE, plotSkip = FALSE){
   # Build 'predicted' object as binary
   predicted <- as.numeric(pred@pred == "Case")
   
-  # If predicted set contains more than one class
-  if(length(unique(actual)) > 1){
+  # If predicted set contains more than one class and aucSkip = FALSE
+  if(length(unique(actual)) > 1 & !aucSkip){
     
-    # If pred object contains decision.values and aucSkip = FALSE
-    if(!is.null(pred@probability) & !aucSkip){
+    require(ROCR)
+    
+    # If pred object contains decision.values
+    if(!is.null(pred@probability)){
       
       cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
       p <- prediction(pred@probability[, "Case"], actual)
@@ -2118,7 +2128,8 @@ calcStats <- function(pred, array, aucSkip = FALSE, plotSkip = FALSE){
     
   }else{
     
-    cat("Predictions include only one class. Calculating accuracy outside of ROCR...\n")
+    if(!aucSkip){ cat("Predictions include only one class. Calculating accuracy outside of ROCR...\n")
+    }else{ cat("aucSkip set to TRUE. Calculating accuracy outside of ROCR...\n")}
     table <- matrix(0, nrow = 2, ncol = 2)
     
     # Fill in the 2 x 2 table
@@ -2207,12 +2218,12 @@ plCV <- function(array, probes, how, fold, ...){ # args to get(how)
     mach <- do.call(what = how, args = args.v)
     
     # Deploy
-    pred <- predict(mach, array.valid)
+    pred <- predict(mach, array.valid, verbose = FALSE)
     
     # Save accuracy
     accs[v] <- calcStats(pred, array.valid, aucSkip = TRUE, plotSkip = TRUE)$acc
     
-    cat(v, "fold accuracy:", accs[v], "\n")
+    cat("Inner-fold", v, "accuracy:", accs[v], "\n")
   }
   
   acc <- mean(accs)
@@ -2230,7 +2241,7 @@ plCV <- function(array, probes, how, fold, ...){ # args to get(how)
 # NOTE: set 'fold' = 0 to perform leave-one-out cross-validation
 # NOTE: set 'fold' = v to perform v-fold cross-validation
 # NOTE: set 'fold' = NULL to skip cross-validation
-plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucSkip = FALSE, ...){ # args to how function
+plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucSkip = FALSE, verbose = TRUE, ...){ # args to how function
   
   args <- as.list(substitute(list(...)))[-1]
   
@@ -2301,7 +2312,7 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
     models[[i]] <- model
     
     # Predict class labels using the provided training set and calculate accuracy
-    pred.train <- predict(model, array.train)
+    pred.train <- predict(model, array.train, verbose = verbose)
     acc <- data.frame("train" = calcStats(pred.train, array.train, aucSkip = aucSkip, plotSkip = TRUE))
     
     # Extract cross-validation accuracy if available (should work even if how = "buildANN"?)
@@ -2311,7 +2322,7 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
     if(!is.null(array.valid)){
       
       # Predict class labels using the provided validation set and calculate accuracy
-      pred.valid <- predict(model, array.valid)
+      pred.valid <- predict(model, array.valid, verbose = verbose)
       acc <- data.frame(acc, "valid" = calcStats(pred.valid, array.valid, aucSkip = aucSkip, plotSkip = TRUE))
     }
     
@@ -2905,7 +2916,7 @@ setMethod("buildEnsemble", "ExprsPipeline",
 
 # NOTE: As of 08/13/2015, 'simple' voting is the only prediction method implemented
 setMethod("predict", "ExprsEnsemble",
-          function(object, array, how = "simple", ...){ # args to predict(ExprsMachine, array, ...)
+          function(object, array, how = "simple", verbose = TRUE, ...){ # args to predict(ExprsMachine, array, ...)
             
             if(class(array) != "ExprsArray"){
               
@@ -2913,7 +2924,7 @@ setMethod("predict", "ExprsEnsemble",
             }
             
             # Deploy each machine in @machs on the provided ExprsArray
-            results <- lapply(object@machs, function(mach) predict(mach, array, ...))
+            results <- lapply(object@machs, function(mach) predict(mach, array, verbose = verbose, ...))
             
             if(how == "simple"){
               
@@ -2954,9 +2965,12 @@ setMethod("predict", "ExprsEnsemble",
             
             final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = px)
             
-            cat("Ensemble classifier performance:\n")
-            cat("(NOTE: This is a preview! Actual performances may differ!)\n")
-            print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
+            if(verbose){
+              
+              cat("Ensemble classifier performance:\n")
+              cat("(NOTE: This is a preview! Actual performances may differ!)\n")
+              print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
+            }
             
             return(final)
           }
