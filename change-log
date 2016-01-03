@@ -95,5 +95,59 @@
 # buildRF: improved handling of invalid names
 # predict: improved handling of invalid names
 #
+# ``2016 Jan 4
+# exprso: split code into multiple sections now stored in '/engine'
+# exprso: modified framework for multi-class classification
+# /engine/1_classes.R
+#   ExprsArray class: added ExprsBinary and ExprsMulti sub-classes
+#   ExprsModel class: replaces the ExprsMachine class
+#   ExprsModel class: added ExprsMachine and ExprsModule sub-classes
+#   plot.ExprsArray: generalized for multi-class
+#   getCases: now an ExprsBinary method
+#   getConts: now an ExprsBinary method
+# /engine/2_import.R
+#   arrayRead: generalized for multi-class
+#   arrayEset: generalized for multi-class
+# /engine/3_split.R
+#   arraySubset: now an ExprsArray method
+#   arrayStrat: now an ExprsArray method
+#   arrayStratify: replaces arrayStrat
+#   arraySample: now an ExprsArray method
+#   arraySample: generalized for multi-class
+# /engine/4_speakEasy.R
+#   speakEasy: minor code consolidation
+#   abridge: generalized for multi-class
+# /engine/5_fs.R
+#   fsStats: now an ExprsBinary method
+#   fsPrcomp: now an ExprsBinary method
+#   fsPenalizedSVM: now an ExprsBinary method
+#   fsPathClassRFE: now an ExprsBinary method
+#   fsEbayes: now an ExprsBinary method
+#   fsMrmre: now an ExprsBinary method
+# /engine/6_build.R
+#   buildNB: now an ExprsBinary method
+#   buildLDA: now an ExprsBinary method
+#   buildSVM: now an ExprsBinary method
+#   buildANN: now an ExprsBinary method
+#   buildRF: now an ExprsBinary method
+#   predict.ExprsMachine: restricted to ExprsBinary
+#   predict.ExprsMachine: improved nnet handling
+#   modHistory: now an ExprsArray method
+#   calcStats: now an ExprsPredict method
+# /engine/7_pl.R
+#   plCV: changed $plCV.acc to $train.plCV
+#   plCV: generalized for multi-class
+#   plCV: fixed fold > sample size error
+#   plNested: fixed fold > sample size error
+# /engine/8_ens.R
+#   buildEnsemble: now an ExprsModel method
+#   predict.ExprsEnsemble: restricted to ExprsBinary
+#   predict.ExprsEnsemble: removed 'how' argument
+# /engine/0_misc.R
+#   modFilter: now an ExprsArray method
+#   modTransform: now an ExprsArray method
+#   modNormalize: now an ExprsArray method
+#   compare: updated deprecated arguments
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
