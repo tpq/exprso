@@ -149,5 +149,19 @@
 #   modNormalize: now an ExprsArray method
 #   compare: updated deprecated arguments
 #
+# ``2016 Jan 5
+# /engine/6_build.R
+#   buildSVM: always 'probability' = TRUE
+#   predict.ExprsMachine: for SVM, removed 'decision.values' = TRUE
+#   predict.ExprsMachine: for SVM, always 'probability' = TRUE
+#   predict.ExprsMachine: '...' removed
+#   ExprsPredict: @pred and @decision.values now from @probability
+#   predict.ExprsMachine: ties resolved randomly
+#   calcStats: removed superfluous code
+# /engine/8_ens.R
+#   predict: 'how' = "probability", averages ExprsModel predictions
+#   predict: 'how' = "majority", performs majority voting
+#   predict: '...' removed
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
