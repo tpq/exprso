@@ -112,6 +112,13 @@ setMethod("buildSVM", "ExprsBinary",
               args <- append(args, list("probability" = TRUE))
             }
             
+            # Mandate probability = TRUE
+            if(args$probability == FALSE){
+              
+              cat("Uh oh! This function requires 'probability' = TRUE. Setting 'probability' to TRUE...\n")
+              args$probability <- TRUE
+            }
+            
             # Convert 'numeric' probe argument to 'character' probe vector
             if(class(probes) == "numeric"){
               
@@ -257,11 +264,9 @@ setMethod("buildRF", "ExprsBinary",
 ### Predict
 
 # NOTE: The validation set should not get modified once separated from the training set
-# NOTE: This function performs only rudimentary checks for this type of error
-# NOTE: predict.nnet class predictions match @decision.values, but differ when using ROCR
-# NOTE: predict.svm class predictions do not match @decision.values, but match ROCR
+# NOTE: All @pred and @decision.values now based on @probability
 setMethod("predict", "ExprsMachine",
-          function(object, array, verbose = TRUE, ...){ # args to predict(ExprsMachine, array)
+          function(object, array, verbose = TRUE){
             
             if(class(array) != "ExprsBinary"){
               
@@ -272,139 +277,61 @@ setMethod("predict", "ExprsMachine",
             array <- modHistory(array, reference = object)
             
             # Build data from modHistory output
-            data <- t(array@exprs)
-            
-            # NOTE: as.data.frame will not rename columns
-            data <- data.frame(data)
+            data <- data.frame(t(array@exprs))
             
             if("naiveBayes" %in% class(object@mach)){
               
               require(e1071)
-              
-              # Predict naiveBayes via ~ method
-              pred <- predict(object@mach, data, type = "class")
-              
-              # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
               px <- predict(object@mach, data, type = "raw")
-              px <- as.data.frame(px)
-              px <- px[, c("Control", "Case")] # order columns
-              dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
-              colnames(dv) <- "Case/Control"
-              
-              # Clean up pred
-              pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-              names(pred) <- rownames(data)
             }
             
             if("lda" %in% class(object@mach)){
               
               require(MASS)
-              
-              # Predict linear discriminant analysis via ~ method
-              prediction <- predict(object@mach, data)
-              
-              # Retrieve binary 'pred' class predictions
-              pred <- as.character(prediction$class)
-              
-              # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
-              px <- prediction$posterior
-              px <- as.data.frame(px)
-              px <- px[, c("Control", "Case")] # order columns
-              dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
-              colnames(dv) <- "Case/Control"
-              
-              # Clean up pred
-              pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-              names(pred) <- rownames(data)
+              pred <- predict(object@mach, data)
+              px <- pred$posterior
             }
             
             if("svm" %in% class(object@mach)){
               
               require(e1071)
-              
-              args <- as.list(substitute(list(...)))[-1]
-              
-              if(!"decision.values" %in% names(args)){
-                
-                cat("Setting 'decision.values' to TRUE (default behavior, override explicitly)...\n")
-                args <- append(args, list("decision.values" = TRUE))
-              }
-              
-              if(!"probability" %in% names(args)){
-                
-                cat("Setting 'probability' to TRUE (default behavior, override explicitly)...\n")
-                args <- append(args, list("probability" = TRUE))
-              }
-              
-              # Predict SVM via ~ method (permits plotting)
-              args <- append(list("object" = object@mach, "newdata" = data), args)
-              pred <- do.call(predict, args)
-              
-              # Extract 'probabilities' attribute
+              pred <- predict(object@mach, data, probability = TRUE)
               px <- attr(pred, "probabilities")
-              px <- as.data.frame(px)
-              px <- px[, c("Control", "Case")]
               
-              # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
-              if(!is.null(px)){
-                
-                dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
-                colnames(dv) <- "Case/Control"
-                
-              }else{
-                
-                dv <- NULL
-              }
-              
-              # Clean up pred
-              pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-              names(pred) <- rownames(data)
             }
             
             if("nnet" %in% class(object@mach)){
               
               require(nnet)
-              
-              # Predict ANN via ~ method
-              pred <- predict(object@mach, data, type = "class")
-              
-              # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
               px <- predict(object@mach, data, type = "raw")
-              if(min(px) > .5){ labMin <- ifelse(pred[which.min(px)] == "Case", "Control", "Case")
-              }else{ labMin <- pred[which.min(px)] }
-              if(max(px) < .5){ labMax <- ifelse(pred[which.max(px)] == "Case", "Control", "Case")
-              }else{ labMax <- pred[which.max(px)] }
-              if(px[which.min(px)] == .5 & px[which.max(px)] == .5){ labMin <- "Control"; labMax <- "Case" }
-              px <- cbind(1 - px, px)
-              px <- as.data.frame(px)
-              colnames(px) <- c(labMin, labMax)
-              px <- px[, c("Control", "Case")] # order columns
-              dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
-              colnames(dv) <- "Case/Control"
-              
-              # Clean up pred
-              pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-              names(pred) <- rownames(data)
+              px <- cbind(px, 1 - px)
+              colnames(px) <- c("Case", "Control") # do not delete this line!
             }
             
             if("randomForest" %in% class(object@mach)){
               
               require(randomForest)
-              
-              # Predict RF via ~ method
-              pred <- predict(object@mach, data, type = "response")
-              
-              # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
               px <- unclass(predict(object@mach, data, type = "prob"))
-              px <- as.data.frame(px)
-              px <- px[, c("Control", "Case")] # order columns
-              dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
-              colnames(dv) <- "Case/Control"
-              
-              # Clean up pred
-              pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-              names(pred) <- rownames(data)
             }
+            
+            # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
+            px <- as.data.frame(px)
+            px <- px[, c("Control", "Case")]
+            dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
+            colnames(dv) <- "Case/Control"
+            
+            # Assign binary values based on probability
+            pred <- vector("character", nrow(px))
+            pred[px$Case > .5] <- "Case"
+            pred[px$Case < .5] <- "Control"
+            
+            # Break ties randomly
+            case <- sum(array@annot$defineCase == "Case") / nrow(array@annot)
+            pred[px$Case == .5] <- sample(c("Case", "Control"), sum(px$Case == .5), TRUE, prob = c(case, 1 - case))
+            
+            # Clean up pred
+            pred <- factor(as.vector(pred), levels = c("Control", "Case"))
+            names(pred) <- rownames(data)
             
             final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = as.matrix(px))
             
@@ -412,7 +339,7 @@ setMethod("predict", "ExprsMachine",
               
               cat("Individual classifier performance:\n")
               cat("(NOTE: This is a preview! Actual performances may differ!)\n")
-              print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
+              print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
             }
             
             return(final)
@@ -459,10 +386,7 @@ setMethod("modHistory", "ExprsArray",
               }else{
                 
                 # Build data according to the i-th probe set
-                data <- t(object@exprs[reference@preFilter[[i]], ])
-                
-                # NOTE: as.data.frame will not rename columns
-                data <- data.frame(data)
+                data <- data.frame(t(object@exprs[reference@preFilter[[i]], ]))
                 
                 # Then, apply the i-th reduction model
                 comps <- predict(reference@reductionModel[[i]], data)
@@ -490,62 +414,36 @@ setMethod("calcStats", "ExprsPredict",
             
             layout(matrix(c(1), 1, 1, byrow = TRUE))
             
-            # Build 'actual' object as binary
+            # Build 'actual' and 'predicted' objects as binary
             actual <- as.numeric(array@annot$defineCase == "Case")
-            
-            # Build 'predicted' object as binary
             predicted <- as.numeric(object@pred == "Case")
             
-            # If predicted set contains more than one class and aucSkip = FALSE
-            if(length(unique(actual)) > 1 & !aucSkip){
+            # If predicted set actually contains two classes, ExprsPredict has @probability, and aucSkip = FALSE
+            if(length(unique(actual)) == 2 & !is.null(object@probability) & !aucSkip){
               
               require(ROCR)
               
-              # If pred object contains @probability
-              if(!is.null(object@probability)){
-                
-                cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
-                p <- prediction(object@probability[, "Case"], actual)
-                
-                # Plot AUC curve
-                perf <- performance(p, measure = "tpr", x.measure = "fpr")
-                if(!plotSkip) plot(perf, col = rainbow(10))
-                
-                # Index optimal cutoff based on Euclidean distance
-                index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
-                
-                # Calculate performance metrics
-                acc <- performance(p, "acc")@y.values[[1]][index]
-                sens <- performance(p, "sens")@y.values[[1]][index]
-                spec <- performance(p, "spec")@y.values[[1]][index]
-                auc <- performance(p, "auc")@y.values[[1]]
-                
-                return(data.frame(acc, sens, spec, auc))
-                
-              }else{
-                
-                cat("Calculating accuracy using ROCR based on raw votes...\n")
-                p <- prediction(predicted, actual)
-                
-                # Plot AUC curve
-                perf <- performance(p, measure = "tpr", x.measure = "fpr")
-                if(!plotSkip) plot(perf, col = rainbow(10))
-                
-                # Index optimal cutoff based on Euclidean distance
-                index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
-                
-                # Calculate performance metrics
-                acc <- performance(p, "acc")@y.values[[1]][index]
-                sens <- performance(p, "sens")@y.values[[1]][index]
-                spec <- performance(p, "spec")@y.values[[1]][index]
-                
-                return(data.frame(acc, sens, spec))
-              }
+              cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+              p <- prediction(object@probability[, "Case"], actual)
+              
+              # Plot AUC curve
+              perf <- performance(p, measure = "tpr", x.measure = "fpr")
+              if(!plotSkip) plot(perf, col = rainbow(10))
+              
+              # Index optimal cutoff based on Euclidean distance
+              index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
+              
+              # Calculate performance metrics
+              acc <- performance(p, "acc")@y.values[[1]][index]
+              sens <- performance(p, "sens")@y.values[[1]][index]
+              spec <- performance(p, "spec")@y.values[[1]][index]
+              auc <- performance(p, "auc")@y.values[[1]]
+              
+              return(data.frame(acc, sens, spec, auc))
               
             }else{
               
-              if(!aucSkip){ cat("Predictions include only one class. Calculating accuracy outside of ROCR...\n")
-              }else{ cat("aucSkip set to TRUE. Calculating accuracy outside of ROCR...\n")}
+              cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
               table <- matrix(0, nrow = 2, ncol = 2)
               
               # Fill in the 2 x 2 table
