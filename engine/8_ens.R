@@ -192,7 +192,7 @@ setMethod("buildEnsemble", "ExprsPipeline",
 ### Predict
 
 setMethod("predict", "ExprsEnsemble",
-          function(object, array, verbose = TRUE, ...){ # args to predict(ExprsMachine, array, ...)
+          function(object, array, how = "probability", verbose = TRUE){
             
             if(!inherits(array, "ExprsArray")){
               
@@ -205,25 +205,11 @@ setMethod("predict", "ExprsEnsemble",
             }
             
             # Deploy each machine in @machs on the provided ExprsArray
-            results <- lapply(object@machs, function(mach) predict(mach, array, verbose = verbose, ...))
+            results <- lapply(object@machs, function(mach) predict(mach, array, verbose = verbose))
             
             if("ExprsBinary" %in% class(array)){
               
-              # Cast a vote (1 for Case, -1 for Control)
-              votes <- lapply(results, function(result) ifelse(result@pred == "Case", 1, -1))
-              final <- rowSums(data.frame(votes, row.names = names(results[[1]]@pred)))
-              
-              # Randomly assign ties as "Case" or "Control" based on the proportion of cases
-              cases <- sum(array@annot$defineCase == "Case")
-              conts <- sum(array@annot$defineCase == "Control")
-              tieBreaker <- cases/(cases + conts)
-              final[final == 0] <- sample(c(1, -1), length(final[final == 0]), replace = TRUE, prob = c(tieBreaker, 1 - tieBreaker))
-              
-              # Prepare ExprsPredict object
-              pred <- factor(ifelse(final > 0, "Case", "Control"), levels = c("Control", "Case"))
-              
-              # If there exists non-NULL @decision.values slots
-              if(!any(is.null(lapply(results, function(result) result@probability)))){
+              if(how == "probability"){
                 
                 # Calculate average probabilities
                 pxs <- lapply(results, function(result) result@probability)
@@ -234,14 +220,51 @@ setMethod("predict", "ExprsEnsemble",
                 px <- cbind(Control, Case)
                 
                 # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
+                px <- as.data.frame(px)
+                px <- px[, c("Control", "Case")]
                 dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
                 colnames(dv) <- "Case/Control"
                 
+                # Assign binary values based on probability
+                pred <- vector("character", nrow(px))
+                pred[px$Case > .5] <- "Case"
+                pred[px$Case < .5] <- "Control"
+                
+                # Break ties randomly
+                case <- sum(array@annot$defineCase == "Case") / nrow(array@annot)
+                pred[px$Case == .5] <- sample(c("Case", "Control"), sum(px$Case == .5), TRUE, prob = c(case, 1 - case))
+                
+                # Clean up pred
+                pred <- factor(as.vector(pred), levels = c("Control", "Case"))
+                names(pred) <- rownames(data)
+                
+              }else if(how == "majority"){
+                
+                # Cast a vote (1 for Case, -1 for Control)
+                votes <- lapply(results, function(result) ifelse(result@pred == "Case", 1, -1))
+                final <- rowSums(data.frame(votes, row.names = names(results[[1]]@pred)))
+                
+                # Randomly assign ties as "Case" or "Control" based on the proportion of cases
+                case <- sum(array@annot$defineCase == "Case") / nrow(array@annot)
+                final[final == 0] <- sample(c(1, -1), length(final[final == 0]), TRUE, prob = c(case, 1 - case))
+                
+                # Clean up pred
+                pred <- factor(ifelse(final > 0, "Case", "Control"), levels = c("Control", "Case"))
+                px <- NULL
+                dv <- NULL
+                
               }else{
                 
-                dv <- NULL
-                px <- NULL
+                stop("Uh oh! Provided 'how' argument not recognized!")
               }
+              
+            }else if("ExprsMulti" %in% class(array)){
+              
+              stop("Uh oh! predict.ExprsEnsemble not yet generalized to work for ExprsMulti objects!")
+              
+            }else{
+              
+              stop("Uh oh! You can only use an ExprsEnsemble to predict on an ExprsArray object!")
             }
             
             final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = px)
@@ -250,7 +273,7 @@ setMethod("predict", "ExprsEnsemble",
               
               cat("Ensemble classifier performance:\n")
               cat("(NOTE: This is a preview! Actual performances may differ!)\n")
-              print(calcStats(final, array, aucSkip = FALSE, plotSkip = TRUE))
+              print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
             }
             
             return(final)
