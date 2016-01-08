@@ -32,7 +32,7 @@ plCV <- function(array, probes, how, fold, ...){ # args to get(how)
   
   if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
     
-    warning("Prior use of feature selection may result in overly optimistic cross-validation accuracies!")
+    warning("plCV can help inform parameter selection but will provide overly optimistic cross-validation accuracies!")
   }
   
   # Extract args from ...
