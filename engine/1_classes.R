@@ -230,7 +230,7 @@ setClass("ExprsPredict", slots = c(pred = "factor", decision.values = "ANY", pro
 setMethod("show", "ExprsPredict",
           function(object){
             
-            cat("@pred summary:", as.numeric(object@pred == "Case"), "\n")
+            cat("@pred summary:", as.numeric(object@pred), "\n")
             cat("@decision.values summary:", colnames(object@decision.values), "\n")
             cat("@probability summary:", colnames(object@probability), "\n")
           }
