@@ -163,5 +163,26 @@
 #   predict: 'how' = "majority", performs majority voting
 #   predict: '...' removed
 #
+# ``2016 Jan 8
+# /engine/1_classes.R
+#   show.ExprsPredict: generalized for multi-class
+# /engine/2_import.R
+#   arrayRead: 'include' now accepts multiple terms per class
+#   arrayRead: ExprsMulti $defineCase represented as factor
+#   arrayEset: 'include' now accepts multiple terms per class
+#   arrayEset: ExprsMulti $defineCase represented as factor
+# /engine/6_build.R
+#   modHistory: used "drop = FALSE" solution to fix "1-subject artifact"
+#   doMulti: new function for managing 1-vs-rest multi-class fs and build
+#   buildNB: added ExprsMulti method, uses doMulti to return ExprsModule
+#   buildLDA: added ExprsMulti method, uses doMulti to return ExprsModule
+#   buildSVM: added ExprsMulti method, uses doMulti to return ExprsModule
+#   buildANN: added ExprsMulti method, uses doMulti to return ExprsModule
+#   buildRF: added ExprsMulti method, uses doMulti to return ExprsModule
+#   predict: added ExprsModule method for ExprsMulti objects
+#   calcStats: added temporary error with ExprsMulti objects
+# /engine/7_pl.R
+#   plCV: updated phrasing of warning
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
