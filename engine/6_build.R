@@ -7,6 +7,7 @@ setGeneric("buildSVM", function(object, ...) standardGeneric("buildSVM"))
 setGeneric("buildANN", function(object, ...) standardGeneric("buildANN"))
 setGeneric("buildRF", function(object, ...) standardGeneric("buildRF"))
 
+setGeneric("doMulti", function(object, ...) standardGeneric("doMulti"))
 setGeneric("modHistory", function(object, ...) standardGeneric("modHistory"))
 setGeneric("calcStats", function(object, ...) standardGeneric("calcStats"))
 
@@ -260,8 +261,171 @@ setMethod("buildRF", "ExprsBinary",
           }
 )
 
+# doMulti depends on the initial number of levels in the $defineCase factor.
+# If an ExprsMulti subset (e.g. from cross-validation) lacks one (or more) cases
+# entirely, that ExprsMachine gets replaced with a NULL place-holder.
+setMethod("doMulti", "ExprsMulti",
+          function(object, probes, what, ...){
+            
+            args <- as.list(substitute(list(...)))[-1]
+            
+            # Initialize multi container
+            multi <- vector("list", length(levels(object@annot$defineCase)))
+            
+            # Perform N binary tasks
+            for(i in 1:length(levels(object@annot$defineCase))){
+              
+              # If the i-th ExprsMachine would not have any representative cases
+              if(all(!as.numeric(object@annot$defineCase) == i)){
+                
+                cat(paste0("Missing a representative of class ", i, ". Object replaced with NULL placeholder.\n"))
+                multi[[i]] <- NULL
+                
+              }else{
+                
+                # Turn the ExprsMulti object into the i-th ExprsBinary object
+                temp <- object
+                temp@annot$defineCase <- ifelse(as.numeric(temp@annot$defineCase) == i, "Case", "Control")
+                class(temp) <- "ExprsBinary"
+                
+                # Perform the binary task
+                cat("Performing a one-vs-all binary task with class", i, "set as \"Case\".\n")
+                args.i <- append(list("object" = temp, "probes" = probes), args)
+                multi[[i]] <- do.call(what = what, args = args.i)
+              }
+            }
+            
+            return(multi)
+          }
+)
+
+setMethod("buildNB", "ExprsMulti",
+          function(object, probes, ...){
+            
+            # Pass arguments to doMulti
+            machs <- doMulti(object, probes, what = "buildNB", ...)
+            
+            # Carry through and append fs history as stored in the ExprsArray object
+            new("ExprsModule",
+                preFilter = append(object@preFilter, list(probes)),
+                reductionModel = append(object@reductionModel, list(NA)),
+                mach = machs)
+          }
+)
+
+setMethod("buildLDA", "ExprsMulti",
+          function(object, probes, ...){
+            
+            # Pass arguments to doMulti
+            machs <- doMulti(object, probes, what = "buildLDA", ...)
+            
+            # Carry through and append fs history as stored in the ExprsArray object
+            new("ExprsModule",
+                preFilter = append(object@preFilter, list(probes)),
+                reductionModel = append(object@reductionModel, list(NA)),
+                mach = machs)
+          }
+)
+
+setMethod("buildSVM", "ExprsMulti",
+          function(object, probes, ...){
+            
+            # Pass arguments to doMulti
+            machs <- doMulti(object, probes, what = "buildSVM", ...)
+            
+            # Carry through and append fs history as stored in the ExprsArray object
+            new("ExprsModule",
+                preFilter = append(object@preFilter, list(probes)),
+                reductionModel = append(object@reductionModel, list(NA)),
+                mach = machs)
+          }
+)
+
+setMethod("buildANN", "ExprsMulti",
+          function(object, probes, ...){
+            
+            # Pass arguments to doMulti
+            machs <- doMulti(object, probes, what = "buildANN", ...)
+            
+            # Carry through and append fs history as stored in the ExprsArray object
+            new("ExprsModule",
+                preFilter = append(object@preFilter, list(probes)),
+                reductionModel = append(object@reductionModel, list(NA)),
+                mach = machs)
+          }
+)
+
+setMethod("buildRF", "ExprsMulti",
+          function(object, probes, ...){
+            
+            # Pass arguments to doMulti
+            machs <- doMulti(object, probes, what = "buildRF", ...)
+            
+            # Carry through and append fs history as stored in the ExprsArray object
+            new("ExprsModule",
+                preFilter = append(object@preFilter, list(probes)),
+                reductionModel = append(object@reductionModel, list(NA)),
+                mach = machs)
+          }
+)
+
 ###########################################################
 ### Predict
+
+setMethod("modHistory", "ExprsArray",
+          function(object, reference){
+            
+            if(!is.null(object@preFilter)){
+              
+              # If reference@preFilter has less (or equal) history than object@preFilter
+              if(length(reference@preFilter) <= length(object@preFilter)){
+                
+                stop("The provided object does not have less history than the reference object.")
+              }
+              
+              # If history of reference@preFilter is not also in the object@preFilter
+              if(!identical(object@preFilter, reference@preFilter[1:length(object@preFilter)])){
+                
+                stop("The provided object history does not match the reference history.")
+              }
+            }
+            
+            # Index first non-overlapping history
+            index <- length(object@reductionModel) + 1
+            
+            # Manipulate object according to history stored in reference
+            for(i in index:length(reference@reductionModel)){
+              
+              # If the i-th fs did NOT involve dimension reduction
+              if(any(is.na(reference@reductionModel[[i]]))){
+                
+                # Build new object
+                object <- new(class(object),
+                              exprs = object@exprs[reference@preFilter[[i]], , drop = FALSE], # Update @exprs
+                              annot = object@annot, # Preserve @annot
+                              preFilter = append(object@preFilter, list(reference@preFilter[[i]])), # Append history
+                              reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])))
+                
+              }else{
+                
+                # Build data according to the i-th probe set
+                data <- data.frame(t(object@exprs[reference@preFilter[[i]], ]))
+                
+                # Then, apply the i-th reduction model
+                comps <- predict(reference@reductionModel[[i]], data)
+                
+                # Build new object
+                object <- new(class(object),
+                              exprs = t(comps), # Update @exprs
+                              annot = object@annot, # Preserve @annot
+                              preFilter = append(object@preFilter, list(reference@preFilter[[i]])), # Append history
+                              reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])))
+              }
+            }
+            
+            return(object)
+          }
+)
 
 # NOTE: The validation set should not get modified once separated from the training set
 # NOTE: All @pred and @decision.values now based on @probability
@@ -314,7 +478,7 @@ setMethod("predict", "ExprsMachine",
               px <- unclass(predict(object@mach, data, type = "prob"))
             }
             
-            # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
+            # Calculate 'decision.values' from 'probability' using inverse Platt scaling
             px <- as.data.frame(px)
             px <- px[, c("Control", "Case")]
             dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
@@ -346,61 +510,94 @@ setMethod("predict", "ExprsMachine",
           }
 )
 
-setMethod("modHistory", "ExprsArray",
-          function(object, reference){
+# If the training set used to build the ExprsModule had a class missing (e.g. from cross-validation),
+# the ExprsModule will not predict that class. As with all functions included in this package,
+# relative class frequencies determine the 'tieBreaker' probability weights.
+setMethod("predict", "ExprsModule",
+          function(object, array, verbose = TRUE){
             
-            if(!is.null(object@preFilter)){
+            if(class(array) != "ExprsMulti"){
               
-              # If reference@preFilter has less (or equal) history than object@preFilter
-              if(length(reference@preFilter) <= length(object@preFilter)){
-                
-                stop("The provided object does not have less history than the reference object.")
-              }
+              stop("Uh oh! You can only use an ExprsModule to predict on an ExprsMulti object.")
+            }
+            
+            if(length(object@mach) != length(levels(array@annot$defineCase))){
               
-              # If history of reference@preFilter is not also in the object@preFilter
-              if(!identical(object@preFilter, reference@preFilter[1:length(object@preFilter)])){
+              stop("Uh oh! ExprsModule and ExprsMulti must have same number of classes.")
+            }
+            
+            # Initialize preds container
+            preds <- vector("list", length(object@mach))
+            
+            # For each ExprsMachine stored in @mach
+            for(i in 1:length(object@mach)){
+              
+              # If the i-th ExprsMachine is missing due to lack of cases during build phase
+              if(is.null(object@mach[[i]])){
                 
-                stop("The provided object history does not match the reference history.")
+                cat("The ExprsMachine corresponding to class", i, "is missing. Setting probability to 0.\n")
+                missingCase <- rep(0, nrow(array@annot))
+                preds[[i]] <- new("ExprsPredict", pred = as.factor(missingCase), decision.values = as.matrix(missingCase),
+                                  probability = as.matrix(data.frame("Control" = missingCase, "Case" = missingCase)))
+              }else{
+                
+                # Turn the ExprsMulti object into the i-th ExprsBinary object
+                array.i <- array
+                array.i@annot$defineCase <- ifelse(as.numeric(array.i@annot$defineCase) == i, "Case", "Control")
+                class(array.i) <- "ExprsBinary"
+                
+                # Predict the i-th ExprsBinary with the i-th ExprsMachine
+                cat("Performing a one-vs-all ExprsMachine prediction with class", i, "set as \"Case\".\n")
+                preds[[i]] <- predict(object@mach[[i]], array.i)
               }
             }
             
-            # Index first non-overlapping history
-            index <- length(object@reductionModel) + 1
+            # Calculate 'decision.values' from 'probability' using inverse Platt scaling
+            px <- lapply(preds, function(p) p@probability[, "Case", drop = FALSE])
+            dv <- lapply(px, function(prob) log(1 / (1 - prob) - 1))
+            px <- do.call(cbind, px); colnames(px) <- 1:ncol(px)
+            dv <- do.call(cbind, dv); colnames(dv) <- 1:ncol(dv)
             
-            # Manipulate object according to history stored in reference
-            for(i in index:length(reference@reductionModel)){
+            # Initialize pred container
+            pred <- vector("character", nrow(px))
+            
+            # calculate weight vector for random sampling during ties
+            tieBreaker <- sapply(1:ncol(px), function(case) sum(array@annot$defineCase == case)) / nrow(array@annot)
+            
+            # Assign classes based on maximum probability
+            for(i in 1:nrow(px)){
               
-              # If the i-th fs did NOT involve dimension reduction
-              if(any(is.na(reference@reductionModel[[i]]))){
+              # Index maximum probabilities for the i-th subject
+              max.i <- which(px[i, ] == max(px[i, ]))
+              
+              # If no tie
+              if(length(max.i) == 1){
                 
-                # Build new object
-                object <- new("ExprsArray",
-                              exprs = as.matrix(object@exprs[reference@preFilter[[i]], ]), # Update @exprs
-                              annot = object@annot, # Preserve @annot
-                              preFilter = append(object@preFilter, list(reference@preFilter[[i]])), # Append history
-                              reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])))
-                
-                # Clean up 1-subject artifact
-                colnames(object@exprs) <- rownames(object@annot)
+                # Select class with maximum probability
+                pred[i] <- as.character(which.max(px[i, ]))
                 
               }else{
                 
-                # Build data according to the i-th probe set
-                data <- data.frame(t(object@exprs[reference@preFilter[[i]], ]))
+                # If none of the tied classes appear in test set, sample of all classes
+                if(all(tieBreaker[max.i] %in% 0)) max.i <- 1:ncol(px)
                 
-                # Then, apply the i-th reduction model
-                comps <- predict(reference@reductionModel[[i]], data)
-                
-                # Build new object
-                object <- new(class(object),
-                              exprs = t(comps), # Update @exprs
-                              annot = object@annot, # Preserve @annot
-                              preFilter = append(object@preFilter, list(reference@preFilter[[i]])), # Append history
-                              reductionModel = append(object@reductionModel, list(reference@reductionModel[[i]])))
+                # Take weighted sample based on weight vector
+                pred[i] <- sample(levels(array@annot$defineCase)[max.i], prob = tieBreaker[max.i])
               }
             }
             
-            return(object)
+            # Clean up pred
+            pred <- factor(as.numeric(pred), levels = 1:ncol(px))
+            
+            final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = px)
+            
+            if(verbose){
+              
+              cat("Multi-class classification confusion table:\n")
+              print(table("PREDICTED" = final@pred, "ACTUAL" = array@annot$defineCase))
+            }
+            
+            return(final)
           }
 )
 
@@ -414,53 +611,60 @@ setMethod("calcStats", "ExprsPredict",
             
             layout(matrix(c(1), 1, 1, byrow = TRUE))
             
-            # Build 'actual' and 'predicted' objects as binary
-            actual <- as.numeric(array@annot$defineCase == "Case")
-            predicted <- as.numeric(object@pred == "Case")
-            
-            # If predicted set actually contains two classes, ExprsPredict has @probability, and aucSkip = FALSE
-            if(length(unique(actual)) == 2 & !is.null(object@probability) & !aucSkip){
+            if(class(array) == "ExprsBinary"){
               
-              require(ROCR)
+              # Build 'actual' and 'predicted' objects as binary
+              actual <- as.numeric(array@annot$defineCase == "Case")
+              predicted <- as.numeric(object@pred == "Case")
               
-              cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
-              p <- prediction(object@probability[, "Case"], actual)
-              
-              # Plot AUC curve
-              perf <- performance(p, measure = "tpr", x.measure = "fpr")
-              if(!plotSkip) plot(perf, col = rainbow(10))
-              
-              # Index optimal cutoff based on Euclidean distance
-              index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
-              
-              # Calculate performance metrics
-              acc <- performance(p, "acc")@y.values[[1]][index]
-              sens <- performance(p, "sens")@y.values[[1]][index]
-              spec <- performance(p, "spec")@y.values[[1]][index]
-              auc <- performance(p, "auc")@y.values[[1]]
-              
-              return(data.frame(acc, sens, spec, auc))
+              # If predicted set actually contains two classes, ExprsPredict has @probability, and aucSkip = FALSE
+              if(length(unique(actual)) == 2 & !is.null(object@probability) & !aucSkip){
+                
+                require(ROCR)
+                
+                cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+                p <- prediction(object@probability[, "Case"], actual)
+                
+                # Plot AUC curve
+                perf <- performance(p, measure = "tpr", x.measure = "fpr")
+                if(!plotSkip) plot(perf, col = rainbow(10))
+                
+                # Index optimal cutoff based on Euclidean distance
+                index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
+                
+                # Calculate performance metrics
+                acc <- performance(p, "acc")@y.values[[1]][index]
+                sens <- performance(p, "sens")@y.values[[1]][index]
+                spec <- performance(p, "spec")@y.values[[1]][index]
+                auc <- performance(p, "auc")@y.values[[1]]
+                
+                return(data.frame(acc, sens, spec, auc))
+                
+              }else{
+                
+                cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
+                table <- matrix(0, nrow = 2, ncol = 2)
+                
+                # Fill in the 2 x 2 table
+                for(i in 1:nrow(array@annot)){
+                  
+                  if(predicted[i] == 1 & actual[i] == 1) table[1, 1] <- table[1, 1] + 1
+                  if(predicted[i] == 1 & actual[i] == 0) table[1, 2] <- table[1, 2] + 1
+                  if(predicted[i] == 0 & actual[i] == 1) table[2, 1] <- table[2, 1] + 1
+                  if(predicted[i] == 0 & actual[i] == 0) table[2, 2] <- table[2, 2] + 1
+                }
+                
+                # Calculate performance metrics
+                acc <- (table[1, 1] + table[2, 2]) / sum(table)
+                sens <- (table[1, 1]) / (table[1, 1] + table[2, 1])
+                spec <- (table[2, 2]) / (table[1, 2] + table[2, 2])
+                
+                return(data.frame(acc, sens, spec))
+              }
               
             }else{
               
-              cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
-              table <- matrix(0, nrow = 2, ncol = 2)
-              
-              # Fill in the 2 x 2 table
-              for(i in 1:nrow(array@annot)){
-                
-                if(predicted[i] == 1 & actual[i] == 1) table[1, 1] <- table[1, 1] + 1
-                if(predicted[i] == 1 & actual[i] == 0) table[1, 2] <- table[1, 2] + 1
-                if(predicted[i] == 0 & actual[i] == 1) table[2, 1] <- table[2, 1] + 1
-                if(predicted[i] == 0 & actual[i] == 0) table[2, 2] <- table[2, 2] + 1
-              }
-              
-              # Calculate performance metrics
-              acc <- (table[1, 1] + table[2, 2]) / sum(table)
-              sens <- (table[1, 1]) / (table[1, 1] + table[2, 1])
-              spec <- (table[2, 2]) / (table[1, 2] + table[2, 2])
-              
-              return(data.frame(acc, sens, spec))
+              stop("Uh oh! No method exists for ExprsMulti yet.")
             }
           }
 )
