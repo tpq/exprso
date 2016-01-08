@@ -26,11 +26,14 @@ arrayRead <- function(file, probes.begin, colID, colBy, include, ...){ # args to
   # Number classes in order of 'include'
   for(i in 1:length(include)){
     
-    array@annot[array@annot[, colBy] == include[[i]], "defineCase"] <- i
+    array@annot[array@annot[, colBy] %in% include[[i]], "defineCase"] <- i
   }
   
   # Name classes if binary
   if(class(array) == "ExprsBinary") array@annot$defineCase <- ifelse(array@annot$defineCase == 1, "Control", "Case")
+  
+  # Set factor if multi
+  if(class(array) == "ExprsMulti") array@annot$defineCase <- factor(array@annot$defineCase)
   
   # Filter @exprs
   array@exprs <- array@exprs[, rownames(array@annot)]
@@ -155,11 +158,14 @@ arrayEset <- function(eSet, colBy, include){
   # Number classes in order of 'include'
   for(i in 1:length(include)){
     
-    array@annot[array@annot[, colBy] == include[[i]], "defineCase"] <- i
+    array@annot[array@annot[, colBy] %in% include[[i]], "defineCase"] <- i
   }
   
   # Name classes if binary
   if(class(array) == "ExprsBinary") array@annot$defineCase <- ifelse(array@annot$defineCase == 1, "Control", "Case")
+  
+  # Set factor if multi
+  if(class(array) == "ExprsMulti") array@annot$defineCase <- factor(array@annot$defineCase)
   
   # Filter @exprs
   array@exprs <- array@exprs[, rownames(array@annot)]
