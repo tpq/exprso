@@ -184,5 +184,14 @@
 # /engine/7_pl.R
 #   plCV: updated phrasing of warning
 #
+# ``2016 Jan 9
+# /engine/6_build.R
+#   buildSVM: removed 'probability' = TRUE alert
+#   predict.ExprsMachine: removed 'verbose' = TRUE alert
+#   predict.ExprsModule: calls calcStats if 'verbose' = TRUE
+#   calcStats: added ExprsMulti method
+# /engine/8_ens.R
+#   predict: removed 'verbose' = TRUE alert
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
