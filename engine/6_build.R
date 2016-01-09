@@ -109,7 +109,6 @@ setMethod("buildSVM", "ExprsBinary",
             
             if(!"probability" %in% names(args)){
               
-              cat("Setting 'probability' to TRUE (default behavior, override explicitly)...\n")
               args <- append(args, list("probability" = TRUE))
             }
             
@@ -502,7 +501,6 @@ setMethod("predict", "ExprsMachine",
             if(verbose){
               
               cat("Individual classifier performance:\n")
-              cat("(NOTE: This is a preview! Actual performances may differ!)\n")
               print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
             }
             
@@ -593,8 +591,8 @@ setMethod("predict", "ExprsModule",
             
             if(verbose){
               
-              cat("Multi-class classification confusion table:\n")
-              print(table("PREDICTED" = final@pred, "ACTUAL" = array@annot$defineCase))
+              cat("Multi-class classifier performance:\n")
+              print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
             }
             
             return(final)
@@ -609,62 +607,87 @@ setMethod("calcStats", "ExprsPredict",
               stop("Uh oh! You can only assess the performance of a classifier using an ExprsArray object.")
             }
             
-            layout(matrix(c(1), 1, 1, byrow = TRUE))
-            
-            if(class(array) == "ExprsBinary"){
+            if(class(array) == "ExprsMulti"){
               
-              # Build 'actual' and 'predicted' objects as binary
-              actual <- as.numeric(array@annot$defineCase == "Case")
-              predicted <- as.numeric(object@pred == "Case")
-              
-              # If predicted set actually contains two classes, ExprsPredict has @probability, and aucSkip = FALSE
-              if(length(unique(actual)) == 2 & !is.null(object@probability) & !aucSkip){
+              if(length(object@mach) != length(levels(array@annot$defineCase))){
                 
-                require(ROCR)
-                
-                cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
-                p <- prediction(object@probability[, "Case"], actual)
-                
-                # Plot AUC curve
-                perf <- performance(p, measure = "tpr", x.measure = "fpr")
-                if(!plotSkip) plot(perf, col = rainbow(10))
-                
-                # Index optimal cutoff based on Euclidean distance
-                index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
-                
-                # Calculate performance metrics
-                acc <- performance(p, "acc")@y.values[[1]][index]
-                sens <- performance(p, "sens")@y.values[[1]][index]
-                spec <- performance(p, "spec")@y.values[[1]][index]
-                auc <- performance(p, "auc")@y.values[[1]]
-                
-                return(data.frame(acc, sens, spec, auc))
-                
-              }else{
-                
-                cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
-                table <- matrix(0, nrow = 2, ncol = 2)
-                
-                # Fill in the 2 x 2 table
-                for(i in 1:nrow(array@annot)){
-                  
-                  if(predicted[i] == 1 & actual[i] == 1) table[1, 1] <- table[1, 1] + 1
-                  if(predicted[i] == 1 & actual[i] == 0) table[1, 2] <- table[1, 2] + 1
-                  if(predicted[i] == 0 & actual[i] == 1) table[2, 1] <- table[2, 1] + 1
-                  if(predicted[i] == 0 & actual[i] == 0) table[2, 2] <- table[2, 2] + 1
-                }
-                
-                # Calculate performance metrics
-                acc <- (table[1, 1] + table[2, 2]) / sum(table)
-                sens <- (table[1, 1]) / (table[1, 1] + table[2, 1])
-                spec <- (table[2, 2]) / (table[1, 2] + table[2, 2])
-                
-                return(data.frame(acc, sens, spec))
+                stop("Uh oh! ExprsPredict and ExprsMulti must have same number of classes.")
               }
+            }
+            
+            # If predicted set contains only two classes, ExprsPredict has @probability, and aucSkip = FALSE
+            if(all(c("Case", "Control") %in% array@annot$defineCase) & !is.null(object@probability) & !aucSkip){
+              
+              require(ROCR)
+              
+              layout(matrix(c(1), 1, 1, byrow = TRUE))
+              
+              cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+              p <- prediction(object@probability[, "Case"], as.numeric(array@annot$defineCase == "Case"))
+              
+              # Plot AUC curve
+              perf <- performance(p, measure = "tpr", x.measure = "fpr")
+              if(!plotSkip) plot(perf, col = rainbow(10))
+              
+              # Index optimal cutoff based on Euclidean distance
+              index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
+              
+              # Calculate performance metrics
+              acc <- performance(p, "acc")@y.values[[1]][index]
+              sens <- performance(p, "sens")@y.values[[1]][index]
+              spec <- performance(p, "spec")@y.values[[1]][index]
+              auc <- performance(p, "auc")@y.values[[1]]
+              
+              return(data.frame(acc, sens, spec, auc))
               
             }else{
               
-              stop("Uh oh! No method exists for ExprsMulti yet.")
+              cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
+              
+              # Turn ExprsBinary $defineCase into factor
+              if(class(array) == "ExprsBinary"){
+                
+                array@annot$defineCase <- factor(array@annot$defineCase, levels = c("Control", "Case"))
+              }
+              
+              # Build confusion table
+              table <- table("predicted" = object@pred, "actual" = array@annot$defineCase)
+              cat("Classification confusion table:\n"); print(table)
+              
+              # Compute per-class performance
+              for(class in 1:nrow(table)){
+                
+                tp <- sum(table[row(table) == col(table)][class])
+                tn <- sum(table[row(table) == col(table)][-class])
+                fp <- sum(table[row(table) == class & col(table) != class]) # called class but not
+                fn <- sum(table[row(table) != class & col(table) == class]) # is but not called
+                acc <- (tp + tn) / (tp + tn + fp + fn)
+                sens <- tp / (tp + fn)
+                spec <- tn / (fp + tn)
+                
+                # If multi-class
+                if(class(array) == "ExprsMulti"){
+                  
+                  cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec))
+                  print(data.frame("class" = class, df))
+                  
+                }else{
+                  
+                  # NOTE: class == 2 refers to "Case"
+                  if(class == 2) return(data.frame(acc, sens, spec))
+                }
+              }
+              
+              # Compute total accuracy
+              tp <- sum(table[row(table) == col(table)])
+              tn <- sum(table[row(table) == col(table)])
+              fp <- sum(table[row(table) != col(table)])
+              fn <- sum(table[row(table) != col(table)])
+              acc <- (tp + tn) / (tp + tn + fp + fn)
+              
+              cat("Total accuracy of ExprsModule:", acc, "\n")
+              
+              return(acc)
             }
           }
 )
