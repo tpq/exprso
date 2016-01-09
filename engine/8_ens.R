@@ -272,7 +272,6 @@ setMethod("predict", "ExprsEnsemble",
             if(verbose){
               
               cat("Ensemble classifier performance:\n")
-              cat("(NOTE: This is a preview! Actual performances may differ!)\n")
               print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
             }
             
