@@ -191,7 +191,9 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
     
     # Predict class labels using the provided training set and calculate accuracy
     pred.train <- predict(model, array.train, verbose = verbose)
-    acc <- data.frame("train" = calcStats(pred.train, array.train, aucSkip = aucSkip, plotSkip = TRUE))
+    stats <- calcStats(pred.train, array.train, aucSkip = aucSkip, plotSkip = TRUE)
+    colnames(stats) <- paste0("train.", colnames(stats))
+    acc <- stats
     
     # Extract cross-validation accuracy if available (should work even if how = "buildANN"?)
     if(!is.null(model@mach$tot.accuracy)) acc <- data.frame("cv.train.acc" = model@mach$tot.accuracy / 100, acc)
@@ -201,7 +203,9 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
       
       # Predict class labels using the provided validation set and calculate accuracy
       pred.valid <- predict(model, array.valid, verbose = verbose)
-      acc <- data.frame(acc, "valid" = calcStats(pred.valid, array.valid, aucSkip = aucSkip, plotSkip = TRUE))
+      stats <- calcStats(pred.valid, array.valid, aucSkip = aucSkip, plotSkip = TRUE)
+      colnames(stats) <- paste0("valid.", colnames(stats))
+      acc <- data.frame(acc, stats)
     }
     
     # If 'fold' argument is provided
@@ -288,6 +292,8 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
 
 # Returns a single accuracy statistic based on plMonteCarlo output
 calcMonteCarlo <- function(pl, colBy){
+  
+  if(missing(colBy)) stop("Uh oh! Missing 'colBy' argument.")
   
   if("boot" %in% colnames(pl@summary)){
     
@@ -455,6 +461,8 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
 
 # Returns a single accuracy statistic based on plNested output
 calcNested <- function(pl, colBy){
+  
+  if(missing(colBy)) stop("Uh oh! Missing 'colBy' argument.")
   
   if("v" %in% colnames(pl@summary)){
     
