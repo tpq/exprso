@@ -131,7 +131,7 @@ setMethod("fsPenalizedSVM", "ExprsBinary",
             
             final <- names(fs$model$w)
             
-            if(length(final) == 1) stop("Uh oh! fsPenalizedSVM only found one feature!")
+            if(length(final) < 2) stop("Uh oh! fsPenalizedSVM did not find enough features!")
             array <- new("ExprsBinary",
                          exprs = object@exprs[final, ],
                          annot = object@annot,
@@ -179,7 +179,7 @@ setMethod("fsPathClassRFE", "ExprsBinary",
             # Use "make.names" key to return to original row.names
             final <- merge(data.frame("new" = final), key)$old
             
-            if(length(final) == 1) stop("Uh oh! fsPathClassRFE only found one feature!")
+            if(length(final) < 2) stop("Uh oh! fsPathClassRFE did not find enough features!")
             array <- new("ExprsBinary",
                          exprs = object@exprs[final, ],
                          annot = object@annot,
