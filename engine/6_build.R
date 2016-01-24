@@ -609,7 +609,7 @@ setMethod("calcStats", "ExprsPredict",
             
             if(class(array) == "ExprsMulti"){
               
-              if(length(object@mach) != length(levels(array@annot$defineCase))){
+              if(length(levels(object@pred)) != length(levels(array@annot$defineCase))){
                 
                 stop("Uh oh! ExprsPredict and ExprsMulti must have same number of classes.")
               }
@@ -668,8 +668,7 @@ setMethod("calcStats", "ExprsPredict",
                 # If multi-class
                 if(class(array) == "ExprsMulti"){
                   
-                  cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec))
-                  print(data.frame("class" = class, df))
+                  cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec), "\n")
                   
                 }else{
                   
@@ -687,7 +686,7 @@ setMethod("calcStats", "ExprsPredict",
               
               cat("Total accuracy of ExprsModule:", acc, "\n")
               
-              return(acc)
+              return(data.frame(acc))
             }
           }
 )
