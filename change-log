@@ -193,5 +193,16 @@
 # /engine/8_ens.R
 #   predict: removed 'verbose' = TRUE alert
 #
+# ``2016 Jan 25
+# /engine/5_fs.R
+#   fsPenalizedSVM: edited insufficient feature error
+#   fsPathClassRFE: edited insufficient feature error
+# /engine/6_build.R
+#   calcStats: fixed miscellaneous ExprsMulti errors
+# /engine/7_pl.R
+#   plGrid: ensured appropriate column naming
+#   calcMonteCarlo: added missing argument check
+#   calcNested: added missing argument check
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
