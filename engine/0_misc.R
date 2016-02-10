@@ -93,8 +93,8 @@ setMethod("modNormalize", "ExprsArray",
             boxplot(v, horizontal = TRUE, main = "Box Plot (Before)", xlab = "Expression Values")
             
             # Perform normalization
-            if(1 %in% MARGIN) object@exprs <- t(apply(object@exprs, MARGIN = 1, function(gene) (gene - mean(gene)) / sd(gene)))
             if(2 %in% MARGIN) object@exprs <- apply(object@exprs, MARGIN = 2, function(samp) (samp - mean(samp)) / sd(samp))
+            if(1 %in% MARGIN) object@exprs <- t(apply(object@exprs, MARGIN = 1, function(gene) (gene - mean(gene)) / sd(gene)))
             
             # For large datasets, plot only a sub-sample
             v <- as.vector(object@exprs)
