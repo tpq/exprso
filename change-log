@@ -204,5 +204,14 @@
 #   calcMonteCarlo: added missing argument check
 #   calcNested: added missing argument check
 #
+# ``2016 Feb 11
+# /engine/0_misc.R
+#   modNormalize: now normalizes subject vectors first
+# /engine/5_fs.R
+#   fsSample: new function randomly selects features
+#   fsEbayes: added missing 'probes' as character code snipet
+# /engine/7_pl.R
+#   plGrid: used "drop = FALSE" to keep results clean
+#
 # ``/`` /__/ .---.  /\/\
 #  /   /  / /____/ / / /
