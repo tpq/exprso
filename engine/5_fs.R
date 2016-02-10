@@ -1,6 +1,7 @@
 ###########################################################
 ### Define generic functions
 
+setGeneric("fsSample", function(object, ...) standardGeneric("fsSample"))
 setGeneric("fsStats", function(object, ...) standardGeneric("fsStats"))
 setGeneric("fsPrcomp", function(object, ...) standardGeneric("fsPrcomp"))
 setGeneric("fsPenalizedSVM", function(object, ...) standardGeneric("fsPenalizedSVM"))
@@ -15,6 +16,36 @@ setGeneric("fsMrmre", function(object, ...) standardGeneric("fsMrmre"))
 # NOTE: IF probes = 0, include ALL probes when building data; otherwise, select top N occurring first
 # NOTE: IF probes is a character vector, include only these probes when building data
 # NOTE: 'probes' argument refers to what you feed INTO the function, not what you expect OUT
+
+setMethod("fsSample", "ExprsBinary",
+          function(object, probes, ...){ #args to ebayes
+            
+            # Convert 'numeric' probe argument to 'character' probe vector
+            if(class(probes) == "numeric"){
+              
+              if(probes == 0) probes <- nrow(object@exprs)
+              probes <- rownames(object@exprs[1:probes, ])
+            }
+            
+            # Build data using supplied 'character' probe vector
+            if(class(probes) == "character"){
+              
+              data <- t(object@exprs[probes, ])
+            }
+            
+            # Randomly sample probes
+            final <- sample(probes)
+            
+            array <- new("ExprsBinary",
+                         exprs = object@exprs[final,],
+                         annot = object@annot,
+                         preFilter = append(object@preFilter, list(final)),
+                         reductionModel = append(object@reductionModel, list(NA))
+            )
+            
+            return(array)
+          }
+)
 
 setMethod("fsStats", "ExprsBinary",
           function(object, probes, how = "t.test", ...){ # args to ks.test, ks.boot, or t.test
@@ -201,6 +232,12 @@ setMethod("fsEbayes", "ExprsBinary",
               
               if(probes == 0) probes <- nrow(object@exprs)
               probes <- rownames(object@exprs[1:probes, ])
+            }
+            
+            # Build data using supplied 'character' probe vector
+            if(class(probes) == "character"){
+              
+              data <- t(object@exprs[probes, ])
             }
             
             # Set up and perform eBayes
