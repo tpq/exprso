@@ -180,10 +180,10 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
   for(i in 1:nrow(grid)){
     
     cat("Now building machine at gridpoint:\n")
-    print(grid[i, ])
+    print(grid[i, , drop = FALSE])
     
     # Format gridpoint args to pass along to build do.call
-    args <- append(list("object" = array.train), as.list(grid[i, ]))
+    args <- append(list("object" = array.train), as.list(grid[i, , drop = FALSE]))
     
     # Build and save model
     model <- do.call(what = how, args = args[!is.na(args)])
@@ -219,7 +219,7 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
     }
     
     # Save summary statistics
-    statistics[[i]] <- data.frame(grid[i,], acc)
+    statistics[[i]] <- data.frame(grid[i, , drop = FALSE], acc)
   }
   
   pl <- new("ExprsPipeline",
