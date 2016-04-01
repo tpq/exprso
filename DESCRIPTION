@@ -9,6 +9,8 @@ Depends:
     R (>= 3.2.2)
 License: GPL-2
 LazyData: TRUE
-Suggests: knitr,
+Suggests:
+    knitr,
     rmarkdown
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1
