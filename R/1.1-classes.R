@@ -78,6 +78,39 @@ setMethod("show", "ExprsArray",
           }
 )
 
+#' @describeIn ExprsArray-class Method to subset \code{ExprsArray} object.
+#'
+# #' @param x An object of class \code{ExprsArray}.
+#' @param i,j,drop Subsets via \code{object@annot[i, j, drop]}.
+#' @export
+setMethod('[', signature(x = "ExprsArray"),
+          function(x, i, j, drop){
+
+            if(!missing(j)){
+
+              return(x@annot[i, j, drop])
+
+            }else{
+
+              x@annot <- x@annot[i, j, drop]
+              x@exprs <- x@exprs[, rownames(x@annot), drop]
+              return(x)
+            }
+          }
+)
+
+#' @describeIn ExprsArray-class Method to subset \code{ExprsArray} object.
+#'
+# #' @param x An object of class \code{ExprsArray}.
+#' @param name Subsets via \code{object@annot[, name]}.
+#' @export
+setMethod('$', signature(x = "ExprsArray"),
+          function(x, name){
+
+            return(x@annot[, name])
+          }
+)
+
 #' @describeIn ExprsArray-class Method to plot three dimensions of the expression data.
 #'
 #' @param i,j,k A numeric scalar. Indexes the first, second, and third dimensions to plot.

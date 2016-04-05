@@ -51,7 +51,7 @@ setGeneric("conjoin",
 ###########################################################
 ### Conjoin
 
-#' @describeIn conjoin Method to join \code{ExprsArray} objects
+#' @describeIn conjoin Method to join \code{ExprsArray} objects.
 #' @import plyr
 #' @export
 setMethod("conjoin", "ExprsArray",
@@ -82,7 +82,7 @@ setMethod("conjoin", "ExprsArray",
           }
 )
 
-#' @describeIn conjoin Method to join \code{ExprsModel} objects
+#' @describeIn conjoin Method to join \code{ExprsModel} objects.
 #' @export
 setMethod("conjoin", "ExprsModel",
           function(object, ...){
@@ -97,7 +97,7 @@ setMethod("conjoin", "ExprsModel",
           }
 )
 
-#' @describeIn conjoin Method to join \code{ExprsPipeline} objects
+#' @describeIn conjoin Method to join \code{ExprsPipeline} objects.
 #' @import plyr
 #' @export
 setMethod("conjoin", "ExprsPipeline",
@@ -153,7 +153,7 @@ setMethod("conjoin", "ExprsPipeline",
           }
 )
 
-#' @describeIn conjoin Method to join \code{ExprsEnsemble} objects
+#' @describeIn conjoin Method to join \code{ExprsEnsemble} objects.
 #' @export
 setMethod("conjoin", "ExprsEnsemble",
           function(object, ...){
