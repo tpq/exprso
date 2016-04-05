@@ -6,4 +6,5 @@
 ..* Removed \code{getCases} and \code{getConts}. Use \code{arraySubset} instead.
 ..* \code{getProbeSet} extended to replace \code{getProbeSummary}.
 * 3-split.R
+..* Code divided into files 3.1-subset.R and 3.2-split.R.
 ..* \code{splitStratify} now properly designated an ExprsBinary method.
