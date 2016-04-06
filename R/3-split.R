@@ -30,11 +30,13 @@
 NULL
 
 #' @describeIn split Method to split \code{ExprsArray} objects randomly.
+#' @export
 setGeneric("splitSample",
            function(object, ...) standardGeneric("splitSample")
 )
 
 #' @describeIn split Method to split \code{ExprsBinary} objects by strata.
+#' @export
 setGeneric("splitStratify",
            function(object, ...) standardGeneric("splitStratify")
 )
