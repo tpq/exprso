@@ -1,10 +1,40 @@
 ###########################################################
 ### Define generic functions
 
+#' @name split
+#'
+#' split \code{ExprsArray} objects
+#'
+#' A collection of functions to build the training and validation sets.
+#'
+#' \code{splitSample} builds training and validation sets through randomly sampling
+#'  the subjects found within the \code{ExprsArray} object. Note that this method
+#'  is not truly random. Instead, \code{splitSample} iterates through the random sampling
+#'  process until it settles on a solution such that both the training and validation set
+#'  contain at least one subject for each class label. If this method finds no solution
+#'  within 10 iterations, the function will post an error. Set \code{percent.include = 100}
+#'  to skip random sampling and return a \code{NULL} validation set. Additional arguments
+#'  (e.g. \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
+#'  for all (i.e. binary and multi-class) \code{ExprsArray} objects.
+#'
+#' \code{splitStratify} builds training and validation sets through a stratified
+#'  random sampling process. This function utilizes the \code{strata} function from the
+#'  sampling package as well as the \code{cut} function from the base package. The latter
+#'  function provides a means by which to bin continuous data prior to stratified random
+#'  sampling. We refer the user to the parameter descriptions to learn the specifics for
+#'  how to use this function. At the time of writing, this method only works in the setting
+#'  of objects prepared for binary classification (i.e. \code{ExprsBinary} objects).
+#'
+#' @seealso
+#' \code{ExprsArray-class}
+NULL
+
+#' @describeIn split Method to split \code{ExprsArray} objects randomly.
 setGeneric("splitSample",
            function(object, ...) standardGeneric("splitSample")
 )
 
+#' @describeIn split Method to split \code{ExprsBinary} objects by strata.
 setGeneric("splitStratify",
            function(object, ...) standardGeneric("splitStratify")
 )
@@ -12,8 +42,13 @@ setGeneric("splitStratify",
 ###########################################################
 ### Split data
 
-# Set replace = FALSE to sample training set WITHOUT replacement
-# Set percent.include = 100 to return a NULL demi-holdout array
+#' @describeIn split Method to split \code{ExprsArray} objects randomly.
+#' @param array Specifies the \code{ExprsArray} object to split.
+#' @param percent.include Specifies the percent of the total number
+#'  of subjects to include in the training set.
+#' @param ... For \code{splitSample}: additional arguments passed
+#'  along to \code{\link{sample}}.
+#' @export
 setMethod("splitSample", "ExprsArray",
           function(object, percent.include, ...){ # args to sample
 
@@ -21,64 +56,48 @@ setMethod("splitSample", "ExprsArray",
 
             if(percent.include < 1 | percent.include > 100) stop("Uh oh! Use an inclusion percentage between 1-100!")
 
-            # Calculate size of bootstrap set
+            # Return NULL validation set if percent.include = 100
             size <- round((ncol(object@exprs) * percent.include)/100, digits = 0)
-
-            all.in <- FALSE # Set all.in to FALSE by default
-            counter <- 1
-            while(!all.in){ # Until sample has at least one of every class
-
-              # Terminate after 10 iterations
-              counter <- counter + 1
-              if(counter > 10) stop("splitSample could not find a solution. Check the supplied parameters.")
-
-              # Perform a simple random sample with or without replacement
-              boot <- sample(colnames(object@exprs), size = size, ...)
-
-              # Check if sample has at least one of every class
-              if(all(unique(object@annot$defineCase) %in% unique(object@annot[boot, "defineCase"]))) all.in <- TRUE
-            }
-
-            # Build bootstrap set
-            cat("Building the random training set...\n\n")
-            array.train <- new(class(object),
-                               exprs = as.matrix(object@exprs[, boot]),
-                               annot = object@annot[boot, ],
-                               preFilter = object@preFilter,
-                               reductionModel = object@reductionModel)
-
-            # Clean up 1-subject artifact
-            colnames(array.train@exprs) <- rownames(array.train@annot)
-
-            # Build demi-holdout set based on the size of the bootstrap set
-            if(ncol(array.train@exprs) < ncol(object@exprs)){
-
-              cat("Building a validation set with remaining samples...\n\n")
-              array.valid <- new(class(object),
-                                 exprs = as.matrix(object@exprs[, !colnames(object@exprs) %in% boot]),
-                                 annot = object@annot[!rownames(object@annot) %in% boot, ],
-                                 preFilter = object@preFilter,
-                                 reductionModel = object@reductionModel)
-
-              # Clean up 1-subject artifact
-              colnames(array.valid@exprs) <- rownames(array.valid@annot)
-
-            }else{
+            if(size == ncol(object@exprs)){
 
               cat("Building a NULL validation set...\n\n")
-              array.valid <- NULL
+              return(list(
+                "array.train" = object,
+                "array.valid" = NULL)
+              )
             }
 
-            return(list("array.train" = array.train, "array.valid" = array.valid))
+            # Sample until training and validation sets have one of every class
+            # Terminate after 10 iterations if no solution found
+            all.in <- FALSE
+            counter <- 1
+            while(!all.in){
+
+              counter <- counter + 1
+              if(counter > 10) stop("splitSample could not find a solution. Check the supplied parameters.")
+              random.train <- sample(1:ncol(object@exprs), size = size, ...)
+              random.valid <- setdiff(random.train, 1:ncol(object@exprs))
+              if(all(unique(object$defineCase) %in% object$defineCase[random.train]) &
+                 all(unique(object$defineCase) %in% object$defineCase[random.valid])) all.in <- TRUE
+            }
+
+            return(list(
+              "array.train" = object[random.train, , drop = FALSE],
+              "array.valid" = object[random.valid, , drop = FALSE])
+            )
           }
 )
 
+#' @describeIn split Method to split \code{ExprsBinary} objects by strata.
 #'
-#'
-#'
-#'
-#'
-#'
+#' @inheritParams splitSample
+#' @param colBy Specifies a vector of column names by which to stratify in
+#'  addition to class labels annotation. If \code{colBy = NULL}, random
+#'  sampling will occur across the class label annotation only.
+#' @param bin A logical vector indicating whether to bin the respective
+#'  \code{colBy} column using \code{cut} (e.g. \code{bin = c(FALSE, TRUE)}).
+#' @param ... For \code{splitSample}: additional arguments passed
+#'  along to \code{\link{cut}}.
 #' @import sampling
 #' @export
 setMethod("splitStratify", "ExprsBinary",
@@ -164,22 +183,9 @@ setMethod("splitStratify", "ExprsBinary",
               print(table(s[, colnames(df)]))
             }
 
-            # Build array.train from the stratified sample
-            cat("\nBuilding the stratified training set...\n\n")
-            array.train <- new(class(object),
-                               exprs = object@exprs[, rownames(s)],
-                               annot = object@annot[rownames(s), ],
-                               preFilter = object@preFilter,
-                               reductionModel = object@reductionModel)
-
-            # Dump remaining samples into array.valid
-            cat("Building a validation set with remaining samples...\n\n")
-            array.valid <- new(class(object),
-                               exprs = object@exprs[, !colnames(object@exprs) %in% colnames(array.train@exprs)],
-                               annot = object@annot[!rownames(object@annot) %in% rownames(array.train@annot), ],
-                               preFilter = object@preFilter,
-                               reductionModel = object@reductionModel)
-
-            return(list("array.train" = array.train, "array.valid" = array.valid))
+            return(list(
+              "array.train" = object[rownames(s), , drop = FALSE],
+              "array.valid" = object[setdiff(rownames(s), rownames(object@annot)), , drop = FALSE])
+            )
           }
 )
