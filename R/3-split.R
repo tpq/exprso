@@ -50,6 +50,7 @@ setGeneric("splitStratify",
 #'  of subjects to include in the training set.
 #' @param ... For \code{splitSample}: additional arguments passed
 #'  along to \code{\link{sample}}.
+#' @return Returns a list of two \code{ExprsArray} objects.
 #' @export
 setMethod("splitSample", "ExprsArray",
           function(object, percent.include, ...){ # args to sample
