@@ -1,6 +1,6 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Introduction to exprso"
+author: "Thomas Quinn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,50 +9,78 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+## Introduction
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+In this series of tutorials, we present the *exprso* package for *R*, a custom library built to tackle a wide variety of supervised machine learning problems, including the construction of ensemble classifiers. We designed this package with the biologist user in mind, carefully assembling a toolkit that allows investigators to quickly implement dichotomous (binary) and multi-class classification on high-dimensional genomic data. We designed *exprso* using a modular framework, whereby each function acts as a self-contained yet interchangable part of the whole. With these modules, the investigator has access to multiple tools that they can use in almost any sequence in order to build their very own personalized machine learning pipeline. By rearranging these modules, one can easily experiment with new pipeline ideas on the fly. In this way, we balance the simplicity of automatation with endless customization, all while maintaining software extensibility.
 
-## Vignette Info
+We have bundled many kinds of functions into the *exprso* package, including functions for data import, data modification, feature selection, individual classifier construction, and ensemble classifier construction. We begin this tutorial by first presenting a brief overview of the objects and functions found in *exprso*. Then, we move on to show how the user can access this package from *GitHub* and import their own data into the *R* environment by one of three different ways.
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+## exprso Objects
 
-## Styles
+Before exploring the utility of the functions included in this library, we will first overview the principle objects used by this package. Objects in *R* serve as convenient ways of organizing data. One can think of an object as simply a custom built data container. We emphasize these here based on a notion that a better understanding of the back-end promotes a better understanding of the front-end.
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+* **ExprsArray** Stores feature and annotation data as well as relevant feature selection history.
+* **ExprsMachine** Stores the trained machine as well as the relevant feature selection history needed to deploy a machine on an independent dataset.
+* **ExprsPipeline** Stores a summary of high-throughput machine performance and the machine objects themselves.
+* **ExprsEnsemble** Stores a number of machine objects which function a single ensemble classifier.
+* **ExprsPredict** Stores the results of machine prediction as three measures: binary, probability, and decision boundary.
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+## exprso Functions
 
-## Figures
+The functions included in this library rely on the objects listed above. Some of these functions return an updated version of the same object type provided, while others return a different object type altogether. We have adopted a nomenclature which we hope helps the user organize the functions available in this package. In this scheme, most functions have a few letters in the beginning of their name which designate their general utility. We include a flow diagram of available functions to go along with the brief description of function prefixes:
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+* **array** Any function that has a role in importing or subsetting data. Returns an updated ExprsArray object.
+* **mod** Any function that has a role in pre-processing ExprsArray objects. Returns an updated ExprsArray object.
+* **split** Any function that has a role in splitting ExprsArray objects into training and test sets. Returns a list of two ExprsArray objects.
+* **fs** Any function that has a role in feature selection. Returns an updated ExprsArray object.
+* **build** Any function that has a role in building a classifier or classifier ensemble. Returns an ExprsMachine or ExprsEnsemble object.
+* **pl** Any function that has a role in high-throughput analytics. Usually returns an ExprsPipeline object.
+* **pipe** Any function that has a role in post-processing ExprsPipeline objects. Returns an updated ExprsPipeline object.
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+## Importing the library
+
+We can load the most recent version of *exprso* directly from *GitHub* using the `install_github` function provided by the *devtools* package.
+
+```{r, eval = FALSE}
+require(devtools)
+devtools::install_github("tpq/exprso")
+require(exprso)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+## Importing data
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+With *exprso* loaded, we can import data in one of three ways. First, we can import data as stored in a tab-delimited text file. The construction of this import function, `arrayRead`, assumes the data file contains the subjects as rows and variables as columns, with annotation variables (e.g. sex or age) appearing before the feature variables (e.g. mRNA expression values). The `include` argument lists any number of annotation vectors to assign to each class label. In the example below, we assign the annotation "Control" to the first class, then we assign the annotations "ASD" and "PDDNOS" to the second class. Any subjects not assigend to a class will get dropped from the resultant object. The user can find more details in the function specific documentation.
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r, eval = FALSE}
+array <-
+  arrayRead("some_example_data_file.txt", # tab-delimited file
+            probes.begin = 11, # the i-th column where features begin
+            colID = "Subject.ID", # column name with subject ID
+            colBy = "DX", # column name with class labels
+            include = list(c("Control"), c("ASD", "PDDNOS")))
 ```
 
-Also a quote using `>`:
+Second, we can import data into *exprso* directly by converting an *eSet* object, a popular container for storing gene expression data, using the function `arrayEset`. The user can find more details in the function specific documentation. In the example below, we convert the classic ALL/AML Golub gene expression dataset from an eSet object (provided by the *golubEsets* package) into an ExprsArray object. We will use this dataset routinely for the remainder of this tutorial. We note here that GDS and GSE data files (from the NCBI GEO repository) easily convert to eSet objects using the `GDS2eSet` and `GSE2eSet` functions from the *Biobase* and *exprso* packages, respectively.
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+```{r, eval = FALSE}
+require(golubEsets)
+data(Golub_Merge)
+array <-
+  arrayEset(Golub_Merge, # an ExpressionSet (abrv. eSet) object
+            colBy = "ALL.AML", # column name with class labels
+            include = list("AML", "ALL"))
+```
+
+Third, we can construct an ExprsArray object manually using the `new` function. To accomplish this, we need to define the four slots found which comprise an ExprsArray object. The `@exprs` slot must contain a feature value `matrix` with subject names as columns. The `@annot` slot must contain an annotation `data.frame` with subject names as rows. It is critical to make sure that the subject names appear in the same order across both data structures. The two additional slots, `@preFilter` and `@reductionModel`, pass along the feature selection history while deploying built machines. When constructing an ExprsArray object manually, set both of these to `NULL`.
+
+```{r, eval = FALSE}
+array <-
+  new("ExprsArray",
+  exprs = some.expression.matrix,
+  annot = some.annotation.data.frame,
+  preFilter = NULL,
+  reductionModel = NULL)
+```
+
+## Subsetting
+
