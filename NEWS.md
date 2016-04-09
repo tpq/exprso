@@ -14,4 +14,11 @@
 * 4-speakEasy.R
 ..* Temporarily commented out until appropriate documentation gets added.
 * 5-fs.R
-..* Code divided into files 5.1-binary.R and 5.2-multi.R.
+..* Code renamed into file 5.1-fs-binary.R.
+* 6-build.R
+..* Code divided into files 5.2-build-binary.R and 6- scripts.
+# ..* `reRank` added to 6.1-doMulti.R.
+# * 7-pl.R
+# ..* Code divided into four separate files.
+# * 8-ens.R
+# ..* `pipeSubset` replaced with `[` and `$` in 1.1-classes.R.
