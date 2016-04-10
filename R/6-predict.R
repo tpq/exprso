@@ -1,9 +1,27 @@
 ###########################################################
-### Predict
+### Duplicate feature selection history
 
-setGeneric("modHistory", function(object, ...) standardGeneric("modHistory"))
+#' Duplicate Feature Selection History
+#'
+#' Duplicates the feature selection history of a reference \code{ExprsArray} object.
+#'  Called directly by \code{predict.ExprsMachine} and indirectly by
+#'  \code{predict.ExprsModule}. Ensures that the validation set has undergone
+#'  the same process of feature selection and dimension reduction as the
+#'  training set.
+#'
+#' @seealso
+#' \code{\link{exprso-predict}}
+#' @export
+setGeneric("modHistory",
+           function(object, ...) standardGeneric("modHistory")
+)
 
-
+#' @describeIn modHistory
+#' @param object An \code{ExprsArray} object. The validation set that should undergo
+#'  feature selection and dimension reduction.
+#' @param reference An \code{ExprsArray} or \code{ExprsModel} object. The object with
+#'  feature selection history used as a template for the validation set.
+#' @export
 setMethod("modHistory", "ExprsArray",
           function(object, reference){
 
@@ -59,16 +77,24 @@ setMethod("modHistory", "ExprsArray",
           }
 )
 
+###########################################################
+### Predict using an ExprsModel object
 
 #' @name exprso-predict
 #'
 #'
 #'
+# NOTE: The validation set should not get modified once separated from the training set
+# NOTE: All @pred and @decision.values now based on @probability
+
+# If the training set used to build the ExprsModule had a class missing (e.g. from cross-validation),
+# the ExprsModule will not predict that class. As with all functions included in this package,
+# relative class frequencies determine the 'tieBreaker' probability weights.
+#'
 #'
 NULL
 
-# NOTE: The validation set should not get modified once separated from the training set
-# NOTE: All @pred and @decision.values now based on @probability
+
 setMethod("predict", "ExprsMachine",
           function(object, array, verbose = TRUE){
 
@@ -149,9 +175,7 @@ setMethod("predict", "ExprsMachine",
           }
 )
 
-# If the training set used to build the ExprsModule had a class missing (e.g. from cross-validation),
-# the ExprsModule will not predict that class. As with all functions included in this package,
-# relative class frequencies determine the 'tieBreaker' probability weights.
+
 setMethod("predict", "ExprsModule",
           function(object, array, verbose = TRUE){
 
@@ -240,15 +264,13 @@ setMethod("predict", "ExprsModule",
           }
 )
 
+###########################################################
+### Calculate classifier performance
 
 
-
-
-
-
-
-
-setGeneric("calcStats", function(object, ...) standardGeneric("calcStats"))
+setGeneric("calcStats",
+           function(object, ...) standardGeneric("calcStats")
+           )
 
 setMethod("calcStats", "ExprsPredict",
           function(object, array, aucSkip = FALSE, plotSkip = FALSE){
