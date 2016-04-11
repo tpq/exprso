@@ -82,19 +82,39 @@ setMethod("modHistory", "ExprsArray",
 
 #' @name exprso-predict
 #'
+#' Predict class labels of a validation set.
 #'
+#' An \code{ExprsMachine} object can only predict against an \code{ExprsBinary}
+#'  object. An \code{ExprsModule} object can only predict against an
+#'  \code{ExprsMulti} object. The validation set should never get modified
+#'  once separated from the training set. If the training set used to build
+#'  an \code{ExprsModule} had a class missing (i.e. a NULL placeholder),
+#'  the \code{ExprsModule} cannot predict the missing class. As with
+#'  all functions included in this package, ties get resolved using
+#'  probability weights based on the relative frequency of the tied
+#'  classes.
 #'
-# NOTE: The validation set should not get modified once separated from the training set
-# NOTE: All @pred and @decision.values now based on @probability
-
-# If the training set used to build the ExprsModule had a class missing (e.g. from cross-validation),
-# the ExprsModule will not predict that class. As with all functions included in this package,
-# relative class frequencies determine the 'tieBreaker' probability weights.
+#' \code{ExprsPredict} objects store predictions in three slots: \code{@@pred},
+#'  \code{@@decision.values}, and \code{@@probability}. The first slot
+#'  stores a "final decision" based on the class label with the maximum
+#'  predicted probability. The second slot stores a transformation
+#'  of the predicted probability for each class calculated by the inverse
+#'  of Platt scaling. The predicted probability gets returned by the
+#'  \code{predict} method called using the stored \code{@@mach} object.
+#'  To learn how these slots get used to calculate classifier performance,
+#'  read more at \code{\link{calcStats}}.
 #'
-#'
+#' @seealso
+#' \code{\link{modHistory}}, \code{\link{calcStats}}
+#' @export
 NULL
 
-
+#' @describeIn exprso-predict
+#' @param object An \code{ExprsModel} object. The classifier to deploy.
+#' @param array An \code{ExprsArray} object. The validation set.
+#' @param verbose A logical scalar. Toggles whether to print \code{calcStats}.
+#' @import e1071 MASS nnet randomForest
+#' @export
 setMethod("predict", "ExprsMachine",
           function(object, array, verbose = TRUE){
 
@@ -111,20 +131,17 @@ setMethod("predict", "ExprsMachine",
 
             if("naiveBayes" %in% class(object@mach)){
 
-              require(e1071)
               px <- predict(object@mach, data, type = "raw")
             }
 
             if("lda" %in% class(object@mach)){
 
-              require(MASS)
               pred <- predict(object@mach, data)
               px <- pred$posterior
             }
 
             if("svm" %in% class(object@mach)){
 
-              require(e1071)
               pred <- predict(object@mach, data, probability = TRUE)
               px <- attr(pred, "probabilities")
 
@@ -132,7 +149,6 @@ setMethod("predict", "ExprsMachine",
 
             if("nnet" %in% class(object@mach)){
 
-              require(nnet)
               px <- predict(object@mach, data, type = "raw")
               px <- cbind(px, 1 - px)
               colnames(px) <- c("Case", "Control") # do not delete this line!
@@ -140,7 +156,6 @@ setMethod("predict", "ExprsMachine",
 
             if("randomForest" %in% class(object@mach)){
 
-              require(randomForest)
               px <- unclass(predict(object@mach, data, type = "prob"))
             }
 
@@ -175,7 +190,8 @@ setMethod("predict", "ExprsMachine",
           }
 )
 
-
+#' @describeIn exprso-predict
+#' @export
 setMethod("predict", "ExprsModule",
           function(object, array, verbose = TRUE){
 
@@ -267,11 +283,44 @@ setMethod("predict", "ExprsModule",
 ###########################################################
 ### Calculate classifier performance
 
-
+#' Calculate Classifier Performance
+#'
+#' \code{calcStats} calculates classifier performance based on class predictions
+#'  stored in an \code{ExprsPredict} object and the actual class labels stored
+#'  in an \code{ExprsArray} object.
+#'
+#' The appropriate use of \code{calcStats} requires the \code{ExprsPredict} object
+#'  to have derived from the same \code{ExprsArray} object used for the \code{array}
+#'  argument. This function calculates classifier performance based on the predicted
+#'  class labels and the actual class labels in one of two ways. If the argument
+#'  \code{aucSkip = FALSE} *and* the \code{ExprsArray} object is an \code{ExprsBinary}
+#'  object with at least one case and one control *and* \code{ExprsPredict} contains
+#'  a coherent \code{@@probability} slot, \code{calcStats} will calculate classifier
+#'  performance using the area under the receiver operating characteristic (ROCR) curve
+#'  via the \code{ROCR} package. Otherwise, \code{calcStats} will calculate classifier
+#'  performance traditionally using a confusion matrix. Note that accuracies calculated
+#'  using \code{ROCR} may differ from accuracies calculated using a confusion
+#'  matrix because the former may adjust the discrimination threshold to optimize
+#'  sensitivity and specificity. The discrimination threshold is automatically chosen
+#'  as the point along the ROC which minimizes the Euclidean distance from (0, 1).
+#'
+#' @seealso
+#' \code{\link{exprso-predict}}
+#' @export
 setGeneric("calcStats",
            function(object, ...) standardGeneric("calcStats")
-           )
+)
 
+#' @describeIn calcStats
+#' @param object An \code{ExprsPredict} object.
+#' @param array An \code{ExprsArray} object. The data object used to produce the
+#'  \code{ExprsPredict} object.
+#' @param aucSkip A logical scalar. Toggles whether to calculate area under the
+#'  receiver operating characteristic curve. See details.
+#' @param plotSkip A logical scalar. Toggles whether to plot the receiver
+#'  operating characteristic curve.
+#' @import ROCR
+#' @export
 setMethod("calcStats", "ExprsPredict",
           function(object, array, aucSkip = FALSE, plotSkip = FALSE){
 
@@ -291,25 +340,23 @@ setMethod("calcStats", "ExprsPredict",
             # If predicted set contains only two classes, ExprsPredict has @probability, and aucSkip = FALSE
             if(all(c("Case", "Control") %in% array@annot$defineCase) & !is.null(object@probability) & !aucSkip){
 
-              require(ROCR)
-
               layout(matrix(c(1), 1, 1, byrow = TRUE))
 
               cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
-              p <- prediction(object@probability[, "Case"], as.numeric(array@annot$defineCase == "Case"))
+              p <- ROCR::prediction(object@probability[, "Case"], as.numeric(array@annot$defineCase == "Case"))
 
               # Plot AUC curve
-              perf <- performance(p, measure = "tpr", x.measure = "fpr")
+              perf <- ROCR::performance(p, measure = "tpr", x.measure = "fpr")
               if(!plotSkip) plot(perf, col = rainbow(10))
 
               # Index optimal cutoff based on Euclidean distance
               index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
 
               # Calculate performance metrics
-              acc <- performance(p, "acc")@y.values[[1]][index]
-              sens <- performance(p, "sens")@y.values[[1]][index]
-              spec <- performance(p, "spec")@y.values[[1]][index]
-              auc <- performance(p, "auc")@y.values[[1]]
+              acc <- ROCR::performance(p, "acc")@y.values[[1]][index]
+              sens <- ROCR::performance(p, "sens")@y.values[[1]][index]
+              spec <- ROCR::performance(p, "spec")@y.values[[1]][index]
+              auc <- ROCR::performance(p, "auc")@y.values[[1]]
 
               return(data.frame(acc, sens, spec, auc))
 

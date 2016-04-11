@@ -16,9 +16,7 @@
 * 5-fs.R
 ..* Code renamed into file 5.1-fs-binary.R.
 * 6-build.R
-..* Code divided into files 5.2-build-binary.R and 6- scripts.
-# ..* `reRank` added to 6.1-doMulti.R.
-# * 7-pl.R
-# ..* Code divided into four separate files.
-# * 8-ens.R
-# ..* `pipeSubset` replaced with `[` and `$` in 1.1-classes.R.
+..* `reRank` function to serialize `doMulti` fs added to 5.3-doMulti.R.
+..* `fsSample` and `fsStats` now have `ExprsMulti` methods.
+..* Some code move to 5.2-build-binary.R and 5.3-doMulti.R.
+..* Remaining 6-build.R code renamed 6-predict.R
