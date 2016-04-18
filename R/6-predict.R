@@ -78,9 +78,11 @@ setMethod("modHistory", "ExprsArray",
 )
 
 ###########################################################
-### Predict using an ExprsModel object
+### Predict class labels using ExprsModel
 
 #' @name exprso-predict
+#'
+#' Predict Class Labels
 #'
 #' Predict class labels of a validation set.
 #'
