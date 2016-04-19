@@ -127,7 +127,10 @@ setMethod("plot", signature(x = "ExprsArray", y = "missing"),
             colnames(df) <- paste0(c("i_", "j_", "k_"), colnames(df))
 
             # Plot k ~ i + j in 3D
-            func <- as.formula(paste(colnames(df)[3], "~", colnames(df)[1], "+", colnames(df)[2], collapse = ""))
+            func <- as.formula(paste(colnames(df)[3], "~",
+                                     colnames(df)[1], "+",
+                                     colnames(df)[2],
+                                     collapse = ""))
             if(missing(colors)) colors <- rainbow(length(unique(x@annot$defineCase)))
             if(missing(shapes)) shapes <- 19
             print(lattice::cloud(func, data = df, col = colors, pch = shapes))
@@ -277,6 +280,40 @@ setMethod("show", "ExprsPipeline",
               lapply(object@machs, show)
               cat("\n")
             }
+          }
+)
+
+#' @describeIn ExprsPipeline-class Method to subset \code{ExprsPipeline} object.
+#'
+# #' @param x An object of class \code{ExprsPipeline}.
+#' @param i,j,drop Subsets via \code{object@summary[i, j, drop]}.
+#' @export
+setMethod('[', signature(x = "ExprsPipeline"),
+          function(x, i, j, drop){
+            
+            if(!missing(j)){
+              
+              return(x@summary[i, j, drop])
+              
+            }else{
+              
+              index <- which(rownames(x@summary) %in% rownames(x@summary[i, j, drop]))
+              x@summary <- x@summary[index, j, drop]
+              x@machs <- x@machs[index]
+              return(x)
+            }
+          }
+)
+
+#' @describeIn ExprsPipeline-class Method to subset \code{ExprsPipeline} object.
+#'
+# #' @param x An object of class \code{ExprsPipeline}.
+#' @param name Subsets via \code{object@summary[, name]}.
+#' @export
+setMethod('$', signature(x = "ExprsPipeline"),
+          function(x, name){
+            
+            return(x@summary[, name])
           }
 )
 
