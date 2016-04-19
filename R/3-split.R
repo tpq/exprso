@@ -45,7 +45,7 @@ setGeneric("splitStratify",
 ### Split data
 
 #' @describeIn split Method to split \code{ExprsArray} objects randomly.
-#' @param array Specifies the \code{ExprsArray} object to split.
+#' @param object Specifies the \code{ExprsArray} object to split.
 #' @param percent.include Specifies the percent of the total number
 #'  of subjects to include in the training set.
 #' @param ... For \code{splitSample}: additional arguments passed
