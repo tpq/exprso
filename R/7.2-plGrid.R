@@ -65,10 +65,11 @@
 #' arrays <- splitSample(array, percent.include = 67)
 #' array.train <- fsStats(arrays[[1]], probes = 0, how = "t.test")
 #' pl <- plGrid(array.train, array.valid = arrays[[2]], how = "buildSVM",
-#'              kernel = c("linear", "radial"), cost = 10^-3:3, gamma = 10^-3:3)
+#'              kernel = c("linear", "radial"), cost = 10^(-3:3), gamma = 10^(-3:3))
 #' }
 #' @export
-plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucSkip = FALSE, verbose = TRUE, ...){ # args to how function
+plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
+                   aucSkip = FALSE, verbose = TRUE, ...){
   
   args <- as.list(substitute(list(...)))[-1]
   
@@ -145,7 +146,10 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10, aucS
     acc <- stats
     
     # Extract cross-validation accuracy if available (should work even if how = "buildANN"?)
-    if(!is.null(model@mach$tot.accuracy)) acc <- data.frame("cv.train.acc" = model@mach$tot.accuracy / 100, acc)
+    if(!is.null(model@mach$tot.accuracy)){
+      
+      acc <- data.frame("cv.train.acc" = model@mach$tot.accuracy / 100, acc)
+    }
     
     # If a validation set is provided
     if(!is.null(array.valid)){

@@ -37,83 +37,78 @@
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
 #'
 #' @export
-plCV <- function(array, probes, how, fold, ...){ # args to get(how)
-
+plCV <- function(array, probes, how, fold, ...){
+  
   if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
-
-    warning("plCV can help inform parameter selection but will provide overly optimistic cross-validation accuracies!")
+    
+    warning("plCV can help inform parameter selection but will provide ",
+            "overly optimistic cross-validation accuracies!")
   }
-
+  
   # Extract args from ...
   args <- as.list(substitute(list(...)))[-1]
-
+  
   # Perform LOOCV if 0 fold
   if(fold == 0) fold <- nrow(array@annot)
-
+  
   if(fold > nrow(array@annot)){
-
+    
     warning("Insufficient subjects for v-fold cross-validation. Performing LOOCV instead.")
     fold <- nrow(array@annot)
   }
-
+  
   # Prepare list to receive per-fold subject IDs
   subjects <- vector("list", fold)
-
+  
   # Randomly sample subject IDs
   ids <- sample(rownames(array@annot))
-
+  
   # Initialize while loop
   i <- 1
-
+  
   # Add the ith subject ID to the vth fold
   while(i <= nrow(array@annot)){
-
+    
     subjects[[i %% fold + 1]] <- c(subjects[[i %% fold + 1]], ids[i])
     i <- i + 1
   }
-
+  
   # Prepare vector to receive cv accs
   accs <- vector("numeric", fold)
-
+  
   # Build a machine against the vth fold
   for(v in 1:length(subjects)){
-
+    
     # The leave one out
     array.train <- new(class(array),
-                       exprs = as.matrix(array@exprs[, !colnames(array@exprs) %in% subjects[[v]]]),
+                       exprs = array@exprs[, !colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
                        annot = array@annot[!rownames(array@annot) %in% subjects[[v]], ],
                        preFilter = array@preFilter,
                        reductionModel = array@reductionModel)
-
-    # Clean up 1-subject artifact
-    colnames(array.train@exprs) <- rownames(array.train@annot)
-
+    
     # The left out one
     array.valid <- new(class(array),
-                       exprs = as.matrix(array@exprs[, colnames(array@exprs) %in% subjects[[v]]]),
+                       exprs = array@exprs[, colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
                        annot = array@annot[rownames(array@annot) %in% subjects[[v]], ],
                        preFilter = array@preFilter,
                        reductionModel = array@reductionModel)
-
-    # Clean up 1-subject artifact
-    colnames(array.valid@exprs) <- rownames(array.valid@annot)
-
+    
     # Prepare args for do.call
     args.v <- append(list("object" = array.train, "probes" = probes), args)
-
+    
     # Build machine
     mach <- do.call(what = how, args = args.v)
-
+    
     # Deploy
     pred <- predict(mach, array.valid, verbose = FALSE)
-
+    
     # Save accuracy
     accs[v] <- calcStats(pred, array.valid, aucSkip = TRUE, plotSkip = TRUE)$acc
-
+    
     cat("plCV", v, "accuracy:", accs[v], "\n")
   }
-
+  
   acc <- mean(accs)
-
+  
   return(acc)
 }
