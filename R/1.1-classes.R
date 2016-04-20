@@ -154,6 +154,8 @@ setMethod("summary", "ExprsArray",
             plot(density(v), main = "Density Plot")
             boxplot(v, horizontal = TRUE, main = "Box Plot", xlab = "Expression Values")
 
+            layout(matrix(c(1), 1, 1, byrow = TRUE))
+
             # Print per-subject summary
             summary(object@exprs)
           }
@@ -290,13 +292,13 @@ setMethod("show", "ExprsPipeline",
 #' @export
 setMethod('[', signature(x = "ExprsPipeline"),
           function(x, i, j, drop){
-            
+
             if(!missing(j)){
-              
+
               return(x@summary[i, j, drop])
-              
+
             }else{
-              
+
               index <- which(rownames(x@summary) %in% rownames(x@summary[i, j, drop]))
               x@summary <- x@summary[index, j, drop]
               x@machs <- x@machs[index]
@@ -312,7 +314,7 @@ setMethod('[', signature(x = "ExprsPipeline"),
 #' @export
 setMethod('$', signature(x = "ExprsPipeline"),
           function(x, name){
-            
+
             return(x@summary[, name])
           }
 )
