@@ -42,9 +42,12 @@ The functions included in this library rely on the objects listed above. Some of
 We can load the most recent version of *exprso* directly from *GitHub* using the `install_github` function provided by the *devtools* package.
 
 ```{r, eval = FALSE}
-require(devtools)
+library(devtools)
 devtools::install_github("tpq/exprso")
-require(exprso)
+```
+
+```{r}
+library(exprso)
 ```
 
 ## Importing data
@@ -60,10 +63,10 @@ array <-
             include = list(c("Control"), c("ASD", "PDDNOS")))
 ```
 
-Second, we can import data into *exprso* directly by converting an *eSet* object, a popular container for storing gene expression data, using the function `arrayEset`. The user can find more details in the function specific documentation. In the example below, we convert the classic ALL/AML Golub gene expression dataset from an eSet object (provided by the *golubEsets* package) into an ExprsArray object. We will use this dataset routinely for the remainder of this tutorial. We note here that GDS and GSE data files (from the NCBI GEO repository) easily convert to eSet objects using the `GDS2eSet` and `GSE2eSet` functions from the *Biobase* and *exprso* packages, respectively.
+Second, we can import data into *exprso* directly by converting an *eSet* object, a popular container for storing gene expression data, using the function `arrayEset`. The user can find more details in the function specific documentation. In the example below, we convert the classic ALL/AML Golub gene expression dataset from an eSet object (provided by the *golubEsets* package) into an ExprsArray object. We will use these data routinely for the remainder of this tutorial. We note here that GDS and GSE data files (from the NCBI GEO repository) easily convert to eSet objects using the `GDS2eSet` and `GSE2eSet` functions from the *Biobase* and *exprso* packages, respectively.
 
-```{r, eval = FALSE}
-require(golubEsets)
+```{r}
+library(golubEsets)
 data(Golub_Merge)
 array <-
   arrayEset(Golub_Merge, # an ExpressionSet (abrv. eSet) object
@@ -76,11 +79,39 @@ Third, we can construct an ExprsArray object manually using the `new` function. 
 ```{r, eval = FALSE}
 array <-
   new("ExprsArray",
-  exprs = some.expression.matrix,
-  annot = some.annotation.data.frame,
-  preFilter = NULL,
-  reductionModel = NULL)
+      exprs = some.expression.matrix,
+      annot = some.annotation.data.frame,
+      preFilter = NULL,
+      reductionModel = NULL)
 ```
 
 ## Subsetting
+
+[PLACEHOLDER]
+
+## Splitting
+
+When performing classification, an investigator will typically withhold a percentage of the data to in order to assess classifier performance, effectively splitting the data into two. The first dataset, called the *training set*, gets used to train the model, while the other, called the external validation or *test set*, gets used to evaluate the model. This package offers two convenience functions for splitting the data, `splitSample` and `splitStratify`. The former builds the training set based on simple random sampling (with or without replacement), assigning the remaining subjects to the test set. The latter builds the training set using stratified random sampling. These functions both return a list of two ExprsArray objects corresponding to the training set and test set respectively. Below, we use the `splitStratify` function to build the training and test sets through a stratified random sample across the dichotomous (binary) classification annotation.
+
+```{r, eval = FALSE}
+arrays <-
+  splitStrat(array,
+             percent.include = 67,
+             colBy = NULL)
+
+array.train <- arrays[[1]]
+```
+
+## Balancing
+
+Above, all subjects not included in the training set (based on `percent.include`) will automatically get assigned to the test set. When using `splitStratify` on a dataset with an unequal number of annotated subjects (e.g. more cases than controls), the resultant test set may contain relative annotation frequencies that differ from the training set. We can fix this so-called "imbalance" at the cost of reducing sample size by performing `splitStratify` a second time. Now, we will use the test set as the input and let `percent.include = 100` (keeping the other parameters the same). This will split the test set such that the new "training set" (i.e. slot 1) now contains the *balanced test set* and the new "test set" (i.e. slot 2) now contains the "spillover" due to balancing.
+
+```{r}
+balance <-
+  splitStrat(arrays[[2]],
+             percent.include = 100,
+             colBy = NULL)
+
+array.test <- balance[[1]]
+```
 
