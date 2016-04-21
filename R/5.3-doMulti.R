@@ -31,10 +31,15 @@
 #'  in the training set.
 #'
 #' @seealso
-#' * \code{\link{fs}}, \code{\link{build}}, \code{\link{doMulti}},
-#'  \code{\link{reRank}}, \code{\link{exprso-predict}}
-#' * \code{\link{plCV}}, \code{\link{plGrid}},
-#'  \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{reRank}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @export
 setGeneric("doMulti",
@@ -42,8 +47,10 @@ setGeneric("doMulti",
 )
 
 #' @describeIn doMulti Method to execute multiple "1 vs. all" binary tasks.
+#'
 #' @inheritParams fs
 #' @param what A character string. The \code{ExprsBinary} method to execute multiple times.
+#'
 #' @export
 setMethod("doMulti", "ExprsMulti",
           function(object, probes, what, ...){
@@ -116,10 +123,15 @@ setMethod("doMulti", "ExprsMulti",
 #'  undergone dimension reduction does not make sense.
 #'
 #' @seealso
-#' * \code{\link{fs}}, \code{\link{build}}, \code{\link{doMulti}},
-#'  \code{\link{reRank}}, \code{\link{exprso-predict}}
-#' * \code{\link{plCV}}, \code{\link{plGrid}},
-#'  \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{reRank}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @export
 reRank <- function(fss){
@@ -167,8 +179,7 @@ reRank <- function(fss){
 ###########################################################
 ### Perform ExprsMulti feature selection
 
-#' @describeIn fs Method to perform random feature selection for
-#'  multi-class classification.
+#' @rdname fs
 #' @export
 setMethod("fsSample", "ExprsMulti",
           function(object, probes, ...){
@@ -185,8 +196,7 @@ setMethod("fsSample", "ExprsMulti",
           }
 )
 
-#' @describeIn fs Method to perform statistics based feature
-#'  selection for multi-class classification.
+#' @rdname fs
 #' @export
 setMethod("fsStats", "ExprsMulti",
           function(object, probes, ...){
@@ -206,8 +216,7 @@ setMethod("fsStats", "ExprsMulti",
 ###########################################################
 ### Perform ExprsMulti build
 
-#' @describeIn build Method to build classifiers for
-#'  multi-class classification.
+#' @rdname build
 #' @export
 setMethod("buildNB", "ExprsMulti",
           function(object, probes, ...){
@@ -223,8 +232,7 @@ setMethod("buildNB", "ExprsMulti",
           }
 )
 
-#' @describeIn build Method to build classifiers for
-#'  multi-class classification.
+#' @rdname build
 #' @export
 setMethod("buildLDA", "ExprsMulti",
           function(object, probes, ...){
@@ -240,8 +248,7 @@ setMethod("buildLDA", "ExprsMulti",
           }
 )
 
-#' @describeIn build Method to build classifiers for
-#'  multi-class classification.
+#' @rdname build
 #' @export
 setMethod("buildSVM", "ExprsMulti",
           function(object, probes, ...){
@@ -257,8 +264,7 @@ setMethod("buildSVM", "ExprsMulti",
           }
 )
 
-#' @describeIn build Method to build classifiers for
-#'  multi-class classification.
+#' @rdname build
 #' @export
 setMethod("buildANN", "ExprsMulti",
           function(object, probes, ...){
@@ -274,8 +280,7 @@ setMethod("buildANN", "ExprsMulti",
           }
 )
 
-#' @describeIn build Method to build classifiers for
-#'  multi-class classification.
+#' @rdname build
 #' @export
 setMethod("buildRF", "ExprsMulti",
           function(object, probes, ...){
