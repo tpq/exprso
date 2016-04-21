@@ -13,8 +13,10 @@ Imports:
     Biobase,
     GEOquery,
     lattice,
-    plyr
+    plyr,
+    sampling
 Suggests:
+    golubEsets,
     knitr,
     rmarkdown
 VignetteBuilder: knitr

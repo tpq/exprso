@@ -2,10 +2,13 @@
 ### Define generic functions
 
 #' @name split
+#' @rdname split
 #'
-#' split \code{ExprsArray} objects
+#' @title split \code{ExprsArray} objects
 #'
-#' A collection of functions to build the training and validation sets.
+#' @description A collection of functions to build the training and validation sets.
+#'
+#' @details
 #'
 #' \code{splitSample} builds training and validation sets through randomly sampling
 #'  the subjects found within the \code{ExprsArray} object. Note that this method
@@ -26,16 +29,16 @@
 #'  of objects prepared for binary classification (i.e. \code{ExprsBinary} objects).
 #'
 #' @seealso
-#' \code{ExprsArray-class}
+#' \code{\link{ExprsArray-class}}
 NULL
 
-#' @describeIn split Method to split \code{ExprsArray} objects randomly.
+#' @rdname split
 #' @export
 setGeneric("splitSample",
            function(object, ...) standardGeneric("splitSample")
 )
 
-#' @describeIn split Method to split \code{ExprsBinary} objects by strata.
+#' @rdname split
 #' @export
 setGeneric("splitStratify",
            function(object, ...) standardGeneric("splitStratify")
@@ -44,13 +47,15 @@ setGeneric("splitStratify",
 ###########################################################
 ### Split data
 
-#' @describeIn split Method to split \code{ExprsArray} objects randomly.
+#' @rdname split
+#'
 #' @param object Specifies the \code{ExprsArray} object to split.
 #' @param percent.include Specifies the percent of the total number
 #'  of subjects to include in the training set.
 #' @param ... For \code{splitSample}: additional arguments passed
 #'  along to \code{\link{sample}}.
 #' @return Returns a list of two \code{ExprsArray} objects.
+#'
 #' @export
 setMethod("splitSample", "ExprsArray",
           function(object, percent.include, ...){ # args to sample
@@ -91,7 +96,7 @@ setMethod("splitSample", "ExprsArray",
           }
 )
 
-#' @describeIn split Method to split \code{ExprsBinary} objects by strata.
+#' @rdname split
 #'
 #' @inheritParams splitSample
 #' @param colBy Specifies a vector of column names by which to stratify in
@@ -101,6 +106,7 @@ setMethod("splitSample", "ExprsArray",
 #'  \code{colBy} column using \code{cut} (e.g. \code{bin = c(FALSE, TRUE)}).
 #' @param ... For \code{splitSample}: additional arguments passed
 #'  along to \code{\link{cut}}.
+#'
 #' @import sampling
 #' @export
 setMethod("splitStratify", "ExprsBinary",
