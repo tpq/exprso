@@ -4,7 +4,7 @@
 \name{ExprsArray-class}
 \alias{$,ExprsArray-method}
 \alias{ExprsArray-class}
-\alias{[,ExprsArray-method}
+\alias{[,ExprsArray,ANY,ANY,ANY-method}
 \alias{getProbeSet,ExprsArray-method}
 \alias{plot,ExprsArray,missing-method}
 \alias{show,ExprsArray-method}
@@ -13,7 +13,7 @@
 \usage{
 \S4method{show}{ExprsArray}(object)
 
-\S4method{[}{ExprsArray}(x, i, j, drop)
+\S4method{[}{ExprsArray,ANY,ANY,ANY}(x, i, j, drop)
 
 \S4method{$}{ExprsArray}(x, name)
 

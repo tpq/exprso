@@ -2,10 +2,13 @@
 ### Define generic functions
 
 #' @name build
+#' @rdname build
 #'
-#' Build Classifiers
+#' @title Build Classifiers
 #'
-#' A collection of functions to build classifiers.
+#' @description A collection of functions to build classifiers.
+#'
+#' @details
 #'
 #' These \code{build} methods construct a single classifier given an \code{ExprsArray}
 #'  object and a set of parameters. This function returns an \code{ExprsModel} object.
@@ -31,14 +34,19 @@
 #'  See \code{\link{modHistory}} to read more about feature selection history.
 #'
 #' @seealso
-#' * \code{\link{fs}}, \code{\link{build}}, \code{\link{doMulti}},
-#'  \code{\link{reRank}}, \code{\link{exprso-predict}}
-#' * \code{\link{plCV}}, \code{\link{plGrid}},
-#'  \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{reRank}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
-#' @example
+#' @examples
 #' \dontrun{
-#' require(golubEsets)
+#' library(golubEsets)
 #' data(Golub_Merge)
 #' array <- arrayEset(Golub_Merge, colBy = "ALL.AML", include = list("ALL", "AML"))
 #' array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
@@ -49,34 +57,33 @@
 #' array.train <- fsPrcomp(array.train, probes = 50)
 #' mach <- buildSVM(array.train, probes = 5, kernel = "linear", cost = 1)
 #' }
-#' @export
 NULL
 
-#' @describeIn build Method to build classifiers using e1071::naiveBayes.
+#' @rdname build
 #' @export
 setGeneric("buildNB",
            function(object, ...) standardGeneric("buildNB")
 )
 
-#' @describeIn build Method to build classifiers using MASS::lda.
+#' @rdname build
 #' @export
 setGeneric("buildLDA",
            function(object, ...) standardGeneric("buildLDA")
 )
 
-#' @describeIn build Method to build classifiers using e1071::svm.
+#' @rdname build
 #' @export
 setGeneric("buildSVM",
            function(object, ...) standardGeneric("buildSVM")
 )
 
-#' @describeIn build Method to build classifiers using nnet::nnet.
+#' @rdname build
 #' @export
 setGeneric("buildANN",
            function(object, ...) standardGeneric("buildANN")
 )
 
-#' @describeIn build Method to build classifiers using randomForest::randomForest.
+#' @rdname build
 #' @export
 setGeneric("buildRF",
            function(object, ...) standardGeneric("buildRF")
@@ -85,8 +92,13 @@ setGeneric("buildRF",
 ###########################################################
 ### Build classifier
 
-#' @describeIn build Method to build classifiers for binary classification.
+#' @rdname build
+#' @section Methods (by generic):
+#' \code{buildNB:} Method to build classifiers using e1071::naiveBayes.
+#'
 #' @inheritParams fs
+#' @return Returns an \code{ExprsModel} object.
+#'
 #' @import e1071
 #' @export
 setMethod("buildNB", "ExprsBinary",
@@ -128,7 +140,9 @@ setMethod("buildNB", "ExprsBinary",
           }
 )
 
-#' @describeIn build Method to build classifiers for binary classification.
+#' @rdname build
+#' @section Methods (by generic):
+#' \code{buildLDA:} Method to build classifiers using MASS::lda.
 #' @import MASS
 #' @export
 setMethod("buildLDA", "ExprsBinary",
@@ -170,7 +184,9 @@ setMethod("buildLDA", "ExprsBinary",
           }
 )
 
-#' @describeIn build Method to build classifiers for binary classification.
+#' @rdname build
+#' @section Methods (by generic):
+#' \code{buildSVM:} Method to build classifiers using e1071::svm.
 #' @import e1071
 #' @export
 setMethod("buildSVM", "ExprsBinary",
@@ -224,7 +240,9 @@ setMethod("buildSVM", "ExprsBinary",
           }
 )
 
-#' @describeIn build Method to build classifiers for binary classification.
+#' @rdname build
+#' @section Methods (by generic):
+#' \code{buildANN:} Method to build classifiers using nnet::nnet.
 #' @import nnet
 #' @export
 setMethod("buildANN", "ExprsBinary",
@@ -290,7 +308,9 @@ setMethod("buildANN", "ExprsBinary",
           }
 )
 
-#' @describeIn build Method to build classifiers for binary classification.
+#' @rdname build
+#' @section Methods (by generic):
+#' \code{buildRF:} Method to build classifiers using randomForest::randomForest.
 #' @import randomForest
 #' @export
 setMethod("buildRF", "ExprsBinary",
