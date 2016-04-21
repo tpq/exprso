@@ -9,6 +9,9 @@ Depends:
     R (>= 3.2.2)
 License: GPL-2
 LazyData: TRUE
+Imports:
+    lattice,
+    plyr
 Suggests:
     knitr,
     rmarkdown

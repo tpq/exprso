@@ -38,11 +38,11 @@
 #' @param ... Two or more objects of the same class.
 #'
 #' @seealso
-#' * \code{\link{ExprsArray-class}}
-#' * \code{\link{ExprsModel-class}}
-#' * \code{\link{ExprsPipeline-class}}
-#' * \code{\link{ExprsEnsemble-class}}
-#' * \code{\link{ExprsPredict-class}}
+#' \code{\link{ExprsArray-class}}\cr
+#' \code{\link{ExprsModel-class}}\cr
+#' \code{\link{ExprsPipeline-class}}\cr
+#' \code{\link{ExprsEnsemble-class}}\cr
+#' \code{\link{ExprsPredict-class}}
 #' @export
 setGeneric("conjoin",
            function(object, ...) standardGeneric("conjoin")

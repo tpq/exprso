@@ -2,10 +2,11 @@
 ---------------------
 * Project now organized in a package distribution format.
 * 0-misc.R
-..* Code renamed to file 2.2-misc.R.
 ..* Temporarily removed `compare` function.
+..* Code renamed to file 2.2-misc.R.
 * 1-classes.R
-..* Code divided into files 1.1-classes.R and 1.2-conjoin.R.
+..* Code divided into files 1.1-classes.R and 1.2-methods.R.
+..* Remaining 1-classes.R code renamed to 1.3-conjoin.R.
 ..* Removed `getCases` and `getConts`. Use `[` and `$` instead.
 ..* `getProbeSet` extended to replace `getProbeSummary`.
 * 2-import.R
