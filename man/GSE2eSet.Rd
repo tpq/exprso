@@ -23,7 +23,7 @@ The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a c
  the user should note that GSE data files do not always get stored in an easy to parse format.
  Although this function has worked succesfully with several GSE data files, we cannot make any
  guarantee that it may not fail for some.
- 
+
 To acquire GSE data files, use the function \code{getGEO} from the GEOquery package, for example
  \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}. For more information, see the GEOquery package.
 }

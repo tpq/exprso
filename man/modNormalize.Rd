@@ -28,7 +28,7 @@ of the before and after \code{ExprsArray} summary.}
 }
 \details{
 This method normalizes subject and/or feature vectors according to the
- formula \code{x' = (x - mean(x)) / sd(x)}.
+ formula \code{x\' = (x - mean(x)) / sd(x)}.
 }
 \section{Methods (by class)}{
 \itemize{

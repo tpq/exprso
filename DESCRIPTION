@@ -12,7 +12,12 @@ LazyData: TRUE
 Imports:
     Biobase,
     GEOquery,
+    Matching,
     lattice,
+    limma,
+    mRMRe,
+    pathClass,
+    penalizedSVM,
     plyr,
     sampling
 Suggests:

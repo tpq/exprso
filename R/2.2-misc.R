@@ -134,7 +134,7 @@ setMethod("modTransform", "ExprsArray",
 #' \code{modNormalize} normalizes gene expression feature data.
 #'
 #' This method normalizes subject and/or feature vectors according to the
-#'  formula \code{x' = (x - mean(x)) / sd(x)}.
+#'  formula \code{x\' = (x - mean(x)) / sd(x)}.
 #'
 #' @seealso
 #' \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}

@@ -93,11 +93,11 @@ array <-
 
 When performing classification, an investigator will typically withhold a percentage of the data to in order to assess classifier performance, effectively splitting the data into two. The first dataset, called the *training set*, gets used to train the model, while the other, called the external validation or *test set*, gets used to evaluate the model. This package offers two convenience functions for splitting the data, `splitSample` and `splitStratify`. The former builds the training set based on simple random sampling (with or without replacement), assigning the remaining subjects to the test set. The latter builds the training set using stratified random sampling. These functions both return a list of two ExprsArray objects corresponding to the training set and test set respectively. Below, we use the `splitStratify` function to build the training and test sets through a stratified random sample across the dichotomous (binary) classification annotation.
 
-```{r, eval = FALSE}
+```{r}
 arrays <-
-  splitStrat(array,
-             percent.include = 67,
-             colBy = NULL)
+  splitStratify(array,
+                percent.include = 67,
+                colBy = NULL)
 
 array.train <- arrays[[1]]
 ```
@@ -108,9 +108,9 @@ Above, all subjects not included in the training set (based on `percent.include`
 
 ```{r}
 balance <-
-  splitStrat(arrays[[2]],
-             percent.include = 100,
-             colBy = NULL)
+  splitStratify(arrays[[2]],
+                percent.include = 100,
+                colBy = NULL)
 
 array.test <- balance[[1]]
 ```

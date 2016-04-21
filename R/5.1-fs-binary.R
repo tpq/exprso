@@ -2,10 +2,13 @@
 ### Define generic functions
 
 #' @name fs
+#' @rdname fs
 #'
-#' Perform Feature Selection
+#' @title Perform Feature Selection
 #'
-#' A collection of functions to select features.
+#' @description A collection of functions to select features.
+#'
+#' @details
 #'
 #' Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary
 #'  to prioritize which features to include during classifier construction. There exists a myriad of
@@ -46,14 +49,19 @@
 #'  owing to its implementation in the imported package \code{mRMRe}.
 #'
 #' @seealso
-#' * \code{\link{fs}}, \code{\link{build}}, \code{\link{doMulti}},
-#'  \code{\link{reRank}}, \code{\link{exprso-predict}}
-#' * \code{\link{plCV}}, \code{\link{plGrid}},
-#'  \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{reRank}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
-#' @example
+#' @examples
 #' \dontrun{
-#' require(golubEsets)
+#' library(golubEsets)
 #' data(Golub_Merge)
 #' array <- arrayEset(Golub_Merge, colBy = "ALL.AML", include = list("ALL", "AML"))
 #' array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
@@ -64,46 +72,45 @@
 #' array.train <- fsPrcomp(array.train, probes = 50)
 #' mach <- buildSVM(array.train, probes = 5, kernel = "linear", cost = 1)
 #' }
-#' @export
 NULL
 
-#' @describeIn fs Method to perform random feature selection using base::sample.
+#' @rdname fs
 #' @export
 setGeneric("fsSample",
            function(object, ...) standardGeneric("fsSample")
 )
 
-#' @describeIn fs Method to perform statistics based feature selection using stats::t.test and others.
+#' @rdname fs
 #' @export
 setGeneric("fsStats",
            function(object, ...) standardGeneric("fsStats")
 )
 
-#' @describeIn fs Method to perform principal components analysis using stats::prcomp.
+#' @rdname fs
 #' @export
 setGeneric("fsPrcomp",
            function(object, ...) standardGeneric("fsPrcomp")
 )
 
-#' @describeIn fs Method to perform penalizedSVM feature selection using penalizedSVM::svm.fs.
+#' @rdname fs
 #' @export
 setGeneric("fsPenalizedSVM",
            function(object, ...) standardGeneric("fsPenalizedSVM")
 )
 
-#' @describeIn fs Method to perform SVM-RFE feature selection using pathClass::fit.rfe.
+#' @rdname fs
 #' @export
 setGeneric("fsPathClassRFE",
            function(object, ...) standardGeneric("fsPathClassRFE")
 )
 
-#' @describeIn fs Method to perform empiric Bayes feature selection using limma::ebayes.
+#' @rdname fs
 #' @export
 setGeneric("fsEbayes",
            function(object, ...) standardGeneric("fsEbayes")
 )
 
-#' @describeIn fs Method to perform mRMR feature selection using mRMRe::mRMR.data.
+#' @rdname fs
 #' @export
 setGeneric("fsMrmre",
            function(object, ...) standardGeneric("fsMrmre")
@@ -112,7 +119,10 @@ setGeneric("fsMrmre",
 ###########################################################
 ### Select features
 
-#' @describeIn fs Method to perform random feature selection for binary classification.
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsSample:} Method to perform random feature selection using base::sample.
+#'
 #' @param object Specifies the \code{ExprsArray} object to undergo feature selection.
 #' @param probes A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
@@ -120,6 +130,7 @@ setGeneric("fsMrmre",
 #'  Set \code{probes = 0} to include all features.
 #' @param ... Arguments passed to the respective wrapped function.
 #' @return Returns an \code{ExprsArray} object.
+#'
 #' @export
 setMethod("fsSample", "ExprsBinary",
           function(object, probes, ...){ #args to ebayes
@@ -151,9 +162,13 @@ setMethod("fsSample", "ExprsBinary",
           }
 )
 
-#' @describeIn fs Method to perform statistics based feature selection for binary classification.
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsStats:} Method to perform statistics based feature selection using stats::t.test and others.
+#'
 #' @param how Specifics which function to call in \code{fsStats}. Accepted arguments
 #'  include \code{"t.test"}, \code{"ks.test"}, and \code{"ks.boot"}.
+#'
 #' @import Matching
 #' @export
 setMethod("fsStats", "ExprsBinary",
@@ -211,7 +226,9 @@ setMethod("fsStats", "ExprsBinary",
           }
 )
 
-#' @describeIn fs Method to perform principal components analysis for binary classification.
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsPrcomp:} Method to perform principal components analysis using stats::prcomp.
 #' @export
 setMethod("fsPrcomp", "ExprsBinary",
           function(object, probes, ...){ # args to prcomp
@@ -253,13 +270,13 @@ setMethod("fsPrcomp", "ExprsBinary",
           }
 )
 
-#' @describeIn fs Method to perform penalizedSVM feature selection for binary classification.
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsPenalizedSVM:} Method to perform penalizedSVM feature selection using penalizedSVM::svm.fs.
 #' @import penalizedSVM
 #' @export
 setMethod("fsPenalizedSVM", "ExprsBinary",
           function(object, probes, ...){ # args to svm.fs
-
-            require(penalizedSVM)
 
             # Convert 'numeric' probe argument to 'character' probe vector
             if(class(probes) == "numeric"){
@@ -296,7 +313,9 @@ setMethod("fsPenalizedSVM", "ExprsBinary",
           }
 )
 
-#' @describeIn fs Method to perform SVM-RFE feature selection for binary classification.
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsPathClassRFE:} Method to perform SVM-RFE feature selection using pathClass::fit.rfe.
 #' @import pathClass
 #' @export
 setMethod("fsPathClassRFE", "ExprsBinary",
@@ -345,11 +364,13 @@ setMethod("fsPathClassRFE", "ExprsBinary",
           }
 )
 
-#' @describeIn fs Method to perform empiric Bayes feature selection for binary classification.
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsEbayes:} Method to perform empiric Bayes feature selection using limma::ebayes.
 #' @import limma
 #' @export
 setMethod("fsEbayes", "ExprsBinary",
-          function(object, probes, ...){ #args to ebayes
+          function(object, probes, ...){ # args to ebayes
 
             # Convert 'numeric' probe argument to 'character' probe vector
             if(class(probes) == "numeric"){
@@ -385,8 +406,10 @@ setMethod("fsEbayes", "ExprsBinary",
           }
 )
 
-#' @describeIn fs Method to perform mRMR feature selection for binary classification.
-#' @import mRMRe
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsMrme:} Method to perform mRMR feature selection using mRMRe::mRMR.classic.
+#' @importFrom mRMRe mRMR.data mRMR.classic solutions featureNames
 #' @export
 setMethod("fsMrmre", "ExprsBinary",
           function(object, probes, ...){ # args to mRMR.classic
@@ -430,7 +453,7 @@ setMethod("fsMrmre", "ExprsBinary",
 
             # Sort probes
             final <- as.vector(
-              apply(solutions(mRMRout)[[1]], 2, function(x, y){ return(y[x])},
+              apply(mRMRe::solutions(mRMRout)[[1]], 2, function(x, y){ return(y[x])},
                     y = mRMRe::featureNames(mRMRdata))
             )
 
