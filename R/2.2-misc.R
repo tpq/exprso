@@ -22,7 +22,7 @@ setGeneric("modFilter",
            function(object, ...) standardGeneric("modFilter")
 )
 
-#' @describeIn modFilter
+#' @describeIn modFilter Method to filter an \code{ExprsArray} object.
 #'
 #' @param object Specifies the \code{ExprsArray} object to undergo pre-processing.
 #' @param threshold A numeric scalar. The value below which to assign this value.
@@ -90,8 +90,10 @@ setGeneric("modTransform",
            function(object, ...) standardGeneric("modTransform")
 )
 
-#' @describeIn modTransform
+#' @describeIn modTransform Method to transform an \code{ExprsArray} object.
+#'
 #' @inheritParams modFilter
+#'
 #' @export
 setMethod("modTransform", "ExprsArray",
           function(object, plotSkip = TRUE){
@@ -142,13 +144,15 @@ setGeneric("modNormalize",
            function(object, ...) standardGeneric("modNormalize")
 )
 
-#' @describeIn modNormalize
+#' @describeIn modNormalize Method to normalize an \code{ExprsArray} object.
+#'
 #' @inheritParams modFilter
 #' @param MARGIN A numeric vector. The margin by which to normalize.
 #'  Provide \code{MARGIN = 1} to normalize the feature vector.
 #'  Provide \code{MARGIN = 2} to normalize the subject vector.
 #'  Provide \code{MARGIN = c(1, 2)} to normalize by the subject vector
 #'  and then by the feature vector.
+#'
 #' @export
 setMethod("modNormalize", "ExprsArray",
           function(object, MARGIN = c(1, 2), plotSkip = TRUE){
