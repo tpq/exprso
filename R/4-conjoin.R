@@ -103,8 +103,6 @@ setMethod("conjoin", "ExprsModel",
 setMethod("conjoin", "ExprsPipeline",
           function(object, ...){
 
-            require(plyr)
-
             # Prepare list of ExprsPipeline objects
             args <- list(...)
             index <- unlist(lapply(args, function(arg) class(arg) == "ExprsPipeline"))

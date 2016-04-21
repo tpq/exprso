@@ -112,8 +112,6 @@ setMethod("splitSample", "ExprsArray",
 setMethod("splitStratify", "ExprsBinary",
           function(object, percent.include, colBy = NULL, bin, breaks, ...){ # args to cut
 
-            require(sampling)
-
             if(percent.include < 1 | percent.include > 100) stop("Uh oh! Use an inclusion percentage between 1-100!")
 
             if(!is.null(colBy)){
