@@ -164,14 +164,14 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
     }
 
     # Perform some gridsearch function (e.g. plGrid)
-    func <- ctrlGS$func
     args <- append(list("array.train" = array.boot,
                         "array.valid" = array.demi),
-                   ctrlGS[!ctrlGS %in% func])
-    args <- exprso:::checkArgs.ctrlGS(args)
+                   ctrlGS)
+    args <- exprso:::check.ctrlGS(args)
+    func <- ctrlGS$func
 
     # Save pl object
-    pl <- do.call(what = func, args = args)
+    pl <- do.call(what = func, args = args[!args %in% func])
     pl@summary <- cbind(v, pl@summary)
     pls[[v]] <- pl
   }
