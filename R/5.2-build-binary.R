@@ -99,7 +99,6 @@ setGeneric("buildRF",
 #' @inheritParams fs
 #' @return Returns an \code{ExprsModel} object.
 #'
-#' @importFrom e1071 naiveBayes
 #' @export
 setMethod("buildNB", "ExprsBinary",
           function(object, probes, ...){ # args to naiveBayes
@@ -143,7 +142,6 @@ setMethod("buildNB", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildLDA:} Method to build classifiers using MASS::lda.
-#' @importFrom MASS lda
 #' @export
 setMethod("buildLDA", "ExprsBinary",
           function(object, probes, ...){ # args to lda
@@ -187,7 +185,6 @@ setMethod("buildLDA", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildSVM:} Method to build classifiers using e1071::svm.
-#' @importFrom e1071 svm
 #' @export
 setMethod("buildSVM", "ExprsBinary",
           function(object, probes, ...){ # args to svm
@@ -243,7 +240,6 @@ setMethod("buildSVM", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildANN:} Method to build classifiers using nnet::nnet.
-#' @importFrom nnet nnet
 #' @export
 setMethod("buildANN", "ExprsBinary",
           function(object, probes, ...){
@@ -311,7 +307,6 @@ setMethod("buildANN", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildRF:} Method to build classifiers using randomForest::randomForest.
-#' @importFrom randomForest randomForest
 #' @export
 setMethod("buildRF", "ExprsBinary",
           function(object, probes, ...){ # args to randomForest

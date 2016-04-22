@@ -169,7 +169,6 @@ setMethod("fsSample", "ExprsBinary",
 #' @param how Specifics which function to call in \code{fsStats}. Accepted arguments
 #'  include \code{"t.test"}, \code{"ks.test"}, and \code{"ks.boot"}.
 #'
-#' @import Matching
 #' @export
 setMethod("fsStats", "ExprsBinary",
           function(object, probes, how = "t.test", ...){ # args to ks.test, ks.boot, or t.test
@@ -273,7 +272,6 @@ setMethod("fsPrcomp", "ExprsBinary",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsPenalizedSVM:} Method to perform penalizedSVM feature selection using penalizedSVM::svm.fs.
-#' @import penalizedSVM
 #' @export
 setMethod("fsPenalizedSVM", "ExprsBinary",
           function(object, probes, ...){ # args to svm.fs
@@ -316,7 +314,6 @@ setMethod("fsPenalizedSVM", "ExprsBinary",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsPathClassRFE:} Method to perform SVM-RFE feature selection using pathClass::fit.rfe.
-#' @import pathClass
 #' @export
 setMethod("fsPathClassRFE", "ExprsBinary",
           function(object, probes, ...){ # args to fit.rfe
@@ -367,7 +364,6 @@ setMethod("fsPathClassRFE", "ExprsBinary",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsEbayes:} Method to perform empiric Bayes feature selection using limma::ebayes.
-#' @import limma
 #' @export
 setMethod("fsEbayes", "ExprsBinary",
           function(object, probes, ...){ # args to ebayes
@@ -409,7 +405,6 @@ setMethod("fsEbayes", "ExprsBinary",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsMrme:} Method to perform mRMR feature selection using mRMRe::mRMR.classic.
-#' @importFrom mRMRe mRMR.data mRMR.classic solutions featureNames
 #' @export
 setMethod("fsMrmre", "ExprsBinary",
           function(object, probes, ...){ # args to mRMR.classic
