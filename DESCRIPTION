@@ -4,7 +4,15 @@ Version: 0.0.0.9000
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: person("Thomas", "Quinn", email = "contacttomquinn@gmail.com", role = c("aut", "cre"))
-Description: More about what it does (maybe more than one line)
+Description: Supervised machine learning often comprises a large part of bioinformatic
+ studies. However, the sheer complexity of classification pipelines poses a significant
+ barrier to expert scientists otherwise unspecialized in machine learning. Moreover,
+ many biologists lack the time or technical skills necessary to implement these methods
+ properly. The exprso package introduces a framework for the rapid implementation of
+ high-throughput supervised machine learning built with the biologist user in mind.
+ Written by biologists, for biologists, exprso provides a user-friendly R interface
+ that empowers investigators to execute state-of-the-art classification with minimal
+ programming experience.
 Depends:
     R (>= 3.2.2)
 License: GPL-2
