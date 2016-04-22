@@ -60,9 +60,7 @@ setGeneric("splitStratify",
 setMethod("splitSample", "ExprsArray",
           function(object, percent.include, ...){ # args to sample
 
-            warning("This method is not truly random; at least one of every class will appear in validation set!")
-
-            if(percent.include < 1 | percent.include > 100) stop("Uh oh! Use an inclusion percentage between 1-100!")
+            if(percent.include > 100) stop("Uh oh! Use an inclusion percentage between 1-100!")
 
             # Return NULL validation set if percent.include = 100
             size <- round((ncol(object@exprs) * percent.include)/100, digits = 0)
@@ -75,6 +73,8 @@ setMethod("splitSample", "ExprsArray",
               )
             }
 
+            warning("This method is not truly random; at least one of every class will appear in validation set!")
+
             # Sample until training and validation sets have one of every class
             # Terminate after 10 iterations if no solution found
             all.in <- FALSE
@@ -84,7 +84,7 @@ setMethod("splitSample", "ExprsArray",
               counter <- counter + 1
               if(counter > 10) stop("splitSample could not find a solution. Check the supplied parameters.")
               random.train <- sample(1:ncol(object@exprs), size = size, ...)
-              random.valid <- setdiff(random.train, 1:ncol(object@exprs))
+              random.valid <- setdiff(1:ncol(object@exprs), random.train)
               if(all(unique(object$defineCase) %in% object$defineCase[random.train]) &
                  all(unique(object$defineCase) %in% object$defineCase[random.valid])) all.in <- TRUE
             }
@@ -192,7 +192,7 @@ setMethod("splitStratify", "ExprsBinary",
 
             return(list(
               "array.train" = object[rownames(s), , drop = FALSE],
-              "array.valid" = object[setdiff(rownames(s), rownames(object@annot)), , drop = FALSE])
+              "array.valid" = object[setdiff(rownames(object@annot), rownames(s)), , drop = FALSE])
             )
           }
 )
