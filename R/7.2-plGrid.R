@@ -5,7 +5,7 @@
 #'
 #' Trains and deploys multiple classifiers across a vast parameter search space.
 #'
-#' \code{plGrid} will \code{\link{build}} and \code{\link{exprso-predict} for
+#' \code{plGrid} will \code{\link{build}} and \code{\link{exprso-predict}} for
 #'  each combination of parameters listed as additional arguments (\code{...}).
 #'  When using \code{plGrid}, supplying a numeric vector as the \code{probes}
 #'  argument will train and deploy a classifier of each mentioned size for
@@ -53,8 +53,8 @@
 #'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
-#' 
-#' @example
+#'
+#' @examples
 #' \dontrun{
 #' require(golubEsets)
 #' data(Golub_Merge)
@@ -70,115 +70,115 @@
 #' @export
 plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
                    aucSkip = FALSE, verbose = TRUE, ...){
-  
+
   args <- as.list(substitute(list(...)))[-1]
-  
+
   # Prepare the use of a numeric probe vector
   if(is.numeric(probes)){
-    
+
     # Exclude 'probes' values less than or equal total available probes
     probes <- probes[!probes > nrow(array.train@exprs)]
-    
+
     # If no valid 'probes' values remain, use all probes
     if(length(probes) == 0){
-      
+
       warning("Each supplied 'probes' values too large. Using all probes instead.")
       probes <- 0
     }
-    
+
     # Replace any 'probes = 0' arguments with the maximum number of probes
     probes[probes == 0] <- nrow(array.train@exprs)
-    
+
   }else{
-    
+
     # Turn character vector into single list entry
     probes <- as.list(probes)
   }
-  
+
   # Build grid
   grid <- expand.grid(append(list("probes" = probes), lapply(args, eval)), stringsAsFactors = FALSE)
-  
+
   # Refine grid for buildSVM
   if(how == "buildSVM"){
-    
+
     if(!"kernel" %in% names(args)) stop("Uh oh! 'kernel' argument missing!")
     if(!"cost" %in% names(args)) stop("Uh oh! 'cost' argument missing!")
     if("radial" %in% eval(args$kernel)){
-      
+
       if(!"gamma" %in% names(args)) stop("Uh oh! 'gamma' argument missing!")
       grid[grid$kernel %in% "linear", "gamma"] <- NA
     }
-    
+
     if("polynomial" %in% eval(args$kernel)){
-      
+
       if(!"degree" %in% names(args)) stop("Uh oh! 'degree' argument missing!")
       if(!"coef0" %in% names(args)) stop("Uh oh! 'coef0' argument missing!")
       grid[grid$kernel %in% c("linear", "kernel"), "degree"] <- NA
       grid[grid$kernel %in% c("linear", "kernel"), "coef0"] <- NA
     }
-    
+
     grid <- unique(grid)
   }
-  
+
   # Initialize ExprsPipeline summary container
   statistics <- vector("list", nrow(grid))
-  
+
   # Initialize ExprsPipeline machs container
   models <- vector("list", nrow(grid))
-  
+
   # For each gridpoint in grid
   for(i in 1:nrow(grid)){
-    
+
     cat("Now building machine at gridpoint:\n")
     print(grid[i, , drop = FALSE])
-    
+
     # Format gridpoint args to pass along to build do.call
     args <- append(list("object" = array.train), as.list(grid[i, , drop = FALSE]))
-    
+
     # Build and save model
     model <- do.call(what = how, args = args[!is.na(args)])
     models[[i]] <- model
-    
+
     # Predict class labels using the provided training set and calculate accuracy
     pred.train <- predict(model, array.train, verbose = verbose)
     stats <- calcStats(pred.train, array.train, aucSkip = aucSkip, plotSkip = TRUE)
     colnames(stats) <- paste0("train.", colnames(stats))
     acc <- stats
-    
+
     # Extract cross-validation accuracy if available (should work even if how = "buildANN"?)
     if(!is.null(model@mach$tot.accuracy)){
-      
+
       acc <- data.frame("cv.train.acc" = model@mach$tot.accuracy / 100, acc)
     }
-    
+
     # If a validation set is provided
     if(!is.null(array.valid)){
-      
+
       # Predict class labels using the provided validation set and calculate accuracy
       pred.valid <- predict(model, array.valid, verbose = verbose)
       stats <- calcStats(pred.valid, array.valid, aucSkip = aucSkip, plotSkip = TRUE)
       colnames(stats) <- paste0("valid.", colnames(stats))
       acc <- data.frame(acc, stats)
     }
-    
+
     # If 'fold' argument is provided
     if(!is.null(fold)){
-      
+
       # Perform leave-one-out or v-fold cross-validation
       args <- append(list("how" = how, "fold" = fold), args)
       names(args)[names(args) == "object"] <- "array"
       cv <- do.call(what = plCV, args = args[!is.na(args)])
       acc <- data.frame("fold" = fold, "train.plCV" = cv, acc)
     }
-    
+
     # Save summary statistics
     statistics[[i]] <- data.frame(grid[i, , drop = FALSE], acc)
   }
-  
+
   pl <- new("ExprsPipeline",
             summary = do.call(rbind, statistics),
             machs = models
   )
-  
+
   return(pl)
 }

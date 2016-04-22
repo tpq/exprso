@@ -2,51 +2,54 @@
 ### Cross-validation argument handlers
 
 #' Manage \code{split} Arguments
-#' 
+#'
 #' This function organizes \code{split} arguments passed to \code{pl} functions.
-#' 
+#'
 #' @param func A character string. The \code{split} function to call.
 #' @param percent.include Argument passed to the \code{split} function.
 #' @param ... Additional arguments passed to the \code{split} function.
 #' @return A list of arguments.
+#'
 #' @export
 ctrlSplitSet <- function(func, percent.include, ...){
-  
+
   list("func" = func,
        "percent.include" = percent.include,
        ...)
 }
 
 #' Manage \code{fs} Arguments
-#' 
+#'
 #' This function organizes \code{fs} arguments passed to \code{pl} functions.
-#' 
+#'
 #' @param func A character string. The \code{fs} function to call.
 #' @param probes Argument passed to the \code{fs} function.
 #' @param ... Additional arguments passed to the \code{fs} function.
 #' @return A list of arguments.
+#'
 #' @export
 ctrlFeatureSelect <- function(func, probes, ...){
-  
+
   list("func" = func,
        "probes" = probes,
        ...)
 }
 
 #' Manage \code{plGrid} Arguments
-#' 
+#'
 #' This function organizes \code{plGrid} arguments passed to \code{pl} functions.
-#' 
+#'
 #' \code{\link{plMonteCarlo}} and \code{\link{plNested}} functions currently
 #'  only accept \code{\link{plGrid}} as the \code{ctrlGridSearch} \code{func}.
-#' 
+#'
 #' @param func A character string. The \code{pl} function to call.
 #' @param probes Argument passed to the \code{pl} function.
 #' @param ... Additional arguments passed to the \code{pl} function.
 #' @return A list of arguments.
+#'
 #' @export
 ctrlGridSearch <- function(func, probes, ...){
-  
+
   list("func" = func,
        "probes" = probes,
        ...)
@@ -56,31 +59,31 @@ ctrlGridSearch <- function(func, probes, ...){
 ### Monte Carlo cross-validation
 
 #' Monte Carlo Cross-Validation
-#' 
+#'
 #' Perform Monte Carlo style cross-validation.
-#' 
+#'
 #' Analogous to how \code{\link{plGrid}} manages multiple \code{build} and
 #'  \code{predict} tasks, \code{plMonteCarlo} effectively manages multiple
 #'  \code{\link{plGrid}} tasks.
-#'  
+#'
 #' Specifically, \code{plMonteCarlo} will call the provided \code{split}
 #'  function (via \code{ctrlSS}) some \code{B} times, performing all
 #'  feature selection tasks (listed via \code{ctrlFS}) on each split
 #'  training set, and executing \code{plGrid} (via \code{ctrlGS}) on the
 #'  training set. We hope future implementations will accomodate
 #'  other \code{ctrlGS} functions beyond \code{plGrid}.
-#'  
+#'
 #' To perform multiple feature selection tasks, supply a list of multiple
 #'  \code{\link{ctrlFeatureSelect}} argument wrappers to \code{ctrlFS}.
 #'  To reduce the results of \code{plMonteCarlo} to a single performance metric,
 #'  feed the returned \code{ExprsPipeline} object through
 #'  \code{\link{calcMonteCarlo}}.
-#'  
+#'
 #' Note that \code{plGrid} uses \code{\link{plCV}} to calculate the "inner"
 #'  cross-validation accuracy. Depending on the use case, may not represent
 #'  the most appropriate choice. We hope future implementations will accomodate
 #'  other \code{ctrlGS} functions beyond \code{plGrid}.
-#'  
+#'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
 #' @param B A numeric scalar. The number of times to \code{split} the data.
 #' @param ctrlSS Arguments handled by \code{\link{ctrlSplitSet}}.
@@ -89,11 +92,11 @@ ctrlGridSearch <- function(func, probes, ...){
 #' @param save A logical scalar. Toggles whether to save randomly split
 #'  training and validation sets.
 #' @return An \code{\link{ExprsPredict-class}} object.
-#' 
+#'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
-#' 
-#' @example
+#'
+#' @examples
 #' \dontrun{
 #' require(golubEsets)
 #' data(Golub_Merge)
@@ -110,127 +113,127 @@ ctrlGridSearch <- function(func, probes, ...){
 #' }
 #' @export
 plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
-  
+
   if(ctrlGS$func != "plGrid"){
-    
+
     stop("Uh oh! This function currently only supports 'ctrlGS$func = \"plGrid\"'!")
   }
-  
+
   if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
-    
+
     warning("Prior use of feature selection may result in ",
             "overly optimistic cross-validation accuracies!")
   }
-  
+
   # For each bootstrap
   pls <- lapply(1:B,
                 function(boot){
-                  
+
                   # Perform some split function (e.g. splitStrat)
                   func <- ctrlSS$func
                   args <- append(list("object" = array), ctrlSS[!ctrlSS %in% func])
                   arrays <- do.call(what = func, args = args)
                   array.boot <- arrays[[1]]
                   array.demi <- arrays[[2]]
-                  
+
                   # Save files
                   if(save){
-                    
+
                     save(array.boot, file = paste0("plMonteCarlo ", boot, " (",
                                                    gsub(":", ".", Sys.time()),
                                                    ") bootstrap.RData"))
-                    
+
                     save(array.demi, file = paste0("plMonteCarlo ", boot, " (",
                                                    gsub(":", ".", Sys.time()),
                                                    ") demi-holdout.RData"))
                   }
-                  
+
                   # Perform fs_ function for each argument set in ctrlFS
                   if(!"list" %in% lapply(ctrlFS, class)) ctrlFS <- list(ctrlFS)
                   for(i in 1:length(ctrlFS)){
-                    
+
                     func <- ctrlFS[[i]]$func
                     args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
                     array.boot <- do.call(what = func, args = args)
                   }
-                  
+
                   # Perform some gridsearch function (e.g. plGrid)
                   func <- ctrlGS$func
                   args <- append(list("array.train" = array.boot,
                                       "array.valid" = array.demi),
                                  ctrlGS[!ctrlGS %in% func])
                   pl <- do.call(what = func, args = args)
-                  
+
                   # Append pl@summary
                   pl@summary <- cbind(boot, pl@summary)
-                  
+
                   return(pl)
                 }
   )
-  
+
   pl <- new("ExprsPipeline",
             summary = do.call(rbind, lapply(pls, function(obj) obj@summary)),
             machs = unlist(lapply(pls, function(obj) obj@machs))
   )
-  
+
   return(pl)
 }
 
 #' Calculate \code{plMonteCarlo} Performance
-#' 
+#'
 #' \code{calcMonteCarlo} calculates a single performance measure for the
 #'  results of a \code{plMonteCarlo} function call.
-#' 
+#'
 #' For each dataset split (i.e., bootstrap), \code{calcMonteCarlo} averages
 #'  the validation set performance for the "best" model (where "best" is
 #'  defined as the model with the maximum "internal" cross-validation
 #'  accuracy, \code{max($train.plCV)}). The validation set performance
 #'  ultimately averaged depends on the supplied \code{colBy} argument.
-#' 
+#'
 #' @param pl Specifies the \code{ExprsPipeline} object returned by \code{plMonteCarlo}.
 #' @param colBy A character vector or string. Specifies column(s) to use when
 #'  summarizing classifier performance. Listing multiple columns will calculate
 #'  performance as a product of those listed performances.
 #' @return A numeric scalar. The cross-validation accuracy.
-#' 
+#'
 #' @export
 calcMonteCarlo <- function(pl, colBy){
-  
+
   if(missing(colBy)) stop("Uh oh! Missing 'colBy' argument.")
-  
+
   if("boot" %in% colnames(pl@summary)){
-    
+
     if("train.plCV" %in% colnames(pl@summary)){
-      
+
       # Prepare container to store validation accuracy
       acc <- vector("numeric", length(unique(pl@summary$boot)))
-      
+
       for(b in 1:length(unique(pl@summary$boot))){
-        
+
         cat("Retrieving best accuracy for boot", b, "...\n")
-        
+
         # Subset only boot 'b'
         boot <- pl@summary[pl@summary$boot == b, ]
-        
+
         # Select best model based on cross-validation accuracy
         best <- boot[which.max(boot$train.plCV), ]
-        
+
         # Save validation accuracy as colBy product
         acc[b] <- apply(best[colBy], MARGIN = 1, prod)
       }
-      
+
     }else{
-      
+
       stop("Uh oh! Supplied data not in expected format. ",
            "Cannot calculate this cross-validation accuracy.")
     }
-    
+
   }else{
-    
+
     stop("Uh oh! Supplied data not in expected format. ",
          "Cannot calculate this cross-validation accuracy.")
   }
-  
+
   # Return average validation accuracy
   cat("Averaging best accuracies across all boots...\n")
   return(mean(acc))

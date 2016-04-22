@@ -50,7 +50,6 @@ setMethod("show", "ExprsArray",
 
 #' @describeIn ExprsArray Method to subset \code{ExprsArray} object.
 #'
-# #' @param x An object of class \code{ExprsArray}.
 #' @param i,j,drop Subsets via \code{object@annot[i, j, drop]}.
 #' @export
 setMethod('[', signature(x = "ExprsArray"),
@@ -71,7 +70,6 @@ setMethod('[', signature(x = "ExprsArray"),
 
 #' @describeIn ExprsArray Method to subset \code{ExprsArray} object.
 #'
-# #' @param x An object of class \code{ExprsArray}.
 #' @param name Subsets via \code{object@annot[, name]}.
 #' @export
 setMethod('$', signature(x = "ExprsArray"),
@@ -214,7 +212,6 @@ setMethod("show", "ExprsPipeline",
 
 #' @describeIn ExprsPipeline Method to subset \code{ExprsPipeline} object.
 #'
-# #' @param x An object of class \code{ExprsPipeline}.
 #' @param i,j,drop Subsets via \code{object@summary[i, j, drop]}.
 #' @export
 setMethod('[', signature(x = "ExprsPipeline"),
@@ -236,7 +233,6 @@ setMethod('[', signature(x = "ExprsPipeline"),
 
 #' @describeIn ExprsPipeline Method to subset \code{ExprsPipeline} object.
 #'
-# #' @param x An object of class \code{ExprsPipeline}.
 #' @param name Subsets via \code{object@summary[, name]}.
 #' @export
 setMethod('$', signature(x = "ExprsPipeline"),
