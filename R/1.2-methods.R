@@ -57,12 +57,12 @@ setMethod('[', signature(x = "ExprsArray"),
 
             if(!missing(j)){
 
-              return(x@annot[i, j, drop])
+              return(x@annot[i, j, drop = drop])
 
             }else{
 
-              x@annot <- x@annot[i, j, drop]
-              x@exprs <- x@exprs[, rownames(x@annot), drop]
+              x@annot <- x@annot[i, j, drop = drop]
+              x@exprs <- x@exprs[, rownames(x@annot), drop = drop]
               return(x)
             }
           }
@@ -219,12 +219,12 @@ setMethod('[', signature(x = "ExprsPipeline"),
 
             if(!missing(j)){
 
-              return(x@summary[i, j, drop])
+              return(x@summary[i, j, drop = drop])
 
             }else{
 
-              index <- which(rownames(x@summary) %in% rownames(x@summary[i, j, drop]))
-              x@summary <- x@summary[index, j, drop]
+              index <- which(rownames(x@summary) %in% rownames(x@summary[i, j, drop = drop]))
+              x@summary <- x@summary[index, j, drop = drop]
               x@machs <- x@machs[index]
               return(x)
             }
