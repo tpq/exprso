@@ -19,7 +19,16 @@ library(exprso)
 
     ## Setting options('GEOquery.inmemory.gpl'=FALSE)
 
-The `exprso` package organizes the myriad of methodological approaches to classification into analytical *modules* that provide the user with stackable and interchangeable data processing tools. Although this package primarily revolves around dichotomous (i.e., binary) classification, `exprso` also includes a rudimentary framework for multi-class classification. Some of the modules available include: \* **array:** Modules that import and pre-process data stored as local files, `ExpressionSet` objects, or NCBI Gene Expression Omnibus data series. \* **split:** Modules that split data into training and test sets. \* **fs:** Modules that perform feature selection (including statistical filters, minimum redundancy maximum relevancy, recursive feature elimination, and more). \* **build:** Modules that build classifiers (including support vector machines, artificial neural networks, random forests, and more). \* **predict:** Modules that deploy classifiers. \* **calc:** Modules that calculate classifier performance (including area under the receiver operating characteristic curve). \* **pl:** Modules that manage elaborate classification pipelines (including high-throughput parameter searches and cross-validation). \* **ens:** Modules that manage ensemble classification.
+The `exprso` package organizes the myriad of methodological approaches to classification into analytical *modules* that provide the user with stackable and interchangeable data processing tools. Although this package primarily revolves around dichotomous (i.e., binary) classification, `exprso` also includes a rudimentary framework for multi-class classification. Some of the modules available include:
+
+-   **array:** Modules that import and pre-process data stored as local files, `ExpressionSet` objects, or NCBI Gene Expression Omnibus data series.
+-   **split:** Modules that split data into training and test sets.
+-   **fs:** Modules that perform feature selection (including statistical filters, minimum redundancy maximum relevancy, recursive feature elimination, and more).
+-   **build:** Modules that build classifiers (including support vector machines, artificial neural networks, random forests, and more).
+-   **predict:** Modules that deploy classifiers.
+-   **calc:** Modules that calculate classifier performance (including area under the receiver operating characteristic curve).
+-   **pl:** Modules that manage elaborate classification pipelines (including high-throughput parameter searches and cross-validation).
+-   **ens:** Modules that manage ensemble classification.
 
 ### ALL/AML classification
 
