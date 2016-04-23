@@ -3,7 +3,9 @@ Title: Rapid Implementation of Machine Learning Algorithms for Genomic Data
 Version: 0.0.0.9000
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
-Authors@R: person("Thomas", "Quinn", email = "contacttomquinn@gmail.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("Thomas", "Quinn", email = "contacttomquinn@gmail.com", role = c("aut", "cre"))
+    )
 Description: Supervised machine learning often comprises a large part of bioinformatic
     studies. However, the sheer complexity of classification pipelines poses a significant
     barrier to expert scientists otherwise unspecialized in machine learning. Moreover,
@@ -13,10 +15,12 @@ Description: Supervised machine learning often comprises a large part of bioinfo
     Written by biologists, for biologists, exprso provides a user-friendly R interface
     that empowers investigators to execute state-of-the-art classification with minimal
     programming experience.
-Depends:
-    R (>= 3.2.2)
 License: GPL-2
 LazyData: TRUE
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1
+Depends:
+    R (>= 3.2.2)
 Imports:
     Biobase,
     GEOquery,
@@ -36,5 +40,3 @@ Suggests:
     golubEsets,
     knitr,
     rmarkdown
-VignetteBuilder: knitr
-RoxygenNote: 5.0.1
