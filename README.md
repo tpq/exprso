@@ -26,8 +26,8 @@ The `exprso` package organizes the myriad of methodological approaches to classi
 -   **fs:** Modules that perform feature selection (e.g., statistical filters, SVM-RFE, mRMR, and more).
 -   **build:** Modules that build classifiers (e.g, SVMs, artificial neural networks, random forests, and more).
 -   **predict:** Modules that deploy classifiers.
--   **calc:** Modules that calculate classifier performance (including area under the ROC curve).
--   **pl:** Modules that manage elaborate classification pipelines (e.g., nested cross-validation).
+-   **calc:** Modules that calculate classifier performance, including area under the ROC curve.
+-   **pl:** Modules that manage elaborate classification pipelines (e.g., nested cross-validation, and more).
 -   **ens:** Modules that build ensemble classifiers.
 
 ### ALL/AML classification
