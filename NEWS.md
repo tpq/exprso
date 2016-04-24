@@ -14,7 +14,7 @@
 * 3-split.R
   * `arraySubset` replaced with `[` and `$` in 1.1-classes.R.
   * `splitSample` code heavily edited, including an `all.in` bug fix.
-  * `splitStratify` now properly designated an ExprsBinary method.
+  * `splitStratify` now handles `ExprsMulti` objects.
 * 4-speakEasy.R
   * Temporarily removed `speakEasy` and `abridge` functions.
 * 5-fs.R

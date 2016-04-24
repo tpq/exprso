@@ -25,8 +25,8 @@
 #'  sampling package as well as the \code{cut} function from the base package. The latter
 #'  function provides a means by which to bin continuous data prior to stratified random
 #'  sampling. We refer the user to the parameter descriptions to learn the specifics for
-#'  how to use this function. At the time of writing, this method only works in the setting
-#'  of objects prepared for binary classification (i.e. \code{ExprsBinary} objects).
+#'  how to use this function. When applied to an \code{ExprsMulti} object, this function
+#'  stratifies subjects across all classes found in that object.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}
@@ -58,9 +58,12 @@ setGeneric("splitStratify",
 #'
 #' @export
 setMethod("splitSample", "ExprsArray",
-          function(object, percent.include, ...){ # args to sample
+          function(object, percent.include, ...){
 
-            if(percent.include > 100) stop("Uh oh! Use an inclusion percentage between 1-100!")
+            if(percent.include < 1 | percent.include > 100){
+
+              stop("Uh oh! Use an inclusion percentage between 1-100!")
+            }
 
             # Return NULL validation set if percent.include = 100
             size <- round((ncol(object@exprs) * percent.include)/100, digits = 0)
@@ -73,7 +76,8 @@ setMethod("splitSample", "ExprsArray",
               )
             }
 
-            warning("This method is not truly random; at least one of every class will appear in validation set!")
+            warning(c("This method is not truly random; at least one of every class ",
+                      "will appear in validation set!"))
 
             # Sample until training and validation sets have one of every class
             # Terminate after 10 iterations if no solution found
@@ -107,12 +111,16 @@ setMethod("splitSample", "ExprsArray",
 #' @param ... For \code{splitSample}: additional arguments passed
 #'  along to \code{\link{cut}}.
 #'
-#' @import sampling
 #' @export
-setMethod("splitStratify", "ExprsBinary",
-          function(object, percent.include, colBy = NULL, bin, breaks, ...){ # args to cut
+setMethod("splitStratify", "ExprsArray",
+          function(object, percent.include, colBy = NULL,
+                   bin = rep(FALSE, length(colBy)),
+                   breaks, ...){
 
-            if(percent.include < 1 | percent.include > 100) stop("Uh oh! Use an inclusion percentage between 1-100!")
+            if(percent.include < 1 | percent.include > 100){
+
+              stop("Uh oh! Use an inclusion percentage between 1-100!")
+            }
 
             if(!is.null(colBy)){
 
@@ -151,7 +159,7 @@ setMethod("splitStratify", "ExprsBinary",
               # Manipulate order of apply(df) so that size vector matches strata expectations
               sizes <- apply(table(df[, c("defineCase", rev(colBy))]), MARGIN = -1, FUN = min)
               sizes <- round(sizes * percent.include/100)
-              sizes <- rep(sizes, 2)
+              sizes <- rep(sizes, length(unique(object$defineCase)))
 
               # Provide error for anticipated stratum of size 0
               if(0 %in% sizes) stop("This function cannot create a stratum of size 0. Subset first!")
@@ -177,7 +185,7 @@ setMethod("splitStratify", "ExprsBinary",
               # Compute strata sizes
               sizes <- min(table(df))
               sizes <- round(sizes * percent.include/100)
-              sizes <- rep(sizes, 2)
+              sizes <- rep(sizes, length(unique(object$defineCase)))
 
               # Provide error for anticipated stratum of size 0
               if(0 %in% sizes) stop("This function cannot create a stratum of size 0. Subset first!")
