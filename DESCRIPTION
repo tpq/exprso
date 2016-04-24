@@ -39,4 +39,5 @@ Imports:
 Suggests:
     golubEsets,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
