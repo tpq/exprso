@@ -319,7 +319,7 @@ setMethod("fsPenalizedSVM", "ExprsBinary",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsPathClassRFE:} Method to perform SVM-RFE feature selection using pathClass::fit.rfe.
-#' @importFrom kernlab kernelMatrix
+#' @import kernlab
 #' @export
 setMethod("fsPathClassRFE", "ExprsBinary",
           function(object, probes, ...){ # args to fit.rfe
