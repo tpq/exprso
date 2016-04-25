@@ -6,7 +6,7 @@
 \alias{splitSample}
 \alias{splitSample,ExprsArray-method}
 \alias{splitStratify}
-\alias{splitStratify,ExprsBinary-method}
+\alias{splitStratify,ExprsArray-method}
 \title{split \code{ExprsArray} objects}
 \usage{
 splitSample(object, ...)
@@ -15,8 +15,8 @@ splitStratify(object, ...)
 
 \S4method{splitSample}{ExprsArray}(object, percent.include, ...)
 
-\S4method{splitStratify}{ExprsBinary}(object, percent.include, colBy = NULL,
-  bin, breaks, ...)
+\S4method{splitStratify}{ExprsArray}(object, percent.include, colBy = NULL,
+  bin = rep(FALSE, length(colBy)), breaks, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to split.}
@@ -59,8 +59,8 @@ A collection of functions to build the training and validation sets.
  sampling package as well as the \code{cut} function from the base package. The latter
  function provides a means by which to bin continuous data prior to stratified random
  sampling. We refer the user to the parameter descriptions to learn the specifics for
- how to use this function. At the time of writing, this method only works in the setting
- of objects prepared for binary classification (i.e. \code{ExprsBinary} objects).
+ how to use this function. When applied to an \code{ExprsMulti} object, this function
+ stratifies subjects across all classes found in that object.
 }
 \seealso{
 \code{\link{ExprsArray-class}}
