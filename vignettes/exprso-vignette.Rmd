@@ -85,11 +85,11 @@ array <-
       reductionModel = NULL)
 ```
 
-## Subsetting
+## Subsetting data
 
 [PLACEHOLDER]
 
-## Splitting
+## Splitting data
 
 When performing classification, an investigator will typically withhold a percentage of the data to in order to assess classifier performance, effectively splitting the data into two. The first dataset, called the *training set*, gets used to train the model, while the other, called the external validation or *test set*, gets used to evaluate the model. This package offers two convenience functions for splitting the data, `splitSample` and `splitStratify`. The former builds the training set based on simple random sampling (with or without replacement), assigning the remaining subjects to the test set. The latter builds the training set using stratified random sampling. These functions both return a list of two ExprsArray objects corresponding to the training set and test set respectively. Below, we use the `splitStratify` function to build the training and test sets through a stratified random sample across the dichotomous (binary) classification annotation.
 
@@ -102,7 +102,7 @@ arrays <-
 array.train <- arrays[[1]]
 ```
 
-## Balancing
+## Balancing data
 
 Above, all subjects not included in the training set (based on `percent.include`) will automatically get assigned to the test set. When using `splitStratify` on a dataset with an unequal number of annotated subjects (e.g. more cases than controls), the resultant test set may contain relative annotation frequencies that differ from the training set. We can fix this so-called "imbalance" at the cost of reducing sample size by performing `splitStratify` a second time. Now, we will use the test set as the input and let `percent.include = 100` (keeping the other parameters the same). This will split the test set such that the new "training set" (i.e. slot 1) now contains the *balanced test set* and the new "test set" (i.e. slot 2) now contains the "spillover" due to balancing.
 
@@ -115,3 +115,62 @@ balance <-
 array.test <- balance[[1]]
 ```
 
+## Selecting features
+
+Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary to prioritize which features to include during classifier construction. There exists a myriad of ways to perform the task of *feature selection*. This package provides functions for some of the most frequently used feature selection methods. Each function works as a self-contained wrapper that (1) pre-processes the ExprsArray input, (2) performs the feature selection, and (3) returns an ExprsArray output with an updated feature selection history. The user may deploy, in tandem, any number of these functions in whatever order they choose, limited only by computational power and imagination.
+
+The feature selection histories get passed along at every step of the way until they eventually get used in order to pre-process an unlabelled dataset during classifier deployment (i.e. prediction). In the spirit of open source programming, we encourage users to submit their own feature selection functions, modeled after those provided in this library.
+
+The first of these feature selection functions, `fsStats`, performs some of the most basic feature selection methods: those rooted in simple statistical tests. Specifically, this function will rank probes based on either the Student's *t*-test or the Kolmogorov-Smirnov test. Below, we rank features according to the results of a Student's *t*-test.
+
+```{r}
+array.train <-
+  fsStats(array.train, probes = 0, how = "t.test")
+```
+
+On first exposure, we acknowledge that the argument `probes` might seem confusing. Therefore, we wish to emphasize the role of this term in specifying either the names or the number of features to supply *to* feature selection: it does not refer to what the user intends to retrieve *from* the feature selection process. When calling the first feature selection method with a numeric *probes* argument, it will draw from the "top ranked" probe set that actually refers to the default order in which the features appear in the ExprsArray input. However, each successful feature selection will return an ExprsArray output with the features implicitly (re-)ranked. Therefore, when calling a subsequent feature selection method, the "top ranked" probe set will indeed correspond to the feature ranks from the previous feature selection process. For example, the third feature selection call draws the top probes from the second feature ranking.
+
+Another included feature selection method, `fsPrcomp`, performs dimension reduction by way of principal components analysis (**PCA**). The dimension reduction model generated during this function call gets saved in the feature selection history along with the compontents themselves. Below, we subject the top 50 probes as prioritized by `fsStats` to principal components analysis.
+
+```{r}
+array.train <-
+  fsPrcomp(array.train, probes = 50)
+```
+
+The other feature selection methods included in this package all follow the same use pattern. Below, we plot the first three components of the training set in 3-dimensional space.
+
+```{r}
+plot(array.train)
+```
+
+## Constructing classifiers
+
+This package exposes several methods for supervised machine learning, including wrapper functions that implement support vector machines, artificial neural networks, random forests, and more. These functions require an ExprsArray object as input and return a single ExprsModel object as output. This ExprsModel object contains the feature selection history that led up to classifier construction as well as the classifier itself. Below, we build an artificial neural network with five intermediate nodes using the top 10 components from the *training set* above.
+
+```{r}
+mach <-
+  buildANN(array.train, probes = 10, size = 5)
+```
+
+## Deploying classifiers
+
+We deploy an ExprsModel object using `predict`. This function returns an ExprsPredict object containing the prediction results in three forms: prediction, probability, and decision boundary predictions. The probability and decision boundary predictions relate to one another by a logistic transformation. The prediction (`@pred`) slot converts these metrics into a single "all-or-nothing" class label assignment.
+
+Another function, `calcStats`, allows us to compare the prediction results (as stored within an ExprsPredict object) against the actual diagnostic labels found in the corresponding ExprsArray object. The `aucSkip` argument specifies whether to calculate the area under the receiver operating characteristic (**ROC**) curve. Note that performance metrics calculated using the ROC may differ from those calculated using a confusion matrix because the former may adjust the discrimination threshold to optimize sensitivity and specificity. The discrimination threshold is automatically chosen as the point along the ROC which minimizes the Euclidean distance from (0, 1). Below, we deploy a classifier on the *test set*, then use the result to calculate classifier performance.
+
+```{r}
+pred <-
+  predict(mach, array.test)
+```
+
+```{r}
+calcStats(pred, array.test)
+```
+
+## High-throughput parameter searches
+
+When constructing a classifier using a **build** method, we can only specify one set of parameters. However, we often want to test models across a vast range of parameters. We provide the `plGrid` function for high-throughput parameter searches. This function wraps not only classifier construction, but deployment as well. By supplying a non-`NULL` argument to `fold`, we can also calculate *v*-fold cross-validation using the training set.
+
+```{r}
+
+```
