@@ -26,7 +26,7 @@ to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogethe
 
 \item{aucSkip}{A logical scalar. Argument passed to \code{\link{calcStats}}.}
 
-\item{verbose}{A logical scalar. Argument passed to \code{\link{predict-exprso}}.}
+\item{verbose}{A logical scalar. Argument passed to \code{\link{exprso-predict}}.}
 
 \item{...}{Arguments passed to the \code{how} method. Unlike the \code{how} wrapper,
 \code{plGrid} will accept multiple terms for each argument, supplied as a vector.

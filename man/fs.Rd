@@ -87,7 +87,7 @@ Considering the high-dimensionality of most genomic datasets, it is prudent and 
 
 All feature selection methods here perform feature selection prior to classifier construction. For
  \code{ExprsBinary} methods, this is typically the desired approach. However, the exprso package
- also provides \code{\link{pl}} methods which automate integrated machine learning pipelines.
+ also provides \code{pl} methods which automate integrated machine learning pipelines.
  However, these feature selection methods do not necessarily generalize to multi-class classification.
  As such, the \code{ExprsMulti} methods instead harness the \code{\link{doMulti}} function
  to perform "1 vs. all" binary feature selection, aggregating the final results with

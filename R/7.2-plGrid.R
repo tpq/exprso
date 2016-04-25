@@ -44,7 +44,7 @@
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation. Argument passed
 #'  to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogether.
 #' @param aucSkip A logical scalar. Argument passed to \code{\link{calcStats}}.
-#' @param verbose A logical scalar. Argument passed to \code{\link{predict-exprso}}.
+#' @param verbose A logical scalar. Argument passed to \code{\link{exprso-predict}}.
 #' @param ... Arguments passed to the \code{how} method. Unlike the \code{how} wrapper,
 #'  \code{plGrid} will accept multiple terms for each argument, supplied as a vector.
 #'  \code{plGrid} will train and deploy a classifier for each combination of

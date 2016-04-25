@@ -167,7 +167,7 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
     args <- append(list("array.train" = array.boot,
                         "array.valid" = array.demi),
                    ctrlGS)
-    args <- exprso:::check.ctrlGS(args)
+    args <- check.ctrlGS(args)
     func <- ctrlGS$func
 
     # Save pl object

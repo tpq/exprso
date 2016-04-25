@@ -77,7 +77,7 @@ These \code{build} methods construct a single classifier given an \code{ExprsArr
  construction. In the setting of four class labels, a single \code{build} call
  will return four classifiers that work in concert to make a single prediction
  of an unlabelled subject. For building multiple classifiers across a vast
- parameter space in a high-throughput manner, see \code{\link{pl}} methods.
+ parameter space in a high-throughput manner, see \code{pl} methods.
 
 Like \code{\link{fs}} methods, \code{build} methods have a \code{probes} argument
  which allows the user to specify which features to feed INTO the classifier

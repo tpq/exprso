@@ -344,7 +344,6 @@ setGeneric("calcStats",
 #'  operating characteristic curve.
 #' @return Returns a \code{data.frame} of performance metrics.
 #'
-#' @import ROCR
 #' @export
 setMethod("calcStats", "ExprsPredict",
           function(object, array, aucSkip = FALSE, plotSkip = FALSE){
