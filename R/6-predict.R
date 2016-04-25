@@ -262,7 +262,7 @@ setMethod("predict", "ExprsModule",
 
             # calculate weight vector for random sampling during ties
             tieBreaker <- sapply(1:ncol(px), function(case) sum(array@annot$defineCase == case))
-            tieBreaker <- tiBreaker / nrow(array@annot)
+            tieBreaker <- tieBreaker / nrow(array@annot)
 
             # Assign classes based on maximum probability
             for(i in 1:nrow(px)){
