@@ -24,6 +24,7 @@ Depends:
 Imports:
     Biobase,
     GEOquery,
+    kernlab,
     MASS,
     Matching,
     e1071,
