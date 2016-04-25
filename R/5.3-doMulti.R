@@ -77,7 +77,7 @@ setMethod("doMulti", "ExprsMulti",
 
                 # Turn the ExprsMulti object into the i-th ExprsBinary object
                 temp <- object
-                temp$defineCase <- ifelse(as.numeric(temp$defineCase) == i, "Case", "Control")
+                temp@annot$defineCase <- ifelse(as.numeric(temp$defineCase) == i, "Case", "Control")
                 class(temp) <- "ExprsBinary"
 
                 # Perform the binary task
@@ -174,6 +174,8 @@ reRank <- function(fss){
   # Add per-class ranks to make final rank list
   final <- rowSums(rank)
   final <- names(final)[order(final)]
+  
+  return(final)
 }
 
 ###########################################################
