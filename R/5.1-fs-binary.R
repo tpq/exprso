@@ -331,6 +331,8 @@ setMethod("fsPathClassRFE", "ExprsBinary",
                    "Try running: install.packages('kernlab')")
             }
 
+            library(kernlab)
+
             # Convert 'numeric' probe argument to 'character' probe vector
             if(class(probes) == "numeric"){
 
