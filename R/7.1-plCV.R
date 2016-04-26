@@ -21,6 +21,10 @@
 #'  set in the setting of one or more feature selection methods, consider using
 #'  a more "sophisticated" form of cross-validation as implemented in
 #'  \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
+#'  
+#' When calculating classifier performance, this function forces
+#'  \code{aucSkip = TRUE} and \code{plotSkip = TRUE}, not unlike
+#'  \code{\link{plCV}}.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
 #' @param probes A numeric scalar or character vector. A numeric scalar indicates
@@ -57,26 +61,18 @@ plCV <- function(array, probes, how, fold, ...){
     fold <- nrow(array@annot)
   }
   
-  # Prepare list to receive per-fold subject IDs
-  subjects <- vector("list", fold)
-  
-  # Randomly sample subject IDs
-  ids <- sample(rownames(array@annot))
-  
-  # Initialize while loop
-  i <- 1
-  
   # Add the ith subject ID to the vth fold
+  subjects <- vector("list", fold)
+  ids <- sample(rownames(array@annot))
+  i <- 1
   while(i <= nrow(array@annot)){
     
     subjects[[i %% fold + 1]] <- c(subjects[[i %% fold + 1]], ids[i])
     i <- i + 1
   }
   
-  # Prepare vector to receive cv accs
-  accs <- vector("numeric", fold)
-  
   # Build a machine against the vth fold
+  accs <- vector("numeric", fold)
   for(v in 1:length(subjects)){
     
     # The leave one out
@@ -96,13 +92,9 @@ plCV <- function(array, probes, how, fold, ...){
     # Prepare args for do.call
     args.v <- append(list("object" = array.train, "probes" = probes), args)
     
-    # Build machine
+    # Build machine and deploy
     mach <- do.call(what = how, args = args.v)
-    
-    # Deploy
     pred <- predict(mach, array.valid, verbose = FALSE)
-    
-    # Save accuracy
     accs[v] <- calcStats(pred, array.valid, aucSkip = TRUE, plotSkip = TRUE)$acc
     
     cat("plCV", v, "accuracy:", accs[v], "\n")

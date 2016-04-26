@@ -3,39 +3,39 @@
 
 #' Check \code{ctrlGS} Arguments
 #'
-#' This function ensures that a list of arguments for \code{ctrlGS} meets the
-#'  criteria for the \code{\link{plNested}} function.
+#' This function ensures that the list of arguments for \code{ctrlGS} meets
+#'  the criteria required by the \code{\link{plNested}} function.
 #'
-#' This function mandates a non-NULL \code{fold} argument and a \code{TRUE}
-#'  \code{aucSkip} argument.
+#' This function mandates \code{aucSkip = TRUE} and \code{plotSkip = TRUE}
+#'  arguments, not unlike \code{\link{plCV}}.
 #'
 #' @param args A list of arguments to check.
 check.ctrlGS <- function(args){
-
-  if(args$func == "plGrid" & !"fold" %in% names(args)){
-
-    cat("Setting 'fold' to 10 (default behavior, override explicitly)...\n")
-    args <- append(args, list("fold" = 10))
-  }
-
-  if(args$func == "plGrid" & is.null(args$fold)){
-
-    cat("Uh oh! This function requires non-NULL 'fold'. Setting 'fold' to 10...\n")
-    args$fold <- 10
-  }
-
+  
   if(args$func == "plGrid" & !"aucSkip" %in% names(args)){
-
+    
     cat("Setting 'aucSkip' to TRUE (default behavior, override explicitly)...\n")
     args <- append(args, list("aucSkip" = TRUE))
   }
-
+  
   if(args$func == "plGrid" & !args$aucSkip){
-
+    
     cat("Uh oh! This function requires TRUE 'aucSkip'. Setting 'aucSkip' to TRUE...\n")
     args$aucSkip <- TRUE
   }
-
+  
+  if(args$func == "plGrid" & !"plotSkip" %in% names(args)){
+    
+    cat("Setting 'plotSkip' to TRUE (default behavior, override explicitly)...\n")
+    args <- append(args, list("plotSkip" = TRUE))
+  }
+  
+  if(args$func == "plGrid" & !args$plotSkip){
+    
+    cat("Uh oh! This function requires TRUE 'plotSkip'. Setting 'plotSkip' to TRUE...\n")
+    args$plotSkip <- TRUE
+  }
+  
   return(args)
 }
 
@@ -55,7 +55,9 @@ check.ctrlGS <- function(args){
 #'  the remaining subjects. Then, some \code{fold} times, it performs all
 #'  feature selection tasks (listed via \code{ctrlFS}) on each split
 #'  training set, and executing \code{plGrid} (via \code{ctrlGS}) on the
-#'  training set.
+#'  training set. The resultant \code{ExprsPipeline} object contains the
+#'  "outer" fold performance metrics in the columns whose names begin with
+#'  "valid" (as carried over by \code{plGrid}).
 #'
 #' To perform multiple feature selection tasks, supply a list of multiple
 #'  \code{\link{ctrlFeatureSelect}} argument wrappers to \code{ctrlFS}.
@@ -67,6 +69,10 @@ check.ctrlGS <- function(args){
 #'  cross-validation accuracy. Depending on the use case, may not represent
 #'  the most appropriate choice. We hope future implementations will accomodate
 #'  other \code{ctrlGS} functions beyond \code{plGrid}.
+#'  
+#' When calculating classifier performance, this function forces
+#'  \code{aucSkip = TRUE} and \code{plotSkip = TRUE}, not unlike
+#'  \code{\link{plCV}}.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
 #' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
@@ -94,58 +100,58 @@ check.ctrlGS <- function(args){
 #' }
 #' @export
 plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
-
+  
   if(ctrlGS$func != "plGrid"){
-
+    
     stop("Uh oh! This function currently only supports 'ctrlGS$func = plGrid'!")
   }
-
+  
   if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
-
+    
     warning("Prior use of feature selection may result in ",
             "overly optimistic cross-validation accuracies!")
   }
-
+  
   # Perform LOOCV if 0 fold
   if(fold == 0) fold <- nrow(array@annot)
-
+  
   if(fold > nrow(array@annot)){
-
+    
     warning("Insufficient subjects for v-fold cross-validation. Performing LOOCV instead.")
     fold <- nrow(array@annot)
   }
-
+  
   # Add the ith random subject ID to the vth fold
   subjects <- vector("list", fold)
   ids <- sample(rownames(array@annot))
   i <- 1
   while(i <= nrow(array@annot)){
-
+    
     subjects[[i %% fold + 1]] <- c(subjects[[i %% fold + 1]], ids[i])
     i <- i + 1
   }
-
+  
   # Perform nested cross-validation
   pls <- vector("list", fold)
   for(v in 1:length(subjects)){
-
+    
     # The v-th fold
     array.boot <- new(class(array),
                       exprs = array@exprs[, !colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
                       annot = array@annot[!rownames(array@annot) %in% subjects[[v]], ],
                       preFilter = array@preFilter,
                       reductionModel = array@reductionModel)
-
+    
     # The leave out
     array.demi <- new(class(array),
                       exprs = array@exprs[, colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
                       annot = array@annot[rownames(array@annot) %in% subjects[[v]], ],
                       preFilter = array@preFilter,
                       reductionModel = array@reductionModel)
-
+    
     # Save files
     if(save){
-
+      
       save(array.boot, file = paste0("plNested ", v, " (",
                                      gsub(":", ".", Sys.time()),
                                      ") bootstrap.RData"))
@@ -153,29 +159,29 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
                                      gsub(":", ".", Sys.time()),
                                      ") demi-holdout.RData"))
     }
-
+    
     # Perform fs_ function for each argument set in ctrlFS
     if(!"list" %in% lapply(ctrlFS, class)) ctrlFS <- list(ctrlFS)
     for(i in 1:length(ctrlFS)){
-
+      
       func <- ctrlFS[[i]]$func
       args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
       array.boot <- do.call(what = func, args = args)
     }
-
+    
     # Perform some gridsearch function (e.g. plGrid)
     args <- append(list("array.train" = array.boot,
                         "array.valid" = array.demi),
                    ctrlGS)
     args <- check.ctrlGS(args)
     func <- ctrlGS$func
-
+    
     # Save pl object
     pl <- do.call(what = func, args = args[!args %in% func])
     pl@summary <- cbind(v, pl@summary)
     pls[[v]] <- pl
   }
-
+  
   pl <- new("ExprsPipeline",
             summary = do.call(rbind, lapply(pls, function(obj) obj@summary)),
             machs = unlist(lapply(pls, function(obj) obj@machs))
@@ -201,42 +207,42 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
 #'
 #' @export
 calcNested <- function(pl, colBy){
-
+  
   if(missing(colBy)) stop("Uh oh! Missing 'colBy' argument.")
-
+  
   if("v" %in% colnames(pl@summary)){
-
+    
     if("train.plCV" %in% colnames(pl@summary)){
-
+      
       # Prepare container to store validation accuracy
       acc <- vector("numeric", length(unique(pl@summary$v)))
-
+      
       for(b in 1:length(unique(pl@summary$v))){
-
+        
         cat("Retrieving best accuracy for fold", b, "...\n")
-
+        
         # Subset only fold 'b'
         fold <- pl@summary[pl@summary$v == b, ]
-
+        
         # Select best model based on cross-validation accuracy
         best <- fold[which.max(fold$train.plCV), ]
-
+        
         # Save validation accuracy as colBy product
         acc[b] <- apply(best[colBy], MARGIN = 1, prod)
       }
-
+      
     }else{
-
+      
       stop("Uh oh! Supplied data not in expected format. ",
            "Cannot calculate this cross-validation accuracy.")
     }
-
+    
   }else{
-
+    
     stop("Uh oh! Supplied data not in expected format. ",
          "Cannot calculate this cross-validation accuracy.")
   }
-
+  
   # Return average validation accuracy
   cat("Averaging best accuracies across all folds...\n")
   return(mean(acc))

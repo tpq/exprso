@@ -10,11 +10,11 @@ check.ctrlGS(args)
 \item{args}{A list of arguments to check.}
 }
 \description{
-This function ensures that a list of arguments for \code{ctrlGS} meets the
- criteria for the \code{\link{plNested}} function.
+This function ensures that the list of arguments for \code{ctrlGS} meets
+ the criteria required by the \code{\link{plNested}} function.
 }
 \details{
-This function mandates a non-NULL \code{fold} argument and a \code{TRUE}
- \code{aucSkip} argument.
+This function mandates \code{aucSkip = TRUE} and \code{plotSkip = TRUE}
+ arguments, not unlike \code{\link{plCV}}.
 }
 

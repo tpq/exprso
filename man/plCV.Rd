@@ -44,6 +44,10 @@ This type of cross-validation is most appropriate if the \code{ExprsArray}
  set in the setting of one or more feature selection methods, consider using
  a more "sophisticated" form of cross-validation as implemented in
  \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
+ 
+When calculating classifier performance, this function forces
+ \code{aucSkip = TRUE} and \code{plotSkip = TRUE}, not unlike
+ \code{\link{plCV}}.
 }
 \seealso{
 \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
