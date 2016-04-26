@@ -20,11 +20,12 @@ in a filter based on a performance metric equal to the product of those
 listed columns.}
 
 \item{how, gate}{A numeric scalar. Arguments between 0 and 1 will impose
-a filter based on the raw value of \code{colBy}. Arguments between 1 and
-100 will impose a filter based on the percentile of \code{colBy}. The
-user may also provide "midrange", "median", or "mean" as an argument
-for these filters. Set \code{how = 0} or \code{gate = 0}, to skip the
-threshold or ceiling filter, respectively.}
+a threshold or ceiling filter, respectively, based on the raw value of
+\code{colBy}. Arguments between 1 and 100 will impose a filter based on
+the percentile of \code{colBy}. The user may also provide "midrange",
+"median", or "mean" as an argument for these filters. Set \code{how = 0}
+or \code{gate = 0}, to skip the threshold or ceiling filter,
+respectively.}
 
 \item{top.N}{A numeric scalar. Determines the top N models based on
 \code{colBy} to include after the threshold and ceiling filters.
