@@ -61,8 +61,8 @@ setMethod('[', signature(x = "ExprsArray"),
 
             }else{
 
-              x@annot <- x@annot[i, j, drop = drop]
-              x@exprs <- x@exprs[, rownames(x@annot), drop = drop]
+              x@annot <- as.data.frame(x@annot[i, j, drop = FALSE])
+              x@exprs <- x@exprs[, i, drop = FALSE]
               return(x)
             }
           }
@@ -223,8 +223,8 @@ setMethod('[', signature(x = "ExprsPipeline"),
 
             }else{
 
-              index <- which(rownames(x@summary) %in% rownames(x@summary[i, j, drop = drop]))
-              x@summary <- x@summary[index, j, drop = drop]
+              index <- which(rownames(x@summary) %in% rownames(x@summary[i, j, drop = FALSE]))
+              x@summary <- x@summary[index, j, drop = FALSE]
               x@machs <- x@machs[index]
               return(x)
             }
