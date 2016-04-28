@@ -63,6 +63,7 @@ setMethod('[', signature(x = "ExprsArray"),
 
               x@annot <- as.data.frame(x@annot[i, j, drop = FALSE])
               x@exprs <- x@exprs[, i, drop = FALSE]
+              colnames(x@exprs) <- rownames(x@annot)
               return(x)
             }
           }
