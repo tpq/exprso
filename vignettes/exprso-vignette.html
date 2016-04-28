@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Thomas Quinn" />
+
+<meta name="date" content="2016-04-28" />
+
+<title>Introduction to exprso</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">Introduction to exprso</h1>
+<h4 class="author"><em>Thomas Quinn</em></h4>
+<h4 class="date"><em>2016-04-28</em></h4>
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>In this series of tutorials, we present the <em>exprso</em> package for <em>R</em>, a custom library built to tackle a wide variety of supervised machine learning problems, including the construction of ensemble classifiers. We designed this package with the biologist user in mind, carefully assembling a toolkit that allows investigators to quickly implement dichotomous (binary) and multi-class classification on high-dimensional genomic data. We designed <em>exprso</em> using a modular framework, whereby each function acts as a self-contained yet interchangable part of the whole. With these modules, the investigator has access to multiple tools that they can use in almost any sequence in order to build their very own personalized machine learning pipeline. By rearranging these modules, one can easily experiment with new pipeline ideas on the fly. In this way, we balance the simplicity of automatation with endless customization, all while maintaining software extensibility.</p>
+<p>We have bundled many kinds of functions into the <em>exprso</em> package, including functions for data import, data modification, feature selection, individual classifier construction, and ensemble classifier construction. We begin this tutorial by first presenting a brief overview of the objects and functions found in <em>exprso</em>. Then, we move on to show how the user can access this package from <em>GitHub</em> and import their own data into the <em>R</em> environment by one of three different ways.</p>
+</div>
+<div id="exprso-objects" class="section level2">
+<h2>exprso Objects</h2>
+<p>Before exploring the utility of the functions included in this library, we will first overview the principle objects used by this package. Objects in <em>R</em> serve as convenient ways of organizing data. One can think of an object as simply a custom built data container. We emphasize these here based on a notion that a better understanding of the back-end promotes a better understanding of the front-end.</p>
+<ul>
+<li><strong>ExprsArray</strong> Stores feature and annotation data as well as relevant feature selection history.</li>
+<li><strong>ExprsMachine</strong> Stores the trained machine as well as the relevant feature selection history needed to deploy a machine on an independent dataset.</li>
+<li><strong>ExprsPipeline</strong> Stores a summary of high-throughput machine performance and the machine objects themselves.</li>
+<li><strong>ExprsEnsemble</strong> Stores a number of machine objects which function a single ensemble classifier.</li>
+<li><strong>ExprsPredict</strong> Stores the results of machine prediction as three measures: binary, probability, and decision boundary.</li>
+</ul>
+</div>
+<div id="exprso-functions" class="section level2">
+<h2>exprso Functions</h2>
+<p>The functions included in this library rely on the objects listed above. Some of these functions return an updated version of the same object type provided, while others return a different object type altogether. We have adopted a nomenclature which we hope helps the user organize the functions available in this package. In this scheme, most functions have a few letters in the beginning of their name which designate their general utility. We include a flow diagram of available functions to go along with the brief description of function prefixes:</p>
+<ul>
+<li><strong>array</strong> Any function that has a role in importing or subsetting data. Returns an updated ExprsArray object.</li>
+<li><strong>mod</strong> Any function that has a role in pre-processing ExprsArray objects. Returns an updated ExprsArray object.</li>
+<li><strong>split</strong> Any function that has a role in splitting ExprsArray objects into training and test sets. Returns a list of two ExprsArray objects.</li>
+<li><strong>fs</strong> Any function that has a role in feature selection. Returns an updated ExprsArray object.</li>
+<li><strong>build</strong> Any function that has a role in building a classifier or classifier ensemble. Returns an ExprsMachine or ExprsEnsemble object.</li>
+<li><strong>pl</strong> Any function that has a role in high-throughput analytics. Usually returns an ExprsPipeline object.</li>
+<li><strong>pipe</strong> Any function that has a role in post-processing ExprsPipeline objects. Returns an updated ExprsPipeline object.</li>
+</ul>
+</div>
+<div id="importing-the-library" class="section level2">
+<h2>Importing the library</h2>
+<p>We can load the most recent version of <em>exprso</em> directly from <em>GitHub</em> using the <code>install_github</code> function provided by the <em>devtools</em> package.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(devtools)
+devtools::<span class="kw">install_github</span>(<span class="st">&quot;tpq/exprso&quot;</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(exprso)</code></pre>
+</div>
+<div id="importing-data" class="section level2">
+<h2>Importing data</h2>
+<p>With <em>exprso</em> loaded, we can import data in one of three ways. First, we can import data as stored in a tab-delimited text file. The construction of this import function, <code>arrayRead</code>, assumes the data file contains the subjects as rows and variables as columns, with annotation variables (e.g. sex or age) appearing before the feature variables (e.g. mRNA expression values). The <code>include</code> argument lists any number of annotation vectors to assign to each class label. In the example below, we assign the annotation “Control” to the first class, then we assign the annotations “ASD” and “PDDNOS” to the second class. Any subjects not assigend to a class will get dropped from the resultant object. The user can find more details in the function specific documentation.</p>
+<pre class="sourceCode r"><code class="sourceCode r">array &lt;-
+<span class="st">  </span><span class="kw">arrayRead</span>(<span class="st">&quot;some_example_data_file.txt&quot;</span>, <span class="co"># tab-delimited file</span>
+            <span class="dt">probes.begin =</span> <span class="dv">11</span>, <span class="co"># the i-th column where features begin</span>
+            <span class="dt">colID =</span> <span class="st">&quot;Subject.ID&quot;</span>, <span class="co"># column name with subject ID</span>
+            <span class="dt">colBy =</span> <span class="st">&quot;DX&quot;</span>, <span class="co"># column name with class labels</span>
+            <span class="dt">include =</span> <span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;Control&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;ASD&quot;</span>, <span class="st">&quot;PDDNOS&quot;</span>)))</code></pre>
+<p>Second, we can import data into <em>exprso</em> directly by converting an <em>eSet</em> object, a popular container for storing gene expression data, using the function <code>arrayEset</code>. The user can find more details in the function specific documentation. In the example below, we convert the classic ALL/AML Golub gene expression dataset from an eSet object (provided by the <em>golubEsets</em> package) into an ExprsArray object. We will use these data routinely for the remainder of this tutorial. We note here that GDS and GSE data files (from the NCBI GEO repository) easily convert to eSet objects using the <code>GDS2eSet</code> and <code>GSE2eSet</code> functions from the <em>Biobase</em> and <em>exprso</em> packages, respectively.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(golubEsets)
+<span class="kw">data</span>(Golub_Merge)
+array &lt;-
+<span class="st">  </span><span class="kw">arrayEset</span>(Golub_Merge, <span class="co"># an ExpressionSet (abrv. eSet) object</span>
+            <span class="dt">colBy =</span> <span class="st">&quot;ALL.AML&quot;</span>, <span class="co"># column name with class labels</span>
+            <span class="dt">include =</span> <span class="kw">list</span>(<span class="st">&quot;AML&quot;</span>, <span class="st">&quot;ALL&quot;</span>))</code></pre>
+<p>Third, we can construct an ExprsArray object manually using the <code>new</code> function. To accomplish this, we need to define the four slots found which comprise an ExprsArray object. The <code>@exprs</code> slot must contain a feature value <code>matrix</code> with subject names as columns. The <code>@annot</code> slot must contain an annotation <code>data.frame</code> with subject names as rows. It is critical to make sure that the subject names appear in the same order across both data structures. The two additional slots, <code>@preFilter</code> and <code>@reductionModel</code>, pass along the feature selection history while deploying built machines. When constructing an ExprsArray object manually, set both of these to <code>NULL</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">array &lt;-
+<span class="st">  </span><span class="kw">new</span>(<span class="st">&quot;ExprsArray&quot;</span>,
+      <span class="dt">exprs =</span> some.expression.matrix,
+      <span class="dt">annot =</span> some.annotation.data.frame,
+      <span class="dt">preFilter =</span> <span class="ot">NULL</span>,
+      <span class="dt">reductionModel =</span> <span class="ot">NULL</span>)</code></pre>
+</div>
+<div id="subsetting-data" class="section level2">
+<h2>Subsetting data</h2>
+<p>[PLACEHOLDER]</p>
+</div>
+<div id="splitting-data" class="section level2">
+<h2>Splitting data</h2>
+<p>When performing classification, an investigator will typically withhold a percentage of the data to in order to assess classifier performance, effectively splitting the data into two. The first dataset, called the <em>training set</em>, gets used to train the model, while the other, called the external validation or <em>test set</em>, gets used to evaluate the model. This package offers two convenience functions for splitting the data, <code>splitSample</code> and <code>splitStratify</code>. The former builds the training set based on simple random sampling (with or without replacement), assigning the remaining subjects to the test set. The latter builds the training set using stratified random sampling. These functions both return a list of two ExprsArray objects corresponding to the training set and test set respectively. Below, we use the <code>splitStratify</code> function to build the training and test sets through a stratified random sample across the dichotomous (binary) classification annotation.</p>
+<pre class="sourceCode r"><code class="sourceCode r">arrays &lt;-
+<span class="st">  </span><span class="kw">splitStratify</span>(array,
+                <span class="dt">percent.include =</span> <span class="dv">67</span>,
+                <span class="dt">colBy =</span> <span class="ot">NULL</span>)</code></pre>
+<pre><code>## 
+## Pre-stratification table:
+## df
+##    Case Control 
+##      47      25 
+## 
+## Weighted stratification results:
+## 
+##    Case Control 
+##      17      17</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">array.train &lt;-<span class="st"> </span>arrays[[<span class="dv">1</span>]]</code></pre>
+</div>
+<div id="balancing-data" class="section level2">
+<h2>Balancing data</h2>
+<p>Above, all subjects not included in the training set (based on <code>percent.include</code>) will automatically get assigned to the test set. When using <code>splitStratify</code> on a dataset with an unequal number of annotated subjects (e.g. more cases than controls), the resultant test set may contain relative annotation frequencies that differ from the training set. We can fix this so-called “imbalance” at the cost of reducing sample size by performing <code>splitStratify</code> a second time. Now, we will use the test set as the input and let <code>percent.include = 100</code> (keeping the other parameters the same). This will split the test set such that the new “training set” (i.e. slot 1) now contains the <em>balanced test set</em> and the new “test set” (i.e. slot 2) now contains the “spillover” due to balancing.</p>
+<pre class="sourceCode r"><code class="sourceCode r">balance &lt;-
+<span class="st">  </span><span class="kw">splitStratify</span>(arrays[[<span class="dv">2</span>]],
+                <span class="dt">percent.include =</span> <span class="dv">100</span>,
+                <span class="dt">colBy =</span> <span class="ot">NULL</span>)</code></pre>
+<pre><code>## 
+## Pre-stratification table:
+## df
+##    Case Control 
+##      30       8 
+## 
+## Weighted stratification results:
+## 
+##    Case Control 
+##       8       8</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">array.test &lt;-<span class="st"> </span>balance[[<span class="dv">1</span>]]</code></pre>
+</div>
+<div id="selecting-features" class="section level2">
+<h2>Selecting features</h2>
+<p>Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary to prioritize which features to include during classifier construction. There exists a myriad of ways to perform the task of <em>feature selection</em>. This package provides functions for some of the most frequently used feature selection methods. Each function works as a self-contained wrapper that (1) pre-processes the ExprsArray input, (2) performs the feature selection, and (3) returns an ExprsArray output with an updated feature selection history. The user may deploy, in tandem, any number of these functions in whatever order they choose, limited only by computational power and imagination.</p>
+<p>The feature selection histories get passed along at every step of the way until they eventually get used in order to pre-process an unlabelled dataset during classifier deployment (i.e. prediction). In the spirit of open source programming, we encourage users to submit their own feature selection functions, modeled after those provided in this library.</p>
+<p>The first of these feature selection functions, <code>fsStats</code>, performs some of the most basic feature selection methods: those rooted in simple statistical tests. Specifically, this function will rank probes based on either the Student’s <em>t</em>-test or the Kolmogorov-Smirnov test. Below, we rank features according to the results of a Student’s <em>t</em>-test.</p>
+<pre class="sourceCode r"><code class="sourceCode r">array.train &lt;-
+<span class="st">  </span><span class="kw">fsStats</span>(array.train, <span class="dt">probes =</span> <span class="dv">0</span>, <span class="dt">how =</span> <span class="st">&quot;t.test&quot;</span>)</code></pre>
+<p>On first exposure, we acknowledge that the argument <code>probes</code> might seem confusing. Therefore, we wish to emphasize the role of this term in specifying either the names or the number of features to supply <em>to</em> feature selection: it does not refer to what the user intends to retrieve <em>from</em> the feature selection process. When calling the first feature selection method with a numeric <em>probes</em> argument, it will draw from the “top ranked” probe set that actually refers to the default order in which the features appear in the ExprsArray input. However, each successful feature selection will return an ExprsArray output with the features implicitly (re-)ranked. Therefore, when calling a subsequent feature selection method, the “top ranked” probe set will indeed correspond to the feature ranks from the previous feature selection process. For example, the third feature selection call draws the top probes from the second feature ranking.</p>
+<p>Another included feature selection method, <code>fsPrcomp</code>, performs dimension reduction by way of principal components analysis (<strong>PCA</strong>). The dimension reduction model generated during this function call gets saved in the feature selection history along with the compontents themselves. Below, we subject the top 50 probes as prioritized by <code>fsStats</code> to principal components analysis.</p>
+<pre class="sourceCode r"><code class="sourceCode r">array.train &lt;-
+<span class="st">  </span><span class="kw">fsPrcomp</span>(array.train, <span class="dt">probes =</span> <span class="dv">50</span>)</code></pre>
+<pre><code>## 
+## Dimension reduction model summary:
+## 
+## Importance of components:
+##                              PC1       PC2       PC3       PC4       PC5
+## Standard deviation     1.017e+04 4876.4312 2813.5202 2.265e+03 2.000e+03
+## Proportion of Variance 6.466e-01    0.1487    0.0495 3.209e-02 2.501e-02
+## Cumulative Proportion  6.466e-01    0.7954    0.8449 8.770e-01 9.020e-01
+##                              PC6       PC7       PC8       PC9      PC10
+## Standard deviation     1.811e+03 1.638e+03 1.395e+03 1.232e+03 1.127e+03
+## Proportion of Variance 2.051e-02 1.679e-02 1.217e-02 9.490e-03 7.940e-03
+## Cumulative Proportion  9.225e-01 9.393e-01 9.514e-01 9.609e-01 9.689e-01
+##                             PC11      PC12      PC13      PC14      PC15
+## Standard deviation     879.30604 836.76615 768.17647 678.45731 633.09889
+## Proportion of Variance   0.00484   0.00438   0.00369   0.00288   0.00251
+## Cumulative Proportion    0.97369   0.97807   0.98176   0.98464   0.98715
+##                             PC16      PC17     PC18      PC19      PC20
+## Standard deviation     601.72963 575.34128 521.7725 496.85671 423.09111
+## Proportion of Variance   0.00226   0.00207   0.0017   0.00154   0.00112
+## Cumulative Proportion    0.98941   0.99148   0.9932   0.99473   0.99585
+##                             PC21      PC22      PC23      PC24      PC25
+## Standard deviation     401.52963 359.49416 279.55951 270.57984 236.21021
+## Proportion of Variance   0.00101   0.00081   0.00049   0.00046   0.00035
+## Cumulative Proportion    0.99686   0.99766   0.99815   0.99861   0.99896
+##                             PC26      PC27      PC28      PC29     PC30
+## Standard deviation     213.41305 173.55256 168.60549 160.34653 128.1539
+## Proportion of Variance   0.00028   0.00019   0.00018   0.00016   0.0001
+## Cumulative Proportion    0.99924   0.99943   0.99961   0.99977   0.9999
+##                            PC31     PC32     PC33      PC34
+## Standard deviation     98.42918 83.77173 58.04284 8.027e-13
+## Proportion of Variance  0.00006  0.00004  0.00002 0.000e+00
+## Cumulative Proportion   0.99994  0.99998  1.00000 1.000e+00</code></pre>
+<p>The other feature selection methods included in this package all follow the same use pattern. Below, we plot the first three components of the training set in 3-dimensional space.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(array.train)</code></pre>
+<p><img src="data:image/png;base64,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" /></p>
+</div>
+<div id="constructing-classifiers" class="section level2">
+<h2>Constructing classifiers</h2>
+<p>This package exposes several methods for supervised machine learning, including wrapper functions that implement support vector machines, artificial neural networks, random forests, and more. These functions require an ExprsArray object as input and return a single ExprsModel object as output. This ExprsModel object contains the feature selection history that led up to classifier construction as well as the classifier itself. Below, we build an artificial neural network with five intermediate nodes using the top 10 components from the <em>training set</em> above.</p>
+<pre class="sourceCode r"><code class="sourceCode r">mach &lt;-
+<span class="st">  </span><span class="kw">buildANN</span>(array.train, <span class="dt">probes =</span> <span class="dv">10</span>, <span class="dt">size =</span> <span class="dv">5</span>)</code></pre>
+<pre><code>## Setting 'range' to 1/max(|x|) (default behavior, override explicitly)...
+## Setting 'decay' to 0.5 (default behavior, override explicitly)...
+## Setting 'maxit' to 1000 (default behavior, override explicitly)...
+## # weights:  61
+## initial  value 27.578186 
+## iter  10 value 17.726230
+## iter  20 value 7.533562
+## iter  30 value 6.910181
+## iter  40 value 6.521412
+## iter  50 value 6.210505
+## iter  60 value 6.107173
+## iter  70 value 5.650919
+## iter  80 value 5.598899
+## iter  90 value 5.434532
+## iter 100 value 5.277371
+## iter 110 value 5.210057
+## iter 120 value 5.185860
+## iter 130 value 5.181636
+## iter 140 value 5.181398
+## iter 150 value 5.181259
+## iter 160 value 5.181211
+## iter 170 value 5.181199
+## iter 180 value 5.181193
+## iter 190 value 5.181168
+## final  value 5.181166 
+## converged</code></pre>
+</div>
+<div id="deploying-classifiers" class="section level2">
+<h2>Deploying classifiers</h2>
+<p>We deploy an ExprsModel object using <code>predict</code>. This function returns an ExprsPredict object containing the prediction results in three forms: prediction, probability, and decision boundary predictions. The probability and decision boundary predictions relate to one another by a logistic transformation. The prediction (<code>@pred</code>) slot converts these metrics into a single “all-or-nothing” class label assignment.</p>
+<p>Another function, <code>calcStats</code>, allows us to compare the prediction results (as stored within an ExprsPredict object) against the actual diagnostic labels found in the corresponding ExprsArray object. The <code>aucSkip</code> argument specifies whether to calculate the area under the receiver operating characteristic (<strong>ROC</strong>) curve.</p>
+<p>We note here that performance metrics calculated using the ROC may differ from those calculated using a confusion matrix because the former may adjust the discrimination threshold to optimize sensitivity and specificity. The discrimination threshold is automatically chosen as the point along the ROC which minimizes the Euclidean distance from (0, 1). Below, we deploy a classifier on the <em>test set</em>, then use the result to calculate classifier performance.</p>
+<pre class="sourceCode r"><code class="sourceCode r">pred &lt;-
+<span class="st">  </span><span class="kw">predict</span>(mach, array.test)</code></pre>
+<pre><code>## Individual classifier performance:
+## Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...
+## Classification confusion table:
+##          actual
+## predicted Control Case
+##   Control       8    0
+##   Case          0    8
+##   acc sens spec
+## 1   1    1    1</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">calcStats</span>(pred, array.test)</code></pre>
+<pre><code>## Calculating accuracy using ROCR based on prediction probabilities...</code></pre>
+<p><img src="data:image/png;base64,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" /></p>
+<pre><code>##   acc sens spec auc
+## 1   1    1    1   1</code></pre>
+</div>
+<div id="pipeline-methods" class="section level2">
+<h2>Pipeline methods</h2>
+<p>This package includes several functions named with the prefix <code>pl</code>. These “pipeline” functions exist to help consolidate high-throughput analyses. In other words, they wrap repetitive tasks in a single operation. Such tasks include high-throughput parameter searches as well as elaborate cross-validation designs. As we will see, some of these <code>pl</code> functions will even have other <code>pl</code> functions embedded within them. For example, the function <code>plGrid</code> contains the function <code>plCV</code> which manages <em>v</em>-fold and leave-one-out cross-validation.</p>
+</div>
+<div id="high-throughput-parameter-searches" class="section level2">
+<h2>High-throughput parameter searches</h2>
+<p>When constructing a classifier using a <strong>build</strong> method, we can only specify one set of parameters at a time. However, we often want to test models across a vast range of parameters. For this task, we provide the <code>plGrid</code> function. This function builds and deploys a model for combination of all provided arguments. For example, given <code>how = &quot;buildSVM&quot;</code> with the arguments <code>probes = c(3, 5, 10)</code>, <code>cost = 10^(-3:3)</code>, and <code>kernel = c(&quot;linear&quot;, &quot;radial&quot;)</code>, this function will build (and deploy) 42 machines.</p>
+<p>This function does accept only one <code>how</code> per run. To analyze the results of multiple <code>build</code> parameter searches jointly, combine the results of those <code>plGrid</code> function calls using <code>?conjoin</code>. We also note here that <code>plGrid</code> does not handle data splitting or feature selection, both of which the user may perform beforehand. However, it does allow the user to specify multiple <em>classifier sizes</em> using the <code>probes</code> argument.</p>
+<p>The <code>plGrid</code> function can also calculate <em>v</em>-fold cross-validation accuracy at each step of the parameter search (toggled by supplying a non-<code>NULL</code> argument to <code>fold</code>). We emphasize, however, that the cross-validation method embedded within <code>plGrid</code> (i.e., <code>plCV</code>) does not re-select features with each fold, which may lead to overly-optimistic measures of classifier performance in the setting of prior feature selection.</p>
+<p>Below, we will run through a few different support vector machine (SVM) builds, calculating leave-one-out cross-validation accuracy (by setting <code>fold = 0</code>) at each step.</p>
+<pre class="sourceCode r"><code class="sourceCode r">gs &lt;-
+<span class="st">  </span><span class="kw">plGrid</span>(<span class="dt">array.train =</span> array.train,
+         <span class="dt">array.valid =</span> array.test,
+         <span class="dt">probes =</span> <span class="dv">0</span>,
+         <span class="dt">how =</span> <span class="st">&quot;buildSVM&quot;</span>,
+         <span class="dt">fold =</span> <span class="dv">0</span>,
+         <span class="dt">kernel =</span> <span class="st">&quot;linear&quot;</span>,
+         <span class="dt">cost =</span> <span class="dv">10</span>^(-<span class="dv">3</span>:<span class="dv">3</span>)
+)</code></pre>
+<p>The returned object contains two slots, <code>@summary</code> and <code>@machs</code>, which store the performance summary and corresponding <code>ExprsModel</code> objects, respectively. The performance summary contains columns detailing the parameter used to build each machine along with performance metrics for the training set (and test set, if provided). Columns named with “train” describe training set performances. Columns named with “valid” describe test set performances. The column, <code>&quot;train.plCV&quot;</code>, contains the cross-validation accuracy, if performed. The returned <code>ExprsPipeline</code> object also contains an <code>ExprsModel</code> for each entry in the performance summary.</p>
+<p>We can subset <code>ExprsPipeline</code> objects by the performance summary using the <code>[</code> and <code>$</code> operators, similar to how <code>ExprsArray</code> subsetting works. Below, we extract the column containing the cross-validation accuracies.</p>
+<pre class="sourceCode r"><code class="sourceCode r">gs[, <span class="st">&quot;train.plCV&quot;</span>]</code></pre>
+<pre><code>## [1] 1.0000000 1.0000000 0.7647059 0.5882353 0.6470588 0.6176471 0.5882353</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">gs$train.plCV</code></pre>
+<pre><code>## [1] 1.0000000 1.0000000 0.7647059 0.5882353 0.6470588 0.6176471 0.5882353</code></pre>
+</div>
+<div id="other-cross-validation" class="section level2">
+<h2>Other cross-validation</h2>
+<p>The <em>exprso</em> package also provides a means by which to perform elaborate cross-validation, including Monte Carlo style and 2-layer “nested” cross-validation. Analogous to how <code>plGrid</code> manages multiple build and predict tasks, these elaborate cross-validation pipelines (<code>plMonteCarlo</code> and <code>plNested</code>) effectively manage multiple <code>plGrid</code> tasks. In order to organize the sheer number of arguments necessary to execute these kinds of cross-validation analyses, we have implemented argument handler functions. These argument handler functions, <code>ctrlSplitSet</code>, <code>ctrlFeatureSelect</code>, and <code>ctrlGridSearch</code> manage data splitting, feature selection, and grid searching, respectively.</p>
+<p>In simplest terms, both of these cross-validation methods use a single training set to calculate classifier performances on a withheld validation set. This <em>internal</em> validation set serves as a kind of proxy for a statistically independent test set. The main difference between <code>plMonteCarlo</code> and <code>plNested</code> stems from how <em>internal validation set</em> gets constructed. On one hand, the <code>plMonteCarlo</code> method uses the <code>ctrlSplitSet</code> argument handler to split the training set into a <em>training subset</em> and an <em>intenral validation set</em> with each boostrap. On the other hand, the <code>plNested</code> method splits the training set into <em>v</em>-folds, treating each fold as an <em>internal validation set</em>, with the remaining subjects comprising the <em>training subset</em>.</p>
+<p>For simplicity, we can call any performance measured on an <em>internal validation set</em> as the <strong>outer-loop</strong> cross-validation performance. Then, we can any cross-validation accuracy measured using the <em>training subset</em> (i.e., via <code>plGrid</code>) the <strong>inner-loop</strong> cross-validation performance. In the performance summaries of the <code>ExprsPipeline</code> objects returned by <code>plMonteCarlo</code> and <code>plNested</code>, columns named with “train” describe <em>training subset</em> performances while columns named with “valid” describe <em>internal validation set</em> performances.</p>
+<p>Although the <strong>inner-loop</strong> cross-validation performances (i.e., via <code>plCV</code>) can over-estimate cross-validation through prior feature selection, the <strong>outer-loop</strong> cross-validation performances derive from classifiers that have undergone feature selection anew with each bootstrap or fold. However, we emphasize here that performing feature selection on a training set <em>prior</em> to the use of <code>plMonteCarlo</code> or <code>plNested</code> can still result in overly optimistic <strong>outer-loop</strong> cross-validation performances.</p>
+<p>In the example below, we perform five iterations of <code>plMonteCarlo</code> using the original training set before it underwent any feature selection (i.e., the first slot of the object <code>balance</code>). With each iteration, this function will (a) sample the subjects randomly through bagging (i.e., random sampling with replacement), (b) perform feature selection using the Student’s t-test, then (c) execute a gridsearch across multiple support vector machine (SVM) parameters and classifier sizes.</p>
+<pre class="sourceCode r"><code class="sourceCode r">ss &lt;-
+<span class="st">  </span><span class="kw">ctrlSplitSet</span>(<span class="dt">func =</span> <span class="st">&quot;splitSample&quot;</span>, <span class="dt">percent.include =</span> <span class="dv">67</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>)
+fs &lt;-
+<span class="st">  </span><span class="kw">ctrlFeatureSelect</span>(<span class="dt">func =</span> <span class="st">&quot;fsStats&quot;</span>, <span class="dt">probes =</span> <span class="dv">0</span>, <span class="dt">how =</span> <span class="st">&quot;t.test&quot;</span>)
+gs &lt;-
+<span class="st">  </span><span class="kw">ctrlGridSearch</span>(<span class="dt">func =</span> <span class="st">&quot;plGrid&quot;</span>,
+                 <span class="dt">how =</span> <span class="st">&quot;buildSVM&quot;</span>,
+                 <span class="dt">probes =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>),
+                 <span class="dt">kernel =</span> <span class="st">&quot;linear&quot;</span>,
+                 <span class="dt">cost =</span> <span class="dv">10</span>^(-<span class="dv">3</span>:<span class="dv">3</span>),
+                 <span class="dt">fold =</span> <span class="dv">10</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">boot &lt;-
+<span class="st">  </span><span class="kw">plMonteCarlo</span>(balance[[<span class="dv">1</span>]],
+               <span class="dt">B =</span> <span class="dv">5</span>,
+               <span class="dt">ctrlSS =</span> ss,
+               <span class="dt">ctrlFS =</span> fs,
+               <span class="dt">ctrlGS =</span> gs)</code></pre>
+<p>To perform multiple feature selection tasks with each bootstrap or fold, supply a list of multiple <code>ctrlFeatureSelect</code> argument wrappers to the <code>ctrlFS</code> argument. To reduce the results of <code>plMonteCarlo</code> or <code>plNested</code> to a single performance metric, feed the returned ExprsPipeline object through <code>calcMonteCarlo</code> or <code>calcNested</code>, respectively.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">calcMonteCarlo</span>(boot, <span class="dt">colBy =</span> <span class="st">&quot;valid.auc&quot;</span>)</code></pre>
+<pre><code>## Retrieving best accuracy for boot 1 ...
+## Retrieving best accuracy for boot 2 ...
+## Retrieving best accuracy for boot 3 ...
+## Retrieving best accuracy for boot 4 ...
+## Retrieving best accuracy for boot 5 ...
+## Averaging best accuracies across all boots...</code></pre>
+<pre><code>## [1] 0.88</code></pre>
+</div>
+<div id="ensemble-classifiers" class="section level2">
+<h2>Ensemble classifiers</h2>
+<p>This package provides two ways to build ensemble classifiers. The first involves manually combining multiple <code>ExprsModel</code> objects together through the function <code>buildEnsemble</code> (or <code>conjoin</code>). The second involves an orchestrated manipulation of an <code>ExprsPipeline</code> object through the <code>pipeFilter</code> method.</p>
+<p>This <code>pipeFilter</code> method filters an <code>ExprsPipeline</code> object in (up to) three steps. First, a threshold filter gets imposed. Any model with a performance less than the threshold filter, <code>how</code>, gets excluded. Second, a ceiling filter gets imposed. Any model with a performance less than the ceiling filter, <code>gate</code>, gets excluded. Third, an arbitrary subset occurs. The top N models in the <code>ExprsPipeline</code> object get selected based on the argument <code>top.N</code>. However, in the case that the <code>@summary</code> slot contains the column “boot” (e.g., in the results of <code>plMonteCarlo</code>), <code>pipeFilter</code> selects the top N models for <em>each</em> unique bootstrap. However, the user may skip any one of these filter steps by setting the respective argument to 0.</p>
+<p>When calling <code>buildEnsemble</code>, any classifiers remaining after the <code>pipeFilter</code> filter will get assembled into a single ensemble classifier. Ensemble classifiers get stored as an <code>ExprsEnsemble</code> object which is nothing more than object-oriented container for a list of <code>ExprsModel</code> objects.</p>
+<p>In the example below, we we will build an ensemble using the single best classifier from each <code>plMonteCarlo</code> bootstrap, and then deploy that ensemble on the withheld test set (i.e., the second slot of the object <code>balance</code>).</p>
+<pre class="sourceCode r"><code class="sourceCode r">ens &lt;-<span class="st"> </span><span class="kw">buildEnsemble</span>(boot, <span class="dt">top.N =</span> <span class="dv">1</span>, <span class="dt">colBy =</span> <span class="st">&quot;valid.auc&quot;</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">predict</span>(ens, array.test, <span class="dt">how =</span> <span class="st">&quot;probability&quot;</span>)</code></pre>
+<pre><code>## Individual classifier performance:
+## Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...
+## Classification confusion table:
+##          actual
+## predicted Control Case
+##   Control       8    3
+##   Case          0    5
+##      acc  sens spec
+## 1 0.8125 0.625    1
+## Individual classifier performance:
+## Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...
+## Classification confusion table:
+##          actual
+## predicted Control Case
+##   Control       4    0
+##   Case          4    8
+##    acc sens spec
+## 1 0.75    1  0.5
+## Individual classifier performance:
+## Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...
+## Classification confusion table:
+##          actual
+## predicted Control Case
+##   Control       8    0
+##   Case          0    8
+##   acc sens spec
+## 1   1    1    1
+## Individual classifier performance:
+## Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...
+## Classification confusion table:
+##          actual
+## predicted Control Case
+##   Control       8    2
+##   Case          0    6
+##     acc sens spec
+## 1 0.875 0.75    1
+## Individual classifier performance:
+## Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...
+## Classification confusion table:
+##          actual
+## predicted Control Case
+##   Control       8    1
+##   Case          0    7
+##      acc  sens spec
+## 1 0.9375 0.875    1
+## Ensemble classifier performance:
+## Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...
+## Classification confusion table:
+##          actual
+## predicted Control Case
+##   Control       8    0
+##   Case          0    8
+##   acc sens spec
+## 1   1    1    1</code></pre>
+<pre><code>## @pred summary: 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 
+## @decision.values summary: Case/Control 
+## @probability summary: Control Case</code></pre>
+<p>Owing to how <code>pipeFilter</code> handles <code>ExprsPipeline</code> objects which contain a “boot” column in the performance summary, we include the <code>pipeUnboot</code> function to rename this “boot” column to “unboot”. Otherwise, to learn more about how <code>ExprsEnsemble</code> predicts class labels, see <code>?'exprso-predict'</code>. In addition, we encourage the user to visit the package documentation, <code>?'ExprsPipeline-class'</code> and <code>?'ExprsEnsemble-class'</code>.</p>
+</div>
+<div id="multi-class-methods" class="section level2">
+<h2>Multi-class methods</h2>
+<p>We conclude this vignette by altering the user that the <em>exprso</em> package also includes a framework for performing multi-class classification in an automated manner. These methods use the “1-vs-all” approach to multi-class classification, whereby each individual class label has a turn getting treated as the positive class label in a dichotomous (binary) framework. Then, the results of each iteration get integrated into a single construct. To learn more about multi-class classification, we refer the user to the package documentation, <code>?arrayRead</code> and <code>?doMulti</code>. However, we should emphasize here that multi-class feature selection is still under heavy development. In the near future, we plan to introduce novel <code>pl</code> methods that implement multi-class feature selection in an optimal manner.</p>
+</div>
+<div id="final-remarks" class="section level2">
+<h2>Final remarks</h2>
+<p>Thank you for your interest in <em>exprso</em>. Although we have made tremendous progress in formalizing this package under a reliable framework, some of the tools included here may eventually change. We will make our best effort to keep this vignette and other documentation as up-to-date as possible. However, we may occasionally fall short on this goal. In face of any discrepancy, we encourage the reader to send any and all questions to the package maintainer (e-mail: <a href="mailto:thom@tpq.me">thom@tpq.me</a>). Under some circumstances, we even welcome requests for new tools that we could bundle into future installments.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
