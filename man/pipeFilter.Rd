@@ -47,7 +47,7 @@ First, a threshold filter gets imposed. Any model with a performance
  less than the threshold filter, \code{how}, gets excluded. Second,
  a ceiling filter gets imposed. Any model with a performance less
  than the ceiling filter, \code{gate}, gets excluded. Third, an
- arbitrary subset occurs. The top N models for \code{ExprsPipeline}
+ arbitrary subset occurs. The top N models in the \code{ExprsPipeline}
  object get selected based on the argument \code{top.N}. However,
  in the case that the \code{@summary} slot contains the column
  "boot", \code{pipeFilter} selects the top N models for each unique
