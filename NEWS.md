@@ -1,4 +1,4 @@
-## exprso 0.0.0.9000
+## exprso 1.0.0.0
 ---------------------
 * Project now organized in a package distribution format.
 * 0-misc.R

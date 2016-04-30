@@ -1,6 +1,6 @@
 Package: exprso
 Title: Rapid Implementation of Machine Learning Algorithms for Genomic Data
-Version: 0.0.0.9000
+Version: 1.0.0.0
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
