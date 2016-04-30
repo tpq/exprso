@@ -32,4 +32,4 @@
   * `plNested` argument checks moved to separate function.
 * 8-ens.R
   * Code divided into files 8.1-pipe.R and 8.2-ens.R.
-  * `pipeSubset` replaced with `[` and `$` in 1.1-classes.R.
+  * Removed `pipeSubset`. Use `[` and `$` instead.
