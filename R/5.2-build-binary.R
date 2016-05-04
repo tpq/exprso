@@ -202,11 +202,21 @@ setMethod("buildSVM", "ExprsBinary",
               args <- append(args, list("probability" = TRUE))
             }
 
-            # Mandate probability = TRUE
             if(args$probability == FALSE){
 
               cat("Uh oh! This function requires 'probability' = TRUE. Setting 'probability' to TRUE...\n")
               args$probability <- TRUE
+            }
+
+            if(!"cross" %in% names(args)){
+
+              args <- append(args, list("cross" = 0))
+            }
+
+            if(args$cross != 0){
+
+              cat("Uh oh! This function requires 'cross' = 0. Setting 'cross' to 0...\n")
+              args$cross <- 0
             }
 
             # Convert 'numeric' probe argument to 'character' probe vector

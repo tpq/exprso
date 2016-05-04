@@ -145,12 +145,6 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
     colnames(stats) <- paste0("train.", colnames(stats))
     acc <- stats
 
-    # Extract cross-validation accuracy if available (should work even if how = "buildANN"?)
-    if(!is.null(model@mach$tot.accuracy)){
-
-      acc <- data.frame("cv.train.acc" = model@mach$tot.accuracy / 100, acc)
-    }
-
     # If a validation set is provided
     if(!is.null(array.valid)){
 
