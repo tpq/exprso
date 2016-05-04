@@ -1,6 +1,11 @@
 ## exprso 1.0.0.9000
 ---------------------
-* [Placeholder]
+* 5.2-build-binary.R
+  * Added `buildDNN.ExprsBinary` method
+* 5.3-doMulti.R
+  * Added `buildDNN.ExprsMulti` method
+* 6-build.R
+  * Added `buildDNN` predict clause
 
 ## exprso 1.0.0.0
 ---------------------
