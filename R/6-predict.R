@@ -173,6 +173,20 @@ setMethod("predict", "ExprsMachine",
               px <- unclass(predict(object@mach, data, type = "prob"))
             }
 
+            if("H2OBinomialModel" %in% class(object@mach)){
+
+              # Import data as H2OFrame via a temporary csv
+              colnames(data) <- paste0("id", 1:ncol(data))
+              tempFile <- tempfile(fileext = ".csv")
+              write.csv(data, tempFile)
+              h2o.data <- h2o::h2o.importFile(path = tempFile, destination_frame = "h2o.data")
+
+              # Extract probability
+              px <- as.data.frame(h2o::h2o.predict(object@mach, h2o.data))$Case
+              px <- cbind(px, 1 - px)
+              colnames(px) <- c("Case", "Control") # do not delete this line!
+            }
+
             # Calculate 'decision.values' from 'probability' using inverse Platt scaling
             px <- as.data.frame(px)
             px <- px[, c("Control", "Case")]
