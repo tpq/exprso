@@ -174,7 +174,7 @@ reRank <- function(fss){
   # Add per-class ranks to make final rank list
   final <- rowSums(rank)
   final <- names(final)[order(final)]
-  
+
   return(final)
 }
 
@@ -289,6 +289,22 @@ setMethod("buildRF", "ExprsMulti",
 
             # Pass arguments to doMulti
             machs <- doMulti(object, probes, what = "buildRF", ...)
+
+            # Carry through and append fs history as stored in the ExprsArray object
+            new("ExprsModule",
+                preFilter = append(object@preFilter, list(probes)),
+                reductionModel = append(object@reductionModel, list(NA)),
+                mach = machs)
+          }
+)
+
+#' @rdname build
+#' @export
+setMethod("buildDNN", "ExprsMulti",
+          function(object, probes, ...){
+
+            # Pass arguments to doMulti
+            machs <- doMulti(object, probes, what = "buildDNN", ...)
 
             # Carry through and append fs history as stored in the ExprsArray object
             new("ExprsModule",

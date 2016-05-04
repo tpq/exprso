@@ -24,6 +24,7 @@ Depends:
 Imports:
     Biobase,
     GEOquery,
+    h2o,
     kernlab,
     MASS,
     Matching,

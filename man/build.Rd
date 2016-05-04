@@ -6,6 +6,9 @@
 \alias{buildANN}
 \alias{buildANN,ExprsBinary-method}
 \alias{buildANN,ExprsMulti-method}
+\alias{buildDNN}
+\alias{buildDNN,ExprsBinary-method}
+\alias{buildDNN,ExprsMulti-method}
 \alias{buildLDA}
 \alias{buildLDA,ExprsBinary-method}
 \alias{buildLDA,ExprsMulti-method}
@@ -30,6 +33,8 @@ buildANN(object, ...)
 
 buildRF(object, ...)
 
+buildDNN(object, ...)
+
 \S4method{buildNB}{ExprsBinary}(object, probes, ...)
 
 \S4method{buildLDA}{ExprsBinary}(object, probes, ...)
@@ -40,6 +45,8 @@ buildRF(object, ...)
 
 \S4method{buildRF}{ExprsBinary}(object, probes, ...)
 
+\S4method{buildDNN}{ExprsBinary}(object, probes, ...)
+
 \S4method{buildNB}{ExprsMulti}(object, probes, ...)
 
 \S4method{buildLDA}{ExprsMulti}(object, probes, ...)
@@ -49,6 +56,8 @@ buildRF(object, ...)
 \S4method{buildANN}{ExprsMulti}(object, probes, ...)
 
 \S4method{buildRF}{ExprsMulti}(object, probes, ...)
+
+\S4method{buildDNN}{ExprsMulti}(object, probes, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to undergo feature selection.}
@@ -61,6 +70,8 @@ indicates specifically which features by name should undergo feature selection.
 Set \code{probes = 0} to include all features.}
 }
 \value{
+Returns an \code{ExprsModel} object.
+
 Returns an \code{ExprsModel} object.
 }
 \description{
@@ -105,6 +116,9 @@ Like \code{\link{fs}} methods, \code{build} methods have a \code{probes} argumen
 
 
 \code{buildRF:} Method to build classifiers using randomForest::randomForest.
+
+
+\code{buildDNN:} Method to build feed-forward networks using h2o::h2o.deeplearning.
 }
 \examples{
 \dontrun{

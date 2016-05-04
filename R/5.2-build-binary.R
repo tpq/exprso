@@ -89,6 +89,12 @@ setGeneric("buildRF",
            function(object, ...) standardGeneric("buildRF")
 )
 
+#' @rdname build
+#' @export
+setGeneric("buildDNN",
+           function(object, ...) standardGeneric("buildDNN")
+)
+
 ###########################################################
 ### Build classifier
 
@@ -334,6 +340,65 @@ setMethod("buildRF", "ExprsBinary",
             df <- data.frame(data, "defineCase" = labels)
             args <- append(list("formula" = defineCase ~ ., "data" = df), args)
             model <- do.call(randomForest::randomForest, args)
+
+            # Carry through and append fs history as stored in the ExprsArray object
+            # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
+            machine <- new("ExprsMachine",
+                           preFilter = append(object@preFilter, list(probes)),
+                           reductionModel = append(object@reductionModel, list(NA)),
+                           mach = model
+            )
+
+            return(machine)
+          }
+)
+
+#' @rdname build
+#' @section Methods (by generic):
+#' \code{buildDNN:} Method to build feed-forward networks using h2o::h2o.deeplearning.
+#'
+#' @inheritParams fs
+#' @return Returns an \code{ExprsModel} object.
+#'
+#' @export
+setMethod("buildDNN", "ExprsBinary",
+          function(object, probes, ...){ # args to h2o.deeplearning
+
+            args <- as.list(substitute(list(...)))[-1]
+
+            # Convert 'numeric' probe argument to 'character' probe vector
+            if(class(probes) == "numeric"){
+
+              if(probes == 0) probes <- nrow(object@exprs)
+              probes <- rownames(object@exprs[1:probes, ])
+              data <- t(object@exprs[probes, ])
+            }
+
+            # Build data using supplied 'character' probe vector
+            if(class(probes) == "character"){
+
+              data <- t(object@exprs[probes, ])
+            }
+
+            # Initialize h2o (required)
+            localH20 <- h2o.init()
+
+            # Rename data based on order supplied by probes
+            colnames(data) <- paste0("id", 1:ncol(data))
+            labels <- object@annot[rownames(data), "defineCase"]
+            df <- data.frame(data, "defineCase" = labels)
+
+            # Import data as H2OFrame via a temporary csv
+            tempFile <- tempfile(fileext = ".csv")
+            write.csv(df, tempFile)
+            h2o.data <- h2o::h2o.importFile(path = tempFile, destination_frame = "h2o.data")
+
+            # Prepare arguments and build classifier
+            args <- append(list("x" = colnames(data),
+                                "y" = "defineCase",
+                                "training_frame" = h2o.data),
+                           args)
+            model <- do.call(h2o::h2o.deeplearning, args)
 
             # Carry through and append fs history as stored in the ExprsArray object
             # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
