@@ -1,3 +1,7 @@
+## exprso 1.0.0.9000
+---------------------
+* [Placeholder]
+
 ## exprso 1.0.0.0
 ---------------------
 * Project now organized in a package distribution format.
