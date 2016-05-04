@@ -381,7 +381,7 @@ setMethod("buildDNN", "ExprsBinary",
             }
 
             # Initialize h2o (required)
-            localH20 <- h2o.init()
+            localH20 <- h2o::h2o.init()
 
             # Rename data based on order supplied by probes
             colnames(data) <- paste0("id", 1:ncol(data))
