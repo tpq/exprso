@@ -136,6 +136,7 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
     args <- append(list("object" = array.train), as.list(grid[i, , drop = FALSE]))
 
     # Build and save model
+    args <- lapply(args, unlist)
     model <- do.call(what = how, args = args[!is.na(args)])
     models[[i]] <- model
 
