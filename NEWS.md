@@ -1,11 +1,17 @@
-## exprso 1.0.0.9000
+## exprso 1.0.1.0
 ---------------------
+* 1.2-methods.R
+  * `summary` method now accomodates lists of vector arguments.
 * 5.2-build-binary.R
   * Added `buildDNN.ExprsBinary` method
+  * Removed `e1071` cross-validation.
 * 5.3-doMulti.R
   * Added `buildDNN.ExprsMulti` method
 * 6-build.R
   * Added `buildDNN` predict clause
+* 7.2-plGrid.R
+  * `plGrid` method now accomodates lists of vector arguments.
+  * Removed `e1071` cross-validation.
 
 ## exprso 1.0.0.0
 ---------------------
