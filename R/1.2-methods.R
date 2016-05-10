@@ -256,7 +256,7 @@ setMethod("summary", "ExprsPipeline",
                                 "sds" = apply(object@summary[, index], MARGIN = 2, sd))
 
             # Tabulate parameter frequency
-            parameters <- lapply(object@summary[, !index], table)
+            parameters <- lapply(object@summary[, !index], function(column) table(as.character(column)))
 
             # Append performance metric summary with parameter frequencies
             summary <- append(performance, parameters)
