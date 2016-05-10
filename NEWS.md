@@ -1,16 +1,22 @@
+## exprso 1.0.1.9000
+---------------------
+* 4-conjoin.R
+  * Code renamed to file 4.1-conjoin.R.
+  * `compare` method reintroduced as 4.2-compare.R.
+
 ## exprso 1.0.1.0
 ---------------------
 * 1.2-methods.R
-  * `summary` method now accomodates lists of vector arguments.
+  * `summary` method now accommodates lists of vector arguments.
 * 5.2-build-binary.R
-  * Added `buildDNN.ExprsBinary` method
+  * Added `buildDNN.ExprsBinary` method.
   * Removed `e1071` cross-validation.
 * 5.3-doMulti.R
-  * Added `buildDNN.ExprsMulti` method
+  * Added `buildDNN.ExprsMulti` method.
 * 6-build.R
-  * Added `buildDNN` predict clause
+  * Added `buildDNN` predict clause.
 * 7.2-plGrid.R
-  * `plGrid` method now accomodates lists of vector arguments.
+  * `plGrid` method now accommodates lists of vector arguments.
   * Removed `e1071` cross-validation.
 
 ## exprso 1.0.0.0
@@ -35,7 +41,7 @@
 * 5-fs.R
   * Code renamed to file 5.1-fs-binary.R.
 * 6-build.R
-  * `reRank` function to serialize `doMulti` fs added to 5.3-doMulti.R.
+  * `reRank` function serializes `doMulti` fs added to 5.3-doMulti.R.
   * `fsSample` and `fsStats` now have `ExprsMulti` methods.
   * Some code move to 5.2-build-binary.R and 5.3-doMulti.R.
   * Remaining 6-build.R code renamed to 6-predict.R.
