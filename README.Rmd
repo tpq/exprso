@@ -15,9 +15,10 @@ Supervised machine learning often comprises a large part of bioinformatic studie
 ```{r, eval = FALSE}
 library(devtools)
 devtools::install_github("tpq/exprso")
+library(exprso)
 ```
 
-```{r}
+```{r, echo = FALSE, message = FALSE}
 library(exprso)
 ```
 
@@ -36,7 +37,7 @@ The `exprso` package organizes the myriad of methodological approaches to classi
 
 To showcase this package, we make use of the publicly available hallmark Golub 1999 dataset to differentiate ALL (acute lymphocytic leukemia) from AML (acute myelogenous leukemia) based on gene expression as measured by microarray technology. We begin by importing this dataset from the package, `GolubEsets`, which exposes these data as an `eSet` (i.e., `ExpressionSet`) object. Then, using the `modFilter`, `modTransform`, and `modNormalize` functions, we filter, log-transform, and normalize the dataset to prepare these data for classification.
 
-```{r}
+```{r, message = FALSE}
 library(golubEsets)
 data(Golub_Merge)
 ```

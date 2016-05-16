@@ -9,15 +9,8 @@ Supervised machine learning often comprises a large part of bioinformatic studie
 ``` r
 library(devtools)
 devtools::install_github("tpq/exprso")
-```
-
-``` r
 library(exprso)
 ```
-
-    ## Setting options('download.file.method.GEOquery'='auto')
-
-    ## Setting options('GEOquery.inmemory.gpl'=FALSE)
 
 The `exprso` package organizes the myriad of methodological approaches to classification into analytical *modules* that provide the user with stackable and interchangeable data processing tools. Although this package primarily revolves around dichotomous (i.e., binary) classification, `exprso` also includes a rudimentary framework for multi-class classification. Some of the modules available include:
 
@@ -36,43 +29,6 @@ To showcase this package, we make use of the publicly available hallmark Golub 1
 
 ``` r
 library(golubEsets)
-```
-
-    ## Loading required package: Biobase
-
-    ## Loading required package: BiocGenerics
-
-    ## Loading required package: parallel
-
-    ## 
-    ## Attaching package: 'BiocGenerics'
-
-    ## The following objects are masked from 'package:parallel':
-    ## 
-    ##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
-    ##     clusterExport, clusterMap, parApply, parCapply, parLapply,
-    ##     parLapplyLB, parRapply, parSapply, parSapplyLB
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     IQR, mad, xtabs
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     anyDuplicated, append, as.data.frame, as.vector, cbind,
-    ##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
-    ##     grep, grepl, intersect, is.unsorted, lapply, lengths, Map,
-    ##     mapply, match, mget, order, paste, pmax, pmax.int, pmin,
-    ##     pmin.int, Position, rank, rbind, Reduce, rownames, sapply,
-    ##     setdiff, sort, table, tapply, union, unique, unlist, unsplit
-
-    ## Welcome to Bioconductor
-    ## 
-    ##     Vignettes contain introductory material; view with
-    ##     'browseVignettes()'. To cite Bioconductor, see
-    ##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-
-``` r
 data(Golub_Merge)
 ```
 
@@ -144,7 +100,7 @@ calcStats(pred, array.test)
 
     ## Calculating accuracy using ROCR based on prediction probabilities...
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
     ##   acc sens spec auc
     ## 1   1    1    1   1
