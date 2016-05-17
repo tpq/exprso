@@ -80,6 +80,27 @@ setMethod('$', signature(x = "ExprsArray"),
           }
 )
 
+#' @describeIn ExprsArray Method to subset \code{ExprsArray} object.
+#'
+# #' @param x An object of class \code{ExprsArray}.
+#' @param subset Subsets via \code{object@annot[subset, ]}.
+#'  Use this argument to rearrange feature order.
+#' @param select Subsets via \code{object@annot[, select]}.
+#'  Use this argument to rearrange subject order.
+#' @export
+setMethod("subset", signature(x = "ExprsArray"),
+          function(x, subset, select){
+
+            if(missing(subset)) subset <- rownames(x@counts)
+            if(missing(select)) select <- colnames(x@counts)
+
+            x@annot <- x@annot[subset, select, drop = FALSE]
+            x@exprs <- x@exprs[, subset]
+
+            return(x)
+          }
+)
+
 #' @describeIn ExprsArray Method to plot three dimensions of the expression data.
 #'
 #' @param i,j,k A numeric scalar. Indexes the first, second, and third dimensions to plot.
