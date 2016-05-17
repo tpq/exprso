@@ -264,6 +264,27 @@ setMethod('$', signature(x = "ExprsPipeline"),
           }
 )
 
+#' @describeIn ExprsPipeline Method to subset \code{ExprsPipeline} object.
+#'
+# #' @param x An object of class \code{ExprsPipeline}.
+#' @param subset Subsets via \code{object@summary[subset, ]}.
+#'  Use this argument to rearrange feature order.
+#' @param select Subsets via \code{object@summary[, select]}.
+#'  Use this argument to rearrange subject order.
+#' @export
+setMethod("subset", signature(x = "ExprsPipeline"),
+          function(x, subset, select){
+
+            if(missing(subset)) subset <- rownames(x@counts)
+            if(missing(select)) select <- colnames(x@counts)
+
+            x@summary <- x@summary[subset, select, drop = FALSE]
+            x@machs <- x@machs[subset]
+
+            return(x)
+          }
+)
+
 #' @describeIn ExprsPipeline Method to summarize \code{ExprsPipeline} parameters and performances.
 #' @export
 setMethod("summary", "ExprsPipeline",
