@@ -8,6 +8,7 @@
 \alias{getProbeSet,ExprsArray-method}
 \alias{plot,ExprsArray,missing-method}
 \alias{show,ExprsArray-method}
+\alias{subset,ExprsArray-method}
 \alias{summary,ExprsArray-method}
 \title{An S4 class to store feature and annotation data}
 \usage{
@@ -16,6 +17,8 @@
 \S4method{[}{ExprsArray,ANY,ANY,ANY}(x, i, j, drop)
 
 \S4method{$}{ExprsArray}(x, name)
+
+\S4method{subset}{ExprsArray}(x, subset, select)
 
 \S4method{plot}{ExprsArray,missing}(x, i = 1, j = 2, k = 3, colors,
   shapes)
@@ -30,6 +33,12 @@
 \item{i, j, drop}{Subsets via \code{object@annot[i, j, drop]}.}
 
 \item{name}{Subsets via \code{object@annot[, name]}.}
+
+\item{subset}{Subsets via \code{object@annot[subset, ]}.
+Use this argument to rearrange feature order.}
+
+\item{select}{Subsets via \code{object@annot[, select]}.
+Use this argument to rearrange subject order.}
 
 \item{colors}{A character vector. Optional. Manually assign a color to each subject point.}
 
@@ -47,6 +56,8 @@ An S4 class to store feature and annotation data
 \item \code{[}: Method to subset \code{ExprsArray} object.
 
 \item \code{$}: Method to subset \code{ExprsArray} object.
+
+\item \code{subset}: Method to subset \code{ExprsArray} object.
 
 \item \code{plot}: Method to plot three dimensions of the expression data.
 

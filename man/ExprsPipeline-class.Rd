@@ -7,6 +7,7 @@
 \alias{[,ExprsPipeline,ANY,ANY,ANY-method}
 \alias{getProbeSet,ExprsPipeline-method}
 \alias{show,ExprsPipeline-method}
+\alias{subset,ExprsPipeline-method}
 \alias{summary,ExprsPipeline-method}
 \title{An S4 class to store models built during high-throughput learning}
 \usage{
@@ -15,6 +16,8 @@
 \S4method{[}{ExprsPipeline,ANY,ANY,ANY}(x, i, j, drop)
 
 \S4method{$}{ExprsPipeline}(x, name)
+
+\S4method{subset}{ExprsPipeline}(x, subset, select)
 
 \S4method{summary}{ExprsPipeline}(object)
 
@@ -26,6 +29,12 @@
 \item{i, j, drop}{Subsets via \code{object@summary[i, j, drop]}.}
 
 \item{name}{Subsets via \code{object@summary[, name]}.}
+
+\item{subset}{Subsets via \code{object@summary[subset, ]}.
+Use this argument to rearrange feature order.}
+
+\item{select}{Subsets via \code{object@summary[, select]}.
+Use this argument to rearrange subject order.}
 
 \item{index}{A numeric scalar. Indicates the i-th model from which to retrieve the features. If missing,
 \code{getProbeSet} will tabulate features across all models.}
@@ -40,6 +49,8 @@ An S4 class to store models built during high-throughput learning
 \item \code{[}: Method to subset \code{ExprsPipeline} object.
 
 \item \code{$}: Method to subset \code{ExprsPipeline} object.
+
+\item \code{subset}: Method to subset \code{ExprsPipeline} object.
 
 \item \code{summary}: Method to summarize \code{ExprsPipeline} parameters and performances.
 

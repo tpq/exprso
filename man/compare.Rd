@@ -9,8 +9,7 @@
 compare(object, ...)
 
 \S4method{compare}{ExprsArray}(object, array.valid = NULL,
-  colBy = "defineCase", include = unique(object@annot[, colBy]),
-  cutoff = 0.05)
+  colBy = "defineCase", cutoff = 0.05)
 }
 \arguments{
 \item{object}{The \code{ExprsArray} object used when comparing annotations.}
@@ -22,14 +21,11 @@ annotations. Optional. Exclude with \code{array.valid = NULL}.}
 compare all other annotation terms (i.e., to test as the independent
 variable).}
 
-\item{include}{A vector. The terms found in \code{colBy} to include when
-comparing all other annotation terms.}
-
 \item{cutoff}{A numeric scalar. The p-value cutoff that determines when
 the annotation test returns a \code{TRUE} result}
 }
 \value{
-A list of three logical vectors. The first and second elements 
+A list of three logical vectors. The first and second elements
 of the list correspond to "internal" comparisons for the two provided
 \cod{ExprsArray} objects, respectively. The third element of the list
 corresponds to comparisons made between the provided objects.
@@ -39,7 +35,8 @@ This method compares the values of all \code{ExprsArray} annotations across a
  specified annotation term for one or more \code{ExprsArray} objects.
  Depending on the composition of each annotation, \code{compare}
  will perform either a chi-squared test or an ANOVA test.
- 
+}
+\details{
 This method performs two kinds of comparisons. First, it tests all
  annotation variables against the annotation supplied by the \code{colBy}
  argument for each provided \code{ExprsArray} object. In other words,
@@ -48,15 +45,14 @@ This method performs two kinds of comparisons. First, it tests all
  all annotation variables between the provided \code{ExprsArray} objects.
  However, providing \code{array.valid = NULL} will skip all testing
  except one "internal" comparison.
- 
+
 This method will test annotations using either a chi-squared test or an
  ANOVA test depending on the class of the values stored by the tested column.
  Either "character" or "factor" values in the tested column will trigger
  a chi-squared test. Therefore, this method requires the user to select
  a \code{colBy} annotation that contains categorical data (i.e., to use as
  the independent variable).
-}
-\details{
+
 We anticipate that this method will serve as a useful adjunct to
  \code{\link{modCluster}}. However, it may also help in quickly determining
  whether the data \code{\link{split}} has yielded comparable training and
