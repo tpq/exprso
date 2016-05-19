@@ -1,8 +1,12 @@
 ## exprso 1.0.1.9000
 ---------------------
+* 1.2-methods.R
+  * Added `subset` method for `ExprsArray` objects.
+  * Added `subset` method for `ExprsPipeline` objects.
 * 4-conjoin.R
   * Code renamed to file 4.1-conjoin.R.
   * `compare` method reintroduced as 4.2-compare.R.
+  * `modCluster` method added to 4.3-cluster.R.
 
 ## exprso 1.0.1.0
 ---------------------
