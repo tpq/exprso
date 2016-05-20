@@ -1,45 +1,9 @@
-# # NOTE: supplied 'probes' argument does not change @exprs composition
-# # NOTE: use "binary" distance when clustering SNP data
-# clustHclust <- function(object, probes = 0, col.clustBy = "defineCase", set.include = "Case", k = 2, dist = "euclidean", ...){ # args to hclust
-#
-#   # Convert 'numeric' probe argument to 'character' probe vector
-#   if(class(probes) == "numeric"){
-#
-#     if(probes == 0) probes <- nrow(object@exprs)
-#     probes <- rownames(object@exprs[1:probes, ])
-#     data <- t(object@exprs[probes, ])
-#   }
-#
-#   # Build data using supplied 'character' probe vector
-#   if(class(probes) == "character"){
-#
-#     data <- t(object@exprs[probes, ])
-#   }
-#
-#   # Subset 'data' by 'col.clustBy'
-#   data <- data[object@annot[rownames(data), col.clustBy] %in% set.include, ]
-#
-#   # Cluster subsetted data
-#   d <- dist(data, method = dist)
-#   hc <- hclust(d, ...)
-#
-#   # Plot dendrogram
-#   layout(matrix(c(1), 1, 1, byrow = TRUE))
-#   plot(as.dendrogram(hc))
-#
-#   # Cut into k clusters
-#   clusts <- cutree(hc, k = k)
-#
-#   # Add cluster membership to $cluster
-#   object@annot[names(clusts), "cluster"] <- clusts
-#   object@annot[!rownames(object@annot) %in% names(clusts), "cluster"] <- 0
-#
-#   return(object)
-# }
+##########################################################
+## Cluster subjects by feature data
 
 #' Cluster Subjects
 #'
-#' This method clusters subjects based on expression data using any of the
+#' This method clusters subjects based on expression data using any one of
 #'  several available clustering algorithms.
 #'
 #' @param object An \code{ExprsArray object}. The object containing
@@ -49,19 +13,19 @@
 #'  indicates specifically which features by name should guide clustering.
 #'  Set \code{probes = 0} to include all features.
 #' @param how A character string. The name of the function used to cluster.
-#'  Select from "hcluster", "kmeans", "agnes", "clara", "diana", "fanny",
-#'  "pam", "som", "Mclust", or "sota".
+#'  Select from "hcluster", "kmeans", "agnes", "clara", "diana", "fanny", or
+#'  "pam".
 #' @param onlyCluster A logical sclar. Toggles whether to return a processed
 #'  cluster object or an updated \code{ExprsArray} object.
 #' @param ... Additional arguments to the cluster function and/or
 #'  other functions used for clustering (e.g., \code{dist} or
 #'  \code{cutree}).
+#'  
+#' @return Typically an \code{ExprsArray} object with subject cluster assignments
+#'  added to the "cluster" column of the \code{@@anot} slot.
 #'
 #' @importFrom stats hclust kmeans
 #' @importFrom cluster agnes clara diana fanny pam
-#' @importFrom kohonen som
-#' @importFrom mclust Mclust
-#' @importFrom clValid sota
 #'
 #' @export
 modCluster <- function(object, probes, how, onlyCluster = FALSE, ...){
@@ -141,7 +105,7 @@ modCluster <- function(object, probes, how, onlyCluster = FALSE, ...){
     result <- do.call(how, args)
   }
 
-  if(how %in% c("clara", "fanny")){
+  if(how %in% c("clara", "fanny", "pam")){
 
     # Add 'k' to args if not already included
     if(!"k" %in% names(args)){
@@ -156,47 +120,30 @@ modCluster <- function(object, probes, how, onlyCluster = FALSE, ...){
     result <- do.call(how, args)
   }
 
-  if(how == "som"){
-
-    # som: self-organizing map
-    # From Wikipedia: The usual arrangement of nodes is a two-dimensional
-    #  regular spacing in a hexagonal or rectangular grid. The self-organizing
-    #  map describes a mapping from a higher-dimensional input space to a
-    #  lower-dimensional map space. The procedure for placing a vector from
-    #  data space onto the map is to find the node with the closest (smallest
-    #  distance metric) weight vector to the data space vector.
-    args <- append(args, list("data" = data))
-    result <- do.call(how, args)
-  }
-
-  if(how == "Mclust"){
-
-    # mclust: normal mixture modeling
-    args <- append(args, list("data" = data))
-    result <- do.call(how, args)
-  }
-
-  if(how == "sota"){
-
-    # Add 'maxCycles' to args if not already included
-    if(!"maxCycles" %in% names(args)){
-
-      cat("Setting 'maxCycles' to '10' (default behavior, override explicitly)...\n")
-      args <- append(args, list("maxCycles" = 10))
-    }
-
-    # sota: self-organizing tree
-    args <- append(args, list("data" = data))
-    result <- do.call(how, args)
-  }
-
   if(onlyCluster){
 
     cat("Returning the processed cluster object...\n")
     return(result)
+    
+  }else{
+    
+    if(how %in% c("hclust", "agnes", "daisy")){
+      
+      clusts <- cutree(result, k = args.k)
+    }
+    
+    if(how == "kmeans"){
+      
+      clusts <- result$cluster
+    }
+    
+    if(how %in% c("clara", "fanny", "pam")){
+      
+      clusts <- result$clustering
+    }
+    
+    cat("Updating ExprsArray object...\n")
+    object@annot[, "cluster"] <- clusts
+    return(object)
   }
-
-  cat("Updating ExprsArray object...\n")
-
-  # [[PLACEHOLDER]]
 }
