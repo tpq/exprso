@@ -3,10 +3,14 @@
 * 1.2-methods.R
   * Added `subset` method for `ExprsArray` objects.
   * Added `subset` method for `ExprsPipeline` objects.
+* 3-split.R
+  * Code renamed to file 3.1-split.R.
 * 4-conjoin.R
-  * Code renamed to file 4.1-conjoin.R.
-  * `compare` method reintroduced as 4.2-compare.R.
-  * `modCluster` method added to 4.3-cluster.R.
+  * Code renamed to file 3.2-conjoin.R.
+  # * `modMutate` method added as 4.1-modMutate.R.
+  # * `modSwap` method added as 4.2-modSwap.R.
+  * `modCluster` method added as 4.3-cluster.R.
+  * `compare` method added as 4.4-compare.R.
 
 ## exprso 1.0.1.0
 ---------------------

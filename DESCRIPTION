@@ -23,6 +23,7 @@ Depends:
     R (>= 3.2.2)
 Imports:
     Biobase,
+    cluster,
     GEOquery,
     h2o,
     kernlab,
