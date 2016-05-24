@@ -1,0 +1,133 @@
+###########################################################
+### Define method for mutating case subjects
+
+#' Mutate Case Subjects
+#'
+#' This experimental function mutates (i.e., changes) a percentage of case subjects
+#'  into noisy positives, false positives, or defined out-groups.
+#'
+#' This function includes several methods for distoring the features of \code{ExprsBinary}
+#'  subjects. The "rp.1" method randomizes subject vectors to create "subject noise".
+#'  The "rp.2" method creates a new subject vector by randomly sampling feature values
+#'  from the respective feature vector. The "fp" method creates a new subject vector
+#'  by randomly sampling feature values from the respective control feature vector.
+#'
+#' The "ng" and "tg" methods create out-groups by defining new means for each feature.
+#'  These methods yield fixed distributions around new feature means such that
+#'  the mean of all new feature means remains constant. The argument \code{theta}
+#'  dictates how much the new feature mean might differ from the original feature mean
+#'  (where larger \code{theta} values lead to more similar new feature means). For
+#'  the "ng" method, the mean of new feature means equals that of the original features
+#'  for case subjects only. On the other hand, for the "tg" method, the mean of new
+#'  feature means equals that of the original features for all subjects.
+#'
+#' @param object An \code{ExprsBinary} object to mutate.
+#'
+#' @export
+setGeneric("modMutate",
+           function(object, ...) standardGeneric("modMutate")
+)
+
+#' @describeIn modMutate A method to mutate \code{ExprsBinary} objects.
+#'
+#' @param how A character string. The method used to mutate case subjects. Select from
+#'  "rp.1", "rp.2", "fp", "ng", or "tg".
+#' @param percent A numeric scalar. The percentage of subjects to mutate.
+#' @param theta A numeric scalar. Applies a weight to the distribution of means when
+#'  mutating subjects via the "ng" or "tg" method.
+#'
+#' @return An \code{ExprsBinary} object containing mutated subjects with an index
+#'  appended to the \code{$mutated} column of the \code{@@annot} slot.
+#'
+#' @export
+setMethod("modMutate", "ExprsBinary",
+          function(object, how = "fp", percent = 10, theta = 1){
+
+            if(percent.include < 1 | percent.include > 100){
+
+              stop("Uh oh! Use an inclusion percentage between 1-100!")
+            }
+
+            # Mutate a percent of case subjects
+            cases <- object@annot$defineCase %in% "Case"
+            mut.size <- round(ncol(object@exprs[, cases]) * percent/100)
+            mut.name <- sample(colnames(object@exprs[, cases]), size = mut.size, replace = FALSE)
+
+            # Calculate "before" PCA
+            temp1 <- fsPrcomp(object, probes = 0)
+
+            if(how == "rp.1"){
+
+              for(mut.col in mut.name){
+
+                object@exprs[, mut.col] <- sample(object@exprs[, mut.col])
+              }
+
+            }else if(how == "rp.2"){
+
+              for(mut.col in mut.name){
+
+                object@exprs[, mut.col] <- apply(object@exprs, MARGIN = 1, sample, size = 1)
+              }
+
+            }else if(how == "fp"){
+
+              for(mut.col in mut.name){
+
+                object@exprs[, mut.col] <- apply(object@exprs[, !cases], MARGIN = 1, sample, size = 1)
+              }
+
+            }else if(how == "ng"){
+
+              # Calculate per-probe case means and sds to make "new group" means and sds
+              means <- apply(object@exprs[, cases], MARGIN = 1, mean)
+              sds <- apply(object@exprs[, cases], MARGIN = 1, sd)
+              ng.means <- unlist(lapply(1:length(means),
+                                        function(i) rnorm(1, mean = means[i], sd = sds[i]/theta)))
+
+              for(mut.col in mut.name){
+
+                object@exprs[, mut.col] <- unlist(lapply(1:length(ng.means),
+                                                         function(i) rnorm(1, mean = ng.means[i], sd = sds[i])))
+              }
+
+            }else if(how == "tg"){
+
+              # Calculate per-probe means and sds using ALL subjects to make "new group" means and sds
+              means <- apply(object@exprs, MARGIN = 1, mean)
+              sds <- apply(object@exprs, MARGIN = 1, sd)
+              tg.means <- unlist(lapply(1:length(means),
+                                        function(i) rnorm(1, mean = means[i], sd = sds[i]/theta)))
+
+              for(mut.col in mut.name){
+
+                object@exprs[, mut.col] <- unlist(lapply(1:length(tg.means),
+                                                         function(i) rnorm(1, mean = tg.means[i], sd = sds[i])))
+              }
+
+            }else{
+
+              stop("Provided how not recognized. Select from 'rp.1', 'rp.2', 'fp', 'ng', or 'tg'.\n")
+            }
+
+            # Store Boolean index of mutated subjects in @annot
+            object@annot$mutated <- rownames(object@annot) %in% mut.name
+
+            # Calculate "after" PCA
+            temp2 <- fsPrcomp(object, probes = 0)
+
+            # Visualize "before" and "after" PCA results
+            layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))
+            plot(temp1@exprs[1, ], temp1@exprs[2, ], col = ifelse(cases, "red", "black"),
+                 pch = ifelse(object@annot$mutated, 22, 16), main = "Before", xlab = "PCA1", ylab = "PCA2")
+            plot(temp2@exprs[1, ], temp2@exprs[2, ], col = ifelse(cases, "red", "black"),
+                 pch = ifelse(object@annot$mutated, 22, 16), main = "After", xlab = "PCA1", ylab = "PCA2")
+            plot(temp1@exprs[1, ], temp1@exprs[3, ], col = ifelse(cases, "red", "black"),
+                 pch = ifelse(object@annot$mutated, 22, 16), main = "Before", xlab = "PCA1", ylab = "PCA3")
+            plot(temp2@exprs[1, ], temp2@exprs[3, ], col = ifelse(cases, "red", "black"),
+                 pch = ifelse(object@annot$mutated, 22, 16), main = "After", xlab = "PCA1", ylab = "PCA3")
+            layout(matrix(c(1), 1, 1, byrow = TRUE))
+
+            return(object)
+          }
+)
