@@ -43,7 +43,7 @@ setGeneric("modMutate",
 setMethod("modMutate", "ExprsBinary",
           function(object, how = "fp", percent = 10, theta = 1){
 
-            if(percent.include < 1 | percent.include > 100){
+            if(percent < 1 | percent > 100){
 
               stop("Uh oh! Use an inclusion percentage between 1-100!")
             }
@@ -111,7 +111,7 @@ setMethod("modMutate", "ExprsBinary",
             }
 
             # Store Boolean index of mutated subjects in @annot
-            object@annot$mutated <- rownames(object@annot) %in% mut.name
+            object@annot$mutated <- as.factor(rownames(object@annot) %in% mut.name)
 
             # Calculate "after" PCA
             temp2 <- fsPrcomp(object, probes = 0)
