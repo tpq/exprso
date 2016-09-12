@@ -7,10 +7,11 @@
   * Code renamed to file 3.1-split.R.
 * 4-conjoin.R
   * Code renamed to file 3.2-conjoin.R.
-  * `modMutate` method added as 4.1-modMutate.R.
-  * `modSwap` method added as 4.2-modSwap.R.
-  * `modCluster` method added as 4.3-cluster.R.
-  * `compare` method added as 4.4-compare.R.
+  * `modMutate` merged with `modSwap` as 4.1-swap.R.
+  * `modCluster` method added as 4.2-cluster.R.
+  * `compare` method added as 4.3-compare.R.
+  * `compare` now handles `ExprsMulti` objects.
+  * `compare` test added to validate method.
 
 ## exprso 1.0.1.0
 ---------------------

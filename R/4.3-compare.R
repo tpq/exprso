@@ -1,5 +1,5 @@
 ##########################################################
-## Compare datasets and data subsets
+### Compare datasets and data subsets
 
 #' Compare \code{ExprsArray} Objects
 #'

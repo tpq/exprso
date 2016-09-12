@@ -1,7 +1,7 @@
 ###########################################################
 ### Define method for mutating case subjects
 
-#' Mutate Case Subjects
+#' Swap Case Subjects
 #'
 #' This experimental function mutates (i.e., changes) a percentage of case subjects
 #'  into noisy positives, false positives, or defined out-groups.
@@ -21,14 +21,18 @@
 #'  for case subjects only. On the other hand, for the "tg" method, the mean of new
 #'  feature means equals that of the original features for all subjects.
 #'
+#' Alternatively, by providing another \code{ExprsBinary} object as the \code{how}
+#'  argument, this function will swap a percentage of case subjects from the main dataset
+#'  with control subjects from the second dataset.
+#'
 #' @param object An \code{ExprsBinary} object to mutate.
 #'
 #' @export
-setGeneric("modMutate",
-           function(object, ...) standardGeneric("modMutate")
+setGeneric("swap",
+           function(object, ...) standardGeneric("swap")
 )
 
-#' @describeIn modMutate A method to mutate \code{ExprsBinary} objects.
+#' @describeIn swap A method to mutate \code{ExprsBinary} objects.
 #'
 #' @param how A character string. The method used to mutate case subjects. Select from
 #'  "rp.1", "rp.2", "fp", "ng", or "tg".
@@ -40,7 +44,7 @@ setGeneric("modMutate",
 #'  appended to the \code{$mutated} column of the \code{@@annot} slot.
 #'
 #' @export
-setMethod("modMutate", "ExprsBinary",
+setMethod("swap", "ExprsBinary",
           function(object, how = "fp", percent = 10, theta = 1){
 
             if(percent < 1 | percent > 100){
@@ -56,7 +60,26 @@ setMethod("modMutate", "ExprsBinary",
             # Calculate "before" PCA
             temp1 <- fsPrcomp(object, probes = 0)
 
-            if(how == "rp.1"){
+            if(inherits(how, "ExprsArray")){
+
+              if(sum(how@annot$defineCase %in% "Control") < mut.size){
+
+                stop("Uh oh! Not enough controls in the supplemental 'ExprsBinary' object to fulfill swap!")
+              }
+
+              if(!identical(rownames(object@exprs), rownames(how@exprs))){
+
+                stop("Uh oh! The provided 'ExprsBinary' objects do not have matching probe vectors!")
+              }
+
+              # Randomly select which controls to use in swap
+              from.name <- sample(rownames(how@annot[how@annot$defineCase %in% "Control", ]),
+                                  size = mut.size, replace = FALSE)
+
+              # Swap 'object' cases for 'how' controls and store index
+              object@exprs[, mut.name] <- how@exprs[, from.name]
+
+            }else if(how == "rp.1"){
 
               for(mut.col in mut.name){
 
