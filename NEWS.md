@@ -7,8 +7,8 @@
   * Code renamed to file 3.1-split.R.
 * 4-conjoin.R
   * Code renamed to file 3.2-conjoin.R.
-  * `modMutate` merged with `modSwap` as 4.1-swap.R.
-  * `modCluster` method added as 4.2-cluster.R.
+  * `modMutate` merged with `modSwap` as 4.1-modSwap.R.
+  * `modCluster` method added as 4.2-modCluster.R.
   * `compare` method added as 4.3-compare.R.
   * `compare` now handles `ExprsMulti` objects.
   * `compare` test added to validate method.
