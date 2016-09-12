@@ -74,12 +74,21 @@ setMethod("compare", "ExprsArray",
             results <- vector("list", 3)
             for(i in 1:length(results)){
 
-              if(i == 1) test.data <- object@annot
+              if(i == 1){
 
-              if(i == 2 & !is.null(array.valid)) test.data <- array.valid@annot
+                cat("## Making internal comparisons for first object (across 'colBy' column)...\n", sep = "")
+                test.data <- object@annot
+              }
+
+              if(i == 2 & !is.null(array.valid)){
+
+                cat("## Making internal comparisons for second object (across 'colBy' column)...\n", sep = "")
+                test.data <- array.valid@annot
+              }
 
               if(i == 3 & !is.null(array.valid)){
 
+                cat("## Making comparisons between objects (independent of 'colBy' column)...\n", sep = "")
                 test.data <- rbind(data.frame("array" = "object",
                                               object@annot),
                                    data.frame("array" = "array.valid",
@@ -101,7 +110,6 @@ setMethod("compare", "ExprsArray",
               if(i == 1 | !is.null(array.valid)){
 
                 # Prepares results vector only if running checks
-                cat("## Making comparisons for Index ", i, "...\n", sep = "")
                 annots <- colnames(test.data)[!colnames(test.data) %in% colBy]
                 results[[i]] <- vector("logical", length(annots))
                 names(results[[i]]) <- annots
