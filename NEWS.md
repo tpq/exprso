@@ -1,4 +1,4 @@
-## exprso 1.0.1.9000
+## exprso 1.0.2
 ---------------------
 * 1.2-methods.R
   * Added `subset` method for `ExprsArray` objects.
@@ -15,7 +15,7 @@
 * 5.1-fs-binary.R
   * `fsStats` has tryCatch to address rare error.
 
-## exprso 1.0.1.0
+## exprso 1.0.1
 ---------------------
 * 1.2-methods.R
   * `summary` method now accommodates lists of vector arguments.
@@ -30,7 +30,7 @@
   * `plGrid` method now accommodates lists of vector arguments.
   * Removed `e1071` cross-validation.
 
-## exprso 1.0.0.0
+## exprso 1.0.0
 ---------------------
 * Project now organized in a package distribution format.
 * 0-misc.R
