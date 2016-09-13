@@ -52,7 +52,7 @@ arrayMulti <-
 ###########################################################
 ### Compare ExprsBinary and ExprsMulti objects
 
-arrays <- splitStratify(array, percent.include = 100, colBy = "sex")
+arrays <- splitStratify(array, percent.include = 50, colBy = "sex")
 array.train <- arrays[[1]]
 array.test <- splitStratify(arrays[[2]], percent.include = 100, colBy = "sex")[[1]]
 
