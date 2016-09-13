@@ -12,6 +12,8 @@
   * `compare` method added as 4.3-compare.R.
   * `compare` now handles `ExprsMulti` objects.
   * `compare` test added to validate method.
+* 5.1-fs-binary.R
+  * `fsStats` has tryCatch to address rare error.
 
 ## exprso 1.0.1.0
 ---------------------

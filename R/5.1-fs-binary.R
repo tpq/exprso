@@ -116,6 +116,9 @@ setGeneric("fsMrmre",
            function(object, ...) standardGeneric("fsMrmre")
 )
 
+#' @import kernlab
+NULL
+
 ###########################################################
 ### Select features
 
@@ -173,6 +176,11 @@ setMethod("fsSample", "ExprsBinary",
 setMethod("fsStats", "ExprsBinary",
           function(object, probes, how = "t.test", ...){ # args to ks.test, ks.boot, or t.test
 
+            if(!how %in% c("ks.test", "ks.boot", "t.test")){
+
+              stop("Uh oh! Provided 'how' argument not recognized!")
+            }
+
             # Convert 'numeric' probe argument to 'character' probe vector
             if(class(probes) == "numeric"){
 
@@ -196,26 +204,29 @@ setMethod("fsStats", "ExprsBinary",
 
             for(i in 1:length(probes)){
 
-              feature <- probes[i]
+              tryCatch(
+                {
+                  if(how == "ks.test"){
 
-              if(how == "ks.test"){
+                    p[i] <- ks.test(object@exprs[probes[i], cases],
+                                    object@exprs[probes[i], conts], ...)$p.value
 
-                p[i] <- ks.test(object@exprs[feature, cases],
-                                object@exprs[feature, conts], ...)$p.value
+                  }else if(how == "ks.boot"){
 
-              }else if(how == "ks.boot"){
+                    p[i] <- Matching::ks.boot(object@exprs[probes[i], cases],
+                                              object@exprs[probes[i], conts], ...)$ks.boot.pvalue
 
-                p[i] <- Matching::ks.boot(object@exprs[feature, cases],
-                                          object@exprs[feature, conts], ...)$ks.boot.pvalue
+                  }else if(how == "t.test"){
 
-              }else if(how == "t.test"){
+                    p[i] <- t.test(object@exprs[probes[i], cases],
+                                   object@exprs[probes[i], conts], ...)$p.value
+                  }
+                }, error = function(e){
 
-                p[i] <- t.test(object@exprs[feature, cases],
-                               object@exprs[feature, conts], ...)$p.value
-
-              }else{
-
-                stop("Uh oh! Provided 'how' argument not recognized!")}
+                  cat("fsStats failed for feature: ", probes[i], ". Setting p(x)=1...\n")
+                  p[i] <- 1
+                }
+              )
             }
 
             final <- probes[order(p)]
@@ -315,9 +326,6 @@ setMethod("fsPenalizedSVM", "ExprsBinary",
             return(array)
           }
 )
-
-#' @import kernlab
-NULL
 
 #' @rdname fs
 #' @section Methods (by generic):
