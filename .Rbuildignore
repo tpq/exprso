@@ -1,6 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
-^README-.*\.png$
+^README_.*\.png$
 ^OLDNEWS\.txt$
 ^NEWS\.md$
