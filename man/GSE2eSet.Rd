@@ -7,11 +7,11 @@
 GSE2eSet(gse, colID = "ID_REF", colVal = "VALUE")
 }
 \arguments{
+\item{gse}{A GSE data object retrieved using GEOquery.}
+
 \item{colID}{A character string. The GSE column name that contains the feature identity.}
 
 \item{colVal}{A character string. The GSE column name that contains the feature value.}
-
-\item{eSet}{An \code{eSet} object.}
 }
 \description{
 A convenience function that builds an \code{eSet} object from a GSE data source.

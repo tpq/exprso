@@ -21,11 +21,14 @@ An S4 class to store class predictions
 \section{Slots}{
 
 \describe{
-\item{\code{pred}}{A factor. Stores class predictions as an unambiguous class assignment.}
+\item{\code{pred}}{A factor. Stores class predictions as an unambiguous
+class assignment.}
 
-\item{\code{decision.values}}{Typically a matrix. Stores class predictions as a decision value.}
+\item{\code{decision.values}}{Typically a matrix. Stores class predictions
+as a decision value.}
 
-\item{\code{probability}}{Typically a matrix. Stores class predictions as a probability.}
+\item{\code{probability}}{Typically a matrix. Stores class predictions
+as a probability.}
 }}
 \seealso{
 \code{\link{ExprsArray-class}}\cr

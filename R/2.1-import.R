@@ -167,7 +167,7 @@ arrayEset <- function(eSet, colBy, include){
 #' To acquire GSE data files, use the function \code{getGEO} from the GEOquery package (e.g.,
 #'  \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}). For more information, see the GEOquery package.
 #'
-#' @param eSet An \code{eSet} object.
+#' @param gse A GSE data object retrieved using GEOquery.
 #' @param colID A character string. The GSE column name that contains the feature identity.
 #' @param colVal A character string. The GSE column name that contains the feature value.
 #'

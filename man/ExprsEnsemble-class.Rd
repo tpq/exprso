@@ -12,7 +12,11 @@
 \S4method{getProbeSet}{ExprsEnsemble}(object, index)
 }
 \arguments{
-\item{object}{An object of class \code{ExprsEnsemble}.}
+\item{object}{An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline},
+\code{ExprsEnsemble}, or \code{ExprsPredict} object.}
+
+\item{index}{A numeric scalar. The i-th model from which to retrieve features.
+If missing, \code{getProbeSet} will tabulate features across all models.}
 }
 \description{
 An S4 class to store multiple classification models
@@ -26,7 +30,8 @@ An S4 class to store multiple classification models
 \section{Slots}{
 
 \describe{
-\item{\code{machs}}{Typically a list. Stores the classification models referenced in \code{summary} slot.}
+\item{\code{machs}}{Typically a list. Stores the classification models
+referenced in \code{summary} slot.}
 }}
 \seealso{
 \code{\link{ExprsArray-class}}\cr

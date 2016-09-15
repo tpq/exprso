@@ -5,6 +5,7 @@
 \alias{$,ExprsPipeline-method}
 \alias{ExprsPipeline-class}
 \alias{[,ExprsPipeline,ANY,ANY,ANY-method}
+\alias{[,ExprsPipeline-method}
 \alias{getProbeSet,ExprsPipeline-method}
 \alias{show,ExprsPipeline-method}
 \alias{subset,ExprsPipeline-method}
@@ -13,7 +14,7 @@
 \usage{
 \S4method{show}{ExprsPipeline}(object)
 
-\S4method{[}{ExprsPipeline,ANY,ANY,ANY}(x, i, j, drop)
+\S4method{[}{ExprsPipeline,ANY,ANY,ANY}(x, i, j)
 
 \S4method{$}{ExprsPipeline}(x, name)
 
@@ -24,20 +25,22 @@
 \S4method{getProbeSet}{ExprsPipeline}(object, index)
 }
 \arguments{
-\item{object}{An object of class \code{ExprsPipeline}.}
+\item{object, x}{An object of class \code{ExprsPipeline}.}
 
-\item{i, j, drop}{Subsets via \code{object@summary[i, j, drop]}.}
+\item{i, j}{Subsets entire \code{ExprsPipeline} object via
+\code{object@summary[i, j]}. Returns \code{object@summary[, j]} if
+argument \code{i} is missing.}
 
-\item{name}{Subsets via \code{object@summary[, name]}.}
+\item{name}{Returns \code{object@summary[, name]}.}
 
-\item{subset}{Subsets via \code{object@summary[subset, ]}.
-Use this argument to rearrange feature order.}
+\item{subset}{Subsets entire \code{ExprsPipeline} object via
+\code{object@summary[subset, ]}. Can be used to rearrange summary table.}
 
-\item{select}{Subsets via \code{object@summary[, select]}.
-Use this argument to rearrange subject order.}
+\item{select}{Subsets entire \code{ExprsPipeline} object via
+\code{object@summary[, select]}. Can be used to rearrange summary table.}
 
-\item{index}{A numeric scalar. Indicates the i-th model from which to retrieve the features. If missing,
-\code{getProbeSet} will tabulate features across all models.}
+\item{index}{A numeric scalar. The i-th model from which to retrieve features.
+If missing, \code{getProbeSet} will tabulate features across all models.}
 }
 \description{
 An S4 class to store models built during high-throughput learning
@@ -59,9 +62,11 @@ An S4 class to store models built during high-throughput learning
 \section{Slots}{
 
 \describe{
-\item{\code{summary}}{Typically a data.frame. Stores the parameters and performances for classification models.}
+\item{\code{summary}}{Typically a data.frame. Stores the parameters and
+performances for classification models.}
 
-\item{\code{machs}}{Typically a list. Stores the classification models referenced in \code{summary} slot.}
+\item{\code{machs}}{Typically a list. Stores the classification models
+referenced in \code{summary} slot.}
 }}
 \seealso{
 \code{\link{ExprsArray-class}}\cr

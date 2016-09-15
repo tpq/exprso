@@ -89,8 +89,10 @@ setClass("ExprsModule",
 
 #' An S4 class to store models built during high-throughput learning
 #'
-#' @slot summary Typically a data.frame. Stores the parameters and performances for classification models.
-#' @slot machs Typically a list. Stores the classification models referenced in \code{summary} slot.
+#' @slot summary Typically a data.frame. Stores the parameters and
+#'  performances for classification models.
+#' @slot machs Typically a list. Stores the classification models
+#'  referenced in \code{summary} slot.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}\cr
@@ -110,7 +112,8 @@ setClass("ExprsPipeline",
 
 #' An S4 class to store multiple classification models
 #'
-#' @slot machs Typically a list. Stores the classification models referenced in \code{summary} slot.
+#' @slot machs Typically a list. Stores the classification models
+#'  referenced in \code{summary} slot.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}\cr
@@ -130,9 +133,12 @@ setClass("ExprsEnsemble",
 
 #' An S4 class to store class predictions
 #'
-#' @slot pred A factor. Stores class predictions as an unambiguous class assignment.
-#' @slot decision.values Typically a matrix. Stores class predictions as a decision value.
-#' @slot probability Typically a matrix. Stores class predictions as a probability.
+#' @slot pred A factor. Stores class predictions as an unambiguous
+#'  class assignment.
+#' @slot decision.values Typically a matrix. Stores class predictions
+#'  as a decision value.
+#' @slot probability Typically a matrix. Stores class predictions
+#'  as a probability.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}\cr

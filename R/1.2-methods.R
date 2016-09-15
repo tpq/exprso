@@ -27,6 +27,7 @@ setGeneric("getProbeSet",
 #' @describeIn ExprsArray Method to show \code{ExprsArray} object.
 #'
 #' @param object,x An object of class \code{ExprsArray}.
+#'
 #' @export
 setMethod("show", "ExprsArray",
           function(object){
@@ -35,7 +36,7 @@ setMethod("show", "ExprsArray",
                 length(unique(object@annot$defineCase)), "\n")
 
             cat("@exprs summary:",
-                nrow(object@exprs), "probes by", ncol(object@exprs), "subjects\n")
+                nrow(object@exprs), "features by", ncol(object@exprs), "subjects\n")
 
             cat("@annot summary:",
                 nrow(object@annot), "subjects by", ncol(object@annot), "annotations\n")
@@ -50,14 +51,19 @@ setMethod("show", "ExprsArray",
 
 #' @describeIn ExprsArray Method to subset \code{ExprsArray} object.
 #'
-#' @param i,j,drop Subsets via \code{object@annot[i, j, drop]}.
+#' @param i,j Subsets entire \code{ExprsArray} object via
+#'  \code{object@annot[i, j]}. Returns \code{object@annot[, j]} if
+#'  argument \code{i} is missing.
+#'
+#' @aliases [,ExprsArray-method
+#' @docType methods
 #' @export
-setMethod('[', signature(x = "ExprsArray"),
-          function(x, i, j, drop){
+setMethod('[', signature(x = "ExprsArray", i = "ANY", j = "ANY"),
+          function(x, i, j){
 
             if(!missing(j)){
 
-              return(x@annot[i, j, drop = drop])
+              return(x@annot[i, j])
 
             }else{
 
@@ -71,7 +77,8 @@ setMethod('[', signature(x = "ExprsArray"),
 
 #' @describeIn ExprsArray Method to subset \code{ExprsArray} object.
 #'
-#' @param name Subsets via \code{object@annot[, name]}.
+#' @param name Returns \code{object@annot[, name]}.
+#'
 #' @export
 setMethod('$', signature(x = "ExprsArray"),
           function(x, name){
@@ -82,11 +89,11 @@ setMethod('$', signature(x = "ExprsArray"),
 
 #' @describeIn ExprsArray Method to subset \code{ExprsArray} object.
 #'
-# #' @param x An object of class \code{ExprsArray}.
-#' @param subset Subsets via \code{object@annot[subset, ]}.
-#'  Use this argument to rearrange feature order.
-#' @param select Subsets via \code{object@annot[, select]}.
-#'  Use this argument to rearrange subject order.
+#' @param subset Subsets entire \code{ExprsArray} object via
+#'  \code{object@annot[subset, ]}. Can be used to rearrange feature order.
+#' @param select Subsets entire \code{ExprsArray} object via
+#'  \code{object@annot[, select]}. Can be used to rearrange subject order.
+#'
 #' @export
 setMethod("subset", signature(x = "ExprsArray"),
           function(x, subset, select){
@@ -101,22 +108,22 @@ setMethod("subset", signature(x = "ExprsArray"),
           }
 )
 
-#' @describeIn ExprsArray Method to plot three dimensions of the expression data.
+#' @describeIn ExprsArray Method to quickly plot three dimensions of data.
 #'
-#' @param i,j,k A numeric scalar. Indexes the first, second, and third dimensions to plot.
+#' @param a,b,c A numeric scalar. Indexes the first, second, and third dimensions to plot.
 #' @param colors A character vector. Optional. Manually assign a color to each subject point.
 #' @param shapes A numeric vector. Optional. Manually assign a shape to each subject point.
 #'
 #' @import lattice
 #' @export
 setMethod("plot", signature(x = "ExprsArray", y = "missing"),
-          function(x, i = 1, j = 2, k = 3, colors, shapes){
+          function(x, a = 1, b = 2, c = 3, colors, shapes){
 
-            # Extract components i, j, and k
-            df <- data.frame(t(x@exprs))[, c(i, j, k)]
-            colnames(df) <- paste0(c("i_", "j_", "k_"), colnames(df))
+            # Extract components a, b, and c
+            df <- data.frame(t(x@exprs))[, c(a, b, c)]
+            colnames(df) <- paste0(c("a_", "b_", "c_"), colnames(df))
 
-            # Plot k ~ i + j in 3D
+            # Plot c ~ a + b in 3D
             func <- as.formula(paste(colnames(df)[3], "~",
                                      colnames(df)[1], "+",
                                      colnames(df)[2],
@@ -128,6 +135,9 @@ setMethod("plot", signature(x = "ExprsArray", y = "missing"),
 )
 
 #' @describeIn ExprsArray Method to plot summary graphs for a sub-sample of expression data.
+#'
+#' @importFrom stats qqnorm density
+#' @importFrom graphics layout boxplot
 #' @export
 setMethod("summary", "ExprsArray",
           function(object){
@@ -152,6 +162,7 @@ setMethod("summary", "ExprsArray",
 )
 
 #' @describeIn ExprsArray Method to return features within an \code{ExprsArray} object.
+#'
 #' @export
 setMethod("getProbeSet", "ExprsArray",
           function(object){
@@ -166,6 +177,7 @@ setMethod("getProbeSet", "ExprsArray",
 #' @describeIn ExprsModel Method to show \code{ExprsModel} object.
 #'
 #' @param object An object of class \code{ExprsModel}.
+#'
 #' @export
 setMethod("show", "ExprsModel",
           function(object){
@@ -184,6 +196,7 @@ setMethod("show", "ExprsModel",
 )
 
 #' @describeIn ExprsModel Method to return features within an \code{ExprsModel} object.
+#'
 #' @export
 setMethod("getProbeSet", "ExprsModel",
           function(object){
@@ -197,7 +210,9 @@ setMethod("getProbeSet", "ExprsModel",
 
 #' @describeIn ExprsPipeline Method to show \code{ExprsPipeline} object.
 #'
-#' @param object An object of class \code{ExprsPipeline}.
+#' @param object,x An object of class \code{ExprsPipeline}.
+#'
+#' @importFrom utils head tail
 #' @export
 setMethod("show", "ExprsPipeline",
           function(object){
@@ -234,14 +249,19 @@ setMethod("show", "ExprsPipeline",
 
 #' @describeIn ExprsPipeline Method to subset \code{ExprsPipeline} object.
 #'
-#' @param i,j,drop Subsets via \code{object@summary[i, j, drop]}.
+#' @param i,j Subsets entire \code{ExprsPipeline} object via
+#'  \code{object@summary[i, j]}. Returns \code{object@summary[, j]} if
+#'  argument \code{i} is missing.
+#'
+#' @aliases [,ExprsPipeline-method
+#' @docType methods
 #' @export
-setMethod('[', signature(x = "ExprsPipeline"),
-          function(x, i, j, drop){
+setMethod('[', signature(x = "ExprsPipeline", i = "ANY", j = "ANY"),
+          function(x, i, j){
 
             if(!missing(j)){
 
-              return(x@summary[i, j, drop = drop])
+              return(x@summary[i, j])
 
             }else{
 
@@ -255,7 +275,8 @@ setMethod('[', signature(x = "ExprsPipeline"),
 
 #' @describeIn ExprsPipeline Method to subset \code{ExprsPipeline} object.
 #'
-#' @param name Subsets via \code{object@summary[, name]}.
+#' @param name Returns \code{object@summary[, name]}.
+#'
 #' @export
 setMethod('$', signature(x = "ExprsPipeline"),
           function(x, name){
@@ -266,11 +287,11 @@ setMethod('$', signature(x = "ExprsPipeline"),
 
 #' @describeIn ExprsPipeline Method to subset \code{ExprsPipeline} object.
 #'
-# #' @param x An object of class \code{ExprsPipeline}.
-#' @param subset Subsets via \code{object@summary[subset, ]}.
-#'  Use this argument to rearrange feature order.
-#' @param select Subsets via \code{object@summary[, select]}.
-#'  Use this argument to rearrange subject order.
+#' @param subset Subsets entire \code{ExprsPipeline} object via
+#'  \code{object@summary[subset, ]}. Can be used to rearrange summary table.
+#' @param select Subsets entire \code{ExprsPipeline} object via
+#'  \code{object@summary[, select]}. Can be used to rearrange summary table.
+#'
 #' @export
 setMethod("subset", signature(x = "ExprsPipeline"),
           function(x, subset, select){
@@ -286,6 +307,8 @@ setMethod("subset", signature(x = "ExprsPipeline"),
 )
 
 #' @describeIn ExprsPipeline Method to summarize \code{ExprsPipeline} parameters and performances.
+#'
+#' @importFrom stats sd
 #' @export
 setMethod("summary", "ExprsPipeline",
           function(object){
@@ -309,8 +332,9 @@ setMethod("summary", "ExprsPipeline",
 
 #' @describeIn ExprsPipeline Method to return features within an \code{ExprsPredict} model.
 #'
-#' @param index A numeric scalar. Indicates the i-th model from which to retrieve the features. If missing,
-#'  \code{getProbeSet} will tabulate features across all models.
+#' @param index A numeric scalar. The i-th model from which to retrieve features.
+#'  If missing, \code{getProbeSet} will tabulate features across all models.
+#'
 #' @export
 setMethod("getProbeSet", "ExprsPipeline",
           function(object, index){
@@ -333,7 +357,9 @@ setMethod("getProbeSet", "ExprsPipeline",
 
 #' @describeIn ExprsEnsemble Method to show \code{ExprsEnsemble} object.
 #'
-#' @param object An object of class \code{ExprsEnsemble}.
+#' @param index A numeric scalar. The i-th model from which to retrieve features.
+#'  If missing, \code{getProbeSet} will tabulate features across all models.
+#'
 #' @export
 setMethod("show", "ExprsEnsemble",
           function(object){
@@ -357,6 +383,7 @@ setMethod("show", "ExprsEnsemble",
 #' @describeIn ExprsEnsemble Method to return features within an \code{ExprsEnsemble} model.
 #'
 #' @inheritParams getProbeSet
+#'
 #' @export
 setMethod("getProbeSet", "ExprsEnsemble",
           function(object, index){
@@ -380,6 +407,7 @@ setMethod("getProbeSet", "ExprsEnsemble",
 #' @describeIn ExprsPredict Method to show \code{ExprsPredict} object.
 #'
 #' @param object An object of class \code{ExprsPredict}.
+#'
 #' @export
 setMethod("show", "ExprsPredict",
           function(object){

@@ -5,6 +5,7 @@
 \alias{$,ExprsArray-method}
 \alias{ExprsArray-class}
 \alias{[,ExprsArray,ANY,ANY,ANY-method}
+\alias{[,ExprsArray-method}
 \alias{getProbeSet,ExprsArray-method}
 \alias{plot,ExprsArray,missing-method}
 \alias{show,ExprsArray-method}
@@ -14,13 +15,13 @@
 \usage{
 \S4method{show}{ExprsArray}(object)
 
-\S4method{[}{ExprsArray,ANY,ANY,ANY}(x, i, j, drop)
+\S4method{[}{ExprsArray,ANY,ANY,ANY}(x, i, j)
 
 \S4method{$}{ExprsArray}(x, name)
 
 \S4method{subset}{ExprsArray}(x, subset, select)
 
-\S4method{plot}{ExprsArray,missing}(x, i = 1, j = 2, k = 3, colors,
+\S4method{plot}{ExprsArray,missing}(x, a = 1, b = 2, c = 3, colors,
   shapes)
 
 \S4method{summary}{ExprsArray}(object)
@@ -30,21 +31,23 @@
 \arguments{
 \item{object, x}{An object of class \code{ExprsArray}.}
 
-\item{i, j, drop}{Subsets via \code{object@annot[i, j, drop]}.}
+\item{i, j}{Subsets entire \code{ExprsArray} object via
+\code{object@annot[i, j]}. Returns \code{object@annot[, j]} if
+argument \code{i} is missing.}
 
-\item{name}{Subsets via \code{object@annot[, name]}.}
+\item{name}{Returns \code{object@annot[, name]}.}
 
-\item{subset}{Subsets via \code{object@annot[subset, ]}.
-Use this argument to rearrange feature order.}
+\item{subset}{Subsets entire \code{ExprsArray} object via
+\code{object@annot[subset, ]}. Can be used to rearrange feature order.}
 
-\item{select}{Subsets via \code{object@annot[, select]}.
-Use this argument to rearrange subject order.}
+\item{select}{Subsets entire \code{ExprsArray} object via
+\code{object@annot[, select]}. Can be used to rearrange subject order.}
+
+\item{a, b, c}{A numeric scalar. Indexes the first, second, and third dimensions to plot.}
 
 \item{colors}{A character vector. Optional. Manually assign a color to each subject point.}
 
 \item{shapes}{A numeric vector. Optional. Manually assign a shape to each subject point.}
-
-\item{i, j, k}{A numeric scalar. Indexes the first, second, and third dimensions to plot.}
 }
 \description{
 An S4 class to store feature and annotation data
@@ -59,7 +62,7 @@ An S4 class to store feature and annotation data
 
 \item \code{subset}: Method to subset \code{ExprsArray} object.
 
-\item \code{plot}: Method to plot three dimensions of the expression data.
+\item \code{plot}: Method to quickly plot three dimensions of data.
 
 \item \code{summary}: Method to plot summary graphs for a sub-sample of expression data.
 
