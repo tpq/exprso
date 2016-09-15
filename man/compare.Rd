@@ -27,7 +27,7 @@ the annotation test returns a \code{TRUE} result}
 \value{
 A list of three logical vectors. The first and second elements
 of the list correspond to "internal" comparisons for the two provided
-\cod{ExprsArray} objects, respectively. The third element of the list
+\code{ExprsArray} objects, respectively. The third element of the list
 corresponds to comparisons made between the provided objects.
 }
 \description{
