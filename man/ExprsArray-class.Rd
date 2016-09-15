@@ -68,7 +68,7 @@ An S4 class to store feature and annotation data
 \section{Slots}{
 
 \describe{
-\item{\code{exprs}}{A matrix. Stores the expression data.}
+\item{\code{exprs}}{A matrix. Stores the feature data.}
 
 \item{\code{annot}}{A data.frame. Stores the annotation data.}
 

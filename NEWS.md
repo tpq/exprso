@@ -1,6 +1,10 @@
 ## exprso 1.0.2.9000
 * 0-global.R
   * Includes all global function definitions.
+* 1.1-classes.R
+  * Revised documentation
+* 1.2-methods.R
+  * [PLACEHOLDER]
 * 2.1-import.R
   * Revised documentation
 

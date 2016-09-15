@@ -3,7 +3,7 @@
 
 #' An S4 class to store feature and annotation data
 #'
-#' @slot exprs A matrix. Stores the expression data.
+#' @slot exprs A matrix. Stores the feature data.
 #' @slot annot A data.frame. Stores the annotation data.
 #' @slot preFilter Typically a list. Stores feature selection history.
 #' @slot reductionModel Typically a list. Stores dimension reduction history.
