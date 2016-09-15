@@ -54,6 +54,10 @@ devtools::install_github("tpq/exprso")
 library(exprso)
 ```
 
+```{r, echo = FALSE}
+set.seed(1)
+```
+
 ## Importing data
 
 With *exprso* loaded, we can import data in one of three ways. First, we can import data as stored locally in a tab-delimited text file. The construction of this import function, `arrayRead`, assumes the data file contains the subjects as rows and variables as columns, with annotation variables (e.g., sex or age) appearing before the feature variables (e.g., mRNA expression values). The `include` argument lists any number of annotation vectors to assign to each class label. In the example below, we assign the annotation "Control" to the first class; then, we assign the annotations "ASD" and "PDDNOS" to the second class. Any subjects not assigend to a class will get dropped from the resultant object.
