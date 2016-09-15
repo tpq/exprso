@@ -7,25 +7,28 @@
 GSE2eSet(gse, colID = "ID_REF", colVal = "VALUE")
 }
 \arguments{
-\item{colID}{A numeric or character index. The column by which to name subjects.}
+\item{colID}{A character string. The GSE column name that contains the feature identity.}
+
+\item{colVal}{A character string. The GSE column name that contains the feature value.}
 
 \item{eSet}{An \code{eSet} object.}
 }
 \description{
-A convenience function to build an \code{eSet} object from a GSE data source.
+A convenience function that builds an \code{eSet} object from a GSE data source.
 }
 \details{
 The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a curated version
  the former. These GDS data files easily convert to an  \code{ExpressionSet} (abbreviated
  \code{eSet}) object using the \code{GDS2eSet} function available from the GEOquery package.
  However, not all GSE data files have a corresponding GDS data file available. To convert GSE
- data files into \code{eSet} objects, \code{exprso} provides this convenience function. However,
- the user should note that GSE data files do not always get stored in an easy to parse format.
- Although this function has worked succesfully with several GSE data files, we cannot make any
- guarantee that it may not fail for some.
+ data files into \code{eSet} objects, \code{exprso} provides this convenience function.
 
-To acquire GSE data files, use the function \code{getGEO} from the GEOquery package, for example
- \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}. For more information, see the GEOquery package.
+However, the user should note that GSE data files do not always get stored in an easy to parse format.
+ Although this function has worked succesfully with some GSE data files, we cannot make any
+ guarantee that it will work for all GSE data files.
+
+To acquire GSE data files, use the function \code{getGEO} from the GEOquery package (e.g.,
+ \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}). For more information, see the GEOquery package.
 }
 \seealso{
 \code{\link{ExprsArray-class}}, \code{\link{arrayRead}}, \code{\link{arrayEset}}

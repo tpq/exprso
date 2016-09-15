@@ -3,29 +3,34 @@
 
 #' Import Data from File
 #'
-#' A convenience function to build an \code{ExprsArray} object from a tab-delimited file.
+#' A convenience function that builds an \code{ExprsArray} object from a tab-delimited file.
 #'
-#' \code{arrayRead} conveniently builds an \code{ExprsArray} object from a tab-delimited
+#' \code{arrayRead} helps build an \code{ExprsArray} object from a tab-delimited
 #'  data file, passing along the \code{file} and \code{...} argument(s) to
-#'  \code{\link{read.delim}}. This function expects the delimited data file to assume
+#'  \code{\link{read.delim}}. This function expects that the delimited data file has
 #'  the following format: rows indicate subject entries while columns indicate measured
-#'  variables. The first several columns should contain annotation information (e.g. age,
-#'  sex, diagnosis). The remaining columns should contain the feature (e.g. expression)
-#'  data. The argument \code{probes.begin} defines the j-th column at which feature data
-#'  begins. By default, \code{arrayRead} forces \code{stringsAsFactors = FASE}. This
-#'  function automatically removes probes with missing (i.e. \code{NA}) values.
+#'  variables.
+#'
+#' The first several columns should contain annotation information (e.g., age,
+#'  sex, diagnosis). The remaining columns should contain feature data (e.g. expression
+#'  values). The argument \code{probes.begin} defines the j-th column at which the feature
+#'  data starts. By default, \code{arrayRead} forces \code{stringsAsFactors = FASE}.
+#'
+#' This function automatically removes any features with \code{NA} values.
 #'
 #' @param file A character string. Argument passed along to \code{read.delim}.
-#' @param probes.begin A numeric scalar. The j-th column at which feature data begins.
-#' @param colID A numeric or character index. The column by which to name subjects.
+#' @param probes.begin A numeric scalar. The j-th column at which feature data starts.
+#' @param colID A numeric or character index. The column used to name subjects.
 #' @param colBy A numeric or character index. The column that contains group annotations.
 #' @param include A list of character vectors. Specifies which annotations in \code{colBy}
 #'  to include into which groups. Each element of a list specifies a unique group while
 #'  each element of the character vector specifies an annotation to fit to that group. For
 #'  binary classification, the first list element defines the negative or control group.
+#' @param ... Additional arguments passed along to \code{read.delim}.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{arrayEset}}, \code{\link{GSE2eSet}}
+#' @importFrom utils read.delim
 #' @export
 arrayRead <- function(file, probes.begin, colID, colBy, include, ...){ # args to read.delim
 
@@ -81,12 +86,12 @@ arrayRead <- function(file, probes.begin, colID, colBy, include, ...){ # args to
 
 #' Import Data from eSet
 #'
-#' A convenience function to build an \code{ExprsArray} object from an \code{eSet} object.
+#' A convenience function that builds an \code{ExprsArray} object from an \code{eSet} object.
 #'
-#' The package Biobase maintains a popular class called \code{ExpressionSet} that
+#' The package Biobase maintains a popular class object called \code{ExpressionSet} that
 #'  often gets used to store expression data. This function converts this \code{eSet}
-#'  object into an \code{ExprsArray} object. This function automatically removes probes
-#'  with missing (i.e. \code{NA}) values.
+#'  object into an \code{ExprsArray} object. This function automatically removes any
+#'  features with \code{NA} values.
 #'
 #' @param eSet An \code{eSet} object.
 #' @inheritParams arrayRead
@@ -147,22 +152,24 @@ arrayEset <- function(eSet, colBy, include){
 
 #' Convert GSE to eSet
 #'
-#' A convenience function to build an \code{eSet} object from a GSE data source.
+#' A convenience function that builds an \code{eSet} object from a GSE data source.
 #'
 #' The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a curated version
 #'  the former. These GDS data files easily convert to an  \code{ExpressionSet} (abbreviated
 #'  \code{eSet}) object using the \code{GDS2eSet} function available from the GEOquery package.
 #'  However, not all GSE data files have a corresponding GDS data file available. To convert GSE
-#'  data files into \code{eSet} objects, \code{exprso} provides this convenience function. However,
-#'  the user should note that GSE data files do not always get stored in an easy to parse format.
-#'  Although this function has worked succesfully with several GSE data files, we cannot make any
-#'  guarantee that it may not fail for some.
+#'  data files into \code{eSet} objects, \code{exprso} provides this convenience function.
 #'
-#' To acquire GSE data files, use the function \code{getGEO} from the GEOquery package, for example
-#'  \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}. For more information, see the GEOquery package.
+#' However, the user should note that GSE data files do not always get stored in an easy to parse format.
+#'  Although this function has worked succesfully with some GSE data files, we cannot make any
+#'  guarantee that it will work for all GSE data files.
+#'
+#' To acquire GSE data files, use the function \code{getGEO} from the GEOquery package (e.g.,
+#'  \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}). For more information, see the GEOquery package.
 #'
 #' @param eSet An \code{eSet} object.
-#' @inheritParams arrayRead
+#' @param colID A character string. The GSE column name that contains the feature identity.
+#' @param colVal A character string. The GSE column name that contains the feature value.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{arrayRead}}, \code{\link{arrayEset}}
@@ -172,8 +179,6 @@ GSE2eSet <- function(gse, colID = "ID_REF", colVal = "VALUE"){
 
   # Check for non-unique platforms
   gsms <- unlist(lapply(GEOquery::GSMList(gse), function(g){ GEOquery::Meta(g)$platform}))
-
-  # Check for non-unique platforms
   if(length(unique(gsms)) > 1) stop("GSE contains non-unique platforms!")
 
   # Provide an opportunity for user to select a new platform ID column
@@ -245,8 +250,6 @@ GSE2eSet <- function(gse, colID = "ID_REF", colVal = "VALUE"){
 
   # Combine annotations into data.frame
   phenoData <- do.call(plyr::rbind.fill, pdata)
-
-  # Set row.names to "sample" column
   rownames(phenoData) <- phenoData$sample
 
   # Build eSet object

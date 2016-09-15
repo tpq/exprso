@@ -9,9 +9,9 @@ arrayRead(file, probes.begin, colID, colBy, include, ...)
 \arguments{
 \item{file}{A character string. Argument passed along to \code{read.delim}.}
 
-\item{probes.begin}{A numeric scalar. The j-th column at which feature data begins.}
+\item{probes.begin}{A numeric scalar. The j-th column at which feature data starts.}
 
-\item{colID}{A numeric or character index. The column by which to name subjects.}
+\item{colID}{A numeric or character index. The column used to name subjects.}
 
 \item{colBy}{A numeric or character index. The column that contains group annotations.}
 
@@ -19,20 +19,25 @@ arrayRead(file, probes.begin, colID, colBy, include, ...)
 to include into which groups. Each element of a list specifies a unique group while
 each element of the character vector specifies an annotation to fit to that group. For
 binary classification, the first list element defines the negative or control group.}
+
+\item{...}{Additional arguments passed along to \code{read.delim}.}
 }
 \description{
-A convenience function to build an \code{ExprsArray} object from a tab-delimited file.
+A convenience function that builds an \code{ExprsArray} object from a tab-delimited file.
 }
 \details{
-\code{arrayRead} conveniently builds an \code{ExprsArray} object from a tab-delimited
+\code{arrayRead} helps build an \code{ExprsArray} object from a tab-delimited
  data file, passing along the \code{file} and \code{...} argument(s) to
- \code{\link{read.delim}}. This function expects the delimited data file to assume
+ \code{\link{read.delim}}. This function expects that the delimited data file has
  the following format: rows indicate subject entries while columns indicate measured
- variables. The first several columns should contain annotation information (e.g. age,
- sex, diagnosis). The remaining columns should contain the feature (e.g. expression)
- data. The argument \code{probes.begin} defines the j-th column at which feature data
- begins. By default, \code{arrayRead} forces \code{stringsAsFactors = FASE}. This
- function automatically removes probes with missing (i.e. \code{NA}) values.
+ variables.
+
+The first several columns should contain annotation information (e.g., age,
+ sex, diagnosis). The remaining columns should contain feature data (e.g. expression
+ values). The argument \code{probes.begin} defines the j-th column at which the feature
+ data starts. By default, \code{arrayRead} forces \code{stringsAsFactors = FASE}.
+
+This function automatically removes any features with \code{NA} values.
 }
 \seealso{
 \code{\link{ExprsArray-class}}, \code{\link{arrayEset}}, \code{\link{GSE2eSet}}

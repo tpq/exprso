@@ -17,13 +17,13 @@ each element of the character vector specifies an annotation to fit to that grou
 binary classification, the first list element defines the negative or control group.}
 }
 \description{
-A convenience function to build an \code{ExprsArray} object from an \code{eSet} object.
+A convenience function that builds an \code{ExprsArray} object from an \code{eSet} object.
 }
 \details{
-The package Biobase maintains a popular class called \code{ExpressionSet} that
+The package Biobase maintains a popular class object called \code{ExpressionSet} that
  often gets used to store expression data. This function converts this \code{eSet}
- object into an \code{ExprsArray} object. This function automatically removes probes
- with missing (i.e. \code{NA}) values.
+ object into an \code{ExprsArray} object. This function automatically removes any
+ features with \code{NA} values.
 }
 \seealso{
 \code{\link{ExprsArray-class}}, \code{\link{arrayRead}}, \code{\link{GSE2eSet}}

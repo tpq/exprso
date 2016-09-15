@@ -1,3 +1,9 @@
+## exprso 1.0.2.9000
+* 0-global.R
+  * Includes all global function definitions.
+* 2.1-import.R
+  * Revised documentation
+
 ## exprso 1.0.2
 ---------------------
 * 1.2-methods.R
