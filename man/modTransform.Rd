@@ -6,7 +6,7 @@
 \alias{modTransform,ExprsArray-method}
 \title{Log Transform Data}
 \usage{
-modTransform(object, plotSkip)
+modTransform(object, plotSkip = TRUE)
 
 \S4method{modTransform}{ExprsArray}(object, plotSkip = TRUE)
 }

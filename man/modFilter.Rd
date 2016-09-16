@@ -6,7 +6,7 @@
 \alias{modFilter,ExprsArray-method}
 \title{Hard Filter Data}
 \usage{
-modFilter(object, threshold, maximum, beta1, beta2, plotSkip)
+modFilter(object, threshold, maximum, beta1, beta2, plotSkip = TRUE)
 
 \S4method{modFilter}{ExprsArray}(object, threshold, maximum, beta1, beta2,
   plotSkip = TRUE)

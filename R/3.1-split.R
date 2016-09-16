@@ -42,7 +42,10 @@ setGeneric("splitSample",
 #' @rdname split
 #' @export
 setGeneric("splitStratify",
-           function(object, percent.include, colBy, bin, breaks, ...) standardGeneric("splitStratify")
+           function(object, percent.include, colBy = NULL,
+                    bin = rep(FALSE, length(colBy)),
+                    breaks = rep(list(NA), length(colBy)),
+                    ...) standardGeneric("splitStratify")
 )
 
 ###########################################################
@@ -112,14 +115,12 @@ setMethod("splitSample", "ExprsArray",
 #'  \code{colBy} column using \code{cut} (e.g. \code{bin = c(FALSE, TRUE)}).
 #' @param breaks A list. Each element of the list should correspond to a
 #'  \code{breaks} argment passed to \code{cut} for the respective
-#'  \code{colBy} column. Set an element to \code{NULL} when not binning
-#'  that respective \code{colBy}.
+#'  \code{colBy} column. Set an element to \code{NA} when not binning
+#'  that \code{colBy}.
 #'
 #' @export
 setMethod("splitStratify", "ExprsArray",
-          function(object, percent.include, colBy = NULL,
-                   bin = rep(FALSE, length(colBy)),
-                   breaks, ...){
+          function(object, percent.include, colBy, bin, breaks, ...){
 
             if(percent.include < 1 | percent.include > 100){
 

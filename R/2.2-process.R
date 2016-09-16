@@ -30,14 +30,14 @@
 #'
 #' @export
 setGeneric("modFilter",
-           function(object, threshold, maximum, beta1, beta2, plotSkip) standardGeneric("modFilter")
+           function(object, threshold, maximum, beta1, beta2, plotSkip = TRUE) standardGeneric("modFilter")
 )
 
 #' @describeIn modFilter Method to filter an \code{ExprsArray} object.
 #'
 #' @export
 setMethod("modFilter", "ExprsArray",
-          function(object, threshold, maximum, beta1, beta2, plotSkip = TRUE){
+          function(object, threshold, maximum, beta1, beta2, plotSkip){
 
             if(!plotSkip){
 
@@ -90,14 +90,14 @@ setMethod("modFilter", "ExprsArray",
 #'
 #' @export
 setGeneric("modTransform",
-           function(object, plotSkip) standardGeneric("modTransform")
+           function(object, plotSkip = TRUE) standardGeneric("modTransform")
 )
 
 #' @describeIn modTransform Method to transform an \code{ExprsArray} object.
 #'
 #' @export
 setMethod("modTransform", "ExprsArray",
-          function(object, plotSkip = TRUE){
+          function(object, plotSkip){
 
             if(!plotSkip){
 
@@ -135,7 +135,7 @@ setMethod("modTransform", "ExprsArray",
 #' \code{modNormalize} normalizes feature data.
 #'
 #' This method normalizes subject and/or feature vectors according to the
-#'  formula \code{x' = (x - mean(x)) / sd(x)}.
+#'  formula \code{y = (x - mean(x)) / sd(x)}.
 #'
 #' @inheritParams modFilter
 #' @param MARGIN A numeric vector. The margin by which to normalize.
@@ -150,14 +150,14 @@ setMethod("modTransform", "ExprsArray",
 #'
 #' @export
 setGeneric("modNormalize",
-           function(object, MARGIN, plotSkip) standardGeneric("modNormalize")
+           function(object, MARGIN = c(1, 2), plotSkip = TRUE) standardGeneric("modNormalize")
 )
 
 #' @describeIn modNormalize Method to normalize an \code{ExprsArray} object.
 #'
 #' @export
 setMethod("modNormalize", "ExprsArray",
-          function(object, MARGIN = c(1, 2), plotSkip = TRUE){
+          function(object, MARGIN, plotSkip){
 
             if(!plotSkip){
 

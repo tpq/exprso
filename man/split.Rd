@@ -11,12 +11,14 @@
 \usage{
 splitSample(object, percent.include, ...)
 
-splitStratify(object, percent.include, colBy, bin, breaks, ...)
+splitStratify(object, percent.include, colBy = NULL, bin = rep(FALSE,
+  length(colBy)), breaks = rep(list(NA), length(colBy)), ...)
 
 \S4method{splitSample}{ExprsArray}(object, percent.include, ...)
 
 \S4method{splitStratify}{ExprsArray}(object, percent.include, colBy = NULL,
-  bin = rep(FALSE, length(colBy)), breaks, ...)
+  bin = rep(FALSE, length(colBy)), breaks = rep(list(NA), length(colBy)),
+  ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to split.}
@@ -37,8 +39,8 @@ sampling will occur across the class label annotation only.}
 
 \item{breaks}{A list. Each element of the list should correspond to a
 \code{breaks} argment passed to \code{cut} for the respective
-\code{colBy} column. Set an element to \code{NULL} when not binning
-that respective \code{colBy}.}
+\code{colBy} column. Set an element to \code{NA} when not binning
+that \code{colBy}.}
 }
 \value{
 Returns a list of two \code{ExprsArray} objects.
