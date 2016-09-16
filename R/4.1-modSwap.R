@@ -29,13 +29,14 @@
 #'
 #' @export
 setGeneric("modSwap",
-           function(object, ...) standardGeneric("modSwap")
+           function(object, how = "fp", percent = 10, theta = 1) standardGeneric("modSwap")
 )
 
 #' @describeIn modSwap A method to mutate \code{ExprsBinary} objects.
 #'
 #' @param how A character string. The method used to mutate case subjects. Select from
-#'  "rp.1", "rp.2", "fp", "ng", or "tg".
+#'  "rp.1", "rp.2", "fp", "ng", or "tg". Alternatively, supply another \code{ExprsBinary}
+#'  object (see Details).
 #' @param percent A numeric scalar. The percentage of subjects to mutate.
 #' @param theta A numeric scalar. Applies a weight to the distribution of means when
 #'  mutating subjects via the "ng" or "tg" method.
@@ -43,9 +44,10 @@ setGeneric("modSwap",
 #' @return An \code{ExprsBinary} object containing mutated subjects with an index
 #'  appended to the \code{$mutated} column of the \code{@@annot} slot.
 #'
+#' @importFrom stats rnorm
 #' @export
 setMethod("modSwap", "ExprsBinary",
-          function(object, how = "fp", percent = 10, theta = 1){
+          function(object, how, percent, theta){
 
             if(percent < 1 | percent > 100){
 
@@ -106,12 +108,12 @@ setMethod("modSwap", "ExprsBinary",
               means <- apply(object@exprs[, cases], MARGIN = 1, mean)
               sds <- apply(object@exprs[, cases], MARGIN = 1, sd)
               ng.means <- unlist(lapply(1:length(means),
-                                        function(i) rnorm(1, mean = means[i], sd = sds[i]/theta)))
+                                        function(i) stats::rnorm(1, mean = means[i], sd = sds[i]/theta)))
 
               for(mut.col in mut.name){
 
                 object@exprs[, mut.col] <- unlist(lapply(1:length(ng.means),
-                                                         function(i) rnorm(1, mean = ng.means[i], sd = sds[i])))
+                                                         function(i) stats::rnorm(1, mean = ng.means[i], sd = sds[i])))
               }
 
             }else if(how == "tg"){
@@ -120,12 +122,12 @@ setMethod("modSwap", "ExprsBinary",
               means <- apply(object@exprs, MARGIN = 1, mean)
               sds <- apply(object@exprs, MARGIN = 1, sd)
               tg.means <- unlist(lapply(1:length(means),
-                                        function(i) rnorm(1, mean = means[i], sd = sds[i]/theta)))
+                                        function(i) stats::rnorm(1, mean = means[i], sd = sds[i]/theta)))
 
               for(mut.col in mut.name){
 
                 object@exprs[, mut.col] <- unlist(lapply(1:length(tg.means),
-                                                         function(i) rnorm(1, mean = tg.means[i], sd = sds[i])))
+                                                         function(i) stats::rnorm(1, mean = tg.means[i], sd = sds[i])))
               }
 
             }else{
@@ -134,7 +136,7 @@ setMethod("modSwap", "ExprsBinary",
             }
 
             # Store Boolean index of mutated subjects in @annot
-            object@annot$mutated <- as.factor(rownames(object@annot) %in% mut.name)
+            object@annot$mutated <- as.numeric(rownames(object@annot) %in% mut.name)
 
             # Calculate "after" PCA
             temp2 <- fsPrcomp(object, probes = 0)

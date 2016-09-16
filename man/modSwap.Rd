@@ -6,7 +6,7 @@
 \alias{modSwap,ExprsBinary-method}
 \title{Swap Case Subjects}
 \usage{
-modSwap(object, ...)
+modSwap(object, how = "fp", percent = 10, theta = 1)
 
 \S4method{modSwap}{ExprsBinary}(object, how = "fp", percent = 10,
   theta = 1)
@@ -15,7 +15,8 @@ modSwap(object, ...)
 \item{object}{An \code{ExprsBinary} object to mutate.}
 
 \item{how}{A character string. The method used to mutate case subjects. Select from
-"rp.1", "rp.2", "fp", "ng", or "tg".}
+"rp.1", "rp.2", "fp", "ng", or "tg". Alternatively, supply another \code{ExprsBinary}
+object (see Details).}
 
 \item{percent}{A numeric scalar. The percentage of subjects to mutate.}
 

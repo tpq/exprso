@@ -35,7 +35,7 @@ addition to class labels annotation. If \code{colBy = NULL}, random
 sampling will occur across the class label annotation only.}
 
 \item{bin}{A logical vector indicating whether to bin the respective
-\code{colBy} column using \code{cut} (e.g. \code{bin = c(FALSE, TRUE)}).}
+\code{colBy} column using \code{cut} (e.g., \code{bin = c(FALSE, TRUE)}).}
 
 \item{breaks}{A list. Each element of the list should correspond to a
 \code{breaks} argment passed to \code{cut} for the respective
@@ -56,7 +56,7 @@ A collection of functions to build the training and validation sets.
  contain at least one subject for each class label. If this method finds no solution
  within 10 iterations, the function will post an error. Set \code{percent.include = 100}
  to skip random sampling and return a \code{NULL} validation set. Additional arguments
- (e.g. \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
+ (e.g., \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
  for all (i.e., binary and multi-class) \code{ExprsArray} objects.
 
 \code{splitStratify} builds a training and validation set through a stratified

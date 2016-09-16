@@ -17,7 +17,7 @@
 #'  contain at least one subject for each class label. If this method finds no solution
 #'  within 10 iterations, the function will post an error. Set \code{percent.include = 100}
 #'  to skip random sampling and return a \code{NULL} validation set. Additional arguments
-#'  (e.g. \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
+#'  (e.g., \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
 #'  for all (i.e., binary and multi-class) \code{ExprsArray} objects.
 #'
 #' \code{splitStratify} builds a training and validation set through a stratified
@@ -112,7 +112,7 @@ setMethod("splitSample", "ExprsArray",
 #'  addition to class labels annotation. If \code{colBy = NULL}, random
 #'  sampling will occur across the class label annotation only.
 #' @param bin A logical vector indicating whether to bin the respective
-#'  \code{colBy} column using \code{cut} (e.g. \code{bin = c(FALSE, TRUE)}).
+#'  \code{colBy} column using \code{cut} (e.g., \code{bin = c(FALSE, TRUE)}).
 #' @param breaks A list. Each element of the list should correspond to a
 #'  \code{breaks} argment passed to \code{cut} for the respective
 #'  \code{colBy} column. Set an element to \code{NA} when not binning
@@ -169,7 +169,7 @@ setMethod("splitStratify", "ExprsArray",
               # Provide error for anticipated stratum of size 0
               if(0 %in% sizes) stop("This function cannot create a stratum of size 0. Subset first!")
 
-              # Perform stratification with remaining non-NA colBy values (e.g. those introduced by binning)
+              # Perform stratification with remaining non-NA colBy values (e.g., those introduced by binning)
               s <- sampling::strata(df, stratanames = colnames(df), size = sizes, method = "srswor")
               if(!identical(rownames(s), rownames(df)[s$ID_unit])) stop("Uh-oh! DEBUG ERROR: 001")
 

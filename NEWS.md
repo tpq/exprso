@@ -13,6 +13,9 @@
   * Revised documentation.
 * 3.1-split.R
   * Revised documentation.
+* 4.1-modSwap.R
+  * Store mutated annotation as boolean (not factor).
+  * Revised documentation.
 
 ## exprso 1.0.2
 ---------------------
