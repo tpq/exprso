@@ -26,14 +26,6 @@
 #'  with control subjects from the second dataset.
 #'
 #' @param object An \code{ExprsBinary} object to mutate.
-#'
-#' @export
-setGeneric("modSwap",
-           function(object, how = "fp", percent = 10, theta = 1) standardGeneric("modSwap")
-)
-
-#' @describeIn modSwap A method to mutate \code{ExprsBinary} objects.
-#'
 #' @param how A character string. The method used to mutate case subjects. Select from
 #'  "rp.1", "rp.2", "fp", "ng", or "tg". Alternatively, supply another \code{ExprsBinary}
 #'  object (see Details).
@@ -43,6 +35,13 @@ setGeneric("modSwap",
 #'
 #' @return An \code{ExprsBinary} object containing mutated subjects with an index
 #'  appended to the \code{$mutated} column of the \code{@@annot} slot.
+#'
+#' @export
+setGeneric("modSwap",
+           function(object, how = "fp", percent = 10, theta = 1) standardGeneric("modSwap")
+)
+
+#' @describeIn modSwap A method to mutate \code{ExprsBinary} objects.
 #'
 #' @importFrom stats rnorm
 #' @export

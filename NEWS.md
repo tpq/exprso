@@ -16,6 +16,8 @@
 * 4.1-modSwap.R
   * Store mutated annotation as boolean (not factor).
   * Revised documentation.
+* 4.2-modCluster.R
+  * Revised documentation.
 
 ## exprso 0.1.2
 ---------------------

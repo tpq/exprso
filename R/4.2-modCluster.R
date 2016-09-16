@@ -3,19 +3,15 @@
 
 #' Cluster Subjects
 #'
-#' This method clusters subjects based on expression data using any one of
-#'  several available clustering algorithms. See Arguments below for details.
+#' This method clusters subjects based on feature data using any one of
+#'  several available clustering algorithms. See Arguments below.
+#'
+#' Note that this function will expect the argument \code{k} to define the returned
+#'  number of clusters, except when \code{how = "kmeans"} in which case this
+#'  function will expect the argument \code{centers} instead.
 #'
 #' @param object An \code{ExprsArray object}. The object containing
 #'  the subject data to cluster.
-#'
-#' @export
-setGeneric("modCluster",
-           function(object, ...) standardGeneric("modCluster")
-)
-
-#' @describeIn modCluster Method to compare \code{ExprsArray} objects.
-#'
 #' @param probes A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should guide clustering. A character vector
 #'  indicates specifically which features by name should guide clustering.
@@ -26,18 +22,24 @@ setGeneric("modCluster",
 #' @param onlyCluster A logical sclar. Toggles whether to return a processed
 #'  cluster object or an updated \code{ExprsArray} object.
 #' @param ... Additional arguments to the cluster function and/or
-#'  other functions used for clustering (e.g., \code{dist} or
+#'  other functions used for clustering (e.g., \code{dist} and
 #'  \code{cutree}).
 #'
 #' @return Typically an \code{ExprsArray} object with subject cluster assignments
 #'  added to the "cluster" column of the \code{@@anot} slot.
 #'
-#' @importFrom stats hclust kmeans
-#' @importFrom cluster agnes clara diana fanny pam
+#' @export
+setGeneric("modCluster",
+           function(object, probes, how, onlyCluster = FALSE, ...) standardGeneric("modCluster")
+)
+
+#' @describeIn modCluster Method to compare \code{ExprsArray} objects.
 #'
+#' @importFrom stats hclust kmeans cutree dist
+#' @importFrom cluster agnes clara diana fanny pam
 #' @export
 setMethod("modCluster", "ExprsArray",
-          function(object, probes, how, onlyCluster = FALSE, ...){
+          function(object, probes, how, onlyCluster, ...){
 
             args <- as.list(substitute(list(...)))[-1]
 
@@ -121,14 +123,13 @@ setMethod("modCluster", "ExprsArray",
                 args <- append(args, list("k" = 2))
               }
 
-              # clara: cluster large applications
-              # fanny: fuzzy analysis
               args <- append(args, list("x" = data))
               result <- do.call(how, args)
 
             }else{
 
-              stop("Provided how not recognized. Select from 'hclust', 'kmeans', 'agnes', 'clara', 'diana', 'fanny', or 'pam'.\n")
+              stop("Provided how not recognized. Select from 'hclust', 'kmeans', 'agnes', ",
+                   "'clara', 'diana', 'fanny', or 'pam'.\n")
             }
 
             if(onlyCluster){

@@ -6,7 +6,7 @@
 \alias{modCluster,ExprsArray-method}
 \title{Cluster Subjects}
 \usage{
-modCluster(object, ...)
+modCluster(object, probes, how, onlyCluster = FALSE, ...)
 
 \S4method{modCluster}{ExprsArray}(object, probes, how, onlyCluster = FALSE,
   ...)
@@ -14,10 +14,6 @@ modCluster(object, ...)
 \arguments{
 \item{object}{An \code{ExprsArray object}. The object containing
 the subject data to cluster.}
-
-\item{...}{Additional arguments to the cluster function and/or
-other functions used for clustering (e.g., \code{dist} or
-\code{cutree}).}
 
 \item{probes}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should guide clustering. A character vector
@@ -30,14 +26,23 @@ Select from "hclust", "kmeans", "agnes", "clara", "diana", "fanny", or
 
 \item{onlyCluster}{A logical sclar. Toggles whether to return a processed
 cluster object or an updated \code{ExprsArray} object.}
+
+\item{...}{Additional arguments to the cluster function and/or
+other functions used for clustering (e.g., \code{dist} and
+\code{cutree}).}
 }
 \value{
 Typically an \code{ExprsArray} object with subject cluster assignments
  added to the "cluster" column of the \code{@anot} slot.
 }
 \description{
-This method clusters subjects based on expression data using any one of
- several available clustering algorithms. See Arguments below for details.
+This method clusters subjects based on feature data using any one of
+ several available clustering algorithms. See Arguments below.
+}
+\details{
+Note that this function will expect the argument \code{k} to define the returned
+ number of clusters, except when \code{how = "kmeans"} in which case this
+ function will expect the argument \code{centers} instead.
 }
 \section{Methods (by class)}{
 \itemize{
