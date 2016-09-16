@@ -9,9 +9,9 @@
 \alias{splitStratify,ExprsArray-method}
 \title{split \code{ExprsArray} objects}
 \usage{
-splitSample(object, ...)
+splitSample(object, percent.include, ...)
 
-splitStratify(object, ...)
+splitStratify(object, percent.include, colBy, bin, breaks, ...)
 
 \S4method{splitSample}{ExprsArray}(object, percent.include, ...)
 
@@ -21,11 +21,12 @@ splitStratify(object, ...)
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to split.}
 
-\item{...}{For \code{splitSample}: additional arguments passed
-along to \code{\link{sample}}.}
-
 \item{percent.include}{Specifies the percent of the total number
 of subjects to include in the training set.}
+
+\item{...}{For \code{splitSample}: additional arguments passed
+along to \code{\link{sample}}. For \code{splitSample}: additional
+arguments passed along to \code{\link{cut}}.}
 
 \item{colBy}{Specifies a vector of column names by which to stratify in
 addition to class labels annotation. If \code{colBy = NULL}, random
@@ -34,8 +35,10 @@ sampling will occur across the class label annotation only.}
 \item{bin}{A logical vector indicating whether to bin the respective
 \code{colBy} column using \code{cut} (e.g. \code{bin = c(FALSE, TRUE)}).}
 
-\item{...}{For \code{splitSample}: additional arguments passed
-along to \code{\link{cut}}.}
+\item{breaks}{A list. Each element of the list should correspond to a
+\code{breaks} argment passed to \code{cut} for the respective
+\code{colBy} column. Set an element to \code{NULL} when not binning
+that respective \code{colBy}.}
 }
 \value{
 Returns a list of two \code{ExprsArray} objects.
@@ -44,7 +47,7 @@ Returns a list of two \code{ExprsArray} objects.
 A collection of functions to build the training and validation sets.
 }
 \details{
-\code{splitSample} builds training and validation sets through randomly sampling
+\code{splitSample} builds a training and validation set by randomly sampling
  the subjects found within the \code{ExprsArray} object. Note that this method
  is not truly random. Instead, \code{splitSample} iterates through the random sampling
  process until it settles on a solution such that both the training and validation set
@@ -52,15 +55,16 @@ A collection of functions to build the training and validation sets.
  within 10 iterations, the function will post an error. Set \code{percent.include = 100}
  to skip random sampling and return a \code{NULL} validation set. Additional arguments
  (e.g. \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
- for all (i.e. binary and multi-class) \code{ExprsArray} objects.
+ for all (i.e., binary and multi-class) \code{ExprsArray} objects.
 
-\code{splitStratify} builds training and validation sets through a stratified
+\code{splitStratify} builds a training and validation set through a stratified
  random sampling process. This function utilizes the \code{strata} function from the
  sampling package as well as the \code{cut} function from the base package. The latter
  function provides a means by which to bin continuous data prior to stratified random
- sampling. We refer the user to the parameter descriptions to learn the specifics for
- how to use this function. When applied to an \code{ExprsMulti} object, this function
- stratifies subjects across all classes found in that object.
+ sampling. We refer the user to the parameter descriptions to learn the specifics of
+ how to apply binning, although the user might find it easier to instead bin
+ annotations beforehand. When applied to an \code{ExprsMulti} object, this function
+ stratifies subjects across all classes found in that dataset.
 }
 \seealso{
 \code{\link{ExprsArray-class}}

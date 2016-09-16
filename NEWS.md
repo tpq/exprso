@@ -11,6 +11,8 @@
 * 2.2-misc.R
   * Code renamed to file 2.2-process.R.
   * Revised documentation.
+* 3.1-split.R
+  * Revised documentation.
 
 ## exprso 1.0.2
 ---------------------

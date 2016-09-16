@@ -135,7 +135,7 @@ setMethod("modTransform", "ExprsArray",
 #' \code{modNormalize} normalizes feature data.
 #'
 #' This method normalizes subject and/or feature vectors according to the
-#'  formula \code{x\' = (x - mean(x)) / sd(x)}.
+#'  formula \code{x' = (x - mean(x)) / sd(x)}.
 #'
 #' @inheritParams modFilter
 #' @param MARGIN A numeric vector. The margin by which to normalize.
