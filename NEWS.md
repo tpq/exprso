@@ -8,6 +8,9 @@
   * Revised documentation.
 * 2.1-import.R
   * Revised documentation.
+* 2.2-misc.R
+  * Code renamed to file 2.2-process.R.
+  * Revised documentation.
 
 ## exprso 1.0.2
 ---------------------

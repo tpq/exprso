@@ -3,7 +3,7 @@
 
 #' Hard Filter Data
 #'
-#' \code{modFilter} imposes a hard filter for gene expression feature data.
+#' \code{modFilter} imposes a hard filter for (gene expression) feature data.
 #'
 #' This method reproduces the hard filter described by Deb and Reddy (2003)
 #'  for pre-processing the hallmark Golub ALL/AML dataset. This filter
@@ -13,16 +13,6 @@
 #' Next, this method includes only those features with (a) a range greater
 #'  than \code{beta1}, and also (b) a ratio of maximum gene expression to
 #'  minimum gene expression greater than \code{beta2}.
-#'
-#' @seealso
-#' \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
-#'
-#' @export
-setGeneric("modFilter",
-           function(object, ...) standardGeneric("modFilter")
-)
-
-#' @describeIn modFilter Method to filter an \code{ExprsArray} object.
 #'
 #' @param object Specifies the \code{ExprsArray} object to undergo pre-processing.
 #' @param threshold A numeric scalar. The value below which to assign this value.
@@ -34,6 +24,16 @@ setGeneric("modFilter",
 #' @param plotSkip A logical scalar. Toggles whether to produce side-by-side plots
 #'  of the before and after \code{ExprsArray} summary.
 #' @return A pre-processed \code{ExprsArray} object.
+#'
+#' @seealso
+#' \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
+#'
+#' @export
+setGeneric("modFilter",
+           function(object, threshold, maximum, beta1, beta2, plotSkip) standardGeneric("modFilter")
+)
+
+#' @describeIn modFilter Method to filter an \code{ExprsArray} object.
 #'
 #' @export
 setMethod("modFilter", "ExprsArray",
@@ -80,19 +80,20 @@ setMethod("modFilter", "ExprsArray",
 
 #' Log Transform Data
 #'
-#' \code{modTransform} log (base 2) transforms gene expression feature data.
+#' \code{modTransform} log (base 2) transforms feature data.
+#'
+#' @inheritParams modFilter
+#' @return A pre-processed \code{ExprsArray} object.
 #'
 #' @seealso
 #' \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
 #'
 #' @export
 setGeneric("modTransform",
-           function(object, ...) standardGeneric("modTransform")
+           function(object, plotSkip) standardGeneric("modTransform")
 )
 
 #' @describeIn modTransform Method to transform an \code{ExprsArray} object.
-#'
-#' @inheritParams modFilter
 #'
 #' @export
 setMethod("modTransform", "ExprsArray",
@@ -131,20 +132,10 @@ setMethod("modTransform", "ExprsArray",
 
 #' Normalize Data
 #'
-#' \code{modNormalize} normalizes gene expression feature data.
+#' \code{modNormalize} normalizes feature data.
 #'
 #' This method normalizes subject and/or feature vectors according to the
 #'  formula \code{x\' = (x - mean(x)) / sd(x)}.
-#'
-#' @seealso
-#' \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
-#'
-#' @export
-setGeneric("modNormalize",
-           function(object, ...) standardGeneric("modNormalize")
-)
-
-#' @describeIn modNormalize Method to normalize an \code{ExprsArray} object.
 #'
 #' @inheritParams modFilter
 #' @param MARGIN A numeric vector. The margin by which to normalize.
@@ -152,6 +143,17 @@ setGeneric("modNormalize",
 #'  Provide \code{MARGIN = 2} to normalize the subject vector.
 #'  Provide \code{MARGIN = c(1, 2)} to normalize by the subject vector
 #'  and then by the feature vector.
+#' @return A pre-processed \code{ExprsArray} object.
+#'
+#' @seealso
+#' \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
+#'
+#' @export
+setGeneric("modNormalize",
+           function(object, MARGIN, plotSkip) standardGeneric("modNormalize")
+)
+
+#' @describeIn modNormalize Method to normalize an \code{ExprsArray} object.
 #'
 #' @export
 setMethod("modNormalize", "ExprsArray",
