@@ -114,7 +114,9 @@ setMethod("subset", signature(x = "ExprsArray"),
 #' @param colors A character vector. Optional. Manually assign a color to each subject point.
 #' @param shapes A numeric vector. Optional. Manually assign a shape to each subject point.
 #'
-#' @import lattice
+#' @importFrom stats as.formula
+#' @importFrom grDevices rainbow
+#' @importFrom lattice cloud
 #' @export
 setMethod("plot", signature(x = "ExprsArray", y = "missing"),
           function(x, a = 1, b = 2, c = 3, colors, shapes){
@@ -124,11 +126,11 @@ setMethod("plot", signature(x = "ExprsArray", y = "missing"),
             colnames(df) <- paste0(c("a_", "b_", "c_"), colnames(df))
 
             # Plot c ~ a + b in 3D
-            func <- as.formula(paste(colnames(df)[3], "~",
-                                     colnames(df)[1], "+",
-                                     colnames(df)[2],
-                                     collapse = ""))
-            if(missing(colors)) colors <- rainbow(length(unique(x@annot$defineCase)))
+            func <- stats::as.formula(paste(colnames(df)[3], "~",
+                                            colnames(df)[1], "+",
+                                            colnames(df)[2],
+                                            collapse = ""))
+            if(missing(colors)) colors <- grDevices::rainbow(length(unique(x@annot$defineCase)))
             if(missing(shapes)) shapes <- 19
             print(lattice::cloud(func, data = df, col = colors, pch = shapes))
           }
