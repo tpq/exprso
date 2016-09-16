@@ -1,4 +1,4 @@
-## exprso 1.0.2.9000
+## exprso 0.1.2.9000
 ---------------------
 * 0-global.R
   * Includes all global function definitions.
@@ -17,7 +17,7 @@
   * Store mutated annotation as boolean (not factor).
   * Revised documentation.
 
-## exprso 1.0.2
+## exprso 0.1.2
 ---------------------
 * 1.2-methods.R
   * Added `subset` method for `ExprsArray` objects.
@@ -49,7 +49,7 @@
   * `plGrid` method now accommodates lists of vector arguments.
   * Removed `e1071` cross-validation.
 
-## exprso 1.0.0
+## exprso 0.1.0
 ---------------------
 * Project now organized in a package distribution format.
 * 0-misc.R
