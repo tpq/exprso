@@ -6,7 +6,7 @@
 \alias{compare,ExprsArray-method}
 \title{Compare \code{ExprsArray} Objects}
 \usage{
-compare(object, ...)
+compare(object, array.valid = NULL, colBy = "defineCase", cutoff = 0.05)
 
 \S4method{compare}{ExprsArray}(object, array.valid = NULL,
   colBy = "defineCase", cutoff = 0.05)
@@ -26,9 +26,9 @@ the annotation test returns a \code{TRUE} result}
 }
 \value{
 A list of three logical vectors. The first and second elements
-of the list correspond to "internal" comparisons for the two provided
-\code{ExprsArray} objects, respectively. The third element of the list
-corresponds to comparisons made between the provided objects.
+ of the list correspond to "internal" comparisons for the two provided
+ \code{ExprsArray} objects, respectively. The third element of the list
+ corresponds to comparisons made between the provided objects.
 }
 \description{
 This method compares the values of all \code{ExprsArray} annotations across a

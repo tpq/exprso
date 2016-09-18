@@ -30,14 +30,6 @@
 #'  test sets in terms of the annotations included in \code{@@annot}.
 #'
 #' @param object The \code{ExprsArray} object used when comparing annotations.
-#'
-#' @export
-setGeneric("compare",
-           function(object, ...) standardGeneric("compare")
-)
-
-#' @describeIn compare Method to compare \code{ExprsArray} objects.
-#'
 #' @param array.valid A second \code{ExprsArray} object used when comparing
 #'  annotations. Optional. Exclude with \code{array.valid = NULL}.
 #' @param colBy A character string. The annotation column against which to
@@ -47,15 +39,22 @@ setGeneric("compare",
 #'  the annotation test returns a \code{TRUE} result
 #'
 #' @return A list of three logical vectors. The first and second elements
-#' of the list correspond to "internal" comparisons for the two provided
-#' \code{ExprsArray} objects, respectively. The third element of the list
-#' corresponds to comparisons made between the provided objects.
+#'  of the list correspond to "internal" comparisons for the two provided
+#'  \code{ExprsArray} objects, respectively. The third element of the list
+#'  corresponds to comparisons made between the provided objects.
 #'
 #' @export
+setGeneric("compare",
+           function(object, array.valid = NULL, colBy = "defineCase",
+                    cutoff = .05) standardGeneric("compare")
+)
+
+#' @describeIn compare Method to compare \code{ExprsArray} objects.
+#'
+#' @importFrom stats na.omit lm anova chisq.test
+#' @export
 setMethod("compare", "ExprsArray",
-          function(object, array.valid = NULL,
-                   colBy = "defineCase",
-                   cutoff = .05){
+          function(object, array.valid, colBy, cutoff){
 
             if(length(colBy) > 1){
 
@@ -130,10 +129,10 @@ setMethod("compare", "ExprsArray",
                                      "x" = as.factor(test.data[, colBy]))
 
                     # Check if ANOVA will work after removing NA values
-                    if(length(unique(na.omit(df)$x)) > 1){
+                    if(length(unique(stats::na.omit(df)$x)) > 1){
 
                       # Fit linear model to independent variable
-                      fit <- lm(y ~ x, data = df, na.action = na.omit)
+                      fit <- lm(y ~ x, data = df, na.action = stats::na.omit)
 
                       # Perform ANOVA test and save significance as boolean
                       anova.p <- anova(fit)$Pr[1]

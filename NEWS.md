@@ -18,6 +18,8 @@
   * Revised documentation.
 * 4.2-modCluster.R
   * Revised documentation.
+* 4.3-compare.R
+  * Revised documentation.
 
 ## exprso 0.1.2
 ---------------------
