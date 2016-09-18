@@ -1,7 +1,13 @@
+## exprso 0.1.3.9000
+---------------------
+* 2.1-import.R
+  * Deprecated `arrayRead` and `arrayEset` functions.
+  * New `arrayExprs` function adds `data.frame` support.
+* 9-deprecated.R
+  * Contains deprecated functions.
+
 ## exprso 0.1.3
 ---------------------
-* 0-global.R
-  * Includes all global function definitions.
 * 1.1-classes.R
   * Fixed warnings and notes.
 * 1.2-methods.R
@@ -32,6 +38,8 @@
   * Fixed warnings and notes.
 * 8.2-ens.R
   * Fixed warnings and notes.
+* 9-global.R
+  * Contains global imports.
 
 ## exprso 0.1.2
 ---------------------

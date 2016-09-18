@@ -81,8 +81,8 @@ setMethod("splitSample", "ExprsArray",
               )
             }
 
-            warning(c("This method is not truly random; at least one of every class ",
-                      "will appear in validation set!"))
+            warning("splitSample is not truly random; at least one of every class ",
+                    "will appear in validation set!")
 
             # Sample until training and validation sets have one of every class
             # Terminate after 10 iterations if no solution found

@@ -4,14 +4,14 @@
 \alias{GSE2eSet}
 \title{Convert GSE to eSet}
 \usage{
-GSE2eSet(gse, colID = "ID_REF", colVal = "VALUE")
+GSE2eSet(gse, colID = "ID_REF", colValue = "VALUE")
 }
 \arguments{
 \item{gse}{A GSE data object retrieved using GEOquery.}
 
 \item{colID}{A character string. The GSE column name that contains the feature identity.}
 
-\item{colVal}{A character string. The GSE column name that contains the feature value.}
+\item{colValue}{A character string. The GSE column name that contains the feature value.}
 }
 \description{
 A convenience function that builds an \code{eSet} object from a GSE data source.
@@ -31,6 +31,6 @@ To acquire GSE data files, use the function \code{getGEO} from the GEOquery pack
  \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}). For more information, see the GEOquery package.
 }
 \seealso{
-\code{\link{ExprsArray-class}}, \code{\link{arrayRead}}, \code{\link{arrayEset}}
+\code{\link{ExprsArray-class}}, \code{\link{arrayExprs}}
 }
 
