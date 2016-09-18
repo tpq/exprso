@@ -16,16 +16,16 @@
   verbose = TRUE)
 }
 \arguments{
-\item{object}{An \code{ExprsModel} object. The classifier to deploy.}
+\item{object}{An \code{ExprsModel} object or an \code{ExprsEnsemble} object.
+The classifier to deploy.}
 
 \item{array}{An \code{ExprsArray} object. The validation set.}
 
 \item{verbose}{A logical scalar. Toggles whether to print \code{calcStats}.}
 
 \item{how}{A character string. Select from "probability" or "majority".
-See "Details" for the implication of this choice.}
-
-\item{object}{An \code{ExprsEnsemble} object. The classifier to deploy.}
+See Details for the implication of this choice. Argument applies to
+\code{ExprsEnsemble} prediction only.}
 }
 \value{
 Returns an \code{ExprsPredict} object.
@@ -34,6 +34,8 @@ Returns an \code{ExprsPredict} object.
 Predict class labels of a validation set.
 }
 \details{
+For an \code{ExprsMachine}:
+
 An \code{ExprsMachine} object can only predict against an \code{ExprsBinary}
  object. An \code{ExprsModule} object can only predict against an
  \code{ExprsMulti} object. The validation set should never get modified
@@ -53,6 +55,8 @@ An \code{ExprsMachine} object can only predict against an \code{ExprsBinary}
  \code{predict} method called using the stored \code{@mach} object.
  To learn how these slots get used to calculate classifier performance,
  read more at \code{\link{calcStats}}.
+
+For an \code{ExprsEnsemble}:
 
 At the moment, \code{ExprsEnsemble} can only make predictions
  with \code{ExprsMachine} objects. Therefore, it can only predict

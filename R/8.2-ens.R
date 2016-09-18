@@ -57,35 +57,6 @@ setMethod("buildEnsemble", "ExprsPipeline",
 ### Predict class labels using ExprsEnsemble
 
 #' @rdname exprso-predict
-#'
-#' @details
-#'
-#' At the moment, \code{ExprsEnsemble} can only make predictions
-#'  with \code{ExprsMachine} objects. Therefore, it can only predict
-#'  against \code{ExprsBinary} objets. Predicting with ensembles poses
-#'  a unique challenge with regard to how to translate multiple
-#'  performance scores (one for each classifier in the ensemble) into
-#'  a single performance score (for the ensemble as a whole). For now,
-#'  the \code{ExprsEnsemble} \code{predict} method offers two options,
-#'  toggled with the argument \code{how}. Regardless of the chosen
-#'  \code{how}, \code{buildEnsemble} begins by deploying each constituent
-#'  classifier on the validation set to yield a list of \code{ExprsPredict}
-#'  objects.
-#'
-#' When \code{how = "probability"}, this method will take the average
-#'  predicted class probability (i.e., \code{@@probability} for each
-#'  returned \code{ExprsPredict} object (corresponding to each constituent
-#'  \code{ExprsModel} object). When \code{how = "majority"}, this method
-#'  will let the final decision from each returned \code{ExprsPredict}
-#'  object (i.e., \code{@@binary}) cast a single (all-or-nothing) vote.
-#'  Each subject gets assigned the class that received the most number
-#'  of votes (i.e., winner takes all). In both scenarios, ties get
-#'  broken randomly with equal weights given to each class.
-#'
-#' @param object An \code{ExprsEnsemble} object. The classifier to deploy.
-#' @param how A character string. Select from "probability" or "majority".
-#'  See "Details" for the implication of this choice.
-#'
 #' @export
 setMethod("predict", "ExprsEnsemble",
           function(object, array, how = "probability", verbose = TRUE){
@@ -130,7 +101,6 @@ setMethod("predict", "ExprsEnsemble",
 
                 # Clean up pred
                 pred <- factor(as.vector(pred), levels = c("Control", "Case"))
-                names(pred) <- rownames(data)
 
               }else if(how == "majority"){
 

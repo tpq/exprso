@@ -9,22 +9,21 @@
 #'  the same process of feature selection and dimension reduction as the
 #'  training set.
 #'
-#' @seealso
-#' \code{\link{exprso-predict}}
-#'
-#' @export
-setGeneric("modHistory",
-           function(object, ...) standardGeneric("modHistory")
-)
-
-#' @describeIn modHistory
-#'
 #' @param object An \code{ExprsArray} object. The validation set that should undergo
 #'  feature selection and dimension reduction.
 #' @param reference An \code{ExprsArray} or \code{ExprsModel} object. The object with
 #'  feature selection history used as a template for the validation set.
 #' @return Returns an \code{ExprsArray} object.
 #'
+#' @seealso
+#' \code{\link{exprso-predict}}
+#'
+#' @export
+setGeneric("modHistory",
+           function(object, reference) standardGeneric("modHistory")
+)
+
+#' @describeIn modHistory Method to duplicate \code{ExprsArray} feature selection history.
 #' @export
 setMethod("modHistory", "ExprsArray",
           function(object, reference){
@@ -97,6 +96,8 @@ setMethod("modHistory", "ExprsArray",
 #'
 #' @details
 #'
+#' For an \code{ExprsMachine}:
+#'
 #' An \code{ExprsMachine} object can only predict against an \code{ExprsBinary}
 #'  object. An \code{ExprsModule} object can only predict against an
 #'  \code{ExprsMulti} object. The validation set should never get modified
@@ -117,17 +118,44 @@ setMethod("modHistory", "ExprsArray",
 #'  To learn how these slots get used to calculate classifier performance,
 #'  read more at \code{\link{calcStats}}.
 #'
+#' For an \code{ExprsEnsemble}:
+#'
+#' At the moment, \code{ExprsEnsemble} can only make predictions
+#'  with \code{ExprsMachine} objects. Therefore, it can only predict
+#'  against \code{ExprsBinary} objets. Predicting with ensembles poses
+#'  a unique challenge with regard to how to translate multiple
+#'  performance scores (one for each classifier in the ensemble) into
+#'  a single performance score (for the ensemble as a whole). For now,
+#'  the \code{ExprsEnsemble} \code{predict} method offers two options,
+#'  toggled with the argument \code{how}. Regardless of the chosen
+#'  \code{how}, \code{buildEnsemble} begins by deploying each constituent
+#'  classifier on the validation set to yield a list of \code{ExprsPredict}
+#'  objects.
+#'
+#' When \code{how = "probability"}, this method will take the average
+#'  predicted class probability (i.e., \code{@@probability} for each
+#'  returned \code{ExprsPredict} object (corresponding to each constituent
+#'  \code{ExprsModel} object). When \code{how = "majority"}, this method
+#'  will let the final decision from each returned \code{ExprsPredict}
+#'  object (i.e., \code{@@binary}) cast a single (all-or-nothing) vote.
+#'  Each subject gets assigned the class that received the most number
+#'  of votes (i.e., winner takes all). In both scenarios, ties get
+#'  broken randomly with equal weights given to each class.
+#'
+#' @param object An \code{ExprsModel} object or an \code{ExprsEnsemble} object.
+#'  The classifier to deploy.
+#' @param array An \code{ExprsArray} object. The validation set.
+#' @param how A character string. Select from "probability" or "majority".
+#'  See Details for the implication of this choice. Argument applies to
+#'  \code{ExprsEnsemble} prediction only.
+#' @param verbose A logical scalar. Toggles whether to print \code{calcStats}.
+#' @return Returns an \code{ExprsPredict} object.
+#'
 #' @seealso
 #' \code{\link{modHistory}}, \code{\link{calcStats}}
 NULL
 
 #' @rdname exprso-predict
-#'
-#' @param object An \code{ExprsModel} object. The classifier to deploy.
-#' @param array An \code{ExprsArray} object. The validation set.
-#' @param verbose A logical scalar. Toggles whether to print \code{calcStats}.
-#' @return Returns an \code{ExprsPredict} object.
-#'
 #' @export
 setMethod("predict", "ExprsMachine",
           function(object, array, verbose = TRUE){
@@ -339,16 +367,6 @@ setMethod("predict", "ExprsModule",
 #'  sensitivity and specificity. The discrimination threshold is automatically chosen
 #'  as the point along the ROC which minimizes the Euclidean distance from (0, 1).
 #'
-#' @seealso
-#' \code{\link{exprso-predict}}
-#'
-#' @export
-setGeneric("calcStats",
-           function(object, ...) standardGeneric("calcStats")
-)
-
-#' @describeIn calcStats
-#'
 #' @param object An \code{ExprsPredict} object.
 #' @param array An \code{ExprsArray} object. The data object used to produce the
 #'  \code{ExprsPredict} object.
@@ -358,9 +376,19 @@ setGeneric("calcStats",
 #'  operating characteristic curve.
 #' @return Returns a \code{data.frame} of performance metrics.
 #'
+#' @seealso
+#' \code{\link{exprso-predict}}
+#'
+#' @export
+setGeneric("calcStats",
+           function(object, array,
+                    aucSkip = FALSE, plotSkip = FALSE) standardGeneric("calcStats")
+)
+
+#' @describeIn calcStats Method to calculate the performance of a deployed classifier.
 #' @export
 setMethod("calcStats", "ExprsPredict",
-          function(object, array, aucSkip = FALSE, plotSkip = FALSE){
+          function(object, array, aucSkip, plotSkip){
 
             if(!inherits(array, "ExprsArray")){
 

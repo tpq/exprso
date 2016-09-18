@@ -6,7 +6,7 @@
 \alias{calcStats,ExprsPredict-method}
 \title{Calculate Classifier Performance}
 \usage{
-calcStats(object, ...)
+calcStats(object, array, aucSkip = FALSE, plotSkip = FALSE)
 
 \S4method{calcStats}{ExprsPredict}(object, array, aucSkip = FALSE,
   plotSkip = FALSE)
@@ -49,7 +49,7 @@ The appropriate use of \code{calcStats} requires the \code{ExprsPredict} object
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{ExprsPredict}: 
+\item \code{ExprsPredict}: Method to calculate the performance of a deployed classifier.
 }}
 \seealso{
 \code{\link{exprso-predict}}

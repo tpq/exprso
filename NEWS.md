@@ -26,6 +26,10 @@
   * Revised documentation.
 * 5.3-doMulti.R
   * Revised documentation.
+* 6-predict.R
+  * Revised documentation.
+* 8.2-ens.R
+  * Revised documentation.
 
 ## exprso 0.1.2
 ---------------------

@@ -6,7 +6,7 @@
 \alias{modHistory,ExprsArray-method}
 \title{Duplicate Feature Selection History}
 \usage{
-modHistory(object, ...)
+modHistory(object, reference)
 
 \S4method{modHistory}{ExprsArray}(object, reference)
 }
@@ -29,7 +29,7 @@ Duplicates the feature selection history of a reference \code{ExprsArray}
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{ExprsArray}: 
+\item \code{ExprsArray}: Method to duplicate \code{ExprsArray} feature selection history.
 }}
 \seealso{
 \code{\link{exprso-predict}}
