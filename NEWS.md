@@ -3,6 +3,11 @@
 * 2.1-import.R
   * Deprecated `arrayRead` and `arrayEset` functions.
   * New `arrayExprs` function adds `data.frame` support.
+* 4.3-compare.R
+  * Convert `compare` warning into error.
+* 8.1-pipe.R
+  * Convert `pipeFilter` warning into a message.
+  * Add details to the "Please Read" vignette.
 * 9-deprecated.R
   * Contains deprecated functions.
 

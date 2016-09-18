@@ -129,9 +129,8 @@ setMethod("pipeFilter", "ExprsPipeline",
                          # Calculate total number of gridpoints for this boot
                          if(top.N > sum(object@summary$boot == boot)){
 
-                           warning("Provided 'top.N' too large for boot ", boot,
-                                   ". Using all gridpoints instead.")
-
+                           message("Provided 'top.N' too large for boot ", boot,
+                                   ". Using all gridpoints instead...")
                            top.N <- 0
                          }
 
@@ -151,9 +150,8 @@ setMethod("pipeFilter", "ExprsPipeline",
               # Calculate total number of gridpoints for ExprsPipeline object
               if(top.N > nrow(object@summary)){
 
-                warning("Provided 'top.N' too large for this ExprsPipeline object.",
-                        "Using all gridpoints instead.")
-
+                message("Provided 'top.N' too large for this ExprsPipeline object.",
+                        "Using all gridpoints instead...")
                 top.N <- 0
               }
 
