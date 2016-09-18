@@ -11,7 +11,7 @@
 #'  rows indicate subject entries while columns indicate measured variables.
 #'  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
 #'  The remaining columns should contain feature data (e.g. expression values).
-#'  The argument \code{featuresBegin} defines the j-th column at which the feature
+#'  The argument \code{probes.begin} defines the j-th column at which the feature
 #'  data starts. By default, \code{arrayExprs} forces \code{stringsAsFactors = FASE}.
 #'  This function automatically removes any features with \code{NA} values.
 #'
@@ -34,7 +34,7 @@
 #'  to include into which groups. Each element of a list specifies a unique group while
 #'  each element of the character vector specifies an annotation to fit to that group. For
 #'  binary classification, the first list element defines the negative or control group.
-#' @param featuresBegin A numeric scalar. The j-th column at which feature data starts.
+#' @param probes.begin A numeric scalar. The j-th column at which feature data starts.
 #'  For \code{data.frame} or file import only.
 #' @param colID A numeric or character index. The column used to name subjects.
 #'  For \code{data.frame} or file import only.
@@ -45,15 +45,15 @@
 #' \code{\link{ExprsArray-class}}, \code{\link{GSE2eSet}}
 #' @importFrom utils read.delim
 #' @export
-arrayExprs <- function(object, featuresBegin, colID, colBy, include, ...){
+arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
 
   if(!class(include) == "list") stop("Uh oh! User must provide 'include' argument as list!")
   if(length(include) < 2) stop("Uh oh! User must provide at least two classes!")
 
   if(class(object) == "data.frame"){
 
-    exprs <- exprs <- t(object[, featuresBegin:ncol(object)])
-    annot <- object[, 1:(featuresBegin-1)]
+    exprs <- exprs <- t(object[, probes.begin:ncol(object)])
+    annot <- object[, 1:(probes.begin-1)]
 
   }else if(class(object) == "ExpressionSet"){
 
@@ -63,8 +63,8 @@ arrayExprs <- function(object, featuresBegin, colID, colBy, include, ...){
   }else if(class(object) == "character" & file.exists(object)){
 
     object <- read.delim(object, stringsAsFactors = FALSE, ...)
-    exprs <- t(object[, featuresBegin:ncol(object)])
-    annot <- object[, 1:(featuresBegin-1)]
+    exprs <- t(object[, probes.begin:ncol(object)])
+    annot <- object[, 1:(probes.begin-1)]
 
   }else{
 

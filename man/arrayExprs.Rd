@@ -4,12 +4,12 @@
 \alias{arrayExprs}
 \title{Import Data as ExprsArray}
 \usage{
-arrayExprs(object, featuresBegin, colID, colBy, include, ...)
+arrayExprs(object, probes.begin, colID, colBy, include, ...)
 }
 \arguments{
 \item{object}{What to import as an \code{ExprsArray} object. See Details.}
 
-\item{featuresBegin}{A numeric scalar. The j-th column at which feature data starts.
+\item{probes.begin}{A numeric scalar. The j-th column at which feature data starts.
 For \code{data.frame} or file import only.}
 
 \item{colID}{A numeric or character index. The column used to name subjects.
@@ -35,7 +35,7 @@ This function expects that the delimited data file has the following format:
  rows indicate subject entries while columns indicate measured variables.
  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
  The remaining columns should contain feature data (e.g. expression values).
- The argument \code{featuresBegin} defines the j-th column at which the feature
+ The argument \code{probes.begin} defines the j-th column at which the feature
  data starts. By default, \code{arrayExprs} forces \code{stringsAsFactors = FASE}.
  This function automatically removes any features with \code{NA} values.
 
