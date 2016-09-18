@@ -63,7 +63,7 @@ the number of top features that should undergo feature selection. A character ve
 indicates specifically which features by name should undergo feature selection.
 Set \code{probes = 0} to include all features.}
 
-\item{how}{Specifics which function to call in \code{fsStats}. Accepted arguments
+\item{how}{Specifics which function to call in \code{fsStats}. Recognized arguments
 include \code{"t.test"}, \code{"ks.test"}, and \code{"ks.boot"}.}
 }
 \value{

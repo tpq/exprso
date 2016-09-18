@@ -370,6 +370,7 @@ setMethod("buildRF", "ExprsBinary",
 #' @inheritParams fs
 #' @return Returns an \code{ExprsModel} object.
 #'
+#' @importFrom utils write.csv
 #' @export
 setMethod("buildDNN", "ExprsBinary",
           function(object, probes, ...){ # args to h2o.deeplearning

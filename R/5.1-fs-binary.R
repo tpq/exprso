@@ -169,9 +169,10 @@ setMethod("fsSample", "ExprsBinary",
 #' @section Methods (by generic):
 #' \code{fsStats:} Method to perform statistics based feature selection using stats::t.test and others.
 #'
-#' @param how Specifics which function to call in \code{fsStats}. Accepted arguments
+#' @param how Specifics which function to call in \code{fsStats}. Recognized arguments
 #'  include \code{"t.test"}, \code{"ks.test"}, and \code{"ks.boot"}.
 #'
+#' @importFrom stats ks.test t.test
 #' @export
 setMethod("fsStats", "ExprsBinary",
           function(object, probes, how = "t.test", ...){ # args to ks.test, ks.boot, or t.test
@@ -244,6 +245,8 @@ setMethod("fsStats", "ExprsBinary",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsPrcomp:} Method to perform principal components analysis using stats::prcomp.
+#'
+#' @importFrom stats prcomp
 #' @export
 setMethod("fsPrcomp", "ExprsBinary",
           function(object, probes, ...){ # args to prcomp

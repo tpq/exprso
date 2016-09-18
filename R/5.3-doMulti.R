@@ -122,6 +122,10 @@ setMethod("doMulti", "ExprsMulti",
 #' We also note here that applying \code{reRank} to data that have
 #'  undergone dimension reduction does not make sense.
 #'
+#' @param fss The result of a \code{doMulti} function call.
+#'
+#' @return A vector of re-ranked features. See Details.
+#'
 #' @seealso
 #' \code{\link{fs}}\cr
 #' \code{\link{build}}\cr

@@ -20,6 +20,12 @@
   * Revised documentation.
 * 4.3-compare.R
   * Revised documentation.
+* 5.1-fs-binary.R
+  * Revised documentation.
+* 5.2-build-binary.R
+  * Revised documentation.
+* 5.3-doMulti.R
+  * Revised documentation.
 
 ## exprso 0.1.2
 ---------------------

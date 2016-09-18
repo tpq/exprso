@@ -6,6 +6,12 @@
 \usage{
 reRank(fss)
 }
+\arguments{
+\item{fss}{The result of a \code{doMulti} function call.}
+}
+\value{
+A vector of re-ranked features. See Details.
+}
 \description{
 A function to convert multiple feature rank lists from "1 vs. all"
  binary feature selection into a single feature rank list.
