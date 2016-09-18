@@ -116,9 +116,6 @@ setGeneric("fsMrmre",
            function(object, ...) standardGeneric("fsMrmre")
 )
 
-#' @import kernlab
-NULL
-
 ###########################################################
 ### Select features
 
@@ -342,6 +339,7 @@ setMethod("fsPathClassRFE", "ExprsBinary",
                    "Try running: install.packages('kernlab')")
             }
 
+            # Removing this will break the method:
             library(kernlab)
 
             # Convert 'numeric' probe argument to 'character' probe vector
