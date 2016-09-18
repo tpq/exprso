@@ -1,42 +1,4 @@
 ###########################################################
-### Rename ExprsPipeline "boot" column
-
-#' Rename "boot" Column
-#'
-#' \code{pipeUnboot} renames the "boot" column of an \code{ExprsPipeline} object
-#'  to "unboot".
-#'
-#' This method provides a convenient adjunct to \code{\link{pipeFilter}} owing to
-#'  how \code{exprso} handles \code{ExprsPipeline} objects with a "boot" column.
-#'
-#' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
-#'
-#' @export
-setGeneric("pipeUnboot",
-           function(object, ...) standardGeneric("pipeUnboot")
-)
-
-#' @describeIn pipeUnboot Method to rename \code{ExprsPipeline} object columns.
-#'
-#' @param object An \code{\link{ExprsPredict-class}} object.
-#' @return An \code{\link{ExprsPredict-class}} object.
-#'
-#' @export
-setMethod("pipeUnboot", "ExprsPipeline",
-          function(object){
-
-            if("boot" %in% colnames(object@summary)){
-
-              # Rename 'boot' column to 'unboot'
-              colnames(object@summary)[colnames(object@summary) == "boot"] <- "unboot"
-            }
-
-            return(object)
-          }
-)
-
-###########################################################
 ### Filter ExprsPipeline object
 
 #' Filter \code{ExprsPipeline} Object
@@ -63,16 +25,6 @@ setMethod("pipeUnboot", "ExprsPipeline",
 #'  one performance metric over another, consider listing that column
 #'  more than once.
 #'
-#' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
-#'
-#' @export
-setGeneric("pipeFilter",
-           function(object, ...) standardGeneric("pipeFilter")
-)
-
-#' @describeIn pipeFilter Method to filter \code{ExprsPipeline} objects.
-#'
 #' @param object An \code{\link{ExprsPredict-class}} object.
 #' @param colBy A character vector or string. Specifies column(s) to use when
 #'  filtering by classifier performance. Listing multiple columns will result
@@ -92,9 +44,19 @@ setGeneric("pipeFilter",
 #'  Set \code{top.N = 0} to skip this subset.
 #' @return An \code{\link{ExprsPredict-class}} object.
 #'
+#' @seealso
+#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#'
+#' @export
+setGeneric("pipeFilter",
+           function(object, colBy, how = 0, gate = 0, top.N = 0) standardGeneric("pipeFilter")
+)
+
+#' @describeIn pipeFilter Method to filter \code{ExprsPipeline} objects.
+#' @importFrom stats median quantile
 #' @export
 setMethod("pipeFilter", "ExprsPipeline",
-          function(object, colBy, how = 0, gate = 0, top.N = 0){
+          function(object, colBy, how, gate, top.N){
 
             # Check if ExprsPipeline contains all colBy
             if(!all(colBy %in% colnames(object@summary))){
@@ -208,6 +170,43 @@ setMethod("pipeFilter", "ExprsPipeline",
             final <- rownames(object@summary) %in% index
             object@summary <- object@summary[final, ]
             object@machs <- object@machs[final]
+
+            return(object)
+          }
+)
+
+###########################################################
+### Rename ExprsPipeline "boot" column
+
+#' Rename "boot" Column
+#'
+#' \code{pipeUnboot} renames the "boot" column of an \code{ExprsPipeline} object
+#'  to "unboot".
+#'
+#' This method provides a convenient adjunct to \code{\link{pipeFilter}} owing to
+#'  how \code{exprso} handles \code{ExprsPipeline} objects with a "boot" column.
+#'
+#' @param object An \code{\link{ExprsPredict-class}} object.
+#' @return An \code{\link{ExprsPredict-class}} object.
+#'
+#' @seealso
+#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#'
+#' @export
+setGeneric("pipeUnboot",
+           function(object) standardGeneric("pipeUnboot")
+)
+
+#' @describeIn pipeUnboot Method to rename \code{ExprsPipeline} object columns.
+#' @export
+setMethod("pipeUnboot", "ExprsPipeline",
+          function(object){
+
+            if("boot" %in% colnames(object@summary)){
+
+              # Rename 'boot' column to 'unboot'
+              colnames(object@summary)[colnames(object@summary) == "boot"] <- "unboot"
+            }
 
             return(object)
           }

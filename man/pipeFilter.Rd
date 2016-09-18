@@ -6,7 +6,7 @@
 \alias{pipeFilter,ExprsPipeline-method}
 \title{Filter \code{ExprsPipeline} Object}
 \usage{
-pipeFilter(object, ...)
+pipeFilter(object, colBy, how = 0, gate = 0, top.N = 0)
 
 \S4method{pipeFilter}{ExprsPipeline}(object, colBy, how = 0, gate = 0,
   top.N = 0)

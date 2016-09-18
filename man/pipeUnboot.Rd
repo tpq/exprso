@@ -6,7 +6,7 @@
 \alias{pipeUnboot,ExprsPipeline-method}
 \title{Rename "boot" Column}
 \usage{
-pipeUnboot(object, ...)
+pipeUnboot(object)
 
 \S4method{pipeUnboot}{ExprsPipeline}(object)
 }

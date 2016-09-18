@@ -1,35 +1,37 @@
-## exprso 0.1.2.9000
+## exprso 0.1.3
 ---------------------
 * 0-global.R
   * Includes all global function definitions.
 * 1.1-classes.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 1.2-methods.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 2.1-import.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 2.2-misc.R
   * Code renamed to file 2.2-process.R.
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 3.1-split.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 4.1-modSwap.R
   * Store mutated annotation as boolean (not factor).
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 4.2-modCluster.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 4.3-compare.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 5.1-fs-binary.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 5.2-build-binary.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 5.3-doMulti.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 * 6-predict.R
-  * Revised documentation.
+  * Fixed warnings and notes.
+* 8.1-pipe.R
+  * Fixed warnings and notes.
 * 8.2-ens.R
-  * Revised documentation.
+  * Fixed warnings and notes.
 
 ## exprso 0.1.2
 ---------------------
