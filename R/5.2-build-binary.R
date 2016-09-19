@@ -33,6 +33,9 @@
 #'  Set \code{probes = 0} to pass all features through a \code{build} method.
 #'  See \code{\link{modHistory}} to read more about feature selection history.
 #'
+#' @inheritParams fs
+#' @return Returns an \code{ExprsModel} object.
+#'
 #' @seealso
 #' \code{\link{fs}}\cr
 #' \code{\link{build}}\cr
@@ -101,10 +104,7 @@ setGeneric("buildDNN",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildNB:} Method to build classifiers using e1071::naiveBayes.
-#'
-#' @inheritParams fs
-#' @return Returns an \code{ExprsModel} object.
-#'
+#' @importFrom e1071 naiveBayes
 #' @export
 setMethod("buildNB", "ExprsBinary",
           function(object, probes, ...){ # args to naiveBayes
@@ -148,6 +148,7 @@ setMethod("buildNB", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildLDA:} Method to build classifiers using MASS::lda.
+#' @importFrom MASS lda
 #' @export
 setMethod("buildLDA", "ExprsBinary",
           function(object, probes, ...){ # args to lda
@@ -191,6 +192,7 @@ setMethod("buildLDA", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildSVM:} Method to build classifiers using e1071::svm.
+#' @importFrom e1071 svm
 #' @export
 setMethod("buildSVM", "ExprsBinary",
           function(object, probes, ...){ # args to svm
@@ -256,6 +258,7 @@ setMethod("buildSVM", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildANN:} Method to build classifiers using nnet::nnet.
+#' @importFrom nnet nnet
 #' @export
 setMethod("buildANN", "ExprsBinary",
           function(object, probes, ...){
@@ -323,6 +326,7 @@ setMethod("buildANN", "ExprsBinary",
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildRF:} Method to build classifiers using randomForest::randomForest.
+#' @importFrom randomForest randomForest
 #' @export
 setMethod("buildRF", "ExprsBinary",
           function(object, probes, ...){ # args to randomForest
@@ -371,6 +375,7 @@ setMethod("buildRF", "ExprsBinary",
 #' @return Returns an \code{ExprsModel} object.
 #'
 #' @importFrom utils write.csv
+#' @importFrom h2o h2o.init h2o.importFile h2o.deeplearning
 #' @export
 setMethod("buildDNN", "ExprsBinary",
           function(object, probes, ...){ # args to h2o.deeplearning
@@ -401,7 +406,7 @@ setMethod("buildDNN", "ExprsBinary",
 
             # Import data as H2OFrame via a temporary csv
             tempFile <- tempfile(fileext = ".csv")
-            write.csv(df, tempFile)
+            utils::write.csv(df, tempFile)
             h2o.data <- h2o::h2o.importFile(path = tempFile, destination_frame = "h2o.data")
 
             # Prepare arguments and build classifier
