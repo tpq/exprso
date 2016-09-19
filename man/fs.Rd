@@ -10,7 +10,6 @@
 \alias{fsPathClassRFE}
 \alias{fsPathClassRFE,ExprsBinary-method}
 \alias{fsPenalizedSVM}
-\alias{fsPenalizedSVM,ExprsBinary-method}
 \alias{fsPrcomp}
 \alias{fsPrcomp,ExprsBinary-method}
 \alias{fsSample}
@@ -41,8 +40,6 @@ fsMrmre(object, ...)
 
 \S4method{fsPrcomp}{ExprsBinary}(object, probes, ...)
 
-\S4method{fsPenalizedSVM}{ExprsBinary}(object, probes, ...)
-
 \S4method{fsPathClassRFE}{ExprsBinary}(object, probes, ...)
 
 \S4method{fsEbayes}{ExprsBinary}(object, probes, ...)
@@ -61,10 +58,11 @@ fsMrmre(object, ...)
 \item{probes}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
-Set \code{probes = 0} to include all features.}
+Set \code{probes = 0} to include all features. A numeric vector can also be used
+to indicate specific features by location, similar to a character vector.}
 
 \item{how}{Specifics which function to call in \code{fsStats}. Recognized arguments
-include \code{"t.test"}, \code{"ks.test"}, and \code{"ks.boot"}.}
+include \code{"t.test"} and \code{"ks.test"}.}
 }
 \value{
 Returns an \code{ExprsArray} object.
@@ -120,9 +118,6 @@ Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count}
 
 
 \code{fsPrcomp:} Method to perform principal components analysis using stats::prcomp.
-
-
-\code{fsPenalizedSVM:} Method to perform penalizedSVM feature selection using penalizedSVM::svm.fs.
 
 
 \code{fsPathClassRFE:} Method to perform SVM-RFE feature selection using pathClass::fit.rfe.

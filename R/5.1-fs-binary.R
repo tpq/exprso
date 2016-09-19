@@ -48,6 +48,17 @@
 #' Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count} argument
 #'  owing to its implementation in the imported package \code{mRMRe}.
 #'
+#' @param object Specifies the \code{ExprsArray} object to undergo feature selection.
+#' @param probes A numeric scalar or character vector. A numeric scalar indicates
+#'  the number of top features that should undergo feature selection. A character vector
+#'  indicates specifically which features by name should undergo feature selection.
+#'  Set \code{probes = 0} to include all features. A numeric vector can also be used
+#'  to indicate specific features by location, similar to a character vector.
+#' @param how Specifics which function to call in \code{fsStats}. Recognized arguments
+#'  include \code{"t.test"} and \code{"ks.test"}.
+#' @param ... Arguments passed to the respective wrapped function.
+#' @return Returns an \code{ExprsArray} object.
+#'
 #' @seealso
 #' \code{\link{fs}}\cr
 #' \code{\link{build}}\cr
@@ -119,373 +130,267 @@ setGeneric("fsMrmre",
 ###########################################################
 ### Select features
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsSample:} Method to perform random feature selection using base::sample.
+#' Workhorse for fs Methods
 #'
-#' @param object Specifies the \code{ExprsArray} object to undergo feature selection.
-#' @param probes A numeric scalar or character vector. A numeric scalar indicates
-#'  the number of top features that should undergo feature selection. A character vector
-#'  indicates specifically which features by name should undergo feature selection.
-#'  Set \code{probes = 0} to include all features.
-#' @param ... Arguments passed to the respective wrapped function.
+#' Used as a back-end wrapper for creating new fs methods.
+#'
+#' If the uniqueFx returns a character vector, it is assumed
+#'  that the fs method is a feature selection only. If the
+#'  uniqueFx returns a list, it is assumed that the fs method
+#'  is a reduction model method only.
+#'
+#' @inheritParams fs
+#' @param uniqueFx A function call unique to that fs method.
 #' @return Returns an \code{ExprsArray} object.
 #'
 #' @export
+fs. <- function(object, probes, uniqueFx, ...){
+
+  if(class(probes) == "numeric"){
+
+    if(length(probes) == 1){
+
+      if(probes == 0) probes <- nrow(object@exprs)
+      probes <- rownames(object@exprs[1:probes, ])
+
+    }else{
+
+      probes <- rownames(object@exprs[probes, ])
+    }
+  }
+
+  data <- t(object@exprs[probes, ])
+  final <- do.call("uniqueFx", list(data, probes, ...))
+
+  if(class(final) == "character"){
+
+    array <- new(class(object), exprs = object@exprs[final,], annot = object@annot,
+                 preFilter = append(object@preFilter, list(final)),
+                 reductionModel = append(object@reductionModel, list(NA))
+    )
+
+  }else if(class(final) == "list"){
+
+    array <- new(class(object), exprs = final[[1]], annot = object@annot,
+                 preFilter = append(object@preFilter, list(probes)),
+                 reductionModel = append(object@reductionModel, list(final[[2]]))
+    )
+
+  }else{
+
+    stop("Uh oh! DEBUG ERROR: 002")
+  }
+}
+
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsSample:} Method to perform random feature selection using base::sample.
+#' @export
 setMethod("fsSample", "ExprsBinary",
-          function(object, probes, ...){ #args to ebayes
+          function(object, probes, ...){ #args to sample
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
+            fs.(object, probes,
+                uniqueFx = function(data, probes, ...){
 
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Randomly sample probes
-            final <- sample(probes)
-
-            array <- new("ExprsBinary",
-                         exprs = object@exprs[final,],
-                         annot = object@annot,
-                         preFilter = append(object@preFilter, list(final)),
-                         reductionModel = append(object@reductionModel, list(NA))
-            )
-
-            return(array)
+                  sample(probes, ...)
+                }, ...)
           }
 )
 
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsStats:} Method to perform statistics based feature selection using stats::t.test and others.
-#'
-#' @param how Specifics which function to call in \code{fsStats}. Recognized arguments
-#'  include \code{"t.test"}, \code{"ks.test"}, and \code{"ks.boot"}.
-#'
-#' @importFrom stats ks.test t.test
+#' @importFrom stats t.test ks.test
 #' @export
 setMethod("fsStats", "ExprsBinary",
-          function(object, probes, how = "t.test", ...){ # args to ks.test, ks.boot, or t.test
+          function(object, probes, how = "t.test", ...){ # args to t.test or ks.test
 
-            if(!how %in% c("ks.test", "ks.boot", "t.test")){
+            if(how == "t.test"){
+
+              fs.(object, probes,
+                  uniqueFx = function(data, probes, ...){
+
+                    # Prepare data for statistical tests
+                    cases <- object@annot$defineCase %in% "Case"
+                    conts <- object@annot$defineCase %in% "Control"
+                    p <- vector("numeric", length(probes))
+
+                    for(i in 1:length(probes)){
+
+                      tryCatch(
+                        {
+                          p[i] <- t.test(object@exprs[probes[i], cases],
+                                         object@exprs[probes[i], conts], ...)$p.value
+
+                        }, error = function(e){
+
+                          cat("fsStats failed for feature: ", probes[i], ". Setting p(x)=1...\n")
+                          p[i] <- 1
+                        })
+                    }
+
+                    probes[order(p)]
+                  }, ...)
+
+            }else if(how == "ks.test"){
+
+              fs.(object, probes,
+                  uniqueFx = function(data, probes, ...){
+
+                    # Prepare data for statistical tests
+                    cases <- object@annot$defineCase %in% "Case"
+                    conts <- object@annot$defineCase %in% "Control"
+                    p <- vector("numeric", length(probes))
+
+                    for(i in 1:length(probes)){
+
+                      tryCatch(
+                        {
+                          p[i] <- ks.test(object@exprs[probes[i], cases],
+                                          object@exprs[probes[i], conts], ...)$p.value
+
+                        }, error = function(e){
+
+                          cat("fsStats failed for feature: ", probes[i], ". Setting p(x)=1...\n")
+                          p[i] <- 1
+                        })
+                    }
+
+                    probes[order(p)]
+                  }, ...)
+
+            }else{
 
               stop("Uh oh! Provided 'how' argument not recognized!")
             }
-
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
-
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Retrieve case and control subjectIDs
-            cases <- object@annot$defineCase %in% "Case"
-            conts <- object@annot$defineCase %in% "Control"
-
-            # Initialize p-value container
-            p <- vector("numeric", length(probes))
-
-            for(i in 1:length(probes)){
-
-              tryCatch(
-                {
-                  if(how == "ks.test"){
-
-                    p[i] <- ks.test(object@exprs[probes[i], cases],
-                                    object@exprs[probes[i], conts], ...)$p.value
-
-                  }else if(how == "ks.boot"){
-
-                    p[i] <- Matching::ks.boot(object@exprs[probes[i], cases],
-                                              object@exprs[probes[i], conts], ...)$ks.boot.pvalue
-
-                  }else if(how == "t.test"){
-
-                    p[i] <- t.test(object@exprs[probes[i], cases],
-                                   object@exprs[probes[i], conts], ...)$p.value
-                  }
-                }, error = function(e){
-
-                  cat("fsStats failed for feature: ", probes[i], ". Setting p(x)=1...\n")
-                  p[i] <- 1
-                }
-              )
-            }
-
-            final <- probes[order(p)]
-            array <- new("ExprsBinary",
-                         exprs = object@exprs[final,],
-                         annot = object@annot,
-                         preFilter = append(object@preFilter, list(final)),
-                         reductionModel = append(object@reductionModel, list(NA))
-            )
-
-            return(array)
           }
 )
 
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsPrcomp:} Method to perform principal components analysis using stats::prcomp.
-#'
 #' @importFrom stats prcomp
 #' @export
 setMethod("fsPrcomp", "ExprsBinary",
           function(object, probes, ...){ # args to prcomp
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
+            fs.(object, probes,
+                uniqueFx = function(data, probes, ...){
 
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
+                  # ATTENTION: We want dependent variables as columns
+                  # NOTE: as.data.frame will not rename columns
+                  #  -- I don't understand this note? 19/09/16
+                  reductionModel <- prcomp(data.frame(data), ...)
 
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # NOTE: as.data.frame will not rename columns
-            data <- data.frame(data)
-
-            # ATTENTION: We want dependent variables as columns
-            reductionModel <- prcomp(data, ...)
-
-            cat("\nDimension reduction model summary:\n\n")
-            print(summary(reductionModel))
-
-            # ATTENTION: The value of predict(reductionModel, data) equals $x
-            # @preFilter stores probes used to build reductionModel (i.e. as passed on by 'probes' argument)
-            # This information will automatically distill the data when calling modHistory
-            array <- new("ExprsBinary",
-                         exprs = t(reductionModel$x),
-                         annot = object@annot,
-                         preFilter = append(object@preFilter, list(probes)),
-                         reductionModel = append(object@reductionModel, list(reductionModel))
-            )
-
-            return(array)
-          }
-)
-
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsPenalizedSVM:} Method to perform penalizedSVM feature selection using penalizedSVM::svm.fs.
-#' @export
-setMethod("fsPenalizedSVM", "ExprsBinary",
-          function(object, probes, ...){ # args to svm.fs
-
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
-
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Set labels as factor
-            labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-            levels(labels) <- c(-1, 1)
-
-            # Run svm.fs()
-            fs <- penalizedSVM::svm.fs(x = data, y = labels, ...)
-
-            final <- names(fs$model$w)
-
-            if(length(final) < 2) stop("Uh oh! fsPenalizedSVM did not find enough features!")
-            array <- new("ExprsBinary",
-                         exprs = object@exprs[final, ],
-                         annot = object@annot,
-                         preFilter = append(object@preFilter, list(final)),
-                         reductionModel = append(object@reductionModel, list(NA))
-            )
-
-            return(array)
+                  # ATTENTION: The value of predict(reductionModel, data) equals $x
+                  # This information will automatically distill the data
+                  #  when calling modHistory
+                  list(t(reductionModel$x),
+                       reductionModel)
+                }, ...)
           }
 )
 
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsPathClassRFE:} Method to perform SVM-RFE feature selection using pathClass::fit.rfe.
+#' @importFrom pathClass fit.rfe
 #' @export
 setMethod("fsPathClassRFE", "ExprsBinary",
           function(object, probes, ...){ # args to fit.rfe
 
-            if(!requireNamespace("kernlab", quietly = TRUE)){
-              stop("Uh oh! This fs method depends on kernlab! ",
-                   "Try running: install.packages('kernlab')")
-            }
+            fs.(object, probes,
+                uniqueFx = function(data, probes, ...){
 
-            # Removing this will break the method:
-            library(kernlab)
+                  if(!requireNamespace("kernlab", quietly = TRUE)){
+                    stop("Uh oh! This fs method depends on kernlab! ",
+                         "Try running: install.packages('kernlab')")
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
+                  }else{
 
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
+                    # Removing this will break the method:
+                    library(kernlab)
+                  }
 
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
+                  # Set up "make.names" key for improper @exprs row.names
+                  labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
+                  key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
 
-              data <- t(object@exprs[probes, ])
-            }
+                  # NOTE: RFE as assembled by pathClass is via a linear kernel only
+                  # NOTE: By default, fit.rfe iterates through C = 10^c(-3:3)
+                  # Run fit.rfe()
+                  rfe <- pathClass::fit.rfe(x = data, y = labels, ...)
 
-            # Set labels as factor
-            labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-
-            # Set up "make.names" key for improper @exprs row.names
-            key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
-
-            # NOTE: RFE as assembled by pathClass is via a linear kernel only
-            # NOTE: By default, fit.rfe iterates through C = 10^c(-3:3)
-            # Run fit.rfe()
-            rfe <- pathClass::fit.rfe(x = data, y = labels, ...)
-
-            # Sort probes
-            final <- rfe$features
-
-            # Use "make.names" key to return to original row.names
-            final <- merge(data.frame("new" = final), key, sort = FALSE)$old
-
-            if(length(final) < 2) stop("Uh oh! fsPathClassRFE did not find enough features!")
-            array <- new("ExprsBinary",
-                         exprs = object@exprs[final, ],
-                         annot = object@annot,
-                         preFilter = append(object@preFilter, list(final)),
-                         reductionModel = append(object@reductionModel, list(NA))
-            )
-
-            return(array)
+                  # Use "make.names" key to return to original row.names
+                  final <- merge(data.frame("new" = rfe$features), key, sort = FALSE)$old
+                  if(length(final) < 2) stop("Uh oh! fsPathClassRFE did not find enough features!")
+                  as.character(final)
+                }, ...)
           }
 )
 
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsEbayes:} Method to perform empiric Bayes feature selection using limma::ebayes.
+#' @importFrom limma ebayes lmFit
 #' @export
 setMethod("fsEbayes", "ExprsBinary",
           function(object, probes, ...){ # args to ebayes
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
+            fs.(object, probes,
+                uniqueFx = function(data, probes, ...){
 
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Set up and perform eBayes
-            design <- as.matrix(ifelse(object@annot$defineCase == "Case", 1, 0))
-            colnames(design) <- "CaseVCont"
-            fit <- limma::lmFit(object@exprs[probes, ], design)
-            ebaye <- limma::ebayes(fit, ...)
-
-            # Sort probes
-            final <- rownames(ebaye$p.value)[order(ebaye$p.value[, 1])]
-
-            array <- new("ExprsBinary",
-                         exprs = object@exprs[final,],
-                         annot = object@annot,
-                         preFilter = append(object@preFilter, list(final)),
-                         reductionModel = append(object@reductionModel, list(NA))
-            )
-
-            return(array)
+                  design <- as.matrix(ifelse(object@annot$defineCase == "Case", 1, 0))
+                  colnames(design) <- "CaseVCont"
+                  fit <- limma::lmFit(object@exprs[probes, ], design)
+                  ebaye <- limma::ebayes(fit, ...)
+                  rownames(ebaye$p.value)[order(ebaye$p.value[, 1])]
+                }, ...)
           }
 )
 
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsMrme:} Method to perform mRMR feature selection using mRMRe::mRMR.classic.
+#' @importFrom mRMRe mRMR.classic mRMR.data solutions featureNames
 #' @export
 setMethod("fsMrmre", "ExprsBinary",
           function(object, probes, ...){ # args to mRMR.classic
 
-            args <- as.list(substitute(list(...)))[-1]
+            fs.(object, probes,
+                uniqueFx = function(data, probes, ...){
 
-            if(!"target_indices" %in% names(args)){
+                  args <- as.list(substitute(list(...)))[-1]
 
-              cat("Setting 'target_indices' to 1 (default behavior, override explicitly)...\n")
-              args <- append(args, list("target_indices" = 1))
-            }
+                  if(!"target_indices" %in% names(args)){
 
-            if(!"feature_count" %in% names(args)){
+                    cat("Setting 'target_indices' to 1 (default behavior, override explicitly)...\n")
+                    args <- append(args, list("target_indices" = 1))
+                  }
 
-              cat("Setting 'feature_count' to 64 (default behavior, override explicitly)...\n")
-              args <- append(args, list("feature_count" = 64))
-            }
+                  if(!"feature_count" %in% names(args)){
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
+                    cat("Setting 'feature_count' to 64 (default behavior, override explicitly)...\n")
+                    args <- append(args, list("feature_count" = 64))
+                  }
 
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
+                  # Set up "make.names" key for improper @exprs row.names
+                  key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
 
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
+                  labels <- as.numeric(object@annot$defineCase == "Case")
+                  mRMRdata <- mRMRe::mRMR.data(data = data.frame(labels, data))
+                  args <- append(list("data" = mRMRdata), args)
+                  mRMRout <- do.call(mRMRe::mRMR.classic, args)
 
-              data <- t(object@exprs[probes, ])
-            }
+                  # Sort probes
+                  final <- as.vector(
+                    apply(mRMRe::solutions(mRMRout)[[1]], 2, function(x, y){ return(y[x])},
+                          y = mRMRe::featureNames(mRMRdata))
+                  )
 
-            # Set up "make.names" key for improper @exprs row.names
-            key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
-
-            # Set up and perform mRMR
-            labels <- as.numeric(object@annot$defineCase == "Case")
-            mRMRdata <- mRMRe::mRMR.data(data = data.frame(labels, data))
-            args <- append(list("data" = mRMRdata), args)
-            mRMRout <- do.call(mRMRe::mRMR.classic, args)
-
-            # Sort probes
-            final <- as.vector(
-              apply(mRMRe::solutions(mRMRout)[[1]], 2, function(x, y){ return(y[x])},
-                    y = mRMRe::featureNames(mRMRdata))
-            )
-
-            # Use "make.names" key to return to original row.names
-            final <- merge(data.frame("new" = final), key, sort = FALSE)$old
-
-            array <- new("ExprsBinary",
-                         exprs = object@exprs[final,],
-                         annot = object@annot,
-                         preFilter = append(object@preFilter, list(final)),
-                         reductionModel = append(object@reductionModel, list(NA))
-            )
-
-            return(array)
-
+                  # Use "make.names" key to return to original row.names
+                  final <- merge(data.frame("new" = final), key, sort = FALSE)$old
+                  as.character(final)
+                }, ...)
           }
 )

@@ -6,8 +6,15 @@
 * 3.1-split.R
   * Remove `splitSample` warning.
   * Add details to the "Please Read" vignette.
+* 4.2-cluster.R
+  * Add support for numeric vector probes.
 * 4.3-compare.R
   * Convert `compare` warning into error.
+* 5.1-fs-binary.R
+  * Add `fs.` method to wrap repetitive code.
+  * Add support for numeric vector probes.
+  * Remove `fsStats` "ks-boot" method.
+  * Remove `fsPenalizedSVM`.
 * 7.1-plCV.R
   * Remove `plCV` warning.
   * Add details to the "Please Read" vignette.
