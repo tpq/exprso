@@ -7,7 +7,7 @@
 modSubset(object, colBy, include)
 }
 \arguments{
-\item{object}{An \code{ExprsArray} object to subset.}
+\item{object}{An \code{ExprsArray} or \code{ExprsPipeline} object to subset.}
 
 \item{colBy}{A numeric or character index. The column that contains group annotations.}
 
@@ -15,7 +15,7 @@ modSubset(object, colBy, include)
 to include in the subset.}
 }
 \value{
-An \code{ExprsArray} object.
+An \code{ExprsArray} or \code{ExprsPipeline} object.
 }
 \description{
 This function provides a tidy wrapper for the \code{ExprsArray}

@@ -19,6 +19,7 @@
 * 5.2-build-binary.R
   * Add imports to NAMESPACE.
   * Add `build.` method to wrap repetitive code.
+  * Add support for numeric vector probes.
 * 7.1-plCV.R
   * Remove `plCV` warning.
   * Add details to the "Please Read" vignette.

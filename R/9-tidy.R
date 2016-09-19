@@ -56,20 +56,22 @@ testSet <- function(splitSets){
 #'  \code{subset} method.
 #'
 #' @inheritParams arrayExprs
-#' @param object An \code{ExprsArray} object to subset.
+#' @param object An \code{ExprsArray} or \code{ExprsPipeline} object to subset.
 #' @param include A character vector. Specifies which annotations in \code{colBy}
 #'  to include in the subset.
-#' @return An \code{ExprsArray} object.
+#' @return An \code{ExprsArray} or \code{ExprsPipeline} object.
 #'
 #' @export
 modSubset <- function(object, colBy, include){
 
-  if(!inherits(object, "ExprsArray")){
+  if(inherits(object, "ExprsArray") | class(object) == "ExprsPipeline"){
 
-    stop("Uh oh! You can only use modSubset to subset an ExprsArray object!")
+    subset(object, subset = object@annot[, colBy] %in% include)
+
+  }else{
+
+    stop("Uh oh! You can only use modSubset on an ExprsArray or ExprsPipeline object!")
   }
-
-  subset(object, subset = object@annot[, colBy] %in% include)
 }
 
 ###########################################################

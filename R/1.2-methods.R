@@ -98,8 +98,8 @@ setMethod('$', signature(x = "ExprsArray"),
 setMethod("subset", signature(x = "ExprsArray"),
           function(x, subset, select){
 
-            if(missing(subset)) subset <- rownames(x@counts)
-            if(missing(select)) select <- colnames(x@counts)
+            if(missing(subset)) subset <- rownames(x@annot)
+            if(missing(select)) select <- colnames(x@annot)
 
             x@annot <- x@annot[subset, select, drop = FALSE]
             x@exprs <- x@exprs[, subset]
@@ -298,8 +298,8 @@ setMethod('$', signature(x = "ExprsPipeline"),
 setMethod("subset", signature(x = "ExprsPipeline"),
           function(x, subset, select){
 
-            if(missing(subset)) subset <- rownames(x@counts)
-            if(missing(select)) select <- colnames(x@counts)
+            if(missing(subset)) subset <- rownames(x@summary)
+            if(missing(select)) select <- colnames(x@summary)
 
             x@summary <- x@summary[subset, select, drop = FALSE]
             x@machs <- x@machs[subset]
