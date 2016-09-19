@@ -10,12 +10,9 @@
 #'  number of clusters, except when \code{how = "kmeans"} in which case this
 #'  function will expect the argument \code{centers} instead.
 #'
-#' @param object An \code{ExprsArray object}. The object containing
-#'  the subject data to cluster.
-#' @param probes A numeric scalar or character vector. A numeric scalar indicates
-#'  the number of top features that should guide clustering. A character vector
-#'  indicates specifically which features by name should guide clustering.
-#'  Set \code{probes = 0} to include all features.
+#' @inheritParams fs
+#' @param object An \code{ExprsArray} object. The object containing the subject
+#'  data to cluster.
 #' @param how A character string. The name of the function used to cluster.
 #'  Select from "hclust", "kmeans", "agnes", "clara", "diana", "fanny", or
 #'  "pam".
@@ -55,6 +52,8 @@ setMethod("modCluster", "ExprsArray",
                 probes <- rownames(object@exprs[probes, ])
               }
             }
+
+            data <- t(object@exprs[probes, ])
 
             # Set the argument 'k' aside to use in 'cutree'
             # NOTE: hclust, agnes, and diana use 'k' via 'cutree'
