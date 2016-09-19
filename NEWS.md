@@ -5,6 +5,11 @@
   * New `arrayExprs` function adds `data.frame` support.
 * 4.3-compare.R
   * Convert `compare` warning into error.
+* 7.2-plGrid.R
+  * Convert `plGrid` warning into a message.
+  * Consolidate numeric probes handling.
+  * Add handling for a list of numeric or character probes.
+  * Add details to the "Please Read" vignette.
 * 8.1-pipe.R
   * Convert `pipeFilter` warning into a message.
   * Add details to the "Please Read" vignette.

@@ -73,27 +73,22 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
 
   args <- as.list(substitute(list(...)))[-1]
 
-  # Prepare the use of a numeric probe vector
   if(is.numeric(probes)){
 
-    # Exclude 'probes' values less than or equal total available probes
-    probes <- probes[!probes > nrow(array.train@exprs)]
+    if(any(probes > nrow(array.train@exprs))){
 
-    # If no valid 'probes' values remain, use all probes
-    if(length(probes) == 0){
-
-      warning("Each supplied 'probes' values too large. Using all probes instead.")
-      probes <- 0
+      message("At least one 'probes' index is too large. Using all probes instead.")
+      probes[probes > nrow(array.train@exprs)] <- nrow(array.train@exprs)
     }
 
-    # Replace any 'probes = 0' arguments with the maximum number of probes
-    probes[probes == 0] <- nrow(array.train@exprs)
+    probes <- unique(probes)
 
-  }else{
+  }else if(is.character(probes)){
 
     # Turn character vector into single list entry
     probes <- as.list(probes)
-  }
+
+  } # if list, do nothing here
 
   # Build grid
   grid <- expand.grid(append(list("probes" = probes), lapply(args, eval)), stringsAsFactors = FALSE)

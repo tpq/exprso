@@ -130,7 +130,7 @@ setMethod("pipeFilter", "ExprsPipeline",
                          if(top.N > sum(object@summary$boot == boot)){
 
                            message("Provided 'top.N' too large for boot ", boot,
-                                   ". Using all gridpoints instead...")
+                                   ". Using all gridpoints instead.")
                            top.N <- 0
                          }
 
@@ -151,7 +151,7 @@ setMethod("pipeFilter", "ExprsPipeline",
               if(top.N > nrow(object@summary)){
 
                 message("Provided 'top.N' too large for this ExprsPipeline object.",
-                        "Using all gridpoints instead...")
+                        "Using all gridpoints instead.")
                 top.N <- 0
               }
 

@@ -101,7 +101,7 @@ setMethod("compare", "ExprsArray",
               # Make sure colBy contains categorical data
               if(!class(test.data[, colBy]) %in% c("character", "factor")){
 
-                stop("Uh oh! The 'colBy' variable must contain categorical data.\n")
+                stop("Uh oh! The 'colBy' variable must contain categorical data.")
               }
 
               # Check whether the values of 'annot' differ across 'colBy' for each data source
