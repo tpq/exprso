@@ -360,19 +360,9 @@ setMethod("fsMrmre", "ExprsBinary",
             fs.(object, probes,
                 uniqueFx = function(data, probes, ...){
 
-                  args <- as.list(substitute(list(...)))[-1]
-
-                  if(!"target_indices" %in% names(args)){
-
-                    cat("Setting 'target_indices' to 1 (default behavior, override explicitly)...\n")
-                    args <- append(args, list("target_indices" = 1))
-                  }
-
-                  if(!"feature_count" %in% names(args)){
-
-                    cat("Setting 'feature_count' to 64 (default behavior, override explicitly)...\n")
-                    args <- append(args, list("feature_count" = 64))
-                  }
+                  args <- getArgs(...)
+                  args <- defaultArg("target_indices", 1, args)
+                  args <- defaultArg("feature_count", 64, args)
 
                   # Set up "make.names" key for improper @exprs row.names
                   key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
