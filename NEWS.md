@@ -3,6 +3,9 @@
 * 2.1-import.R
   * Deprecated `arrayRead` and `arrayEset` functions.
   * New `arrayExprs` function adds `data.frame` support.
+* 3.1-split.R
+  * Remove `splitSample` warning.
+  * Add details to the "Please Read" vignette.
 * 4.3-compare.R
   * Convert `compare` warning into error.
 * 7.2-plGrid.R

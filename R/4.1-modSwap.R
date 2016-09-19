@@ -131,7 +131,7 @@ setMethod("modSwap", "ExprsBinary",
 
             }else{
 
-              stop("Provided how not recognized. Select from 'rp.1', 'rp.2', 'fp', 'ng', or 'tg'.\n")
+              stop("Provided how not recognized. Select from 'rp.1', 'rp.2', 'fp', 'ng', or 'tg'.")
             }
 
             # Store Boolean index of mutated subjects in @annot
