@@ -6,7 +6,7 @@
 #' This function extracts the training set from the result of a
 #'  \code{split} method call such as \code{splitSample} or \code{splitStratify}.
 #'
-#' @param A two-item list. The result of a \code{split} method call.
+#' @param splitSets A two-item list. The result of a \code{split} method call.
 #' @return An \code{ExprsArray} object.
 #'
 #' @export
@@ -55,7 +55,12 @@ testSet <- function(splitSets){
 #' This function provides a tidy wrapper for the \code{ExprsArray}
 #'  \code{subset} method.
 #'
-#' @inheritParams ExprsArray
+#' @inheritParams arrayExprs
+#' @param object An \code{ExprsArray} object to subset.
+#' @param include A character vector. Specifies which annotations in \code{colBy}
+#'  to include in the subset.
+#' @return An \code{ExprsArray} object.
+#'
 #' @export
 modSubset <- function(object, colBy, include){
 

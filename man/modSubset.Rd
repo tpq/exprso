@@ -6,6 +6,17 @@
 \usage{
 modSubset(object, colBy, include)
 }
+\arguments{
+\item{object}{An \code{ExprsArray} object to subset.}
+
+\item{colBy}{A numeric or character index. The column that contains group annotations.}
+
+\item{include}{A character vector. Specifies which annotations in \code{colBy}
+to include in the subset.}
+}
+\value{
+An \code{ExprsArray} object.
+}
 \description{
 This function provides a tidy wrapper for the \code{ExprsArray}
  \code{subset} method.

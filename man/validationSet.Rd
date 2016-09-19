@@ -6,6 +6,9 @@
 \usage{
 validationSet(splitSets)
 }
+\arguments{
+\item{splitSets}{A two-item list. The result of a \code{split} method call.}
+}
 \value{
 An \code{ExprsArray} object.
 }
