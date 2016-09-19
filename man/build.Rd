@@ -60,7 +60,8 @@ buildDNN(object, ...)
 \S4method{buildDNN}{ExprsMulti}(object, probes, ...)
 }
 \arguments{
-\item{object}{Specifies the \code{ExprsArray} object to undergo feature selection.}
+\item{object}{Specifies the \code{ExprsArray} object to use as a training set
+for classification.}
 
 \item{...}{Arguments passed to the respective wrapped function.}
 
@@ -71,8 +72,6 @@ Set \code{probes = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 }
 \value{
-Returns an \code{ExprsModel} object.
-
 Returns an \code{ExprsModel} object.
 }
 \description{

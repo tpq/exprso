@@ -34,6 +34,8 @@
 #'  See \code{\link{modHistory}} to read more about feature selection history.
 #'
 #' @inheritParams fs
+#' @param object Specifies the \code{ExprsArray} object to use as a training set
+#'  for classification.
 #' @return Returns an \code{ExprsModel} object.
 #'
 #' @seealso
@@ -101,6 +103,43 @@ setGeneric("buildDNN",
 ###########################################################
 ### Build classifier
 
+#' Workhorse for build Methods
+#'
+#' Used as a back-end wrapper for creating new build methods.
+#'
+#' @inheritParams build
+#' @param uniqueFx A function call unique to that fs method.
+#' @return Returns an \code{ExprsModel} object.
+#'
+#' @export
+build. <- function(object, probes, uniqueFx, ...){
+
+  if(class(probes) == "numeric"){
+
+    if(length(probes) == 1){
+
+      if(probes == 0) probes <- nrow(object@exprs)
+      probes <- rownames(object@exprs[1:probes, ])
+
+    }else{
+
+      probes <- rownames(object@exprs[probes, ])
+    }
+  }
+
+  data <- t(object@exprs[probes, ])
+  labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
+  model <- do.call("uniqueFx", list(data, labels, ...))
+
+  # Carry through and append fs history as stored in the ExprsArray object
+  # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
+  machine <- new("ExprsMachine",
+                 preFilter = append(object@preFilter, list(probes)),
+                 reductionModel = append(object@reductionModel, list(NA)),
+                 mach = model
+  )
+}
+
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildNB:} Method to build classifiers using e1071::naiveBayes.
@@ -109,39 +148,15 @@ setGeneric("buildDNN",
 setMethod("buildNB", "ExprsBinary",
           function(object, probes, ...){ # args to naiveBayes
 
-            args <- as.list(substitute(list(...)))[-1]
+            build.(object, probes,
+                   uniqueFx = function(data, labels, ...){
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
-
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Set labels as factor
-            labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-
-            # Perform naiveBayes via ~ method
-            df <- data.frame(data, "defineCase" = labels)
-            args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-            model <- do.call(e1071::naiveBayes, args)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-            machine <- new("ExprsMachine",
-                           preFilter = append(object@preFilter, list(probes)),
-                           reductionModel = append(object@reductionModel, list(NA)),
-                           mach = model
-            )
-
-            return(machine)
+                     # Perform naiveBayes via ~ method
+                     args <- getArgs(...)
+                     df <- data.frame(data, "defineCase" = labels)
+                     args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+                     do.call(e1071::naiveBayes, args)
+                   }, ...)
           }
 )
 
@@ -153,39 +168,15 @@ setMethod("buildNB", "ExprsBinary",
 setMethod("buildLDA", "ExprsBinary",
           function(object, probes, ...){ # args to lda
 
-            args <- as.list(substitute(list(...)))[-1]
+            build.(object, probes,
+                   uniqueFx = function(data, labels, ...){
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
-
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Set labels as factor
-            labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-
-            # Perform linear discriminant analysis via ~ method
-            df <- data.frame(data, "defineCase" = labels)
-            args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-            model <- do.call(MASS::lda, args)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-            machine <- new("ExprsMachine",
-                           preFilter = append(object@preFilter, list(probes)),
-                           reductionModel = append(object@reductionModel, list(NA)),
-                           mach = model
-            )
-
-            return(machine)
+                     # Perform linear discriminant analysis via ~ method
+                     args <- getArgs(...)
+                     df <- data.frame(data, "defineCase" = labels)
+                     args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+                     do.call(MASS::lda, args)
+                   }, ...)
           }
 )
 
@@ -197,61 +188,17 @@ setMethod("buildLDA", "ExprsBinary",
 setMethod("buildSVM", "ExprsBinary",
           function(object, probes, ...){ # args to svm
 
-            args <- as.list(substitute(list(...)))[-1]
+            build.(object, probes,
+                   uniqueFx = function(data, labels, ...){
 
-            if(!"probability" %in% names(args)){
-
-              args <- append(args, list("probability" = TRUE))
-            }
-
-            if(args$probability == FALSE){
-
-              cat("Uh oh! This function requires 'probability' = TRUE. Setting 'probability' to TRUE...\n")
-              args$probability <- TRUE
-            }
-
-            if(!"cross" %in% names(args)){
-
-              args <- append(args, list("cross" = 0))
-            }
-
-            if(args$cross != 0){
-
-              cat("Uh oh! This function requires 'cross' = 0. Setting 'cross' to 0...\n")
-              args$cross <- 0
-            }
-
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
-
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Set labels as factor
-            labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-
-            # Perform SVM via ~ method (permits plotting)
-            df <- data.frame(data, "defineCase" = labels)
-            args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-            model <- do.call(e1071::svm, args)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-            machine <- new("ExprsMachine",
-                           preFilter = append(object@preFilter, list(probes)),
-                           reductionModel = append(object@reductionModel, list(NA)),
-                           mach = model
-            )
-
-            return(machine)
+                     # Perform SVM via ~ method (permits plotting)
+                     args <- getArgs(...)
+                     args <- forceArg("probability", TRUE, args)
+                     args <- forceArg("cross", 0, args)
+                     df <- data.frame(data, "defineCase" = labels)
+                     args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+                     do.call(e1071::svm, args)
+                   }, ...)
           }
 )
 
@@ -263,63 +210,19 @@ setMethod("buildSVM", "ExprsBinary",
 setMethod("buildANN", "ExprsBinary",
           function(object, probes, ...){
 
-            args <- as.list(substitute(list(...)))[-1]
+            build.(object, probes,
+                   uniqueFx = function(data, labels, ...){
 
-            if(!"size" %in% names(args)){
-
-              cat("Setting 'size' to 1 (default behavior, override explicitly)...\n")
-              args <- append(args, list("size" = 1))
-            }
-
-            if(!"range" %in% names(args)){
-
-              cat("Setting 'range' to 1/max(|x|) (default behavior, override explicitly)...\n")
-              args <- append(args, list("range" = 1/max(abs(as.vector(object@exprs)))))
-            }
-
-            if(!"decay" %in% names(args)){
-
-              cat("Setting 'decay' to 0.5 (default behavior, override explicitly)...\n")
-              args <- append(args, list("decay" = 0.5))
-            }
-
-            if(!"maxit" %in% names(args)){
-
-              cat("Setting 'maxit' to 1000 (default behavior, override explicitly)...\n")
-              args <- append(args, list("maxit" = 1000))
-            }
-
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
-
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Set labels as factor
-            labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-
-            # Perform ANN via ~ method
-            df <- data.frame(data, "defineCase" = labels)
-            args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-            model <- do.call(nnet::nnet, args)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-            machine <- new("ExprsMachine",
-                           preFilter = append(object@preFilter, list(probes)),
-                           reductionModel = append(object@reductionModel, list(NA)),
-                           mach = model
-            )
-
-            return(machine)
+                     # Perform ANN via ~ method
+                     args <- getArgs(...)
+                     args <- defaultArg("size", 1, args)
+                     args <- defaultArg("range", 1/max(abs(as.vector(data))), args)
+                     args <- defaultArg("decay", 0.5, args)
+                     args <- defaultArg("maxit", 1000, args)
+                     df <- data.frame(data, "defineCase" = labels)
+                     args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+                     do.call(nnet::nnet, args)
+                   }, ...)
           }
 )
 
@@ -331,99 +234,50 @@ setMethod("buildANN", "ExprsBinary",
 setMethod("buildRF", "ExprsBinary",
           function(object, probes, ...){ # args to randomForest
 
-            args <- as.list(substitute(list(...)))[-1]
+            build.(object, probes,
+                   uniqueFx = function(data, labels, ...){
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
-
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
-
-              data <- t(object@exprs[probes, ])
-            }
-
-            # Set labels as factor
-            labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-
-            # Perform RF via ~ method
-            df <- data.frame(data, "defineCase" = labels)
-            args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-            model <- do.call(randomForest::randomForest, args)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-            machine <- new("ExprsMachine",
-                           preFilter = append(object@preFilter, list(probes)),
-                           reductionModel = append(object@reductionModel, list(NA)),
-                           mach = model
-            )
-
-            return(machine)
+                     # Perform RF via ~ method
+                     args <- getArgs(...)
+                     df <- data.frame(data, "defineCase" = labels)
+                     args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+                     do.call(randomForest::randomForest, args)
+                   }, ...)
           }
 )
 
 #' @rdname build
 #' @section Methods (by generic):
 #' \code{buildDNN:} Method to build feed-forward networks using h2o::h2o.deeplearning.
-#'
-#' @inheritParams fs
-#' @return Returns an \code{ExprsModel} object.
-#'
 #' @importFrom utils write.csv
 #' @importFrom h2o h2o.init h2o.importFile h2o.deeplearning
 #' @export
 setMethod("buildDNN", "ExprsBinary",
           function(object, probes, ...){ # args to h2o.deeplearning
 
-            args <- as.list(substitute(list(...)))[-1]
+            args <- getArgs(...)
 
-            # Convert 'numeric' probe argument to 'character' probe vector
-            if(class(probes) == "numeric"){
+            build.(object, probes,
+                   uniqueFx = function(data, labels, ...){
 
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
+                     # Initialize h2o (required)
+                     localH20 <- h2o::h2o.init()
 
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
+                     # Rename data based on order supplied by probes
+                     colnames(data) <- paste0("id", 1:ncol(data))
+                     labels <- object@annot[rownames(data), "defineCase"]
+                     df <- data.frame(data, "defineCase" = labels)
 
-              data <- t(object@exprs[probes, ])
-            }
+                     # Import data as H2OFrame via a temporary csv
+                     tempFile <- tempfile(fileext = ".csv")
+                     utils::write.csv(df, tempFile)
+                     h2o.data <- h2o::h2o.importFile(path = tempFile, destination_frame = "h2o.data")
 
-            # Initialize h2o (required)
-            localH20 <- h2o::h2o.init()
-
-            # Rename data based on order supplied by probes
-            colnames(data) <- paste0("id", 1:ncol(data))
-            labels <- object@annot[rownames(data), "defineCase"]
-            df <- data.frame(data, "defineCase" = labels)
-
-            # Import data as H2OFrame via a temporary csv
-            tempFile <- tempfile(fileext = ".csv")
-            utils::write.csv(df, tempFile)
-            h2o.data <- h2o::h2o.importFile(path = tempFile, destination_frame = "h2o.data")
-
-            # Prepare arguments and build classifier
-            args <- append(list("x" = colnames(data),
-                                "y" = "defineCase",
-                                "training_frame" = h2o.data),
-                           args)
-            model <- do.call(h2o::h2o.deeplearning, args)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-            machine <- new("ExprsMachine",
-                           preFilter = append(object@preFilter, list(probes)),
-                           reductionModel = append(object@reductionModel, list(NA)),
-                           mach = model
-            )
-
-            return(machine)
+                     # Prepare arguments and build classifier
+                     args <- getArgs(...)
+                     args <- append(list("x" = colnames(data), "y" = "defineCase",
+                                         "training_frame" = h2o.data), args)
+                     do.call(h2o::h2o.deeplearning, args)
+                   }, ...)
           }
 )
