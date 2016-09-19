@@ -30,7 +30,6 @@
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{arrayEset}}, \code{\link{GSE2eSet}}
-#' @importFrom utils read.delim
 #' @export
 arrayRead <- function(file, probes.begin, colID, colBy, include, ...){
 
@@ -100,7 +99,6 @@ arrayRead <- function(file, probes.begin, colID, colBy, include, ...){
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{arrayRead}}, \code{\link{GSE2eSet}}
-#' @import Biobase
 #' @export
 arrayEset <- function(eSet, colBy, include){
 

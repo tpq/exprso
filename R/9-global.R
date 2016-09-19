@@ -1,6 +1,6 @@
 #' @importFrom methods new as
 #' @importFrom plyr rbind.fill
-#' @import kernlab
+#' @importClassesFrom Biobase ExpressionSet
 #' @import GEOquery
-#' @import Biobase
+#' @import kernlab
 NULL
