@@ -48,7 +48,7 @@ Note that \code{plGrid} uses \code{\link{plCV}} to calculate the "inner"
  cross-validation accuracy. Depending on the use case, may not represent
  the most appropriate choice. We hope future implementations will accomodate
  other \code{ctrlGS} functions beyond \code{plGrid}.
- 
+
 When calculating classifier performance, this function forces
  \code{aucSkip = TRUE} and \code{plotSkip = TRUE}, not unlike
  \code{\link{plCV}}.
