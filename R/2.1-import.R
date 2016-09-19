@@ -1,5 +1,5 @@
 ###########################################################
-### Import data from file or eSet
+### Import data from data.frame, eSet, or file
 
 #' Import Data as ExprsArray
 #'
@@ -57,8 +57,8 @@ arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
 
   }else if(class(object) == "ExpressionSet"){
 
-    exprs <- exprs(eSet)
-    annot <- eSet@phenoData@data
+    exprs <- exprs(object)
+    annot <- object@phenoData@data
 
   }else if(class(object) == "character" & file.exists(object)){
 

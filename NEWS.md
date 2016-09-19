@@ -8,6 +8,9 @@
   * Add details to the "Please Read" vignette.
 * 4.3-compare.R
   * Convert `compare` warning into error.
+* 7.1-plCV.R
+  * Remove `plCV` warning.
+  * Add details to the "Please Read" vignette.
 * 7.2-plGrid.R
   * Convert `plGrid` warning into a message.
   * Consolidate numeric probes handling.
