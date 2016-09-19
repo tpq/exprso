@@ -2,11 +2,14 @@
 % Please edit documentation in R/9-tidy.R
 \name{getArgs}
 \alias{getArgs}
-\title{Build args List}
+\title{Build an args List}
 \usage{
 getArgs(...)
 }
+\arguments{
+\item{...}{Arguments passed down from a calling function.}
+}
 \description{
-Build args List
+Build an args List
 }
 

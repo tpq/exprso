@@ -11,10 +11,14 @@
 * 4.3-compare.R
   * Convert `compare` warning into error.
 * 5.1-fs-binary.R
+  * Add imports to NAMESPACE.
   * Add `fs.` method to wrap repetitive code.
   * Add support for numeric vector probes.
-  * Remove `fsStats` "ks-boot" method.
+  * Remove the `fsStats` "ks-boot" method.
   * Remove `fsPenalizedSVM`.
+* 5.2-build-binary.R
+  * Add imports to NAMESPACE.
+  * Add `build.` method to wrap repetitive code.
 * 7.1-plCV.R
   * Remove `plCV` warning.
   * Add details to the "Please Read" vignette.
@@ -28,6 +32,10 @@
   * Add details to the "Please Read" vignette.
 * 9-deprecated.R
   * Contains deprecated functions.
+* 9-tidy.R
+  * Add `getArgs`, `defaultArg`, and `forceArg` functions.
+  * Add `trainingSet`, `validationSet`, and `testSet` functions.
+  * Add `modSubset` wrapper for `subset` method.
 
 ## exprso 0.1.3
 ---------------------

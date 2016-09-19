@@ -2,11 +2,18 @@
 % Please edit documentation in R/9-tidy.R
 \name{forceArg}
 \alias{forceArg}
-\title{Force args Value}
+\title{Force an args List Element to Value}
 \usage{
 forceArg(what, as, args)
 }
+\arguments{
+\item{what}{The name of the argument.}
+
+\item{as}{The value to set it as.}
+
+\item{args}{An args list. The result of \code{\link{getArgs}}.}
+}
 \description{
-Force args Value
+Force an args List Element to Value
 }
 

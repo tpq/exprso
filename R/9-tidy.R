@@ -1,11 +1,87 @@
-#' Build args List
+###########################################################
+### For a tidy application of exprso
+
+#' Extract Training Set
+#'
+#' This function extracts the training set from the result of a
+#'  \code{split} method call such as \code{splitSample} or \code{splitStratify}.
+#'
+#' @param A two-item list. The result of a \code{split} method call.
+#' @return An \code{ExprsArray} object.
+#'
+#' @export
+trainingSet <- function(splitSets){
+
+  if(class(splitSets) == "list" & length(splitSets) == 2){
+
+    return(splitSets[["array.train"]])
+
+  }else{
+
+    stop("Uh oh! Cannot extract the training set from this object.")
+  }
+}
+
+#' Extract Validation Set
+#'
+#' This function extracts the validation set from the result of a
+#'  \code{split} method call such as \code{splitSample} or \code{splitStratify}.
+#'
+#' @inheritParams trainingSet
+#' @return An \code{ExprsArray} object.
+#'
+#' @export
+validationSet <- function(splitSets){
+
+  if(class(splitSets) == "list" & length(splitSets) == 2){
+
+    return(splitSets[["array.valid"]])
+
+  }else{
+
+    stop("Uh oh! Cannot extract the validation set from this object.")
+  }
+}
+
+#' @describeIn trainingSet Identical to the \code{validationSet} function.
+#' @export
+testSet <- function(splitSets){
+
+  validationSet(splitSets)
+}
+
+#' ExprsArray Subset Wrapper
+#'
+#' This function provides a tidy wrapper for the \code{ExprsArray}
+#'  \code{subset} method.
+#'
+#' @inheritParams ExprsArray
+#' @export
+modSubset <- function(object, colBy, include){
+
+  if(!inherits(object, "ExprsArray")){
+
+    stop("Uh oh! You can only use modSubset to subset an ExprsArray object!")
+  }
+
+  subset(object, subset = object@annot[, colBy] %in% include)
+}
+
+###########################################################
+### For a tidy source code
+
+#' Build an args List
+#' @param ... Arguments passed down from a calling function.
 getArgs <- function(...){
 
   args <- as.list(substitute(list(...)))[-1]
   return(args)
 }
 
-#' Set Default args Value
+#' Set an args List Element to Default Value
+#' @param what The name of the argument.
+#' @param as The value to set it as.
+#' @param args An args list. The result of \code{\link{getArgs}}.
 defaultArg <- function(what, as, args){
 
   if(!what %in% names(args)){
@@ -18,7 +94,8 @@ defaultArg <- function(what, as, args){
   return(args)
 }
 
-#' Force args Value
+#' Force an args List Element to Value
+#' @inheritParams defaultArg
 forceArg <- function(what, as, args){
 
   if(!what %in% names(args)){

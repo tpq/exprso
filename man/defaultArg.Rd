@@ -2,11 +2,18 @@
 % Please edit documentation in R/9-tidy.R
 \name{defaultArg}
 \alias{defaultArg}
-\title{Set Default args Value}
+\title{Set an args List Element to Default Value}
 \usage{
 defaultArg(what, as, args)
 }
+\arguments{
+\item{what}{The name of the argument.}
+
+\item{as}{The value to set it as.}
+
+\item{args}{An args list. The result of \code{\link{getArgs}}.}
+}
 \description{
-Set Default args Value
+Set an args List Element to Default Value
 }
 
