@@ -107,7 +107,7 @@ arrayEset <- function(eSet, colBy, include){
 
   # Build an ExprsArray object from the eSet object
   array <- new(ifelse(length(include) == 2, "ExprsBinary", "ExprsMulti"),
-               exprs = exprs(eSet),
+               exprs = Biobase::exprs(eSet),
                annot = eSet@phenoData@data,
                preFilter = NULL,
                reductionModel = NULL)

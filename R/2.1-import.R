@@ -44,6 +44,7 @@
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{GSE2eSet}}
 #' @importFrom utils read.delim
+#' @importFrom Biobase exprs
 #' @export
 arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
 
@@ -57,7 +58,7 @@ arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
 
   }else if(class(object) == "ExpressionSet"){
 
-    exprs <- exprs(object)
+    exprs <- Biobase::exprs(object)
     annot <- object@phenoData@data
 
   }else if(class(object) == "character" & file.exists(object)){
