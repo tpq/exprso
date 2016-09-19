@@ -37,8 +37,10 @@
 #' @param probes A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
 #'  indicates specifically which features by name should undergo feature selection.
-#'  Set \code{probes = 0} to include all features. This \code{probes} argument will
-#'  also accept multiple numeric terms for each argument, supplied as a vector.
+#'  Set \code{probes = 0} to include all features. Note that providing a numeric vector
+#'  for the \code{probes} argument will have \code{plGrid} search across multiple
+#'  top features. However, by providing a list of numeric vectors as the \code{probes}
+#'  argument, the user can force the default handling of numeric vectors.
 #' @param how A character string. Specifies the \code{\link{build}} method to iterate.
 #' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation. Argument passed

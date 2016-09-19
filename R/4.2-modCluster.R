@@ -43,18 +43,17 @@ setMethod("modCluster", "ExprsArray",
 
             args <- as.list(substitute(list(...)))[-1]
 
-            # Convert 'numeric' probe argument to 'character' probe vector
             if(class(probes) == "numeric"){
 
-              if(probes == 0) probes <- nrow(object@exprs)
-              probes <- rownames(object@exprs[1:probes, ])
-              data <- t(object@exprs[probes, ])
-            }
+              if(length(probes) == 1){
 
-            # Build data using supplied 'character' probe vector
-            if(class(probes) == "character"){
+                if(probes == 0) probes <- nrow(object@exprs)
+                probes <- rownames(object@exprs[1:probes, ])
 
-              data <- t(object@exprs[probes, ])
+              }else{
+
+                probes <- rownames(object@exprs[probes, ])
+              }
             }
 
             # Set the argument 'k' aside to use in 'cutree'
