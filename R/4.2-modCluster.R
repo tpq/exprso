@@ -44,6 +44,7 @@ setMethod("modCluster", "ExprsArray",
 
               if(length(probes) == 1){
 
+                if(probes > nrow(object@exprs)) probes <- 0
                 if(probes == 0) probes <- nrow(object@exprs)
                 probes <- rownames(object@exprs[1:probes, ])
 
