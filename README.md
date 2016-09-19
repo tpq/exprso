@@ -4,7 +4,7 @@ Quick start
 
 Welcome to the `exprso` GitHub page!
 
-Supervised machine learning often comprises a large part of bioinformatic studies. However, the sheer complexity of classification pipelines poses a significant barrier to expert scientists otherwise unspecialized in machine learning. Moreover, many biologists lack the time or technical skills necessary to implement these methods properly. The `exprso` package introduces a framework for the rapid implementation of high-throughput supervised machine learning built with the biologist user in mind. Written by biologists, for biologists, `exprso` provides a user-friendly *R* interface that empowers investigators to execute state-of-the-art classification with minimal programming experience. You can get started with `exprso` by installing the most up-to-date version of this package directly from GitHub.
+Supervised machine learning has an increasingly important role in biological studies. However, the sheer complexity of classification pipelines poses a significant barrier to the expert biologist unfamilar with machine learning. Moreover, many biologists lack the time or coding skills necessary to establish their own pipelines. The `exprso` package introduces a framework for the rapid implementation of high-throughput supervised machine learning built with the biologist user in mind. Written by biologists, for biologists, `exprso` provides a user-friendly *R* interface that empowers investigators to execute state-of-the-art binary and multi-class classification, including some deep learning, with minimal programming experience necessary. You can get started with `exprso` by installing the most up-to-date version of this package directly from GitHub.
 
 ``` r
 library(devtools)
@@ -14,14 +14,15 @@ library(exprso)
 
 The `exprso` package organizes the myriad of methodological approaches to classification into analytical *modules* that provide the user with stackable and interchangeable data processing tools. Although this package primarily revolves around dichotomous (i.e., binary) classification, `exprso` also includes a rudimentary framework for multi-class classification. Some of the modules available include:
 
--   **array:** Modules that import data stored as local files, `eSet` objects, or NCBI GEO data series.
+-   **array:** Modules that import data stored as a `data.frame` or `eSet` object, or as a local file.
+-   **mod:** Modules that modify the imported data prior to classification.
 -   **split:** Modules that split these data into training and test sets.
 -   **fs:** Modules that perform feature selection (e.g., statistical filters, SVM-RFE, mRMR, and more).
 -   **build:** Modules that build classifiers (e.g, SVMs, artificial neural networks, random forests, and more).
--   **predict:** Modules that deploy classifiers.
+-   **predict:** Modules that deploy classifiers and classifier ensembles.
 -   **calc:** Modules that calculate classifier performance, including area under the ROC curve.
 -   **pl:** Modules that manage elaborate classification pipelines (e.g., nested cross-validation, and more).
--   **ens:** Modules that build ensemble classifiers.
+-   **pipe:** Modules that filter classification pipeline results.
 
 ### ALL/AML classification
 
@@ -34,10 +35,10 @@ data(Golub_Merge)
 
 ``` r
 set.seed(12345)
-array <- arrayEset(Golub_Merge,
-                   colBy = "ALL.AML",
-                   include = list("ALL",
-                                  "AML"))
+array <- arrayExprs(Golub_Merge,
+                    colBy = "ALL.AML",
+                    include = list("ALL",
+                                   "AML"))
 ```
 
 ``` r
@@ -50,12 +51,6 @@ In the next code chunk, we split the datasets randomly into training and test se
 
 ``` r
 arrays <- splitSample(array, percent.include = 67)
-```
-
-    ## Warning in .local(object, ...): This method is not truly random; at least
-    ## one of every class will appear in validation set!
-
-``` r
 array.train <- fsStats(arrays$array.train, probes = 0, how = "t.test")
 array.test <- arrays$array.valid
 ```

@@ -4,6 +4,7 @@
 \name{ExprsPipeline-class}
 \alias{$,ExprsPipeline-method}
 \alias{ExprsPipeline-class}
+\alias{[,ExprsPipeline,ANY,ANY,ANY-method}
 \alias{[,ExprsPipeline-method}
 \alias{getProbeSet,ExprsPipeline-method}
 \alias{show,ExprsPipeline-method}
@@ -13,7 +14,7 @@
 \usage{
 \S4method{show}{ExprsPipeline}(object)
 
-\S4method{[}{ExprsPipeline}(x, i, j)
+\S4method{[}{ExprsPipeline,ANY,ANY,ANY}(x, i, j)
 
 \S4method{$}{ExprsPipeline}(x, name)
 
