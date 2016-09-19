@@ -23,53 +23,53 @@
 \alias{buildSVM,ExprsMulti-method}
 \title{Build Classifiers}
 \usage{
-buildNB(object, ...)
+buildNB(object, probes = 0, ...)
 
-buildLDA(object, ...)
+buildLDA(object, probes = 0, ...)
 
-buildSVM(object, ...)
+buildSVM(object, probes = 0, ...)
 
-buildANN(object, ...)
+buildANN(object, probes = 0, ...)
 
-buildRF(object, ...)
+buildRF(object, probes = 0, ...)
 
-buildDNN(object, ...)
+buildDNN(object, probes = 0, ...)
 
-\S4method{buildNB}{ExprsBinary}(object, probes, ...)
+\S4method{buildNB}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{buildLDA}{ExprsBinary}(object, probes, ...)
+\S4method{buildLDA}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{buildSVM}{ExprsBinary}(object, probes, ...)
+\S4method{buildSVM}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{buildANN}{ExprsBinary}(object, probes, ...)
+\S4method{buildANN}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{buildRF}{ExprsBinary}(object, probes, ...)
+\S4method{buildRF}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{buildDNN}{ExprsBinary}(object, probes, ...)
+\S4method{buildDNN}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{buildNB}{ExprsMulti}(object, probes, ...)
+\S4method{buildNB}{ExprsMulti}(object, probes = 0, ...)
 
-\S4method{buildLDA}{ExprsMulti}(object, probes, ...)
+\S4method{buildLDA}{ExprsMulti}(object, probes = 0, ...)
 
-\S4method{buildSVM}{ExprsMulti}(object, probes, ...)
+\S4method{buildSVM}{ExprsMulti}(object, probes = 0, ...)
 
-\S4method{buildANN}{ExprsMulti}(object, probes, ...)
+\S4method{buildANN}{ExprsMulti}(object, probes = 0, ...)
 
-\S4method{buildRF}{ExprsMulti}(object, probes, ...)
+\S4method{buildRF}{ExprsMulti}(object, probes = 0, ...)
 
-\S4method{buildDNN}{ExprsMulti}(object, probes, ...)
+\S4method{buildDNN}{ExprsMulti}(object, probes = 0, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to use as a training set
 for classification.}
-
-\item{...}{Arguments passed to the respective wrapped function.}
 
 \item{probes}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
 Set \code{probes = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
+
+\item{...}{Arguments passed to the respective wrapped function.}
 }
 \value{
 Returns an \code{ExprsModel} object.

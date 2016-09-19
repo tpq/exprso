@@ -67,37 +67,37 @@ NULL
 #' @rdname build
 #' @export
 setGeneric("buildNB",
-           function(object, ...) standardGeneric("buildNB")
+           function(object, probes = 0, ...) standardGeneric("buildNB")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildLDA",
-           function(object, ...) standardGeneric("buildLDA")
+           function(object, probes = 0, ...) standardGeneric("buildLDA")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildSVM",
-           function(object, ...) standardGeneric("buildSVM")
+           function(object, probes = 0, ...) standardGeneric("buildSVM")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildANN",
-           function(object, ...) standardGeneric("buildANN")
+           function(object, probes = 0, ...) standardGeneric("buildANN")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildRF",
-           function(object, ...) standardGeneric("buildRF")
+           function(object, probes = 0, ...) standardGeneric("buildRF")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildDNN",
-           function(object, ...) standardGeneric("buildDNN")
+           function(object, probes = 0, ...) standardGeneric("buildDNN")
 )
 
 ###########################################################
@@ -209,7 +209,7 @@ setMethod("buildSVM", "ExprsBinary",
 #' @importFrom nnet nnet
 #' @export
 setMethod("buildANN", "ExprsBinary",
-          function(object, probes, ...){
+          function(object, probes, ...){ # args to nnet
 
             build.(object, probes,
                    uniqueFx = function(data, labels, ...){

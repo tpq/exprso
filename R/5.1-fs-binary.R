@@ -88,43 +88,37 @@ NULL
 #' @rdname fs
 #' @export
 setGeneric("fsSample",
-           function(object, ...) standardGeneric("fsSample")
+           function(object, probes = 0, ...) standardGeneric("fsSample")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsStats",
-           function(object, ...) standardGeneric("fsStats")
+           function(object, probes = 0, ...) standardGeneric("fsStats")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsPrcomp",
-           function(object, ...) standardGeneric("fsPrcomp")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsPenalizedSVM",
-           function(object, ...) standardGeneric("fsPenalizedSVM")
+           function(object, probes = 0, ...) standardGeneric("fsPrcomp")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsPathClassRFE",
-           function(object, ...) standardGeneric("fsPathClassRFE")
+           function(object, probes = 0, ...) standardGeneric("fsPathClassRFE")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsEbayes",
-           function(object, ...) standardGeneric("fsEbayes")
+           function(object, probes = 0, ...) standardGeneric("fsEbayes")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsMrmre",
-           function(object, ...) standardGeneric("fsMrmre")
+           function(object, probes = 0, ...) standardGeneric("fsMrmre")
 )
 
 ###########################################################

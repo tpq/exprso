@@ -9,7 +9,6 @@
 \alias{fsMrmre,ExprsBinary-method}
 \alias{fsPathClassRFE}
 \alias{fsPathClassRFE,ExprsBinary-method}
-\alias{fsPenalizedSVM}
 \alias{fsPrcomp}
 \alias{fsPrcomp,ExprsBinary-method}
 \alias{fsSample}
@@ -20,46 +19,44 @@
 \alias{fsStats,ExprsMulti-method}
 \title{Perform Feature Selection}
 \usage{
-fsSample(object, ...)
+fsSample(object, probes = 0, ...)
 
-fsStats(object, ...)
+fsStats(object, probes = 0, ...)
 
-fsPrcomp(object, ...)
+fsPrcomp(object, probes = 0, ...)
 
-fsPenalizedSVM(object, ...)
+fsPathClassRFE(object, probes = 0, ...)
 
-fsPathClassRFE(object, ...)
+fsEbayes(object, probes = 0, ...)
 
-fsEbayes(object, ...)
+fsMrmre(object, probes = 0, ...)
 
-fsMrmre(object, ...)
-
-\S4method{fsSample}{ExprsBinary}(object, probes, ...)
+\S4method{fsSample}{ExprsBinary}(object, probes = 0, ...)
 
 \S4method{fsStats}{ExprsBinary}(object, probes, how = "t.test", ...)
 
-\S4method{fsPrcomp}{ExprsBinary}(object, probes, ...)
+\S4method{fsPrcomp}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{fsPathClassRFE}{ExprsBinary}(object, probes, ...)
+\S4method{fsPathClassRFE}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{fsEbayes}{ExprsBinary}(object, probes, ...)
+\S4method{fsEbayes}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{fsMrmre}{ExprsBinary}(object, probes, ...)
+\S4method{fsMrmre}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{fsSample}{ExprsMulti}(object, probes, ...)
+\S4method{fsSample}{ExprsMulti}(object, probes = 0, ...)
 
-\S4method{fsStats}{ExprsMulti}(object, probes, ...)
+\S4method{fsStats}{ExprsMulti}(object, probes = 0, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to undergo feature selection.}
-
-\item{...}{Arguments passed to the respective wrapped function.}
 
 \item{probes}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
 Set \code{probes = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
+
+\item{...}{Arguments passed to the respective wrapped function.}
 
 \item{how}{Specifics which function to call in \code{fsStats}. Recognized arguments
 include \code{"t.test"} and \code{"ks.test"}.}

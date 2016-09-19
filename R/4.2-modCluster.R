@@ -27,7 +27,8 @@
 #'
 #' @export
 setGeneric("modCluster",
-           function(object, probes, how, onlyCluster = FALSE, ...) standardGeneric("modCluster")
+           function(object, probes = 0, how = "hclust",
+                    onlyCluster = FALSE, ...) standardGeneric("modCluster")
 )
 
 #' @describeIn modCluster Method to compare \code{ExprsArray} objects.

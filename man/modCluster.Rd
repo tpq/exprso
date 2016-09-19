@@ -6,10 +6,10 @@
 \alias{modCluster,ExprsArray-method}
 \title{Cluster Subjects}
 \usage{
-modCluster(object, probes, how, onlyCluster = FALSE, ...)
+modCluster(object, probes = 0, how = "hclust", onlyCluster = FALSE, ...)
 
-\S4method{modCluster}{ExprsArray}(object, probes, how, onlyCluster = FALSE,
-  ...)
+\S4method{modCluster}{ExprsArray}(object, probes = 0, how = "hclust",
+  onlyCluster = FALSE, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object. The object containing the subject
