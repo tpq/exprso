@@ -66,11 +66,6 @@ test_that("probes argument to fs ExprsBinary method works", {
 
   expect_equal(
     rownames(fsStats(array, probes = 0, how = "ks.test")@exprs),
-    rownames(fsStats(array, probes = c("feat4", "feat3", "feat2", "feat1"), how = "ks.test")@exprs)
-  )
-
-  expect_equal(
-    rownames(fsStats(array, probes = 0, how = "ks.test")@exprs),
     c("feat2", "feat4", "feat1", "feat3")
   )
 
