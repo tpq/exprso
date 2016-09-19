@@ -4,7 +4,7 @@ Quick start
 
 Welcome to the `exprso` GitHub page!
 
-Supervised machine learning has an increasingly important role in biological studies. However, the sheer complexity of classification pipelines poses a significant barrier to the expert biologist unfamilar with machine learning. Moreover, many biologists lack the time or coding skills necessary to establish their own pipelines. The `exprso` package introduces a framework for the rapid implementation of high-throughput supervised machine learning built with the biologist user in mind. Written by biologists, for biologists, `exprso` provides a user-friendly *R* interface that empowers investigators to execute state-of-the-art binary and multi-class classification, including some deep learning, with minimal programming experience necessary. You can get started with `exprso` by installing the most up-to-date version of this package directly from GitHub.
+Supervised machine learning has an increasingly important role in biological studies. However, the sheer complexity of classification pipelines poses a significant barrier to the expert biologist unfamiliar with machine learning. Moreover, many biologists lack the time or technical skills necessary to establish their own pipelines. The `exprso` package introduces a framework for the rapid implementation of high-throughput supervised machine learning built with the biologist user in mind. Written by biologists, for biologists, `exprso` provides a user-friendly *R* interface that empowers investigators to execute state-of-the-art binary and multi-class classification, including deep learning, with minimal programming experience necessary. You can get started with `exprso` by installing the most up-to-date version of this package directly from GitHub.
 
 ``` r
 library(devtools)
@@ -26,7 +26,7 @@ The `exprso` package organizes the myriad of methodological approaches to classi
 
 ### ALL/AML classification
 
-To showcase this package, we make use of the publicly available hallmark Golub 1999 dataset to differentiate ALL (acute lymphocytic leukemia) from AML (acute myelogenous leukemia) based on gene expression as measured by microarray technology. We begin by importing this dataset from the package, `GolubEsets`, which exposes these data as an `eSet` (i.e., `ExpressionSet`) object. Then, using the `modFilter`, `modTransform`, and `modNormalize` functions, we filter, log-transform, and normalize the dataset to prepare these data for classification.
+To showcase this package, we make use of the publicly available hallmark Golub 1999 dataset to differentiate ALL (acute lymphocytic leukemia) from AML (acute myelogenous leukemia) based on gene expression as measured by microarray technology. We begin by importing this dataset from the package, `GolubEsets`, which exposes these data as an `eSet` (i.e., `ExpressionSet`) object. Then, using the `arrayExprs` function, we load the data into `exprso`. The `modFilter`, `modTransform`, and `modNormalize` functions allow us to replicate the pre-processing steps taken by the original investigators.
 
 ``` r
 library(golubEsets)
@@ -62,6 +62,12 @@ mach <- buildSVM(array.train,
                  probes = 50,
                  kernel = "linear",
                  cost = 1)
+```
+
+    ## Setting probability to TRUE (default behavior, override explicitly)...
+    ## Setting cross to 0 (default behavior, override explicitly)...
+
+``` r
 pred <- predict(mach, array.train)
 ```
 
@@ -100,7 +106,7 @@ calcStats(pred, array.test)
     ##   acc sens spec auc
     ## 1   1    1    1   1
 
-When constructing a classifier using **build** modules, we can only specify one set of parameters. However, investigators often want to test models across a vast range of parameters. We provide the `plGrid` function for high-throughput parameter searches. This function wraps not only classifier construction, but deployment as well. By supplying a non-`NULL` argument to `fold`, this function will also calculate *v*-fold cross-validation using the training set.
+When constructing a classifier using **build** modules, we can only specify one set of parameters at a time. However, investigators often want to test models across a vast range of parameters. We provide the `plGrid` function for high-throughput parameter searches. This function wraps not only classifier construction, but deployment as well. By supplying a non-`NULL` argument to `fold`, this function will also calculate *v*-fold cross-validation using the training set.
 
 ``` r
 pl <- plGrid(array.train,
@@ -114,7 +120,7 @@ pl <- plGrid(array.train,
 
 ### Bootstrapping
 
-What if we wanted to apply these modules to multiple splits of the same dataset? This package provides a simple interface for executing Monte Carlo style bootstrapping by embedding **split**, **fs**, and **pl** modules all within a single wrapper. The `plMonteCarlo` function effectively iterates over the above pipeline (including `plGrid`) some number `B` times. Using this function requires custom argument handlers that organize the **split**, **fs**, and **pl** methods, respectively.
+What if we wanted to analyze multiple splits of a dataset simultaneously? This package provides a simple interface for executing Monte Carlo style bootstrapping, embedding **split**, **fs**, and **pl** modules all within a single wrapper. The `plMonteCarlo` function effectively iterates over the above modules (including `plGrid`) some number `B` times. Using this function requires custom argument handlers that help organize the **split**, **fs**, and **pl** methods, respectively.
 
 ``` r
 ss <- ctrlSplitSet(func = "splitSample", percent.include = 67)
