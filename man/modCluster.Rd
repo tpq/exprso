@@ -12,13 +12,14 @@ modCluster(object, probes, how, onlyCluster = FALSE, ...)
   ...)
 }
 \arguments{
-\item{object}{An \code{ExprsArray object}. The object containing
-the subject data to cluster.}
+\item{object}{An \code{ExprsArray} object. The object containing the subject
+data to cluster.}
 
 \item{probes}{A numeric scalar or character vector. A numeric scalar indicates
-the number of top features that should guide clustering. A character vector
-indicates specifically which features by name should guide clustering.
-Set \code{probes = 0} to include all features.}
+the number of top features that should undergo feature selection. A character vector
+indicates specifically which features by name should undergo feature selection.
+Set \code{probes = 0} to include all features. A numeric vector can also be used
+to indicate specific features by location, similar to a character vector.}
 
 \item{how}{A character string. The name of the function used to cluster.
 Select from "hclust", "kmeans", "agnes", "clara", "diana", "fanny", or
