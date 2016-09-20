@@ -1,4 +1,4 @@
-## exprso 0.1.3.9000
+## exprso 0.1.4
 ---------------------
 * 2.1-import.R
   * Deprecated `arrayRead` and `arrayEset` functions.

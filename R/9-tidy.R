@@ -66,7 +66,7 @@ modSubset <- function(object, colBy, include){
 
   if(inherits(object, "ExprsArray") | class(object) == "ExprsPipeline"){
 
-    subset(object, subset = object@annot[, colBy] %in% include)
+    subset(object, subset = object[, colBy] %in% include)
 
   }else{
 

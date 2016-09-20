@@ -1,17 +1,17 @@
 ---
-title: "Introduction to exprso"
+title: "An Introduction to the exprso Package"
 author: "Thomas Quinn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{An Introduction to the exprso Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ## Introduction
 
-In this tutorial, we present the *exprso* package for *R*, a custom library built to tackle a wide variety of supervised machine learning problems, including the construction of ensemble classifiers. We designed this package with the biologist user in mind, carefully assembling a toolkit that allows investigators to quickly implement dichotomous (binary) and multi-class classification on high-dimensional genomic data. We designed *exprso* using a modular framework, whereby each function acts as a self-contained, yet interchangable, part of the whole. With these modules, the investigator has access to multiple tools that they can use in almost any sequence in order to build their very own personalized machine learning pipeline. By rearranging these modules, one can easily experiment with new pipeline ideas on the fly. In this way, we balance the simplicity of automatation with endless customization, all while maintaining software extensibility.
+In this tutorial, we present the *exprso* package for *R*, a custom library built to tackle a wide variety of supervised machine learning tasks, including the construction of ensemble classifiers. We designed this package with the biologist user in mind, carefully assembling a toolkit that allows investigators to quickly implement dichotomous (binary) and multi-class classification on high-dimensional genomic data. We designed *exprso* using a modular framework, whereby each function acts as a self-contained, yet interchangeable, part of the whole. With these modules, the investigator has access to multiple tools that they can use in almost any sequence to build their very own personalized machine learning pipeline. By rearranging these modules, one can easily experiment with new pipeline ideas on the fly. In this way, we balance the simplicity of automation with endless customization, all while maintaining software extensibility.
 
 We have bundled many kinds of functions into the *exprso* package, including functions for data import, data modification, feature selection, individual classifier construction, and ensemble classifier construction. We begin this tutorial by first presenting a brief overview of the objects and functions found in *exprso*. Then, we move on to show how the user can access this package from *GitHub* and import their own data into the *R* environment.
 
@@ -19,8 +19,8 @@ We have bundled many kinds of functions into the *exprso* package, including fun
 
 Before exploring the utility of the functions included in this library, we will first overview the principal object types used by this package. Objects in *R* serve as a convenient way to organize data. One can think of an object simply as a custom built data container. We emphasize these now based on the notion that a better understanding of the back-end promotes a better use of the front-end.
 
-* **ExprsArray** Stores feature and annotation data as well as relevant feature selection history.
-* **ExprsModel** Stores the trained classifier as well as the relevant feature selection history needed to deploy the classifier on an independent dataset.
+* **ExprsArray** Stores feature and annotation data as well as relevant feature selection history. The sub-classes `ExprsBinary` and `ExprsMulti` handle dichotomous and multi-class data, respectively.
+* **ExprsModel** Stores the trained classifier as well as the relevant feature selection history needed to deploy the classifier on an independent dataset. The sub-classes `ExprsMachine` and `ExprsModule` handle dichotomous and multi-class classifiers, respectively.
 * **ExprsPipeline** Stores a summary of high-throughput classifier performance and the classifier objects themselves.
 * **ExprsEnsemble** Stores any number of classifier objects which function a single ensemble classifier.
 * **ExprsPredict** Stores the results of classifier prediction as one of three measures.
@@ -60,18 +60,29 @@ set.seed(1)
 
 ## Importing data
 
-With *exprso* loaded, we can import data in one of three ways. First, we can import data as stored locally in a tab-delimited text file. The construction of this import function, `arrayRead`, assumes the data file contains the subjects as rows and variables as columns, with annotation variables (e.g., sex or age) appearing before the feature variables (e.g., mRNA expression values). The `include` argument lists any number of annotation vectors to assign to each class label. In the example below, we assign the annotation "Control" to the first class; then, we assign the annotations "ASD" and "PDDNOS" to the second class. Any subjects not assigend to a class will get dropped from the resultant object.
+With *exprso* loaded, we can import data in one of three ways. First, we can import data stored locally as a tab-delimited text file or a `data.frame`. The construction of this import function, `arrayExprs`, assumes these data contain subjects as rows and variables as columns, with the annotation variables (e.g., sex or age) appearing before the feature variables (e.g., mRNA expression values). The `include` argument lists any number of annotation vectors to assign to each class label. In the example below, we assign the annotation "Control" to the first class; then, we assign the annotations "ASD" and "PDDNOS" to the second class. Any subjects not assigned to a class will get dropped from the resultant object.
 
 ```{r, eval = FALSE}
 array <-
-  arrayRead("some_example_data_file.txt", # tab-delimited file
-            probes.begin = 11, # the i-th column where features begin
-            colID = "Subject.ID", # column name with subject ID
-            colBy = "DX", # column name with class labels
-            include = list(c("Control"), c("ASD", "PDDNOS")))
+  arrayExprs("some_example_data_file.txt", # tab-delimited file
+             colBy = "DX", # column name with class labels
+             include = list(c("Control"), c("ASD", "PDDNOS")),
+             probes.begin = 11, # the i-th column where features begin
+             colID = "Subject.ID") # column name with subject ID)
 ```
 
-Second, we can construct an `ExprsArray` object manually using the `new` function. To accomplish this, we need to define the four slots found which comprise an `ExprsArray` object. The `@exprs` slot must contain a feature value `matrix` with subject names as columns. The `@annot` slot must contain an annotation `data.frame` with subject names as rows. It is critical to make sure that the subject names appear in the same order across both data structures. The two additional slots, `@preFilter` and `@reductionModel`, pass along the feature selection history while deploying built machines. When constructing an `ExprsArray` object manually, we should set both of these to `NULL`.
+Second, we can directly import an `eSet` object, a popular container for storing gene expression data, using the same function `arrayExprs`. In the example below, we convert the classic ALL/AML Golub gene expression dataset from an `eSet` object (provided by the *golubEsets* package) into an `ExprsArray` object.
+
+```{r, message = FALSE}
+library(golubEsets)
+data(Golub_Merge)
+array <-
+  arrayExprs(Golub_Merge, # an ExpressionSet (abrv. eSet) object
+             colBy = "ALL.AML", # column name with class labels
+             include = list("AML", "ALL"))
+```
+
+Third, we can make an `ExprsArray` object manually using the `new` function. To accomplish this, we need to define the four slots found which comprise an `ExprsArray` object. The `@exprs` slot must contain a feature value `matrix` with subject names as columns. The `@annot` slot must contain an annotation `data.frame` with subject names as rows. It is critical to make sure that the subject names appear in the same order across both data structures. The two additional slots, `@preFilter` and `@reductionModel`, pass along the feature selection history while deploying built machines. When constructing an `ExprsArray` object manually, we should set both of these to `NULL`.
 
 ```{r, eval = FALSE}
 array <-
@@ -82,18 +93,7 @@ array <-
       reductionModel = NULL)
 ```
 
-Third, we can import data directly by converting an `eSet` object, a popular container for storing gene expression data, using the function `arrayEset`. In the example below, we convert the classic ALL/AML Golub gene expression dataset from an `eSet` object (provided by the *golubEsets* package) into an `ExprsArray` object.
-
-```{r, message = FALSE}
-library(golubEsets)
-data(Golub_Merge)
-array <-
-  arrayEset(Golub_Merge, # an ExpressionSet (abrv. eSet) object
-            colBy = "ALL.AML", # column name with class labels
-            include = list("AML", "ALL"))
-```
-
-We will routinely make use these above data for the remainder of this tutorial. However, we wish to note here that both GDS and GSE data files (from the NCBI GEO repository) easily convert to `eSet` objects using the `GDS2eSet` and `GSE2eSet` functions from the *Biobase* and *exprso* packages, respectively. For more information on the import functions described in this section, we refer the user to the package documentation, `?arrayRead` and `?arrayEset`.
+We will routinely make use the Golub data for the remainder of this tutorial. However, we wish to note here that both GDS and GSE data files (from the NCBI GEO repository) easily convert to `eSet` objects using the `GDS2eSet` and `GSE2eSet` functions from the *Biobase* and *exprso* packages, respectively. For more information on the import function described in this section, we refer the user to the package documentation, `?arrayExprs`.
 
 ## Subsetting data
 
@@ -101,6 +101,13 @@ For quickly subsetting `ExprsArray` objects by subject annotations, we provide m
 
 ```{r}
 array[array$defineCase == "Case", "ALL.AML"]
+```
+
+The `subset` method and the `modSubset` function offer two alternatives for subsetting data.
+
+```{r}
+array.subset <- subset(array, subset = array$defineCase == "Case")
+array.subset <- modSubset(array, colBy = "defineCase", include = "Case")
 ```
 
 ## Splitting data
@@ -135,7 +142,7 @@ For more information, we refer the user to the package documentation, `?split`.
 
 Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary to prioritize which features to include during classifier construction. There exists a myriad of ways to perform the task of *feature selection*. This package provides functions for some of the most frequently used feature selection methods. Each function works as a self-contained wrapper that (1) pre-processes the `ExprsArray` input, (2) performs the feature selection, and (3) returns an `ExprsArray` output with an updated feature selection history.
 
-These feature selection histories get passed along at every step of the way until they eventually get used in order to pre-process an unlabelled dataset during classifier deployment (i.e., prediction). In the spirit of open source programming, we encourage users to submit their own feature selection functions, modeled after those provided in this library.
+These feature selection histories get passed along at every step of the way until they eventually get used in order to pre-process an unlabeled dataset during classifier deployment (i.e., prediction). In the spirit of open source programming, we encourage users to submit their own feature selection functions, modeled after those provided in this library.
 
 The first of these feature selection functions, `fsStats`, performs some of the most basic feature selection methods: those rooted in simple statistical tests. Specifically, this function will rank probes based on either the Student's *t*-test or the Kolmogorov-Smirnov test. Below, we rank features according to the results of a Student's *t*-test.
 
@@ -146,7 +153,7 @@ array.train <-
 
 On first exposure, we acknowledge that the argument `probes` might seem confusing. Therefore, we wish to emphasize the role of this term in specifying either the names or the number of features to supply *to* feature selection: it does not refer to what the user intends to retrieve *from* the feature selection process. When calling the first feature selection method with a numeric *probes* argument, it will draw from the "top ranked" probe set that actually refers to the default order in which the features appear in the `ExprsArray` input. However, each successful feature selection will return an `ExprsArray` output with the features implicitly (re-)ranked. Therefore, when calling a subsequent feature selection method, the "top ranked" probe set will indeed correspond to the feature ranks from the previous feature selection process. For example, the third feature selection call draws the top probes from the second feature ranking. The user may deploy, in tandem, any number of these functions in whatever order they choose, limited only by computational power and imagination.
 
-Another included feature selection method, `fsPrcomp`, performs dimension reduction by way of principal components analysis (**PCA**). The dimension reduction model generated during this function call gets saved in the feature selection history along with the compontents themselves. Below, we subject the top 50 probes as prioritized by `fsStats` to PCA.
+Another included feature selection method, `fsPrcomp`, performs dimension reduction by way of principal components analysis (**PCA**). The dimension reduction model generated during this function call gets saved in the feature selection history along with the components themselves. Below, we subject the top 50 features, as prioritized by `fsStats`, to PCA.
 
 ```{r}
 array.train <-
@@ -223,17 +230,21 @@ We can subset `ExprsPipeline` objects based on the performance summary (i.e., `@
 
 ```{r}
 gs[, "train.plCV"]
+gs$train.plCV
 ```
 
+Again, the `subset` method and the `modSubset` function offer two alternatives for subsetting data.
+
 ```{r}
-gs$train.plCV
+gs.subset <- subset(gs, subset = gs$kernel == "linear")
+gs.subset <- modSubset(gs, colBy = "kernel", include = "linear")
 ```
 
 ## Other cross-validation
 
 The *exprso* package also provides a means by which to perform elaborate cross-validation, including Monte Carlo style and 2-layer "nested" cross-validation. Analogous to how `plGrid` manages multiple build and predict tasks, these pipelines (i.e., `plMonteCarlo` and `plNested`) effectively manage multiple `plGrid` tasks. In order to organize the sheer number of arguments necessary to execute these functions, we have implemented argument handler functions. These argument handler functions (i.e., `ctrlSplitSet`, `ctrlFeatureSelect`, and `ctrlGridSearch`) handle the data splitting, feature selection, and grid searching arguments, respectively.
 
-In simplest terms, `plMonteCarlo` and `plNested` use a single training set to calculate classifier performances on a withheld *internal validation set*. This *internal validation set* serves as a kind of proxy for a statistically independent test set. The main difference between `plMonteCarlo` and `plNested` stems from how *internal validation set* gets constructed. On one hand, the `plMonteCarlo` method uses the `ctrlSplitSet` argument handler to split the training set into a *training subset* and an *intenral validation set* with each boostrap. On the other hand, the `plNested` method splits the training set into *v*-folds, treating each fold as an *internal validation set*, with the remaining subjects comprising the *training subset*.
+In simplest terms, `plMonteCarlo` and `plNested` use a single training set to calculate classifier performances on a withheld *internal validation set*. This *internal validation set* serves as a kind of proxy for a statistically independent test set. The main difference between `plMonteCarlo` and `plNested` stems from how *internal validation set* gets constructed. On one hand, the `plMonteCarlo` method uses the `ctrlSplitSet` argument handler to split the training set into a *training subset* and an *intenral validation set* with each bootstrap. On the other hand, the `plNested` method splits the training set into *v*-folds, treating each fold as an *internal validation set*, with the remaining subjects comprising the *training subset*.
 
 For the sake of simplicity, we will call any performance measured on an *internal validation set* as the **outer-loop** cross-validation performance. Then, we will call any cross-validation accuracy measured using the *training subset* (i.e., via `plGrid`) the **inner-loop** cross-validation performance. In the performance summaries of the `ExprsPipeline` objects returned by `plMonteCarlo` and `plNested`, columns named with "train" describe *training subset* performances while columns named with "valid" describe *internal validation set* performances.
 
@@ -292,8 +303,8 @@ Owing to how the `pipeFilter` function handles `ExprsPipeline` objects that cont
 
 ## Multi-class methods
 
-We conclude this vignette by alerting the user that the *exprso* package also includes a framework for performing multi-class classification in an automated manner. These methods use the "1-vs-all" approach to multi-class classification, whereby each individual class label has a turn getting treated as the positive class label in a dichotomous (binary) scheme. Then, the results of each iteration get integrated into a single construct. To learn more about multi-class classification, we refer the user to the package documentation, `?arrayRead` and `?doMulti`. However, we wish to emphasize here that multi-class feature selection is still under heavy development. In the near future, we plan to introduce novel `pl` methods that implement multi-class feature selection in an optimal manner.
+We conclude this vignette by alerting the user that the *exprso* package also includes a framework for performing multi-class classification in an automated manner. These methods use the "1-vs-all" approach to multi-class classification, whereby each individual class label has a turn getting treated as the positive class label in a dichotomous (binary) scheme. Then, the results of each iteration get integrated into a single construct. To learn more about multi-class classification, we refer the user to the package documentation, `?arrayExprs` and `?doMulti`. However, we wish to emphasize here that multi-class feature selection is still under heavy development. In the near future, we plan to introduce novel `pl` methods that implement multi-class feature selection in an optimal manner.
 
 ## Final remarks
 
-Thank you for your interest in *exprso*. Although we have made tremendous progress in formalizing this library in a reliable package framework, some of the tools included here may eventually change. We will make our best effort to keep this vignette and other documentation as up-to-date as possible. However, we may occasionally fall short on this goal. In face of any discrepancy, we encourage the reader to send any and all questions to the package maintainer (e-mail: thom@tpq.me). In addition, we welcome suggestions for new tools that we could bundle into future installments.
+Thank you for your interest in *exprso*. Although we have made tremendous progress in formalizing this library in a reliable package framework, some of the tools included here may change. We will do our best to keep this vignette and other documentation as up-to-date as possible. However, we may sometimes fall short on this goal. To the best of knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know! File any and all issues at [github.com/tpq/exprso/issues](http://www.github.com/tpq/exprso/issues). In addition, we always welcome suggestions for new tools that we include in future releases. Happy learning!
