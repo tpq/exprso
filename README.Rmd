@@ -77,7 +77,7 @@ pred <- predict(mach, array.test)
 ```
 
 ```{r}
-calcStats(pred, array.test)
+calcStats(pred)
 ```
 
 When constructing a classifier using **build** modules, we can only specify one set of parameters at a time. However, investigators often want to test models across a vast range of parameters. We provide the `plGrid` function for high-throughput parameter searches. This function wraps not only classifier construction, but deployment as well. By supplying a non-`NULL` argument to `fold`, this function will also calculate *v*-fold cross-validation using the training set.

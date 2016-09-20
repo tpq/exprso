@@ -96,7 +96,7 @@ pred <- predict(mach, array.test)
     ## 1   1    1    1
 
 ``` r
-calcStats(pred, array.test)
+calcStats(pred)
 ```
 
     ## Calculating accuracy using ROCR based on prediction probabilities...
