@@ -110,6 +110,7 @@ setMethod("subset", signature(x = "ExprsArray"),
 
 #' @describeIn ExprsArray Method to quickly plot three dimensions of data.
 #'
+#' @param y Leave missing. Argument exists because of \code{\link{plot}} generic definition.
 #' @param a,b,c A numeric scalar. Indexes the first, second, and third dimensions to plot.
 #' @param colors A character vector. Optional. Manually assign a color to each subject point.
 #' @param shapes A numeric vector. Optional. Manually assign a shape to each subject point.
@@ -119,7 +120,7 @@ setMethod("subset", signature(x = "ExprsArray"),
 #' @importFrom lattice cloud
 #' @export
 setMethod("plot", signature(x = "ExprsArray", y = "missing"),
-          function(x, a = 1, b = 2, c = 3, colors, shapes){
+          function(x, y, a = 1, b = 2, c = 3, colors, shapes){
 
             # Extract components a, b, and c
             df <- data.frame(t(x@exprs))[, c(a, b, c)]
