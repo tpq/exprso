@@ -131,28 +131,28 @@ test_that("built models can detect wrong classes", {
   set.seed(12345)
   mach <- buildNB(array.train, probes = 2)
   expect_equal(
-    calcStats(predict(mach, array.test), array.test, aucSkip = TRUE)$acc,
+    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
   )
 
   set.seed(12345)
   mach <- buildLDA(array.train, probes = 2)
   expect_equal(
-    calcStats(predict(mach, array.test), array.test, aucSkip = TRUE)$acc,
+    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
   )
 
   set.seed(12345)
   mach <- buildSVM(array.train, probes = 2, kernel = "linear", cost = 1)
   expect_equal(
-    calcStats(predict(mach, array.test), array.test, aucSkip = TRUE)$acc,
+    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
   )
 
   set.seed(12345)
   mach <- buildANN(array.train, probes = 2, size = 3, decay = 1)
   expect_equal(
-    calcStats(predict(mach, array.test), array.test, aucSkip = TRUE)$acc,
+    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
   )
 })
@@ -188,7 +188,7 @@ test_that("doMulti performs 1 vs. all build", {
   array.i@annot$defineCase <- ifelse(as.numeric(array.i@annot$defineCase) == i, "Case", "Control")
   class(array.i) <- "ExprsBinary"
   expect_equal(
-    calcStats(predict(mach.multi[[i]], array.i), array.i)$acc,
+    calcStats(predict(mach.multi[[i]], array.i))$acc,
     1
   )
 
@@ -197,7 +197,7 @@ test_that("doMulti performs 1 vs. all build", {
   array.i@annot$defineCase <- ifelse(as.numeric(array.i@annot$defineCase) == i, "Case", "Control")
   class(array.i) <- "ExprsBinary"
   expect_equal(
-    calcStats(predict(mach.multi[[i]], array.i), array.i)$acc,
+    calcStats(predict(mach.multi[[i]], array.i))$acc,
     1
   )
 
@@ -206,7 +206,7 @@ test_that("doMulti performs 1 vs. all build", {
   array.i@annot$defineCase <- ifelse(as.numeric(array.i@annot$defineCase) == i, "Case", "Control")
   class(array.i) <- "ExprsBinary"
   expect_equal(
-    calcStats(predict(mach.multi[[i]], array.i), array.i)$acc,
+    calcStats(predict(mach.multi[[i]], array.i))$acc,
     1
   )
 })
@@ -214,12 +214,12 @@ test_that("doMulti performs 1 vs. all build", {
 test_that("ExprsMulti build and predict is grossly intact", {
 
   expect_equal(
-    calcStats(predict(mach, arrayMulti.train), arrayMulti.train)$acc,
+    calcStats(predict(mach, arrayMulti.train))$acc,
     1
   )
 
   expect_equal(
-    calcStats(predict(mach, arrayMulti.test), arrayMulti.test)$acc,
+    calcStats(predict(mach, arrayMulti.test))$acc,
     1
   )
 })

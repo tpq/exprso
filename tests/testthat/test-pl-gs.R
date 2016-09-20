@@ -82,13 +82,13 @@ test_that("@summary match expectations", {
   mach <- buildLDA(array.train, probes = 0, method = "mle")
   expect_equal(
     matrix(pl@summary[1, c("valid.acc", "valid.sens", "valid.spec", "valid.auc")]),
-    matrix(calcStats(predict(mach, array.test), array.test))
+    matrix(calcStats(predict(mach, array.test)))
   )
 
   mach <- buildLDA(array.train, probes = 0, method = "mve")
   expect_equal(
     matrix(pl@summary[2, c("valid.acc", "valid.sens", "valid.spec", "valid.auc")]),
-    matrix(calcStats(predict(mach, array.test), array.test))
+    matrix(calcStats(predict(mach, array.test)))
   )
 })
 
