@@ -48,10 +48,12 @@ We can load the most recent version of *exprso* directly from *GitHub* using the
 ```{r, eval = FALSE}
 library(devtools)
 devtools::install_github("tpq/exprso")
+library(exprso)
 ```
 
-```{r, message = FALSE}
+```{r, echo = FALSE, message = FALSE}
 library(exprso)
+set.seed(1)
 ```
 
 ## Importing data
@@ -99,11 +101,11 @@ For quickly subsetting `ExprsArray` objects by subject annotations, we provide m
 array[array$defineCase == "Case", "ALL.AML"]
 ```
 
-The `subset` method and the `modSubset` function offer two alternatives for subsetting data.
+The `modSubset` function and the `subset` method offer two alternatives for subsetting data.
 
 ```{r}
-array.subset <- subset(array, subset = array$defineCase == "Case")
-array.subset <- modSubset(array, colBy = "defineCase", include = "Case")
+modSubset(array, colBy = "defineCase", include = "Case")
+subset(array, subset = array$defineCase == "Case")
 ```
 
 ## Splitting data
@@ -189,7 +191,7 @@ pred <-
 ```
 
 ```{r}
-calcStats(pred, array.test)
+calcStats(pred)
 ```
 
 For more information, we refer the user to the package documentation, `?'exprso-predict`.
@@ -229,11 +231,11 @@ gs[, "train.plCV"]
 gs$train.plCV
 ```
 
-Again, the `subset` method and the `modSubset` function offer two alternatives for subsetting data.
+As above, the `pipeSubset` function and the `subset` method offer two alternatives for subsetting data.
 
 ```{r}
-gs.subset <- subset(gs, subset = gs$kernel == "linear")
-gs.subset <- modSubset(gs, colBy = "kernel", include = "linear")
+pipeSubset(gs, colBy = "kernel", include = "linear")
+subset(gs, subset = gs$kernel == "linear")
 ```
 
 ## Other cross-validation
