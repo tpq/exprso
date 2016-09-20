@@ -67,7 +67,14 @@ setMethod("modHistory", "ExprsArray",
                 data <- data.frame(t(object@exprs[reference@preFilter[[i]], ]))
 
                 # Then, apply the i-th reduction model
-                comps <- predict(reference@reductionModel[[i]], data)
+                if(class(reference@reductionModel[[i]]) == "prcomp"){
+
+                  comps <- predict(reference@reductionModel[[i]], data)
+
+                }else{
+
+                  stop("Uh oh! Reduction model class not recognized.")
+                }
 
                 # Build new object
                 object <- new(class(object),
