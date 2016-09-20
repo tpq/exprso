@@ -36,7 +36,7 @@ to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogethe
 parameters provided in this way.}
 }
 \value{
-An \code{\link{ExprsPredict-class}} object.
+An \code{\link{ExprsPipeline-class}} object.
 }
 \description{
 Trains and deploys multiple classifiers across a vast parameter search space.

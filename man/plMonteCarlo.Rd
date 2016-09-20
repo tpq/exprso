@@ -21,7 +21,7 @@ plMonteCarlo(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE)
 training and validation sets.}
 }
 \value{
-An \code{\link{ExprsPredict-class}} object.
+An \code{\link{ExprsPipeline-class}} object.
 }
 \description{
 Perform Monte Carlo style cross-validation.

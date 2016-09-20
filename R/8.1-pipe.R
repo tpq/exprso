@@ -25,7 +25,7 @@
 #'  one performance metric over another, consider listing that column
 #'  more than once.
 #'
-#' @param object An \code{\link{ExprsPredict-class}} object.
+#' @param object An \code{\link{ExprsPipeline-class}} object.
 #' @param colBy A character vector or string. Specifies column(s) to use when
 #'  filtering by classifier performance. Listing multiple columns will result
 #'  in a filter based on a performance metric equal to the product of those
@@ -42,7 +42,7 @@
 #'  In the case that the \code{@@summary} slot contains the column
 #'  "boot", this determines the top N models for each unique bootstrap.
 #'  Set \code{top.N = 0} to skip this subset.
-#' @return An \code{\link{ExprsPredict-class}} object.
+#' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
@@ -184,8 +184,8 @@ setMethod("pipeFilter", "ExprsPipeline",
 #' This method provides a convenient adjunct to \code{\link{pipeFilter}} owing to
 #'  how \code{exprso} handles \code{ExprsPipeline} objects with a "boot" column.
 #'
-#' @param object An \code{\link{ExprsPredict-class}} object.
-#' @return An \code{\link{ExprsPredict-class}} object.
+#' @param object An \code{\link{ExprsPipeline-class}} object.
+#' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}

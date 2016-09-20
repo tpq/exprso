@@ -91,7 +91,7 @@ ctrlGridSearch <- function(func, probes, ...){
 #' @param ctrlGS Arguments handled by \code{\link{ctrlGridSearch}}.
 #' @param save A logical scalar. Toggles whether to save randomly split
 #'  training and validation sets.
-#' @return An \code{\link{ExprsPredict-class}} object.
+#' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}

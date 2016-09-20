@@ -46,6 +46,9 @@ In the case that the \code{@summary} slot contains the column
 "boot", this determines the top N models for each unique bootstrap.
 Set \code{top.N = 0} to skip this subset.}
 }
+\value{
+An \code{\link{ExprsEnsemble-class}} object.
+}
 \description{
 Aggregates multiple classifiers into a single ensemble classifier.
 }

@@ -51,7 +51,7 @@
 #'  \code{plGrid} will accept multiple terms for each argument, supplied as a vector.
 #'  \code{plGrid} will train and deploy a classifier for each combination of
 #'  parameters provided in this way.
-#' @return An \code{\link{ExprsPredict-class}} object.
+#' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
@@ -117,13 +117,9 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
     grid <- unique(grid)
   }
 
-  # Initialize ExprsPipeline summary container
-  statistics <- vector("list", nrow(grid))
-
-  # Initialize ExprsPipeline machs container
-  models <- vector("list", nrow(grid))
-
   # For each gridpoint in grid
+  statistics <- vector("list", nrow(grid))
+  models <- vector("list", nrow(grid))
   for(i in 1:nrow(grid)){
 
     cat("Now building machine at gridpoint:\n")

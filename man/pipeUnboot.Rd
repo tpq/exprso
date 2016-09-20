@@ -11,10 +11,10 @@ pipeUnboot(object)
 \S4method{pipeUnboot}{ExprsPipeline}(object)
 }
 \arguments{
-\item{object}{An \code{\link{ExprsPredict-class}} object.}
+\item{object}{An \code{\link{ExprsPipeline-class}} object.}
 }
 \value{
-An \code{\link{ExprsPredict-class}} object.
+An \code{\link{ExprsPipeline-class}} object.
 }
 \description{
 \code{pipeUnboot} renames the "boot" column of an \code{ExprsPipeline} object

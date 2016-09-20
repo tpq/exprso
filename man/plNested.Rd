@@ -19,7 +19,7 @@ Set \code{fold = 0} to perform leave-one-out cross-validation.}
 \item{save}{A logical scalar. Toggles whether to save each fold.}
 }
 \value{
-An \code{\link{ExprsPredict-class}} object.
+An \code{\link{ExprsPipeline-class}} object.
 }
 \description{
 Perform nested cross-validation.

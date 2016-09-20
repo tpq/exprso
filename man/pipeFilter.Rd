@@ -12,7 +12,7 @@ pipeFilter(object, colBy, how = 0, gate = 0, top.N = 0)
   top.N = 0)
 }
 \arguments{
-\item{object}{An \code{\link{ExprsPredict-class}} object.}
+\item{object}{An \code{\link{ExprsPipeline-class}} object.}
 
 \item{colBy}{A character vector or string. Specifies column(s) to use when
 filtering by classifier performance. Listing multiple columns will result
@@ -34,7 +34,7 @@ In the case that the \code{@summary} slot contains the column
 Set \code{top.N = 0} to skip this subset.}
 }
 \value{
-An \code{\link{ExprsPredict-class}} object.
+An \code{\link{ExprsPipeline-class}} object.
 }
 \description{
 \code{pipeFilter} subsets an \code{ExprsPipeline} object.

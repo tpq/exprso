@@ -80,7 +80,7 @@ check.ctrlGS <- function(args){
 #' @param ctrlFS A list of arguments handled by \code{\link{ctrlFeatureSelect}}.
 #' @param ctrlGS Arguments handled by \code{\link{ctrlGridSearch}}.
 #' @param save A logical scalar. Toggles whether to save each fold.
-#' @return An \code{\link{ExprsPredict-class}} object.
+#' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}

@@ -17,6 +17,10 @@
 #'  the remaining models into a classifier. As an adjunct to this method, consider
 #'  joining multiple \code{ExprsPipeline} objects with \code{\link{conjoin}}.
 #'
+#' @param object An \code{\link{ExprsModel-class}} object.
+#' @param ... Additional \code{ExprsModel} objects to use in an ensemble.
+#' @return An \code{\link{ExprsEnsemble-class}} object.
+#'
 #' @seealso
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
 #'
@@ -26,8 +30,6 @@ setGeneric("buildEnsemble",
 )
 
 #' @describeIn buildEnsemble Method to build ensemble from \code{ExprsModel} objects.
-#' @param object An \code{\link{ExprsModel-class}} object.
-#' @param ... Additional \code{ExprsModel} objects to use in an ensemble.
 #' @export
 setMethod("buildEnsemble", "ExprsModel",
           function(object, ...){ # args to include additional ExprsMachine objects
