@@ -303,8 +303,8 @@ setMethod("fsPathClassRFE", "ExprsBinary",
 
                   }else{
 
-                    # Removing this will break the method:
-                    library(kernlab)
+                    # Removing this will break the method?
+                    requireNamespace(kernlab)
                   }
 
                   # Set up "make.names" key for improper @exprs row.names
