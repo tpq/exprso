@@ -139,6 +139,8 @@ build. <- function(object, probes, uniqueFx, ...){
                  reductionModel = append(object@reductionModel, list(NA)),
                  mach = model
   )
+
+  return(machine)
 }
 
 #' @rdname build

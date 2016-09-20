@@ -175,6 +175,8 @@ fs. <- function(object, probes, uniqueFx, ...){
 
     stop("Uh oh! DEBUG ERROR: 002")
   }
+
+  return(array)
 }
 
 #' @rdname fs
@@ -296,16 +298,6 @@ setMethod("fsPathClassRFE", "ExprsBinary",
 
             fs.(object, probes,
                 uniqueFx = function(data, probes, ...){
-
-                  if(!requireNamespace("kernlab", quietly = TRUE)){
-                    stop("Uh oh! This fs method depends on kernlab! ",
-                         "Try running: install.packages('kernlab')")
-
-                  }else{
-
-                    # Removing this will break the method?
-                    requireNamespace(kernlab)
-                  }
 
                   # Set up "make.names" key for improper @exprs row.names
                   labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))

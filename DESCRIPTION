@@ -27,7 +27,6 @@ Imports:
     cluster,
     GEOquery,
     h2o,
-    kernlab,
     MASS,
     e1071,
     lattice,
@@ -40,6 +39,8 @@ Imports:
     randomForest,
     ROCR,
     sampling
+Depends:
+    kernlab
 Suggests:
     golubEsets,
     knitr,
