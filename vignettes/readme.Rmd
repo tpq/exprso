@@ -1,0 +1,28 @@
+---
+title: "Use Disclaimer, Please Read"
+author: "Thomas Quinn"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Use Disclaimer, Please Read}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Disclaimer
+
+This is a stable release of a work-in-progress in active development. We make no guarantees about its quality. To the best of knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know! File any and all issues at [github.com/tpq/exprso/issues](http://www.github.com/tpq/exprso/issues). Read documentation carefully before using this package. In some cases, you need to know about the implicit assumptions that make for a smooth user experience. In other cases, you need to know about the key terminology that could prevent gross negligence. Otherwise, happy learning!
+
+## Warnings against improper use
+
+* **plGrid, plMonteCarlo, plNested:** For a high-throughput classification pipeline, if you supply an $x$ number of top features to the `probes` argument greater than the number of total number of features available in a training set, *exprso* will automatically use *all* features instead.
+* **pipeFilter, buildEnsemble:** For an `ExprsPipeline` model extraction, if you supply an $x$ number of top models to the `top.N` argument greater than the total number of models available in a filtered cut of models, *exprso* will automatically use *all* models instead. If you are concerned about this, call `pipeFilter` first, then call `buildEnsemble` on the `pipeFilter` results after inspecting them manually.
+* **plCV:** This internal function calculates a simple metric of cross-validation during high-throughput classification. When the function receives data that have already undergone feature selection (which is in most cases), **`plCV` provides an invalid and overly-optimistic metric of classifier performance**. However, the results of `plCV` appear to have at least some *relative* validity. Therefore, it is reasonable to let the results posted by `plCV` guide your choice of the final classifier parameters. However, you must *never* report any performance statistic derived from a validation set that contains subjects who have undergone feature selection with the training set.
+* **splitSample:** The `splitSample` method builds the training and validation sets by randomly sampling all subjects in the `ExprsArray` object. However, **`splitSample` is not truly random; it iteratively samples until at least one of every class will appear in the test set**. This rule makes it easier to run analyses and interpret results, but requires caution when articulating in a report how you chose the test set.
+* **doMulti:** Any and all multi-class *feature selection methods* are experimental. We do not expect them to improve multi-class classification performance considerably, but if they do, please let us know!
+
+## Known issues
+
+* **fsMrmre:** This feature selection method will crash when using too many (> 46340) features. Unfortunately, this has to do with the implementation of the `mRMRe` package and we can do nothing about it.
+* **buildDNN:** This classification method will exhaust RAM unless you manually clear old models with `h2o::h2o.shutdown()`. The `ExprsModel` objects for deep learning store links to back-end classifiers and do not contain the classifiers themselves. These back-end classifiers will continue to exist long after the R object has been destroyed *unless manually cleared*. Unfortunately, this has to do with the implementation of the `h2o` package and we can do nothing about it.
+* **buildRF:** This classification method will crash sometimes when working with very small or unbalanced datasets within a large high-throughput classification pipeline. We are actively working on finding a solution for this problem that will disrupt the rest of the package.
