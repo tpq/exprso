@@ -135,7 +135,7 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
 
     # Predict class labels using the provided training set and calculate accuracy
     pred.train <- predict(model, array.train, verbose = verbose)
-    stats <- calcStats(pred.train, array.train, aucSkip = aucSkip, plotSkip = TRUE)
+    stats <- calcStats(pred.train, aucSkip = aucSkip, plotSkip = TRUE)
     colnames(stats) <- paste0("train.", colnames(stats))
     acc <- stats
 
@@ -144,7 +144,7 @@ plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
 
       # Predict class labels using the provided validation set and calculate accuracy
       pred.valid <- predict(model, array.valid, verbose = verbose)
-      stats <- calcStats(pred.valid, array.valid, aucSkip = aucSkip, plotSkip = TRUE)
+      stats <- calcStats(pred.valid, aucSkip = aucSkip, plotSkip = TRUE)
       colnames(stats) <- paste0("valid.", colnames(stats))
       acc <- data.frame(acc, stats)
     }

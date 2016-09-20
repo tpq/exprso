@@ -244,12 +244,14 @@ setMethod("predict", "ExprsMachine",
             pred <- factor(as.vector(pred), levels = c("Control", "Case"))
             names(pred) <- rownames(data)
 
-            final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = as.matrix(px))
+            final <- new("ExprsPredict",
+                         pred = pred, decision.values = dv, probability = as.matrix(px),
+                         actual = array@annot$defineCase)
 
             if(verbose){
 
               cat("Individual classifier performance:\n")
-              print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
+              print(calcStats(final, aucSkip = TRUE, plotSkip = TRUE))
             }
 
             return(final)
@@ -286,7 +288,8 @@ setMethod("predict", "ExprsModule",
                                   pred = as.factor(missingCase),
                                   decision.values = as.matrix(missingCase),
                                   probability = as.matrix(data.frame("Control" = missingCase,
-                                                                     "Case" = missingCase)))
+                                                                     "Case" = missingCase)),
+                                  actual = array@annot$defineCase)
               }else{
 
                 # Turn the ExprsMulti object into the i-th ExprsBinary object
@@ -338,12 +341,14 @@ setMethod("predict", "ExprsModule",
             # Clean up pred
             pred <- factor(as.numeric(pred), levels = 1:ncol(px))
 
-            final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = px)
+            final <- new("ExprsPredict",
+                         pred = pred, decision.values = dv, probability = px,
+                         actual = array@annot$defineCase)
 
             if(verbose){
 
               cat("Multi-class classifier performance:\n")
-              print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
+              print(calcStats(final, aucSkip = TRUE, plotSkip = TRUE))
             }
 
             return(final)
@@ -356,14 +361,11 @@ setMethod("predict", "ExprsModule",
 #' Calculate Classifier Performance
 #'
 #' \code{calcStats} calculates classifier performance based on class predictions
-#'  stored in an \code{ExprsPredict} object and the actual class labels stored
-#'  in an \code{ExprsArray} object.
+#'  and actual class labels stored in an \code{ExprsPredict} object.
 #'
-#' The appropriate use of \code{calcStats} requires the \code{ExprsPredict} object
-#'  to have derived from the same \code{ExprsArray} object used for the \code{array}
-#'  argument. This function calculates classifier performance based on the predicted
+#' This function calculates classifier performance based on the predicted
 #'  class labels and the actual class labels in one of two ways. If the argument
-#'  \code{aucSkip = FALSE} *and* the \code{ExprsArray} object is an \code{ExprsBinary}
+#'  \code{aucSkip = FALSE} *and* the \code{ExprsArray} object was an \code{ExprsBinary}
 #'  object with at least one case and one control *and* \code{ExprsPredict} contains
 #'  a coherent \code{@@probability} slot, \code{calcStats} will calculate classifier
 #'  performance using the area under the receiver operating characteristic (ROCR) curve
@@ -375,8 +377,6 @@ setMethod("predict", "ExprsModule",
 #'  as the point along the ROC which minimizes the Euclidean distance from (0, 1).
 #'
 #' @param object An \code{ExprsPredict} object.
-#' @param array An \code{ExprsArray} object. The data object used to produce the
-#'  \code{ExprsPredict} object.
 #' @param aucSkip A logical scalar. Toggles whether to calculate area under the
 #'  receiver operating characteristic curve. See details.
 #' @param plotSkip A logical scalar. Toggles whether to plot the receiver
@@ -388,35 +388,21 @@ setMethod("predict", "ExprsModule",
 #'
 #' @export
 setGeneric("calcStats",
-           function(object, array,
-                    aucSkip = FALSE, plotSkip = FALSE) standardGeneric("calcStats")
+           function(object, aucSkip = FALSE, plotSkip = FALSE) standardGeneric("calcStats")
 )
 
 #' @describeIn calcStats Method to calculate the performance of a deployed classifier.
 #' @export
 setMethod("calcStats", "ExprsPredict",
-          function(object, array, aucSkip, plotSkip){
-
-            if(!inherits(array, "ExprsArray")){
-
-              stop("Uh oh! You can only assess the performance of a classifier using an ExprsArray object.")
-            }
-
-            if(class(array) == "ExprsMulti"){
-
-              if(length(levels(object@pred)) != length(levels(array@annot$defineCase))){
-
-                stop("Uh oh! ExprsPredict and ExprsMulti must have same number of classes.")
-              }
-            }
+          function(object, aucSkip, plotSkip){
 
             # If predicted set contains only two classes, ExprsPredict has @probability, and aucSkip = FALSE
-            if(all(c("Case", "Control") %in% array@annot$defineCase) & !is.null(object@probability) & !aucSkip){
+            if(all(c("Case", "Control") %in% object@actual) & !is.null(object@probability) & !aucSkip){
 
               layout(matrix(c(1), 1, 1, byrow = TRUE))
 
               cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
-              p <- ROCR::prediction(object@probability[, "Case"], as.numeric(array@annot$defineCase == "Case"))
+              p <- ROCR::prediction(object@probability[, "Case"], as.numeric(object@actual == "Case"))
 
               # Plot AUC curve
               perf <- ROCR::performance(p, measure = "tpr", x.measure = "fpr")
@@ -438,13 +424,13 @@ setMethod("calcStats", "ExprsPredict",
               cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
 
               # Turn ExprsBinary $defineCase into factor
-              if(class(array) == "ExprsBinary"){
+              if(any(c("Control", "Case") %in% object@actual)){
 
-                array@annot$defineCase <- factor(array@annot$defineCase, levels = c("Control", "Case"))
+                object@actual <- factor(object@actual, levels = c("Control", "Case"))
               }
 
               # Build confusion table
-              table <- table("predicted" = object@pred, "actual" = array@annot$defineCase)
+              table <- table("predicted" = object@pred, "actual" = object@actual)
               cat("Classification confusion table:\n"); print(table)
 
               # Compute per-class performance
@@ -459,7 +445,7 @@ setMethod("calcStats", "ExprsPredict",
                 spec <- tn / (fp + tn)
 
                 # If multi-class
-                if(class(array) == "ExprsMulti"){
+                if(length(levels(object@actual)) > 2){
 
                   cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec), "\n")
 

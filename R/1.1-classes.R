@@ -139,6 +139,7 @@ setClass("ExprsEnsemble",
 #'  as a decision value.
 #' @slot probability Typically a matrix. Stores class predictions
 #'  as a probability.
+#' @slot actual Known class labels. Used by \code{\link{calcStats}}.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}\cr
@@ -151,6 +152,7 @@ setClass("ExprsPredict",
          slots = c(
            pred = "factor",
            decision.values = "ANY",
-           probability = "ANY"
+           probability = "ANY",
+           actual = "ANY"
          )
 )

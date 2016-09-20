@@ -6,16 +6,13 @@
 \alias{calcStats,ExprsPredict-method}
 \title{Calculate Classifier Performance}
 \usage{
-calcStats(object, array, aucSkip = FALSE, plotSkip = FALSE)
+calcStats(object, aucSkip = FALSE, plotSkip = FALSE)
 
-\S4method{calcStats}{ExprsPredict}(object, array, aucSkip = FALSE,
+\S4method{calcStats}{ExprsPredict}(object, aucSkip = FALSE,
   plotSkip = FALSE)
 }
 \arguments{
 \item{object}{An \code{ExprsPredict} object.}
-
-\item{array}{An \code{ExprsArray} object. The data object used to produce the
-\code{ExprsPredict} object.}
 
 \item{aucSkip}{A logical scalar. Toggles whether to calculate area under the
 receiver operating characteristic curve. See details.}
@@ -28,15 +25,12 @@ Returns a \code{data.frame} of performance metrics.
 }
 \description{
 \code{calcStats} calculates classifier performance based on class predictions
- stored in an \code{ExprsPredict} object and the actual class labels stored
- in an \code{ExprsArray} object.
+ and actual class labels stored in an \code{ExprsPredict} object.
 }
 \details{
-The appropriate use of \code{calcStats} requires the \code{ExprsPredict} object
- to have derived from the same \code{ExprsArray} object used for the \code{array}
- argument. This function calculates classifier performance based on the predicted
+This function calculates classifier performance based on the predicted
  class labels and the actual class labels in one of two ways. If the argument
- \code{aucSkip = FALSE} *and* the \code{ExprsArray} object is an \code{ExprsBinary}
+ \code{aucSkip = FALSE} *and* the \code{ExprsArray} object was an \code{ExprsBinary}
  object with at least one case and one control *and* \code{ExprsPredict} contains
  a coherent \code{@probability} slot, \code{calcStats} will calculate classifier
  performance using the area under the receiver operating characteristic (ROCR) curve

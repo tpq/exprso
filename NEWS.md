@@ -1,3 +1,21 @@
+## exprso 0.1.4.9000
+---------------------
+* 1.1-classes.R
+  * Add `actual` slot to `ExprsPredict` object.
+* 6-predict.R
+  * Pass along known class values to `ExprsPredict` result.
+  * Remove `calcStats` `array` argument.
+* 7.1-plCV.R
+  * Tidy `calcStats` calls.
+* 7.2-plGrid.R
+  * Tidy `calcStats` calls.
+* 8.2-ens.R
+  * Pass along known class values to `ExprsPredict` result.
+* 9-global.R
+  * Find optimal import combination.
+* 9-tidy.R
+  * Add `pipeSubset` function.
+
 ## exprso 0.1.4
 ---------------------
 * 2.1-import.R

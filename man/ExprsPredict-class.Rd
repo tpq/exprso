@@ -29,6 +29,8 @@ as a decision value.}
 
 \item{\code{probability}}{Typically a matrix. Stores class predictions
 as a probability.}
+
+\item{\code{actual}}{Known class labels. Used by \code{\link{calcStats}}.}
 }}
 \seealso{
 \code{\link{ExprsArray-class}}\cr

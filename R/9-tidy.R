@@ -50,10 +50,11 @@ testSet <- function(splitSets){
   validationSet(splitSets)
 }
 
-#' ExprsArray Subset Wrapper
+#' Tidy Subset Wrapper
 #'
-#' This function provides a tidy wrapper for the \code{ExprsArray}
-#'  \code{subset} method.
+#' \code{modSubset} function provides a tidy wrapper for the \code{ExprsArray}
+#'  \code{subset} method. \code{pipeSubset} provides a tidy wrapper for the
+#'  \code{ExprsPipeline} \code{subset} method.
 #'
 #' @inheritParams arrayExprs
 #' @param object An \code{ExprsArray} or \code{ExprsPipeline} object to subset.
@@ -72,6 +73,13 @@ modSubset <- function(object, colBy, include){
 
     stop("Uh oh! You can only use modSubset on an ExprsArray or ExprsPipeline object!")
   }
+}
+
+#' @describeIn modSubset The \code{ExprsPipeline} analogue of \code{modSubset}.
+#' @export
+pipeSubset <- function(object, colBy, include){
+
+  modSubset(object, colBy, include)
 }
 
 ###########################################################

@@ -2,9 +2,12 @@
 % Please edit documentation in R/9-tidy.R
 \name{modSubset}
 \alias{modSubset}
-\title{ExprsArray Subset Wrapper}
+\alias{pipeSubset}
+\title{Tidy Subset Wrapper}
 \usage{
 modSubset(object, colBy, include)
+
+pipeSubset(object, colBy, include)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} or \code{ExprsPipeline} object to subset.}
@@ -18,7 +21,12 @@ to include in the subset.}
 An \code{ExprsArray} or \code{ExprsPipeline} object.
 }
 \description{
-This function provides a tidy wrapper for the \code{ExprsArray}
- \code{subset} method.
+\code{modSubset} function provides a tidy wrapper for the \code{ExprsArray}
+ \code{subset} method. \code{pipeSubset} provides a tidy wrapper for the
+ \code{ExprsPipeline} \code{subset} method.
 }
+\section{Functions}{
+\itemize{
+\item \code{pipeSubset}: The \code{ExprsPipeline} analogue of \code{modSubset}.
+}}
 

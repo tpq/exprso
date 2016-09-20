@@ -136,12 +136,14 @@ setMethod("predict", "ExprsEnsemble",
               stop("Uh oh! You can only use an ExprsEnsemble to predict on an ExprsArray object!")
             }
 
-            final <- new("ExprsPredict", pred = pred, decision.values = dv, probability = px)
+            final <- new("ExprsPredict",
+                         pred = pred, decision.values = dv, probability = px,
+                         actual = array@annot$defineCase)
 
             if(verbose){
 
               cat("Ensemble classifier performance:\n")
-              print(calcStats(final, array, aucSkip = TRUE, plotSkip = TRUE))
+              print(calcStats(final, aucSkip = TRUE, plotSkip = TRUE))
             }
 
             return(final)
