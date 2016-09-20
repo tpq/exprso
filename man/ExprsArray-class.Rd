@@ -21,7 +21,7 @@
 
 \S4method{subset}{ExprsArray}(x, subset, select)
 
-\S4method{plot}{ExprsArray,missing}(x, a = 1, b = 2, c = 3, colors,
+\S4method{plot}{ExprsArray,missing}(x, y, a = 1, b = 2, c = 3, colors,
   shapes)
 
 \S4method{summary}{ExprsArray}(object)
@@ -42,6 +42,8 @@ argument \code{i} is missing.}
 
 \item{select}{Subsets entire \code{ExprsArray} object via
 \code{object@annot[, select]}. Can be used to rearrange subject order.}
+
+\item{y}{Leave missing. Argument exists because of \code{\link{plot}} generic definition.}
 
 \item{a, b, c}{A numeric scalar. Indexes the first, second, and third dimensions to plot.}
 
