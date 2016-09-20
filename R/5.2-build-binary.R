@@ -253,7 +253,7 @@ setMethod("buildRF", "ExprsBinary",
 #' @section Methods (by generic):
 #' \code{buildDNN:} Method to build feed-forward networks using h2o::h2o.deeplearning.
 #' @importFrom utils write.csv
-#' @importFrom h2o h2o.init h2o.importFile h2o.deeplearning
+#' @importFrom h2o h2o.init h2o.importFile h2o.deeplearning h2o.predict
 #' @export
 setMethod("buildDNN", "ExprsBinary",
           function(object, probes, ...){ # args to h2o.deeplearning
