@@ -1,8 +1,8 @@
 #' @importFrom methods new as
 #' @importFrom plyr rbind.fill
+#' @importMethodsFrom kernlab predict
 #' @importClassesFrom Biobase ExpressionSet
-#' @importMethodsFrom kernlab kernelMatrix
+#' @importMethodsFrom ROCR plot
 #' @importFrom graphics plot
-#' @importFrom stats predict
 #' @import GEOquery
 NULL
