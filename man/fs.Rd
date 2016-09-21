@@ -33,7 +33,8 @@ fsMrmre(object, probes = 0, ...)
 
 \S4method{fsSample}{ExprsBinary}(object, probes = 0, ...)
 
-\S4method{fsStats}{ExprsBinary}(object, probes, how = "t.test", ...)
+\S4method{fsStats}{ExprsBinary}(object, probes = 0, how = c("t.test",
+  "ks.test"), ...)
 
 \S4method{fsPrcomp}{ExprsBinary}(object, probes = 0, ...)
 

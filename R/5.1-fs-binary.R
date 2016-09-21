@@ -200,7 +200,7 @@ setMethod("fsSample", "ExprsBinary",
 #' @importFrom stats t.test ks.test
 #' @export
 setMethod("fsStats", "ExprsBinary",
-          function(object, probes, how = "t.test", ...){ # args to t.test or ks.test
+          function(object, probes = 0, how = c("t.test", "ks.test"), ...){ # args to t.test or ks.test
 
             if(how == "t.test"){
 
