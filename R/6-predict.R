@@ -67,7 +67,7 @@ setMethod("modHistory", "ExprsArray",
                 data <- data.frame(t(object@exprs[reference@preFilter[[i]], ]))
 
                 # Then, apply the i-th reduction model
-                if(class(reference@reductionModel[[i]]) == "prcomp"){
+                if("prcomp" %in% class(reference@reductionModel[[i]])){
 
                   comps <- predict(reference@reductionModel[[i]], data)
 
@@ -181,34 +181,28 @@ setMethod("predict", "ExprsMachine",
             if("naiveBayes" %in% class(object@mach)){
 
               px <- predict(object@mach, data, type = "raw")
-            }
 
-            if("lda" %in% class(object@mach)){
+            }else if("lda" %in% class(object@mach)){
 
               pred <- predict(object@mach, data)
               px <- pred$posterior
-            }
 
-            if("svm" %in% class(object@mach)){
+            }else if("svm" %in% class(object@mach)){
 
               pred <- predict(object@mach, data, probability = TRUE)
               px <- attr(pred, "probabilities")
 
-            }
-
-            if("nnet" %in% class(object@mach)){
+            }else if("nnet" %in% class(object@mach)){
 
               px <- predict(object@mach, data, type = "raw")
               px <- cbind(px, 1 - px)
               colnames(px) <- c("Case", "Control") # do not delete this line!
-            }
 
-            if("randomForest" %in% class(object@mach)){
+            }else if("randomForest" %in% class(object@mach)){
 
               px <- unclass(predict(object@mach, data, type = "prob"))
-            }
 
-            if("H2OBinomialModel" %in% class(object@mach)){
+            }else if("H2OBinomialModel" %in% class(object@mach)){
 
               # Import data as H2OFrame via a temporary csv
               colnames(data) <- paste0("id", 1:ncol(data))
@@ -220,6 +214,10 @@ setMethod("predict", "ExprsMachine",
               px <- as.data.frame(h2o::h2o.predict(object@mach, h2o.data))$Case
               px <- cbind(px, 1 - px)
               colnames(px) <- c("Case", "Control") # do not delete this line!
+
+            }else{
+
+              stop("Uh oh! Classification model class not recognized.")
             }
 
             # Calculate 'decision.values' from 'probability' using inverse Platt scaling
@@ -399,16 +397,13 @@ setMethod("calcStats", "ExprsPredict",
             # If predicted set contains only two classes, ExprsPredict has @probability, and aucSkip = FALSE
             if(all(c("Case", "Control") %in% object@actual) & !is.null(object@probability) & !aucSkip){
 
-              layout(matrix(c(1), 1, 1, byrow = TRUE))
-
               cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+
               p <- ROCR::prediction(object@probability[, "Case"], as.numeric(object@actual == "Case"))
 
-              # Plot AUC curve
+              # Plot AUC curve and index optimal cutoff based on Euclidean distance
               perf <- ROCR::performance(p, measure = "tpr", x.measure = "fpr")
               if(!plotSkip) plot(perf, col = rainbow(10))
-
-              # Index optimal cutoff based on Euclidean distance
               index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
 
               # Calculate performance metrics
@@ -444,7 +439,6 @@ setMethod("calcStats", "ExprsPredict",
                 sens <- tp / (tp + fn)
                 spec <- tn / (fp + tn)
 
-                # If multi-class
                 if(length(levels(object@actual)) > 2){
 
                   cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec), "\n")
