@@ -1,4 +1,4 @@
-## exprso 0.1.4.9000
+## exprso 0.1.5
 ---------------------
 * 1.1-classes.R
   * Add `actual` slot to `ExprsPredict` object.
