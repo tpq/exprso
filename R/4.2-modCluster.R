@@ -88,7 +88,7 @@ setMethod("modCluster", "ExprsArray",
                 }
 
                 # Build distance matrix, then remove dist() args
-                cat("Calculating dissimilarity matrix using 'metric' and 'p' arguments...")
+                cat("Calculating dissimilarity matrix using 'metric' and 'p' arguments...\n")
                 d <- dist(data, method = args$metric, p = args$p)
                 args <- args[!"metric" == names(args)]
                 args <- args[!"p" == names(args)]
