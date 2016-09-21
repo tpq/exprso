@@ -2,9 +2,15 @@
 ---------------------
 * 1.1-classes.R
   * Add `actual` slot to `ExprsPredict` object.
+* 1.2-methods.R
+  * Add 2D plotting to `plot` method.
 * 2.1-import.R
   * Force `stringsAsFactors = FALSE`.
+* 4.1-modSwap.R
+  * Clean up plot calls using new `plot` method.
 * 6-predict.R
+  * Add class check for `modHistory` `@reductionModel`.
+  * Add class check for `predict` `@mach`.
   * Pass along known class values to `ExprsPredict` result.
   * Remove `calcStats` `array` argument.
 * 7.1-plCV.R

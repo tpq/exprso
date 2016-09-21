@@ -142,14 +142,10 @@ setMethod("modSwap", "ExprsBinary",
 
             # Visualize "before" and "after" PCA results
             layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))
-            plot(temp1@exprs[1, ], temp1@exprs[2, ], col = ifelse(cases, "red", "black"),
-                 pch = ifelse(object@annot$mutated, 22, 16), main = "Before", xlab = "PCA1", ylab = "PCA2")
-            plot(temp2@exprs[1, ], temp2@exprs[2, ], col = ifelse(cases, "red", "black"),
-                 pch = ifelse(object@annot$mutated, 22, 16), main = "After", xlab = "PCA1", ylab = "PCA2")
-            plot(temp1@exprs[1, ], temp1@exprs[3, ], col = ifelse(cases, "red", "black"),
-                 pch = ifelse(object@annot$mutated, 22, 16), main = "Before", xlab = "PCA1", ylab = "PCA3")
-            plot(temp2@exprs[1, ], temp2@exprs[3, ], col = ifelse(cases, "red", "black"),
-                 pch = ifelse(object@annot$mutated, 22, 16), main = "After", xlab = "PCA1", ylab = "PCA3")
+            plot(temp1, a = 1, b = 2, c = 0, main = "Before", xlab = "PCA1", ylab = "PCA2")
+            plot(temp2, a = 1, b = 2, c = 0, main = "After", xlab = "PCA1", ylab = "PCA2")
+            plot(temp1, a = 1, b = 3, c = 0, main = "Before", xlab = "PCA1", ylab = "PCA3")
+            plot(temp2, a = 1, b = 3, c = 0, main = "After", xlab = "PCA1", ylab = "PCA3")
             layout(matrix(c(1), 1, 1, byrow = TRUE))
 
             return(object)
