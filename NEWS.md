@@ -2,6 +2,8 @@
 ---------------------
 * 1.1-classes.R
   * Add `actual` slot to `ExprsPredict` object.
+* 2.1-import.R
+  * Force `stringsAsFactors = FALSE`.
 * 6-predict.R
   * Pass along known class values to `ExprsPredict` result.
   * Remove `calcStats` `array` argument.

@@ -36,8 +36,8 @@ This function expects that the delimited data file has the following format:
  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
  The remaining columns should contain feature data (e.g. expression values).
  The argument \code{probes.begin} defines the j-th column at which the feature
- data starts. By default, \code{arrayExprs} forces \code{stringsAsFactors = FASE}.
- This function automatically removes any features with \code{NA} values.
+ data starts. This function automatically removes any features with \code{NA} values.
+ Take care to remove any \code{factor} columns before importing.
 
 For an \code{ExpressionSet} object:
 
@@ -51,6 +51,7 @@ For a \code{file}:
 \code{arrayExprs} can also build an \code{ExprsArray} object from a tab-delimited
  data file, passing along the \code{file} and \code{...} argument(s) to
  \code{\link{read.delim}}. All rules for \code{data.frame} import also apply here.
+ By default, \code{arrayExprs} forces \code{stringsAsFactors = FASE}.
 }
 \seealso{
 \code{\link{ExprsArray-class}}, \code{\link{GSE2eSet}}

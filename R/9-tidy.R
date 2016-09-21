@@ -115,7 +115,7 @@ forceArg <- function(what, as, args){
 
   if(!what %in% names(args)){
 
-    cat("Setting", what, "to", as.character(as), "(default behavior, override explicitly)...\n")
+    cat("Setting", what, "to", as.character(as), "(forced behavior, cannot override)...\n")
     names(as) <- what
     args <- append(args, as.list(as))
 

@@ -12,8 +12,8 @@
 #'  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
 #'  The remaining columns should contain feature data (e.g. expression values).
 #'  The argument \code{probes.begin} defines the j-th column at which the feature
-#'  data starts. By default, \code{arrayExprs} forces \code{stringsAsFactors = FASE}.
-#'  This function automatically removes any features with \code{NA} values.
+#'  data starts. This function automatically removes any features with \code{NA} values.
+#'  Take care to remove any \code{factor} columns before importing.
 #'
 #' For an \code{ExpressionSet} object:
 #'
@@ -27,6 +27,7 @@
 #' \code{arrayExprs} can also build an \code{ExprsArray} object from a tab-delimited
 #'  data file, passing along the \code{file} and \code{...} argument(s) to
 #'  \code{\link{read.delim}}. All rules for \code{data.frame} import also apply here.
+#'  By default, \code{arrayExprs} forces \code{stringsAsFactors = FASE}.
 #'
 #' @param object What to import as an \code{ExprsArray} object. See Details.
 #' @param colBy A numeric or character index. The column that contains group annotations.
@@ -63,7 +64,10 @@ arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
 
   }else if(class(object) == "character" & file.exists(object)){
 
-    object <- read.delim(object, stringsAsFactors = FALSE, ...)
+    args <- getArgs(...)
+    args <- forceArg("stringsAsFactors", FALSE, args)
+    args <- append(args, list("file" = object))
+    object <- do.call("read.delim", args)
     exprs <- t(object[, probes.begin:ncol(object)])
     annot <- object[, 1:(probes.begin-1)]
 
