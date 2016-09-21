@@ -102,7 +102,7 @@ setMethod("subset", signature(x = "ExprsArray"),
             if(missing(select)) select <- colnames(x@annot)
 
             x@annot <- x@annot[subset, select, drop = FALSE]
-            x@exprs <- x@exprs[, subset]
+            x@exprs <- x@exprs[, subset, drop = FALSE]
 
             return(x)
           }
