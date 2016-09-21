@@ -22,7 +22,7 @@
 \S4method{subset}{ExprsArray}(x, subset, select)
 
 \S4method{plot}{ExprsArray,missing}(x, y, a = 1, b = 2, c = 3, colors,
-  shapes)
+  shapes, ...)
 
 \S4method{summary}{ExprsArray}(object)
 
@@ -45,11 +45,14 @@ argument \code{i} is missing.}
 
 \item{y}{Leave missing. Argument exists because of \code{\link{plot}} generic definition.}
 
-\item{a, b, c}{A numeric scalar. Indexes the first, second, and third dimensions to plot.}
+\item{a, b, c}{A numeric scalar. Indexes the first, second, and third dimensions to plot.
+Set \code{c = 0} to plot two dimensions.}
 
 \item{colors}{A character vector. Optional. Manually assign a color to each subject point.}
 
 \item{shapes}{A numeric vector. Optional. Manually assign a shape to each subject point.}
+
+\item{...}{Additional arguments passed to\code{plot} or \code{lattice::cloud}.}
 }
 \description{
 An S4 class to store feature and annotation data
@@ -64,7 +67,7 @@ An S4 class to store feature and annotation data
 
 \item \code{subset}: Method to subset \code{ExprsArray} object.
 
-\item \code{plot}: Method to quickly plot three dimensions of data.
+\item \code{plot}: Method to quickly plot two or three dimensions of data.
 
 \item \code{summary}: Method to plot summary graphs for a sub-sample of expression data.
 

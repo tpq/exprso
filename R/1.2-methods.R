@@ -108,32 +108,55 @@ setMethod("subset", signature(x = "ExprsArray"),
           }
 )
 
-#' @describeIn ExprsArray Method to quickly plot three dimensions of data.
+#' @describeIn ExprsArray Method to quickly plot two or three dimensions of data.
 #'
 #' @param y Leave missing. Argument exists because of \code{\link{plot}} generic definition.
 #' @param a,b,c A numeric scalar. Indexes the first, second, and third dimensions to plot.
+#'  Set \code{c = 0} to plot two dimensions.
 #' @param colors A character vector. Optional. Manually assign a color to each subject point.
 #' @param shapes A numeric vector. Optional. Manually assign a shape to each subject point.
+#' @param ... Additional arguments passed to\code{plot} or \code{lattice::cloud}.
 #'
 #' @importFrom stats as.formula
 #' @importFrom grDevices rainbow
 #' @importFrom lattice cloud
 #' @export
 setMethod("plot", signature(x = "ExprsArray", y = "missing"),
-          function(x, y, a = 1, b = 2, c = 3, colors, shapes){
+          function(x, y, a = 1, b = 2, c = 3, colors, shapes, ...){
 
-            # Extract components a, b, and c
-            df <- data.frame(t(x@exprs))[, c(a, b, c)]
-            colnames(df) <- paste0(c("a_", "b_", "c_"), colnames(df))
+            args <- getArgs(...)
 
-            # Plot c ~ a + b in 3D
-            func <- stats::as.formula(paste(colnames(df)[3], "~",
-                                            colnames(df)[1], "+",
-                                            colnames(df)[2],
-                                            collapse = ""))
-            if(missing(colors)) colors <- grDevices::rainbow(length(unique(x@annot$defineCase)))
-            if(missing(shapes)) shapes <- 19
-            print(lattice::cloud(func, data = df, col = colors, pch = shapes))
+            args <- defaultArg("col", grDevices::rainbow(length(unique(x$defineCase)))
+                               [as.numeric(factor(x$defineCase))], args)
+            args <- defaultArg("pch", 19, args)
+
+            if(c > 0){
+
+              # Extract components a, b, and c
+              df <- data.frame(t(x@exprs))[, c(a, b, c)]
+              colnames(df) <- paste0(c("a_", "b_", "c_"), colnames(df))
+
+              # Plot c ~ a + b in 3D
+              func <- stats::as.formula(paste(colnames(df)[3], "~",
+                                              colnames(df)[1], "+",
+                                              colnames(df)[2],
+                                              collapse = ""))
+
+              args <- append(args, list("x" = func, "data" = df))
+              do.call("cloud", args)
+
+            }else{
+
+              # Extract components a and b
+              df <- data.frame(t(x@exprs))[, c(a, b)]
+              colnames(df) <- paste0(c("a_", "b_"), colnames(df))
+
+              args <- defaultArg("xlab", colnames(df)[1], args)
+              args <- defaultArg("ylab", colnames(df)[2], args)
+
+              args <- append(args, list("x" = df[, a], "y" = df[, b]))
+              do.call("plot", args)
+            }
           }
 )
 
