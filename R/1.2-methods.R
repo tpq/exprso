@@ -154,7 +154,7 @@ setMethod("plot", signature(x = "ExprsArray", y = "missing"),
               args <- defaultArg("xlab", colnames(df)[1], args)
               args <- defaultArg("ylab", colnames(df)[2], args)
 
-              args <- append(args, list("x" = df[, a], "y" = df[, b]))
+              args <- append(args, list("x" = df[, 1], "y" = df[, 2]))
               do.call("plot", args)
             }
           }
