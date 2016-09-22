@@ -4,7 +4,8 @@ Version: 0.1.5.9000
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
-    person("Thomas", "Quinn", email = "contacttomquinn@gmail.com", role = c("aut", "cre"))
+    person("Thomas", "Quinn", email = "contacttomquinn@gmail.com", role = c("aut", "cre")),
+    person("Daniel", "Tylee", email = "dantylee@gmail.com", role = "ctb")
     )
 Description: Supervised machine learning has an increasingly important role in biological
     studies. However, the sheer complexity of classification pipelines poses a significant

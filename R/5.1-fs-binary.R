@@ -202,6 +202,9 @@ setMethod("fsSample", "ExprsBinary",
 setMethod("fsStats", "ExprsBinary",
           function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args to t.test or ks.test
 
+            # Choose first "how" from default argument vector
+            how <- how[1]
+
             if(how == "t.test"){
 
               fs.(object, top,
