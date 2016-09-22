@@ -37,22 +37,22 @@
 #'  along to prepare the test or validation set during model deployment, ensuring that these
 #'  sets undergo the same feature selection and dimension reduction in the appropriate steps.
 #'  Under the scenarios where users plan to apply multiple feature selection or dimension
-#'  reduction steps, the \code{probes} argument manages which features (e.g. gene probes) to
-#'  send through each feature selection or dimension reduction procedure. For \code{probes},
+#'  reduction steps, the \code{top} argument manages which features (e.g., gene expression values)
+#'  to send through each feature selection or dimension reduction procedure. For \code{top},
 #'  a numeric scalar indicates the number of top features to use, while a character vector
 #'  indicates specifically which features to use. In this way, the user sets which features
 #'  to feed INTO the \code{fs} method (NOT which features the user expects OUT). The example
 #'  below shows how to apply dimension reduction to the top 50 features as selected by the
-#'  Student's t-test. Set \code{probes = 0} to pass all features through an \code{fs} method.
+#'  Student's t-test. Set \code{top = 0} to pass all features through an \code{fs} method.
 #'
 #' Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count} argument
 #'  owing to its implementation in the imported package \code{mRMRe}.
 #'
 #' @param object Specifies the \code{ExprsArray} object to undergo feature selection.
-#' @param probes A numeric scalar or character vector. A numeric scalar indicates
+#' @param top A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
 #'  indicates specifically which features by name should undergo feature selection.
-#'  Set \code{probes = 0} to include all features. A numeric vector can also be used
+#'  Set \code{top = 0} to include all features. A numeric vector can also be used
 #'  to indicate specific features by location, similar to a character vector.
 #' @param how Specifics which function to call in \code{fsStats}. Recognized arguments
 #'  include \code{"t.test"} and \code{"ks.test"}.
@@ -79,46 +79,46 @@
 #' array <- modTransform(array) # lg transform
 #' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 #' arrays <- splitSample(array, percent.include = 67)
-#' array.train <- fsStats(arrays[[1]], probes = 0, how = "t.test")
-#' array.train <- fsPrcomp(array.train, probes = 50)
-#' mach <- buildSVM(array.train, probes = 5, kernel = "linear", cost = 1)
+#' array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
+#' array.train <- fsPrcomp(array.train, top = 50)
+#' mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
 #' }
 NULL
 
 #' @rdname fs
 #' @export
 setGeneric("fsSample",
-           function(object, probes = 0, ...) standardGeneric("fsSample")
+           function(object, top = 0, ...) standardGeneric("fsSample")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsStats",
-           function(object, probes = 0, ...) standardGeneric("fsStats")
+           function(object, top = 0, ...) standardGeneric("fsStats")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsPrcomp",
-           function(object, probes = 0, ...) standardGeneric("fsPrcomp")
+           function(object, top = 0, ...) standardGeneric("fsPrcomp")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsPathClassRFE",
-           function(object, probes = 0, ...) standardGeneric("fsPathClassRFE")
+           function(object, top = 0, ...) standardGeneric("fsPathClassRFE")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsEbayes",
-           function(object, probes = 0, ...) standardGeneric("fsEbayes")
+           function(object, top = 0, ...) standardGeneric("fsEbayes")
 )
 
 #' @rdname fs
 #' @export
 setGeneric("fsMrmre",
-           function(object, probes = 0, ...) standardGeneric("fsMrmre")
+           function(object, top = 0, ...) standardGeneric("fsMrmre")
 )
 
 ###########################################################
@@ -138,24 +138,24 @@ setGeneric("fsMrmre",
 #' @return Returns an \code{ExprsArray} object.
 #'
 #' @export
-fs. <- function(object, probes, uniqueFx, ...){
+fs. <- function(object, top, uniqueFx, ...){
 
-  if(class(probes) == "numeric"){
+  if(class(top) == "numeric"){
 
-    if(length(probes) == 1){
+    if(length(top) == 1){
 
-      if(probes > nrow(object@exprs)) probes <- 0
-      if(probes == 0) probes <- nrow(object@exprs)
-      probes <- rownames(object@exprs[1:probes, ])
+      if(top > nrow(object@exprs)) top <- 0
+      if(top == 0) top <- nrow(object@exprs)
+      top <- rownames(object@exprs[1:top, ])
 
     }else{
 
-      probes <- rownames(object@exprs[probes, ])
+      top <- rownames(object@exprs[top, ])
     }
   }
 
-  data <- t(object@exprs[probes, ])
-  final <- do.call("uniqueFx", list(data, probes, ...))
+  data <- t(object@exprs[top, ])
+  final <- do.call("uniqueFx", list(data, top, ...))
 
   if(class(final) == "character"){
 
@@ -167,7 +167,7 @@ fs. <- function(object, probes, uniqueFx, ...){
   }else if(class(final) == "list"){
 
     array <- new(class(object), exprs = final[[1]], annot = object@annot,
-                 preFilter = append(object@preFilter, list(probes)),
+                 preFilter = append(object@preFilter, list(top)),
                  reductionModel = append(object@reductionModel, list(final[[2]]))
     )
 
@@ -184,12 +184,12 @@ fs. <- function(object, probes, uniqueFx, ...){
 #' \code{fsSample:} Method to perform random feature selection using base::sample.
 #' @export
 setMethod("fsSample", "ExprsBinary",
-          function(object, probes, ...){ #args to sample
+          function(object, top, ...){ #args to sample
 
-            fs.(object, probes,
-                uniqueFx = function(data, probes, ...){
+            fs.(object, top,
+                uniqueFx = function(data, top, ...){
 
-                  sample(probes, ...)
+                  sample(top, ...)
                 }, ...)
           }
 )
@@ -200,60 +200,60 @@ setMethod("fsSample", "ExprsBinary",
 #' @importFrom stats t.test ks.test
 #' @export
 setMethod("fsStats", "ExprsBinary",
-          function(object, probes = 0, how = c("t.test", "ks.test"), ...){ # args to t.test or ks.test
+          function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args to t.test or ks.test
 
             if(how == "t.test"){
 
-              fs.(object, probes,
-                  uniqueFx = function(data, probes, ...){
+              fs.(object, top,
+                  uniqueFx = function(data, top, ...){
 
                     # Prepare data for statistical tests
                     cases <- object@annot$defineCase %in% "Case"
                     conts <- object@annot$defineCase %in% "Control"
-                    p <- vector("numeric", length(probes))
+                    p <- vector("numeric", length(top))
 
-                    for(i in 1:length(probes)){
+                    for(i in 1:length(top)){
 
                       tryCatch(
                         {
-                          p[i] <- t.test(object@exprs[probes[i], cases],
-                                         object@exprs[probes[i], conts], ...)$p.value
+                          p[i] <- t.test(object@exprs[top[i], cases],
+                                         object@exprs[top[i], conts], ...)$p.value
 
                         }, error = function(e){
 
-                          cat("fsStats failed for feature: ", probes[i], ". Setting p(x)=1...\n")
+                          cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
                           p[i] <- 1
                         })
                     }
 
-                    probes[order(p)]
+                    top[order(p)]
                   }, ...)
 
             }else if(how == "ks.test"){
 
-              fs.(object, probes,
-                  uniqueFx = function(data, probes, ...){
+              fs.(object, top,
+                  uniqueFx = function(data, top, ...){
 
                     # Prepare data for statistical tests
                     cases <- object@annot$defineCase %in% "Case"
                     conts <- object@annot$defineCase %in% "Control"
-                    p <- vector("numeric", length(probes))
+                    p <- vector("numeric", length(top))
 
-                    for(i in 1:length(probes)){
+                    for(i in 1:length(top)){
 
                       tryCatch(
                         {
-                          p[i] <- ks.test(object@exprs[probes[i], cases],
-                                          object@exprs[probes[i], conts], ...)$p.value
+                          p[i] <- ks.test(object@exprs[top[i], cases],
+                                          object@exprs[top[i], conts], ...)$p.value
 
                         }, error = function(e){
 
-                          cat("fsStats failed for feature: ", probes[i], ". Setting p(x)=1...\n")
+                          cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
                           p[i] <- 1
                         })
                     }
 
-                    probes[order(p)]
+                    top[order(p)]
                   }, ...)
 
             }else{
@@ -269,10 +269,10 @@ setMethod("fsStats", "ExprsBinary",
 #' @importFrom stats prcomp
 #' @export
 setMethod("fsPrcomp", "ExprsBinary",
-          function(object, probes, ...){ # args to prcomp
+          function(object, top, ...){ # args to prcomp
 
-            fs.(object, probes,
-                uniqueFx = function(data, probes, ...){
+            fs.(object, top,
+                uniqueFx = function(data, top, ...){
 
                   # ATTENTION: We want dependent variables as columns
                   # NOTE: as.data.frame will not rename columns
@@ -294,10 +294,10 @@ setMethod("fsPrcomp", "ExprsBinary",
 #' @importFrom pathClass fit.rfe
 #' @export
 setMethod("fsPathClassRFE", "ExprsBinary",
-          function(object, probes, ...){ # args to fit.rfe
+          function(object, top, ...){ # args to fit.rfe
 
-            fs.(object, probes,
-                uniqueFx = function(data, probes, ...){
+            fs.(object, top,
+                uniqueFx = function(data, top, ...){
 
                   # Set up "make.names" key for improper @exprs row.names
                   labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
@@ -322,14 +322,14 @@ setMethod("fsPathClassRFE", "ExprsBinary",
 #' @importFrom limma ebayes lmFit
 #' @export
 setMethod("fsEbayes", "ExprsBinary",
-          function(object, probes, ...){ # args to ebayes
+          function(object, top, ...){ # args to ebayes
 
-            fs.(object, probes,
-                uniqueFx = function(data, probes, ...){
+            fs.(object, top,
+                uniqueFx = function(data, top, ...){
 
                   design <- as.matrix(ifelse(object@annot$defineCase == "Case", 1, 0))
                   colnames(design) <- "CaseVCont"
-                  fit <- limma::lmFit(object@exprs[probes, ], design)
+                  fit <- limma::lmFit(object@exprs[top, ], design)
                   ebaye <- limma::ebayes(fit, ...)
                   rownames(ebaye$p.value)[order(ebaye$p.value[, 1])]
                 }, ...)
@@ -342,10 +342,10 @@ setMethod("fsEbayes", "ExprsBinary",
 #' @importFrom mRMRe mRMR.classic mRMR.data solutions featureNames
 #' @export
 setMethod("fsMrmre", "ExprsBinary",
-          function(object, probes, ...){ # args to mRMR.classic
+          function(object, top, ...){ # args to mRMR.classic
 
-            fs.(object, probes,
-                uniqueFx = function(data, probes, ...){
+            fs.(object, top,
+                uniqueFx = function(data, top, ...){
 
                   args <- getArgs(...)
                   args <- defaultArg("target_indices", 1, args)
@@ -359,7 +359,7 @@ setMethod("fsMrmre", "ExprsBinary",
                   args <- append(list("data" = mRMRdata), args)
                   mRMRout <- do.call(mRMRe::mRMR.classic, args)
 
-                  # Sort probes
+                  # Sort features
                   final <- as.vector(
                     apply(mRMRe::solutions(mRMRout)[[1]], 2, function(x, y){ return(y[x])},
                           y = mRMRe::featureNames(mRMRdata))

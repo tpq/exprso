@@ -27,7 +27,7 @@
 #'
 #' @export
 setGeneric("modCluster",
-           function(object, probes = 0, how = "hclust",
+           function(object, top = 0, how = "hclust",
                     onlyCluster = FALSE, ...) standardGeneric("modCluster")
 )
 
@@ -37,25 +37,25 @@ setGeneric("modCluster",
 #' @importFrom cluster agnes clara diana fanny pam
 #' @export
 setMethod("modCluster", "ExprsArray",
-          function(object, probes, how, onlyCluster, ...){
+          function(object, top, how, onlyCluster, ...){
 
             args <- as.list(substitute(list(...)))[-1]
 
-            if(class(probes) == "numeric"){
+            if(class(top) == "numeric"){
 
-              if(length(probes) == 1){
+              if(length(top) == 1){
 
-                if(probes > nrow(object@exprs)) probes <- 0
-                if(probes == 0) probes <- nrow(object@exprs)
-                probes <- rownames(object@exprs[1:probes, ])
+                if(top > nrow(object@exprs)) top <- 0
+                if(top == 0) top <- nrow(object@exprs)
+                top <- rownames(object@exprs[1:top, ])
 
               }else{
 
-                probes <- rownames(object@exprs[probes, ])
+                top <- rownames(object@exprs[top, ])
               }
             }
 
-            data <- t(object@exprs[probes, ])
+            data <- t(object@exprs[top, ])
 
             # Set the argument 'k' aside to use in 'cutree'
             # NOTE: hclust, agnes, and diana use 'k' via 'cutree'

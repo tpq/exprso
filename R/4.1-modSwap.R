@@ -59,7 +59,7 @@ setMethod("modSwap", "ExprsBinary",
             mut.name <- sample(colnames(object@exprs[, cases]), size = mut.size, replace = FALSE)
 
             # Calculate "before" PCA
-            temp1 <- fsPrcomp(object, probes = 0)
+            temp1 <- fsPrcomp(object, top = 0)
 
             if(inherits(how, "ExprsArray")){
 
@@ -70,7 +70,7 @@ setMethod("modSwap", "ExprsBinary",
 
               if(!identical(rownames(object@exprs), rownames(how@exprs))){
 
-                stop("Uh oh! The provided 'ExprsBinary' objects do not have matching probe vectors!")
+                stop("Uh oh! The provided 'ExprsBinary' objects do not have matching feature vectors!")
               }
 
               # Randomly select which controls to use in swap
@@ -103,7 +103,7 @@ setMethod("modSwap", "ExprsBinary",
 
             }else if(how == "ng"){
 
-              # Calculate per-probe case means and sds to make "new group" means and sds
+              # Calculate per-feature case means and sds to make "new group" means and sds
               means <- apply(object@exprs[, cases], MARGIN = 1, mean)
               sds <- apply(object@exprs[, cases], MARGIN = 1, sd)
               ng.means <- unlist(lapply(1:length(means),
@@ -117,7 +117,7 @@ setMethod("modSwap", "ExprsBinary",
 
             }else if(how == "tg"){
 
-              # Calculate per-probe means and sds using ALL subjects to make "new group" means and sds
+              # Calculate per-feature means and sds using ALL subjects to make "new group" means and sds
               means <- apply(object@exprs, MARGIN = 1, mean)
               sds <- apply(object@exprs, MARGIN = 1, sd)
               tg.means <- unlist(lapply(1:length(means),
@@ -138,7 +138,7 @@ setMethod("modSwap", "ExprsBinary",
             object@annot$mutated <- as.numeric(rownames(object@annot) %in% mut.name)
 
             # Calculate "after" PCA
-            temp2 <- fsPrcomp(object, probes = 0)
+            temp2 <- fsPrcomp(object, top = 0)
 
             # Visualize "before" and "after" PCA results
             layout(matrix(c(1,2,3,4), 2, 2, byrow = TRUE))

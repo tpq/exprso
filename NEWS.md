@@ -4,7 +4,12 @@
   * Rename `getProbeSet` to `getFeatures`.
 * 2.1-import.R
   * Rename `probes.begin` argument to `begin`.
-* 
+* 4.1-modSwap.R
+  * Have `fsPrcomp` use `top` argument.
+* 4.2-modCluster.R
+  * Change `probes` argument to `top`.
+* 5.1-fs-binary.R
+  * Change `probes` argument to `top`.
 
 ## exprso 0.1.5
 ---------------------
