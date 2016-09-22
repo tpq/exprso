@@ -42,11 +42,11 @@ setMethod("buildEnsemble", "ExprsModel",
 #' @inheritParams pipeFilter
 #' @export
 setMethod("buildEnsemble", "ExprsPipeline",
-          function(object, colBy = 0, how = 0, gate = 0, top.N = 0){
+          function(object, colBy = 0, how = 0, gate = 0, top = 0){
 
             if(!identical(colBy, 0)){
 
-              object <- pipeFilter(object, colBy = colBy, how = how, gate = gate, top.N = top.N)
+              object <- pipeFilter(object, colBy = colBy, how = how, gate = gate, top = top)
             }
 
             new("ExprsEnsemble",

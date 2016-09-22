@@ -6,10 +6,10 @@
 \alias{pipeFilter,ExprsPipeline-method}
 \title{Filter \code{ExprsPipeline} Object}
 \usage{
-pipeFilter(object, colBy, how = 0, gate = 0, top.N = 0)
+pipeFilter(object, colBy, how = 0, gate = 0, top = 0)
 
 \S4method{pipeFilter}{ExprsPipeline}(object, colBy, how = 0, gate = 0,
-  top.N = 0)
+  top = 0)
 }
 \arguments{
 \item{object}{An \code{\link{ExprsPipeline-class}} object.}
@@ -27,11 +27,11 @@ the percentile of \code{colBy}. The user may also provide "midrange",
 or \code{gate = 0}, to skip the threshold or ceiling filter,
 respectively.}
 
-\item{top.N}{A numeric scalar. Determines the top N models based on
+\item{top}{A numeric scalar. Determines the top N models based on
 \code{colBy} to include after the threshold and ceiling filters.
 In the case that the \code{@summary} slot contains the column
 "boot", this determines the top N models for each unique bootstrap.
-Set \code{top.N = 0} to skip this subset.}
+Set \code{top = 0} to skip this subset.}
 }
 \value{
 An \code{\link{ExprsPipeline-class}} object.
@@ -48,7 +48,7 @@ First, a threshold filter gets imposed. Any model with a performance
  a ceiling filter gets imposed. Any model with a performance less
  than the ceiling filter, \code{gate}, gets excluded. Third, an
  arbitrary subset occurs. The top N models in the \code{ExprsPipeline}
- object get selected based on the argument \code{top.N}. However,
+ object get selected based on the argument \code{top}. However,
  in the case that the \code{@summary} slot contains the column
  "boot", \code{pipeFilter} selects the top N models for each unique
  bootstrap.

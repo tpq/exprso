@@ -57,7 +57,7 @@ gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildLDA")
 pred <- trainingSet(splitSets) %>%
   plMonteCarlo(B = 10, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs) %>%
   pipeUnboot %>%
-  pipeFilter(colBy = "valid.auc", top.N = 3) %>%
+  pipeFilter(colBy = "valid.auc", top = 3) %>%
   buildEnsemble %>%
   predict(testSet(splitSets)) %T>%
   calcStats

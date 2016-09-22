@@ -12,7 +12,7 @@ buildEnsemble(object, ...)
 \S4method{buildEnsemble}{ExprsModel}(object, ...)
 
 \S4method{buildEnsemble}{ExprsPipeline}(object, colBy = 0, how = 0,
-  gate = 0, top.N = 0)
+  gate = 0, top = 0)
 }
 \arguments{
 \item{object}{An \code{\link{ExprsModel-class}} object.}
@@ -40,11 +40,11 @@ the percentile of \code{colBy}. The user may also provide "midrange",
 or \code{gate = 0}, to skip the threshold or ceiling filter,
 respectively.}
 
-\item{top.N}{A numeric scalar. Determines the top N models based on
+\item{top}{A numeric scalar. Determines the top N models based on
 \code{colBy} to include after the threshold and ceiling filters.
 In the case that the \code{@summary} slot contains the column
 "boot", this determines the top N models for each unique bootstrap.
-Set \code{top.N = 0} to skip this subset.}
+Set \code{top = 0} to skip this subset.}
 }
 \value{
 An \code{\link{ExprsEnsemble-class}} object.

@@ -13,7 +13,7 @@
 #'  a ceiling filter gets imposed. Any model with a performance less
 #'  than the ceiling filter, \code{gate}, gets excluded. Third, an
 #'  arbitrary subset occurs. The top N models in the \code{ExprsPipeline}
-#'  object get selected based on the argument \code{top.N}. However,
+#'  object get selected based on the argument \code{top}. However,
 #'  in the case that the \code{@@summary} slot contains the column
 #'  "boot", \code{pipeFilter} selects the top N models for each unique
 #'  bootstrap.
@@ -37,11 +37,11 @@
 #'  "median", or "mean" as an argument for these filters. Set \code{how = 0}
 #'  or \code{gate = 0}, to skip the threshold or ceiling filter,
 #'  respectively.
-#' @param top.N A numeric scalar. Determines the top N models based on
+#' @param top A numeric scalar. Determines the top N models based on
 #'  \code{colBy} to include after the threshold and ceiling filters.
 #'  In the case that the \code{@@summary} slot contains the column
 #'  "boot", this determines the top N models for each unique bootstrap.
-#'  Set \code{top.N = 0} to skip this subset.
+#'  Set \code{top = 0} to skip this subset.
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
@@ -49,14 +49,14 @@
 #'
 #' @export
 setGeneric("pipeFilter",
-           function(object, colBy, how = 0, gate = 0, top.N = 0) standardGeneric("pipeFilter")
+           function(object, colBy, how = 0, gate = 0, top = 0) standardGeneric("pipeFilter")
 )
 
 #' @describeIn pipeFilter Method to filter \code{ExprsPipeline} objects.
 #' @importFrom stats median quantile
 #' @export
 setMethod("pipeFilter", "ExprsPipeline",
-          function(object, colBy, how, gate, top.N){
+          function(object, colBy, how, gate, top){
 
             # Check if ExprsPipeline contains all colBy
             if(!all(colBy %in% colnames(object@summary))){
@@ -117,27 +117,27 @@ setMethod("pipeFilter", "ExprsPipeline",
               accMeasures <- accMeasures[accMeasures <= ceiling]
             }
 
-            # Select top.N based on presence of a boot column
+            # Select top based on presence of a boot column
             if("boot" %in% colnames(object@summary)){
 
-              # For each B boot, select 'top.N' @machs
+              # For each B boot, select 'top' @machs
               index <- unlist(
 
                 lapply(unique(object@summary$boot),
                        function(boot){
 
                          # Calculate total number of gridpoints for this boot
-                         if(top.N > sum(object@summary$boot == boot)){
+                         if(top > sum(object@summary$boot == boot)){
 
-                           message("Provided 'top.N' too large for boot ", boot,
+                           message("Provided 'top' too large for boot ", boot,
                                    ". Using all gridpoints instead.")
-                           top.N <- 0
+                           top <- 0
                          }
 
-                         if(top.N == 0) top.N <- sum(object@summary$boot == boot)
+                         if(top == 0) top <- sum(object@summary$boot == boot)
 
-                         # Order 'top.N' accMeasures for this boot
-                         topMachs <- rev(order(accMeasures[object@summary$boot == boot]))[1:top.N]
+                         # Order 'top' accMeasures for this boot
+                         topMachs <- rev(order(accMeasures[object@summary$boot == boot]))[1:top]
 
                          # Index by rowname for this boot
                          rownames(object@summary[object@summary$boot == boot,])[topMachs]
@@ -148,17 +148,17 @@ setMethod("pipeFilter", "ExprsPipeline",
             }else{
 
               # Calculate total number of gridpoints for ExprsPipeline object
-              if(top.N > nrow(object@summary)){
+              if(top > nrow(object@summary)){
 
-                message("Provided 'top.N' too large for this ExprsPipeline object.",
+                message("Provided 'top' too large for this ExprsPipeline object.",
                         "Using all gridpoints instead.")
-                top.N <- 0
+                top <- 0
               }
 
-              if(top.N == 0) top.N <- nrow(object@summary)
+              if(top == 0) top <- nrow(object@summary)
 
-              # Order 'top.N' accMeasures for entire object
-              topMachs <- order(accMeasures, decreasing = TRUE)[1:top.N]
+              # Order 'top' accMeasures for entire object
+              topMachs <- order(accMeasures, decreasing = TRUE)[1:top]
 
               # Index by rowname
               index <- rownames(object@summary)[topMachs]

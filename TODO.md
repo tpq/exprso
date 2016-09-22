@@ -9,7 +9,7 @@
   * [x] Add 2D plot
   * [x] Rename `getProbeSet` function.
   * [x] Rename `probes` as `top`
-  * [] Rename `top.N` as `top`
+  * [x] Rename `top.N` as `top`
   
 * `ExprsMulti` expansion:
   * [x] Fix `splitStratify` for multi-class
