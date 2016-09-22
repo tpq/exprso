@@ -5,3 +5,4 @@
 ^OLDNEWS\.txt$
 ^NEWS\.md$
 ^cran-comments\.md$
+^TODO\.md$
