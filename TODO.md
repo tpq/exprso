@@ -7,8 +7,8 @@
   * [] Make ExprsBinary $defineCase a factor?
   * [x] Make `calcStats` tidy
   * [x] Add 2D plot
-  * [] Rename `getProbeSet` function.
-  * [] Rename `probes` as `top`
+  * [x] Rename `getProbeSet` function.
+  * [x] Rename `probes` as `top`
   * [] Rename `top.N` as `top`
   
 * `ExprsMulti` expansion:

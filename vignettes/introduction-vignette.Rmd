@@ -65,7 +65,7 @@ array <-
   arrayExprs("some_example_data_file.txt", # tab-delimited file
              colBy = "DX", # column name with class labels
              include = list(c("Control"), c("ASD", "PDDNOS")),
-             probes.begin = 11, # the i-th column where features begin
+             begin = 11, # the i-th column where features begin
              colID = "Subject.ID") # column name with subject ID)
 ```
 
@@ -142,20 +142,20 @@ Considering the high-dimensionality of most genomic datasets, it is prudent and 
 
 These feature selection histories get passed along at every step of the way until they eventually get used in order to pre-process an unlabeled dataset during classifier deployment (i.e., prediction). In the spirit of open source programming, we encourage users to submit their own feature selection functions, modeled after those provided in this library.
 
-The first of these feature selection functions, `fsStats`, performs some of the most basic feature selection methods: those rooted in simple statistical tests. Specifically, this function will rank probes based on either the Student's *t*-test or the Kolmogorov-Smirnov test. Below, we rank features according to the results of a Student's *t*-test.
+The first of these feature selection functions, `fsStats`, performs some of the most basic feature selection methods: those rooted in simple statistical tests. Specifically, this function will rank features based on either the Student's *t*-test or the Kolmogorov-Smirnov test. Below, we rank features according to the results of a Student's *t*-test.
 
 ```{r}
 array.train <-
-  fsStats(array.train, probes = 0, how = "t.test")
+  fsStats(array.train, top = 0, how = "t.test")
 ```
 
-On first exposure, we acknowledge that the argument `probes` might seem confusing. Therefore, we wish to emphasize the role of this term in specifying either the names or the number of features to supply *to* feature selection: it does not refer to what the user intends to retrieve *from* the feature selection process. When calling the first feature selection method with a numeric *probes* argument, it will draw from the "top ranked" probe set that actually refers to the default order in which the features appear in the `ExprsArray` input. However, each successful feature selection will return an `ExprsArray` output with the features implicitly (re-)ranked. Therefore, when calling a subsequent feature selection method, the "top ranked" probe set will indeed correspond to the feature ranks from the previous feature selection process. For example, the third feature selection call draws the top probes from the second feature ranking. The user may deploy, in tandem, any number of these functions in whatever order they choose, limited only by computational power and imagination.
+On first exposure, we acknowledge that the argument `top` might seem confusing. Therefore, we wish to emphasize the role of this term in specifying either the names or the number of features to supply *to* feature selection: it does not refer to what the user intends to retrieve *from* the feature selection process. When calling the first feature selection method with a numeric `top` argument, it will draw from the "top ranked" feature set that actually refers to the default order in which the features appear in the `ExprsArray` input. However, each successful feature selection will return an `ExprsArray` output with the features implicitly (re-)ranked. Therefore, when calling a subsequent feature selection method, the "top ranked" feature set will indeed correspond to the feature ranks from the previous feature selection process. For example, the third feature selection call draws the top features from the second feature ranking. The user may deploy, in tandem, any number of these functions in whatever order they choose, limited only by computational power and imagination.
 
 Another included feature selection method, `fsPrcomp`, performs dimension reduction by way of principal components analysis (**PCA**). The dimension reduction model generated during this function call gets saved in the feature selection history along with the components themselves. Below, we subject the top 50 features, as prioritized by `fsStats`, to PCA.
 
 ```{r}
 array.train <-
-  fsPrcomp(array.train, probes = 50)
+  fsPrcomp(array.train, top = 50)
 ```
 
 The other feature selection methods included in this package all follow the same use pattern. Below, we plot the first three components of the training set in 3-dimensional space.
@@ -172,7 +172,7 @@ This package exposes several methods for supervised machine learning, including 
 
 ```{r}
 mach <-
-  buildANN(array.train, probes = 10, size = 5)
+  buildANN(array.train, top = 10, size = 5)
 ```
 
 For more information, we refer the user to the package documentation, `?build`.
@@ -202,9 +202,9 @@ This package includes several functions named with the prefix `pl`. These "pipel
 
 ## High-throughput parameter searches
 
-When constructing a classifier using a **build** method, we can only specify one set of parameters at a time. However, we often want to test models across a vast range of parameters. For this task, we provide the `plGrid` function. This function builds and deploys a model for each combination of all provided arguments. For example, calling `plGrid` with the arguments `how = "buildSVM"`, `probes = c(3, 5, 10)`, `cost = 10^(-3:3)`, and `kernel = c("linear", "radial")` will yield  42 classifiers.
+When constructing a classifier using a **build** method, we can only specify one set of parameters at a time. However, we often want to test models across a vast range of parameters. For this task, we provide the `plGrid` function. This function builds and deploys a model for each combination of all provided arguments. For example, calling `plGrid` with the arguments `how = "buildSVM"`, `top = c(3, 5, 10)`, `cost = 10^(-3:3)`, and `kernel = c("linear", "radial")` will yield  42 classifiers.
 
-We note here that this function only accepts one `how` per run. To analyze the results of multiple `build` parameter searches jointly, combine the results of those `plGrid` function calls using `?conjoin`. We will also note that `plGrid` does not execute any data splitting or feature selection, both of which the user may perform beforehand. However, `plGrid` does allow the user to specify multiple *classifier sizes* by providing a numeric vector as the `probes` argument.
+We note here that this function only accepts one `how` per run. To analyze the results of multiple `build` parameter searches jointly, combine the results of those `plGrid` function calls using `?conjoin`. We will also note that `plGrid` does not execute any data splitting or feature selection, both of which the user may perform beforehand. However, `plGrid` does allow the user to specify multiple *classifier sizes* by providing a numeric vector as the `top` argument.
 
 The `plGrid` function can also calculate *v*-fold cross-validation accuracy at each step of the parameter search (toggled by supplying a non-`NULL` argument to `fold`). We emphasize, however, that the cross-validation method embedded within `plGrid` (i.e., `plCV`) does not re-select features with each fold, which may lead to overly-optimistic measures of classifier performance in the setting of prior feature selection.
 
@@ -214,7 +214,7 @@ Below, we will run through a few different support vector machine (SVM) builds, 
 gs <-
   plGrid(array.train = array.train,
          array.valid = array.test,
-         probes = 0,
+         top = 0,
          how = "buildSVM",
          fold = 0,
          kernel = "linear",
@@ -254,11 +254,11 @@ In the example below, we perform five iterations of `plMonteCarlo` using the ori
 ss <-
   ctrlSplitSet(func = "splitSample", percent.include = 67, replace = TRUE)
 fs <-
-  ctrlFeatureSelect(func = "fsStats", probes = 0, how = "t.test")
+  ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
 gs <-
   ctrlGridSearch(func = "plGrid",
                  how = "buildSVM",
-                 probes = c(10, 25, 50),
+                 top = c(10, 25, 50),
                  kernel = "linear",
                  cost = 10^(-3:3),
                  fold = 10)

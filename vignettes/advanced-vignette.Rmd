@@ -36,7 +36,7 @@ Next, we pull the training set from the `split` method result using the `trainin
 ```{r}
 pred <- trainingSet(splitSets) %>%
   fsStats(how = "t.test") %>%
-  fsPrcomp(probes = 10) %T>%
+  fsPrcomp(top = 10) %T>%
   plot(c = 0) %>%
   buildSVM %>%
   predict(testSet(splitSets)) %T>%
@@ -51,8 +51,8 @@ For code clarity, we define the argument handler functions `ctrlSplitSet`, `ctrl
 
 ```{r}
 ss <- ctrlSplitSet(func = "splitSample", percent.include = 67, replace = TRUE)
-fs <- ctrlFeatureSelect(func = "fsPathClassRFE", probes = 0)
-gs <- ctrlGridSearch(func = "plGrid", probes = 0, how = "buildLDA")
+fs <- ctrlFeatureSelect(func = "fsPathClassRFE", top = 0)
+gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildLDA")
 
 pred <- trainingSet(splitSets) %>%
   plMonteCarlo(B = 10, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs) %>%
@@ -73,10 +73,10 @@ We use the result of the `split` method above to carve the dataset into two clus
 
 ```{r}
 pred <- trainingSet(splitSets) %>%
-  modCluster(probes = 0, how = "pam", k = 2) %>%
+  modCluster(top = 0, how = "pam", k = 2) %>%
   modSubset(colBy = "cluster", include = 1) %>%
-  fsMrmre(probes = 0) %>%
-  buildANN(probes = 20, size = 5, decay = 1, maxit = 100) %>%
+  fsMrmre(top = 0) %>%
+  buildANN(top = 20, size = 5, decay = 1, maxit = 100) %>%
   predict(testSet(splitSets)) %T>%
   calcStats
 ```
@@ -97,7 +97,7 @@ Deep learning in *exprso* does not differ much from the other approaches to clas
 
 ```{r, eval = FALSE}
 pred <- trainingSet(splitSets) %>%
-  buildDNN(probes = 0,
+  buildDNN(top = 0,
            activation = "TanhWithDropout", # or 'Tanh'
            input_dropout_ratio = 0.2, # % of inputs dropout
            hidden_dropout_ratios = c(0.5,0.5,0.5), # % for nodes dropout
@@ -115,7 +115,7 @@ However, one important difference with `buildDNN` is that you have to take the t
 h2o::h2o.shutdown()
 ```
   
-When embedding `buildDNN` within a grid search, we run into the problem that each argument typically requires a numeric vector as input, corresponding as a unique argument to each layer of []. We provide a gridpoint of a vector argument using []. (Note that this style of providing a list of vectors as arugments also applies to the `probes` argument, if you ever saw a need to do so).
+When embedding `buildDNN` within a grid search, we run into the problem that each argument typically requires a numeric vector as input, corresponding as a unique argument to each layer of []. We provide a gridpoint of a vector argument using []. (Note that this style of providing a list of vectors as arugments also applies to the `top` argument, if you ever saw a need to do so).
 
 ```{r, eval = FALSE}
 # Make sure plGrid works with list arguments
@@ -135,7 +135,7 @@ As a more advanced example, with[]. For details on these arguments, see `?h2o::h
 # Run high-throughput grid search
 # NOTE: All deep neural networks within a single plGrid must have the same number of hidden layers
 ?h2o::h2o.deeplearning
-plGrid(array.train = arrays[[1]], array.valid = arrays[[2]], probes = 0, how = "buildDNN", fold = NULL,
+plGrid(array.train = arrays[[1]], array.valid = arrays[[2]], top = 0, how = "buildDNN", fold = NULL,
              activation = c("Rectifier",
                             "TanhWithDropout"), # or 'Tanh'
              input_dropout_ratio = c(0.2,

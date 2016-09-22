@@ -162,19 +162,19 @@ GSE2eSet <- function(gse, colBy = "VALUE", colID = "ID_REF"){
     colBy <- readline(prompt = "Which column will you use for platform VALUE?\n")
   }
 
-  # Establish a template for all probes
-  probesets <- Table(GEOquery::GPLList(gse)[[1]])$ID
+  # Establish a template for all features
+  featsets <- Table(GEOquery::GPLList(gse)[[1]])$ID
 
-  # Retrieve probe values for each sample
+  # Retrieve feature values for each sample
   vals <- lapply(GEOquery::GSMList(gse),
                  function(g){
 
-                   as.numeric(GEOquery::Table(g)[match(probesets, GEOquery::Table(g)[, colID]), colBy])
+                   as.numeric(GEOquery::Table(g)[match(featsets, GEOquery::Table(g)[, colID]), colBy])
                  }
   )
 
   # Combine samples into data.frame
-  exprs <- data.frame(vals, row.names = probesets)
+  exprs <- data.frame(vals, row.names = featsets)
 
   # Retrieve annotations for each sample
   pdata <- lapply(GEOquery::GSMList(gse),
