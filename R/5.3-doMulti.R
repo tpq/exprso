@@ -149,24 +149,24 @@ reRank <- function(fss){
 
     if(i == 1){
 
-      rank <- data.frame("probe" = rownames(fss[[i]]@exprs),
+      rank <- data.frame("feat" = rownames(fss[[i]]@exprs),
                          "rank" = 1:nrow(fss[[i]]@exprs))
     }
 
-    rank.next <- data.frame("probe" = rownames(fss[[i + 1]]@exprs),
+    rank.next <- data.frame("feat" = rownames(fss[[i + 1]]@exprs),
                             "rank" = 1:nrow(fss[[i + 1]]@exprs))
 
     rank <- merge(rank, rank.next,
-                  by.x = "probe",
-                  by.y = "probe",
+                  by.x = "feat",
+                  by.y = "feat",
                   all = TRUE)
 
     i <- i + 1
   }
 
   # Clean up rank table
-  rownames(rank) <- rank[, "probe"]
-  rank <- rank[, !colnames(rank) %in% "probe"]
+  rownames(rank) <- rank[, "feat"]
+  rank <- rank[, !colnames(rank) %in% "feat"]
 
   # For each class, replace any NAs with 1 more than the maximum rank
   for(col in 1:ncol(rank)){
