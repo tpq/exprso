@@ -51,7 +51,7 @@ In the next code chunk, we split the datasets randomly into training and test se
 
 ``` r
 arrays <- splitSample(array, percent.include = 67)
-array.train <- fsStats(arrays$array.train, probes = 0, how = "t.test")
+array.train <- fsStats(arrays$array.train, top = 0, how = "t.test")
 array.test <- arrays$array.valid
 ```
 
@@ -59,13 +59,13 @@ With the training set established, we can now build a classifier and deploy it o
 
 ``` r
 mach <- buildSVM(array.train,
-                 probes = 50,
+                 top = 50,
                  kernel = "linear",
                  cost = 1)
 ```
 
-    ## Setting probability to TRUE (default behavior, override explicitly)...
-    ## Setting cross to 0 (default behavior, override explicitly)...
+    ## Setting probability to TRUE (forced behavior, cannot override)...
+    ## Setting cross to 0 (forced behavior, cannot override)...
 
 ``` r
 pred <- predict(mach, array.train)
@@ -112,7 +112,7 @@ When constructing a classifier using **build** modules, we can only specify one 
 pl <- plGrid(array.train,
              array.test,
              how = "buildSVM",
-             probes = c(5, 10, 25, 50),
+             top = c(5, 10, 25, 50),
              kernel = "linear",
              cost = 10^(-3:3),
              fold = NULL)
@@ -124,10 +124,10 @@ What if we wanted to analyze multiple splits of a dataset simultaneously? This p
 
 ``` r
 ss <- ctrlSplitSet(func = "splitSample", percent.include = 67)
-fs <- ctrlFeatureSelect(func = "fsStats", probes = 0, how = "t.test")
+fs <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
 gs <- ctrlGridSearch(func = "plGrid",
                      how = "buildSVM",
-                     probes = c(5, 10, 25, 50),
+                     top = c(5, 10, 25, 50),
                      kernel = "linear",
                      cost = 10^(-3:3),
                      fold = NULL)
