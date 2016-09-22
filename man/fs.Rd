@@ -19,42 +19,42 @@
 \alias{fsStats,ExprsMulti-method}
 \title{Perform Feature Selection}
 \usage{
-fsSample(object, probes = 0, ...)
+fsSample(object, top = 0, ...)
 
-fsStats(object, probes = 0, ...)
+fsStats(object, top = 0, ...)
 
-fsPrcomp(object, probes = 0, ...)
+fsPrcomp(object, top = 0, ...)
 
-fsPathClassRFE(object, probes = 0, ...)
+fsPathClassRFE(object, top = 0, ...)
 
-fsEbayes(object, probes = 0, ...)
+fsEbayes(object, top = 0, ...)
 
-fsMrmre(object, probes = 0, ...)
+fsMrmre(object, top = 0, ...)
 
-\S4method{fsSample}{ExprsBinary}(object, probes = 0, ...)
+\S4method{fsSample}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{fsStats}{ExprsBinary}(object, probes = 0, how = c("t.test",
+\S4method{fsStats}{ExprsBinary}(object, top = 0, how = c("t.test",
   "ks.test"), ...)
 
-\S4method{fsPrcomp}{ExprsBinary}(object, probes = 0, ...)
+\S4method{fsPrcomp}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{fsPathClassRFE}{ExprsBinary}(object, probes = 0, ...)
+\S4method{fsPathClassRFE}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{fsEbayes}{ExprsBinary}(object, probes = 0, ...)
+\S4method{fsEbayes}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{fsMrmre}{ExprsBinary}(object, probes = 0, ...)
+\S4method{fsMrmre}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{fsSample}{ExprsMulti}(object, probes = 0, ...)
+\S4method{fsSample}{ExprsMulti}(object, top = 0, ...)
 
-\S4method{fsStats}{ExprsMulti}(object, probes = 0, ...)
+\S4method{fsStats}{ExprsMulti}(object, top = 0, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to undergo feature selection.}
 
-\item{probes}{A numeric scalar or character vector. A numeric scalar indicates
+\item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
-Set \code{probes = 0} to include all features. A numeric vector can also be used
+Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
 \item{...}{Arguments passed to the respective wrapped function.}
@@ -96,13 +96,13 @@ For all feature selection methods, \code{@preFilter} and \code{@reductionModel} 
  along to prepare the test or validation set during model deployment, ensuring that these
  sets undergo the same feature selection and dimension reduction in the appropriate steps.
  Under the scenarios where users plan to apply multiple feature selection or dimension
- reduction steps, the \code{probes} argument manages which features (e.g. gene probes) to
- send through each feature selection or dimension reduction procedure. For \code{probes},
+ reduction steps, the \code{top} argument manages which features (e.g., gene expression values)
+ to send through each feature selection or dimension reduction procedure. For \code{top},
  a numeric scalar indicates the number of top features to use, while a character vector
  indicates specifically which features to use. In this way, the user sets which features
  to feed INTO the \code{fs} method (NOT which features the user expects OUT). The example
  below shows how to apply dimension reduction to the top 50 features as selected by the
- Student's t-test. Set \code{probes = 0} to pass all features through an \code{fs} method.
+ Student's t-test. Set \code{top = 0} to pass all features through an \code{fs} method.
 
 Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count} argument
  owing to its implementation in the imported package \code{mRMRe}.
@@ -135,9 +135,9 @@ array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
 array <- modTransform(array) # lg transform
 array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 arrays <- splitSample(array, percent.include = 67)
-array.train <- fsStats(arrays[[1]], probes = 0, how = "t.test")
-array.train <- fsPrcomp(array.train, probes = 50)
-mach <- buildSVM(array.train, probes = 5, kernel = "linear", cost = 1)
+array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
+array.train <- fsPrcomp(array.train, top = 50)
+mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
 }
 }
 \seealso{

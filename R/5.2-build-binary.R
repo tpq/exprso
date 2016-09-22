@@ -22,7 +22,7 @@
 #'  of an unlabelled subject. For building multiple classifiers across a vast
 #'  parameter space in a high-throughput manner, see \code{pl} methods.
 #'
-#' Like \code{\link{fs}} methods, \code{build} methods have a \code{probes} argument
+#' Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
 #'  which allows the user to specify which features to feed INTO the classifier
 #'  build. This effectively provides the user with one last opportunity to subset
 #'  the feature space based on prior feature selection or dimension reduction.
@@ -30,7 +30,7 @@
 #'  get passed along to the resultant \code{ExprsModel} object, again ensuring
 #'  that any test or validation sets will undergo the same feature selection and
 #'  dimension reduction in the appropriate steps when deploying the classifier.
-#'  Set \code{probes = 0} to pass all features through a \code{build} method.
+#'  Set \code{top = 0} to pass all features through a \code{build} method.
 #'  See \code{\link{modHistory}} to read more about feature selection history.
 #'
 #' @inheritParams fs
@@ -58,46 +58,46 @@
 #' array <- modTransform(array) # lg transform
 #' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 #' arrays <- splitSample(array, percent.include = 67)
-#' array.train <- fsStats(arrays[[1]], probes = 0, how = "t.test")
-#' array.train <- fsPrcomp(array.train, probes = 50)
-#' mach <- buildSVM(array.train, probes = 5, kernel = "linear", cost = 1)
+#' array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
+#' array.train <- fsPrcomp(array.train, top = 50)
+#' mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
 #' }
 NULL
 
 #' @rdname build
 #' @export
 setGeneric("buildNB",
-           function(object, probes = 0, ...) standardGeneric("buildNB")
+           function(object, top = 0, ...) standardGeneric("buildNB")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildLDA",
-           function(object, probes = 0, ...) standardGeneric("buildLDA")
+           function(object, top = 0, ...) standardGeneric("buildLDA")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildSVM",
-           function(object, probes = 0, ...) standardGeneric("buildSVM")
+           function(object, top = 0, ...) standardGeneric("buildSVM")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildANN",
-           function(object, probes = 0, ...) standardGeneric("buildANN")
+           function(object, top = 0, ...) standardGeneric("buildANN")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildRF",
-           function(object, probes = 0, ...) standardGeneric("buildRF")
+           function(object, top = 0, ...) standardGeneric("buildRF")
 )
 
 #' @rdname build
 #' @export
 setGeneric("buildDNN",
-           function(object, probes = 0, ...) standardGeneric("buildDNN")
+           function(object, top = 0, ...) standardGeneric("buildDNN")
 )
 
 ###########################################################
@@ -112,30 +112,30 @@ setGeneric("buildDNN",
 #' @return Returns an \code{ExprsModel} object.
 #'
 #' @export
-build. <- function(object, probes, uniqueFx, ...){
+build. <- function(object, top, uniqueFx, ...){
 
-  if(class(probes) == "numeric"){
+  if(class(top) == "numeric"){
 
-    if(length(probes) == 1){
+    if(length(top) == 1){
 
-      if(probes > nrow(object@exprs)) probes <- 0
-      if(probes == 0) probes <- nrow(object@exprs)
-      probes <- rownames(object@exprs[1:probes, ])
+      if(top > nrow(object@exprs)) top <- 0
+      if(top == 0) top <- nrow(object@exprs)
+      top <- rownames(object@exprs[1:top, ])
 
     }else{
 
-      probes <- rownames(object@exprs[probes, ])
+      top <- rownames(object@exprs[top, ])
     }
   }
 
-  data <- t(object@exprs[probes, ])
+  data <- t(object@exprs[top, ])
   labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
   model <- do.call("uniqueFx", list(data, labels, ...))
 
   # Carry through and append fs history as stored in the ExprsArray object
   # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
   machine <- new("ExprsMachine",
-                 preFilter = append(object@preFilter, list(probes)),
+                 preFilter = append(object@preFilter, list(top)),
                  reductionModel = append(object@reductionModel, list(NA)),
                  mach = model
   )
@@ -149,9 +149,9 @@ build. <- function(object, probes, uniqueFx, ...){
 #' @importFrom e1071 naiveBayes
 #' @export
 setMethod("buildNB", "ExprsBinary",
-          function(object, probes, ...){ # args to naiveBayes
+          function(object, top, ...){ # args to naiveBayes
 
-            build.(object, probes,
+            build.(object, top,
                    uniqueFx = function(data, labels, ...){
 
                      # Perform naiveBayes via ~ method
@@ -169,9 +169,9 @@ setMethod("buildNB", "ExprsBinary",
 #' @importFrom MASS lda
 #' @export
 setMethod("buildLDA", "ExprsBinary",
-          function(object, probes, ...){ # args to lda
+          function(object, top, ...){ # args to lda
 
-            build.(object, probes,
+            build.(object, top,
                    uniqueFx = function(data, labels, ...){
 
                      # Perform linear discriminant analysis via ~ method
@@ -189,9 +189,9 @@ setMethod("buildLDA", "ExprsBinary",
 #' @importFrom e1071 svm
 #' @export
 setMethod("buildSVM", "ExprsBinary",
-          function(object, probes, ...){ # args to svm
+          function(object, top, ...){ # args to svm
 
-            build.(object, probes,
+            build.(object, top,
                    uniqueFx = function(data, labels, ...){
 
                      # Perform SVM via ~ method (permits plotting)
@@ -211,9 +211,9 @@ setMethod("buildSVM", "ExprsBinary",
 #' @importFrom nnet nnet
 #' @export
 setMethod("buildANN", "ExprsBinary",
-          function(object, probes, ...){ # args to nnet
+          function(object, top, ...){ # args to nnet
 
-            build.(object, probes,
+            build.(object, top,
                    uniqueFx = function(data, labels, ...){
 
                      # Perform ANN via ~ method
@@ -235,9 +235,9 @@ setMethod("buildANN", "ExprsBinary",
 #' @importFrom randomForest randomForest
 #' @export
 setMethod("buildRF", "ExprsBinary",
-          function(object, probes, ...){ # args to randomForest
+          function(object, top, ...){ # args to randomForest
 
-            build.(object, probes,
+            build.(object, top,
                    uniqueFx = function(data, labels, ...){
 
                      # Perform RF via ~ method
@@ -256,17 +256,17 @@ setMethod("buildRF", "ExprsBinary",
 #' @importFrom h2o h2o.init h2o.importFile h2o.deeplearning h2o.predict
 #' @export
 setMethod("buildDNN", "ExprsBinary",
-          function(object, probes, ...){ # args to h2o.deeplearning
+          function(object, top, ...){ # args to h2o.deeplearning
 
             args <- getArgs(...)
 
-            build.(object, probes,
+            build.(object, top,
                    uniqueFx = function(data, labels, ...){
 
                      # Initialize h2o (required)
                      localH20 <- h2o::h2o.init()
 
-                     # Rename data based on order supplied by probes
+                     # Rename data based on order supplied by top
                      colnames(data) <- paste0("id", 1:ncol(data))
                      labels <- object@annot[rownames(data), "defineCase"]
                      df <- data.frame(data, "defineCase" = labels)

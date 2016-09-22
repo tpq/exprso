@@ -6,19 +6,19 @@
 \alias{modCluster,ExprsArray-method}
 \title{Cluster Subjects}
 \usage{
-modCluster(object, probes = 0, how = "hclust", onlyCluster = FALSE, ...)
+modCluster(object, top = 0, how = "hclust", onlyCluster = FALSE, ...)
 
-\S4method{modCluster}{ExprsArray}(object, probes = 0, how = "hclust",
+\S4method{modCluster}{ExprsArray}(object, top = 0, how = "hclust",
   onlyCluster = FALSE, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object. The object containing the subject
 data to cluster.}
 
-\item{probes}{A numeric scalar or character vector. A numeric scalar indicates
+\item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
-Set \code{probes = 0} to include all features. A numeric vector can also be used
+Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
 \item{how}{A character string. The name of the function used to cluster.

@@ -10,6 +10,10 @@
   * Change `probes` argument to `top`.
 * 5.1-fs-binary.R
   * Change `probes` argument to `top`.
+* 5.2-build-binary.R
+  * Change `probes` argument to `top`.
+* 5.3-doMulti.R
+  * Change `probes` argument to `top`.
 
 ## exprso 0.1.5
 ---------------------

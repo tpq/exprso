@@ -23,50 +23,50 @@
 \alias{buildSVM,ExprsMulti-method}
 \title{Build Classifiers}
 \usage{
-buildNB(object, probes = 0, ...)
+buildNB(object, top = 0, ...)
 
-buildLDA(object, probes = 0, ...)
+buildLDA(object, top = 0, ...)
 
-buildSVM(object, probes = 0, ...)
+buildSVM(object, top = 0, ...)
 
-buildANN(object, probes = 0, ...)
+buildANN(object, top = 0, ...)
 
-buildRF(object, probes = 0, ...)
+buildRF(object, top = 0, ...)
 
-buildDNN(object, probes = 0, ...)
+buildDNN(object, top = 0, ...)
 
-\S4method{buildNB}{ExprsBinary}(object, probes = 0, ...)
+\S4method{buildNB}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{buildLDA}{ExprsBinary}(object, probes = 0, ...)
+\S4method{buildLDA}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{buildSVM}{ExprsBinary}(object, probes = 0, ...)
+\S4method{buildSVM}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{buildANN}{ExprsBinary}(object, probes = 0, ...)
+\S4method{buildANN}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{buildRF}{ExprsBinary}(object, probes = 0, ...)
+\S4method{buildRF}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{buildDNN}{ExprsBinary}(object, probes = 0, ...)
+\S4method{buildDNN}{ExprsBinary}(object, top = 0, ...)
 
-\S4method{buildNB}{ExprsMulti}(object, probes = 0, ...)
+\S4method{buildNB}{ExprsMulti}(object, top = 0, ...)
 
-\S4method{buildLDA}{ExprsMulti}(object, probes = 0, ...)
+\S4method{buildLDA}{ExprsMulti}(object, top = 0, ...)
 
-\S4method{buildSVM}{ExprsMulti}(object, probes = 0, ...)
+\S4method{buildSVM}{ExprsMulti}(object, top = 0, ...)
 
-\S4method{buildANN}{ExprsMulti}(object, probes = 0, ...)
+\S4method{buildANN}{ExprsMulti}(object, top = 0, ...)
 
-\S4method{buildRF}{ExprsMulti}(object, probes = 0, ...)
+\S4method{buildRF}{ExprsMulti}(object, top = 0, ...)
 
-\S4method{buildDNN}{ExprsMulti}(object, probes = 0, ...)
+\S4method{buildDNN}{ExprsMulti}(object, top = 0, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to use as a training set
 for classification.}
 
-\item{probes}{A numeric scalar or character vector. A numeric scalar indicates
+\item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
-Set \code{probes = 0} to include all features. A numeric vector can also be used
+Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
 \item{...}{Arguments passed to the respective wrapped function.}
@@ -90,7 +90,7 @@ These \code{build} methods construct a single classifier given an \code{ExprsArr
  of an unlabelled subject. For building multiple classifiers across a vast
  parameter space in a high-throughput manner, see \code{pl} methods.
 
-Like \code{\link{fs}} methods, \code{build} methods have a \code{probes} argument
+Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
  which allows the user to specify which features to feed INTO the classifier
  build. This effectively provides the user with one last opportunity to subset
  the feature space based on prior feature selection or dimension reduction.
@@ -98,7 +98,7 @@ Like \code{\link{fs}} methods, \code{build} methods have a \code{probes} argumen
  get passed along to the resultant \code{ExprsModel} object, again ensuring
  that any test or validation sets will undergo the same feature selection and
  dimension reduction in the appropriate steps when deploying the classifier.
- Set \code{probes = 0} to pass all features through a \code{build} method.
+ Set \code{top = 0} to pass all features through a \code{build} method.
  See \code{\link{modHistory}} to read more about feature selection history.
 }
 \section{Methods (by generic)}{
@@ -129,9 +129,9 @@ array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
 array <- modTransform(array) # lg transform
 array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 arrays <- splitSample(array, percent.include = 67)
-array.train <- fsStats(arrays[[1]], probes = 0, how = "t.test")
-array.train <- fsPrcomp(array.train, probes = 50)
-mach <- buildSVM(array.train, probes = 5, kernel = "linear", cost = 1)
+array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
+array.train <- fsPrcomp(array.train, top = 50)
+mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
 }
 }
 \seealso{

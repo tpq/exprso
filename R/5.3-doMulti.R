@@ -53,7 +53,7 @@ setGeneric("doMulti",
 #'
 #' @export
 setMethod("doMulti", "ExprsMulti",
-          function(object, probes, what, ...){
+          function(object, top, what, ...){
 
             args <- as.list(substitute(list(...)))[-1]
 
@@ -82,7 +82,7 @@ setMethod("doMulti", "ExprsMulti",
 
                 # Perform the binary task
                 cat("Performing a one-vs-all binary task with class", i, "set as \"Case\".\n")
-                args.i <- append(list("object" = temp, "probes" = probes), args)
+                args.i <- append(list("object" = temp, "top" = top), args)
                 multi[[i]] <- do.call(what = what, args = args.i)
               }
             }
@@ -188,10 +188,10 @@ reRank <- function(fss){
 #' @rdname fs
 #' @export
 setMethod("fsSample", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Call doMulti and make single rank list
-            fss <- doMulti(object, probes, what = "fsSample", ...)
+            fss <- doMulti(object, top, what = "fsSample", ...)
             final <- reRank(fss)
 
             new("ExprsMulti",
@@ -205,10 +205,10 @@ setMethod("fsSample", "ExprsMulti",
 #' @rdname fs
 #' @export
 setMethod("fsStats", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Call doMulti and make single rank list
-            fss <- doMulti(object, probes, what = "fsStats", ...)
+            fss <- doMulti(object, top, what = "fsStats", ...)
             final <- reRank(fss)
 
             new("ExprsMulti",
@@ -225,14 +225,14 @@ setMethod("fsStats", "ExprsMulti",
 #' @rdname build
 #' @export
 setMethod("buildNB", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Pass arguments to doMulti
-            machs <- doMulti(object, probes, what = "buildNB", ...)
+            machs <- doMulti(object, top, what = "buildNB", ...)
 
             # Carry through and append fs history as stored in the ExprsArray object
             new("ExprsModule",
-                preFilter = append(object@preFilter, list(probes)),
+                preFilter = append(object@preFilter, list(top)),
                 reductionModel = append(object@reductionModel, list(NA)),
                 mach = machs)
           }
@@ -241,14 +241,14 @@ setMethod("buildNB", "ExprsMulti",
 #' @rdname build
 #' @export
 setMethod("buildLDA", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Pass arguments to doMulti
-            machs <- doMulti(object, probes, what = "buildLDA", ...)
+            machs <- doMulti(object, top, what = "buildLDA", ...)
 
             # Carry through and append fs history as stored in the ExprsArray object
             new("ExprsModule",
-                preFilter = append(object@preFilter, list(probes)),
+                preFilter = append(object@preFilter, list(top)),
                 reductionModel = append(object@reductionModel, list(NA)),
                 mach = machs)
           }
@@ -257,14 +257,14 @@ setMethod("buildLDA", "ExprsMulti",
 #' @rdname build
 #' @export
 setMethod("buildSVM", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Pass arguments to doMulti
-            machs <- doMulti(object, probes, what = "buildSVM", ...)
+            machs <- doMulti(object, top, what = "buildSVM", ...)
 
             # Carry through and append fs history as stored in the ExprsArray object
             new("ExprsModule",
-                preFilter = append(object@preFilter, list(probes)),
+                preFilter = append(object@preFilter, list(top)),
                 reductionModel = append(object@reductionModel, list(NA)),
                 mach = machs)
           }
@@ -273,14 +273,14 @@ setMethod("buildSVM", "ExprsMulti",
 #' @rdname build
 #' @export
 setMethod("buildANN", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Pass arguments to doMulti
-            machs <- doMulti(object, probes, what = "buildANN", ...)
+            machs <- doMulti(object, top, what = "buildANN", ...)
 
             # Carry through and append fs history as stored in the ExprsArray object
             new("ExprsModule",
-                preFilter = append(object@preFilter, list(probes)),
+                preFilter = append(object@preFilter, list(top)),
                 reductionModel = append(object@reductionModel, list(NA)),
                 mach = machs)
           }
@@ -289,14 +289,14 @@ setMethod("buildANN", "ExprsMulti",
 #' @rdname build
 #' @export
 setMethod("buildRF", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Pass arguments to doMulti
-            machs <- doMulti(object, probes, what = "buildRF", ...)
+            machs <- doMulti(object, top, what = "buildRF", ...)
 
             # Carry through and append fs history as stored in the ExprsArray object
             new("ExprsModule",
-                preFilter = append(object@preFilter, list(probes)),
+                preFilter = append(object@preFilter, list(top)),
                 reductionModel = append(object@reductionModel, list(NA)),
                 mach = machs)
           }
@@ -305,14 +305,14 @@ setMethod("buildRF", "ExprsMulti",
 #' @rdname build
 #' @export
 setMethod("buildDNN", "ExprsMulti",
-          function(object, probes, ...){
+          function(object, top, ...){
 
             # Pass arguments to doMulti
-            machs <- doMulti(object, probes, what = "buildDNN", ...)
+            machs <- doMulti(object, top, what = "buildDNN", ...)
 
             # Carry through and append fs history as stored in the ExprsArray object
             new("ExprsModule",
-                preFilter = append(object@preFilter, list(probes)),
+                preFilter = append(object@preFilter, list(top)),
                 reductionModel = append(object@reductionModel, list(NA)),
                 mach = machs)
           }

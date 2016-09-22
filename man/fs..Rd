@@ -4,15 +4,15 @@
 \alias{fs.}
 \title{Workhorse for fs Methods}
 \usage{
-fs.(object, probes, uniqueFx, ...)
+fs.(object, top, uniqueFx, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to undergo feature selection.}
 
-\item{probes}{A numeric scalar or character vector. A numeric scalar indicates
+\item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
-Set \code{probes = 0} to include all features. A numeric vector can also be used
+Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
 \item{uniqueFx}{A function call unique to that fs method.}
