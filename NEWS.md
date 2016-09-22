@@ -1,6 +1,10 @@
 ## exprso 0.1.5.9000
 ---------------------
-* []
+* 1.2-methods.R
+  * Rename `getProbeSet` to `getFeatures`.
+* 2.1-import.R
+  * Rename `probes.begin` argument to `begin`.
+* 
 
 ## exprso 0.1.5
 ---------------------

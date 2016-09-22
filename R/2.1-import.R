@@ -11,7 +11,7 @@
 #'  rows indicate subject entries while columns indicate measured variables.
 #'  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
 #'  The remaining columns should contain feature data (e.g. expression values).
-#'  The argument \code{probes.begin} defines the j-th column at which the feature
+#'  The argument \code{begin} defines the j-th column at which the feature
 #'  data starts. This function automatically removes any features with \code{NA} values.
 #'  Take care to remove any \code{factor} columns before importing.
 #'
@@ -35,27 +35,28 @@
 #'  to include into which groups. Each element of a list specifies a unique group while
 #'  each element of the character vector specifies an annotation to fit to that group. For
 #'  binary classification, the first list element defines the negative or control group.
-#' @param probes.begin A numeric scalar. The j-th column at which feature data starts.
-#'  For \code{data.frame} or file import only.
 #' @param colID A numeric or character index. The column used to name subjects.
+#'  For \code{data.frame} or file import only.
+#' @param begin A numeric scalar. The j-th column at which feature data starts.
 #'  For \code{data.frame} or file import only.
 #' @param ... Additional arguments passed along to \code{read.delim}.
 #'  For file import only.
+#' @return An \code{ExprsArray} object.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{GSE2eSet}}
 #' @importFrom utils read.delim
 #' @importFrom Biobase exprs
 #' @export
-arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
+arrayExprs <- function(object, colBy, include, colID, begin, ...){
 
   if(!class(include) == "list") stop("Uh oh! User must provide 'include' argument as list!")
   if(length(include) < 2) stop("Uh oh! User must provide at least two classes!")
 
   if(class(object) == "data.frame"){
 
-    exprs <- exprs <- t(object[, probes.begin:ncol(object)])
-    annot <- object[, 1:(probes.begin-1)]
+    exprs <- exprs <- t(object[, begin:ncol(object)])
+    annot <- object[, 1:(begin-1)]
 
   }else if(class(object) == "ExpressionSet"){
 
@@ -68,8 +69,8 @@ arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
     args <- forceArg("stringsAsFactors", FALSE, args)
     args <- append(args, list("file" = object))
     object <- do.call("read.delim", args)
-    exprs <- t(object[, probes.begin:ncol(object)])
-    annot <- object[, 1:(probes.begin-1)]
+    exprs <- t(object[, begin:ncol(object)])
+    annot <- object[, 1:(begin-1)]
 
   }else{
 
@@ -130,13 +131,14 @@ arrayExprs <- function(object, probes.begin, colID, colBy, include, ...){
 #'  \code{getGEO("GSExxxxx", GSEMatrix = FALSE)}). For more information, see the GEOquery package.
 #'
 #' @param gse A GSE data object retrieved using GEOquery.
+#' @param colBy A character string. The GSE column name that contains the feature value.
 #' @param colID A character string. The GSE column name that contains the feature identity.
-#' @param colValue A character string. The GSE column name that contains the feature value.
+#' @return An \code{ExpressionSet} object.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{arrayExprs}}
 #' @export
-GSE2eSet <- function(gse, colID = "ID_REF", colValue = "VALUE"){
+GSE2eSet <- function(gse, colBy = "VALUE", colID = "ID_REF"){
 
   # Check for non-unique platforms
   gsms <- unlist(lapply(GEOquery::GSMList(gse), function(g){ GEOquery::Meta(g)$platform}))
@@ -152,12 +154,12 @@ GSE2eSet <- function(gse, colID = "ID_REF", colValue = "VALUE"){
   }
 
   # Provide an opportunity for user to select a new platform VALUE column
-  if(is.null(colValue)){
+  if(is.null(colBy)){
 
     cat("The columns available for platform VALUE include:\n")
     print(Columns(GEOquery::GSMList(gse)[[1]]))
     cat("\n")
-    colValue <- readline(prompt = "Which column will you use for platform VALUE?\n")
+    colBy <- readline(prompt = "Which column will you use for platform VALUE?\n")
   }
 
   # Establish a template for all probes
@@ -167,7 +169,7 @@ GSE2eSet <- function(gse, colID = "ID_REF", colValue = "VALUE"){
   vals <- lapply(GEOquery::GSMList(gse),
                  function(g){
 
-                   as.numeric(GEOquery::Table(g)[match(probesets, GEOquery::Table(g)[, colID]), colValue])
+                   as.numeric(GEOquery::Table(g)[match(probesets, GEOquery::Table(g)[, colID]), colBy])
                  }
   )
 

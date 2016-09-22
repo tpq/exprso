@@ -4,16 +4,10 @@
 \alias{arrayExprs}
 \title{Import Data as ExprsArray}
 \usage{
-arrayExprs(object, probes.begin, colID, colBy, include, ...)
+arrayExprs(object, colBy, include, colID, begin, ...)
 }
 \arguments{
 \item{object}{What to import as an \code{ExprsArray} object. See Details.}
-
-\item{probes.begin}{A numeric scalar. The j-th column at which feature data starts.
-For \code{data.frame} or file import only.}
-
-\item{colID}{A numeric or character index. The column used to name subjects.
-For \code{data.frame} or file import only.}
 
 \item{colBy}{A numeric or character index. The column that contains group annotations.}
 
@@ -22,8 +16,17 @@ to include into which groups. Each element of a list specifies a unique group wh
 each element of the character vector specifies an annotation to fit to that group. For
 binary classification, the first list element defines the negative or control group.}
 
+\item{colID}{A numeric or character index. The column used to name subjects.
+For \code{data.frame} or file import only.}
+
+\item{begin}{A numeric scalar. The j-th column at which feature data starts.
+For \code{data.frame} or file import only.}
+
 \item{...}{Additional arguments passed along to \code{read.delim}.
 For file import only.}
+}
+\value{
+An \code{ExprsArray} object.
 }
 \description{
 A convenience function that builds an \code{ExprsArray} object from an object.
@@ -35,7 +38,7 @@ This function expects that the delimited data file has the following format:
  rows indicate subject entries while columns indicate measured variables.
  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
  The remaining columns should contain feature data (e.g. expression values).
- The argument \code{probes.begin} defines the j-th column at which the feature
+ The argument \code{begin} defines the j-th column at which the feature
  data starts. This function automatically removes any features with \code{NA} values.
  Take care to remove any \code{factor} columns before importing.
 

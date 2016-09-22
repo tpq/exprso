@@ -4,14 +4,17 @@
 \alias{GSE2eSet}
 \title{Convert GSE to eSet}
 \usage{
-GSE2eSet(gse, colID = "ID_REF", colValue = "VALUE")
+GSE2eSet(gse, colBy = "VALUE", colID = "ID_REF")
 }
 \arguments{
 \item{gse}{A GSE data object retrieved using GEOquery.}
 
-\item{colID}{A character string. The GSE column name that contains the feature identity.}
+\item{colBy}{A character string. The GSE column name that contains the feature value.}
 
-\item{colValue}{A character string. The GSE column name that contains the feature value.}
+\item{colID}{A character string. The GSE column name that contains the feature identity.}
+}
+\value{
+An \code{ExpressionSet} object.
 }
 \description{
 A convenience function that builds an \code{eSet} object from a GSE data source.
