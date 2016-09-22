@@ -43,7 +43,7 @@ tempFile <- tempfile()
 write.table(df, file = tempFile, sep = "\t")
 
 array <-
-  arrayExprs(tempFile, probes.begin = 4, colID = "id", colBy = "class",
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
              include = list("a", "b"))
 
 arrays <- splitStratify(array, percent.include = 50, colBy = "sex")

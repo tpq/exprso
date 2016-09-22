@@ -42,12 +42,12 @@ tempFile <- tempfile()
 write.table(df, file = tempFile, sep = "\t")
 
 array <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b"))
 
 arrayMulti <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b", "c"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b", "c"))
 
 ###########################################################
 ### Build and predict ExprsMachine objects
@@ -55,10 +55,10 @@ arrayMulti <-
 set.seed(12345)
 
 arrays <- splitStratify(array, percent.include = 50, colBy = NULL)
-array.train <- fsStats(arrays[[1]], probes = 0)
+array.train <- fsStats(arrays[[1]], top = 0)
 array.test <- arrays[[2]]
 
-mach <- buildSVM(array.train, probes = 0, kernel = "linear", cost = 1)
+mach <- buildSVM(array.train, top = 0, kernel = "linear", cost = 1)
 pred.train <- predict(mach, array.train)
 pred.test <- predict(mach, array.test)
 
@@ -95,28 +95,28 @@ test_that("ExprsPredict slots make sense", {
 test_that("built models can predict correct classes", {
 
   set.seed(12345)
-  mach <- buildNB(array.train, probes = 2)
+  mach <- buildNB(array.train, top = 2)
   expect_equal(
     as.character(predict(mach, array.test)@pred),
     array.test$defineCase
   )
 
   set.seed(12345)
-  mach <- buildLDA(array.train, probes = 2)
+  mach <- buildLDA(array.train, top = 2)
   expect_equal(
     as.character(predict(mach, array.test)@pred),
     array.test$defineCase
   )
 
   set.seed(12345)
-  mach <- buildSVM(array.train, probes = 2, kernel = "linear", cost = 1)
+  mach <- buildSVM(array.train, top = 2, kernel = "linear", cost = 1)
   expect_equal(
     as.character(predict(mach, array.test)@pred),
     array.test$defineCase
   )
 
   set.seed(12345)
-  mach <- buildANN(array.train, probes = 2, size = 3, decay = 1)
+  mach <- buildANN(array.train, top = 2, size = 3, decay = 1)
   expect_equal(
     as.character(predict(mach, array.test)@pred),
     array.test$defineCase
@@ -129,28 +129,28 @@ array.test@annot$defineCase[10] <- "Control"
 test_that("built models can detect wrong classes", {
 
   set.seed(12345)
-  mach <- buildNB(array.train, probes = 2)
+  mach <- buildNB(array.train, top = 2)
   expect_equal(
     calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
   )
 
   set.seed(12345)
-  mach <- buildLDA(array.train, probes = 2)
+  mach <- buildLDA(array.train, top = 2)
   expect_equal(
     calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
   )
 
   set.seed(12345)
-  mach <- buildSVM(array.train, probes = 2, kernel = "linear", cost = 1)
+  mach <- buildSVM(array.train, top = 2, kernel = "linear", cost = 1)
   expect_equal(
     calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
   )
 
   set.seed(12345)
-  mach <- buildANN(array.train, probes = 2, size = 3, decay = 1)
+  mach <- buildANN(array.train, top = 2, size = 3, decay = 1)
   expect_equal(
     calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9
@@ -163,12 +163,12 @@ test_that("built models can detect wrong classes", {
 set.seed(12345)
 
 arraysMulti <- splitStratify(arrayMulti, percent.include = 80, colBy = NULL)
-arrayMulti.train <- fsStats(arraysMulti[[1]], probes = 0)
+arrayMulti.train <- fsStats(arraysMulti[[1]], top = 0)
 arrayMulti.test <- arraysMulti[[2]]
 
 set.seed(12345)
 
-mach <- buildSVM(arrayMulti.train, probes = 0, kernel = "linear", cost = 1)
+mach <- buildSVM(arrayMulti.train, top = 0, kernel = "linear", cost = 1)
 pred.train <- predict(mach, arrayMulti.train)
 pred.test <- predict(mach, arrayMulti.test)
 
@@ -179,7 +179,7 @@ test_that("ExprsMulti models predict only on ExprsMulti datasets", {
   )
 })
 
-mach.multi <- doMulti(arrayMulti.train, probes = 0, what = "buildSVM")
+mach.multi <- doMulti(arrayMulti.train, top = 0, what = "buildSVM")
 
 test_that("doMulti performs 1 vs. all build", {
 

@@ -20,8 +20,6 @@
   * Change `probes` argument to `top`.
 * 7.3-plMonteCarlo.R
   * Change `probes` argument to `top`.
-* 8.1-pipe.R
-  * []
 
 ## exprso 0.1.5
 ---------------------

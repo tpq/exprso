@@ -42,8 +42,8 @@ tempFile <- tempfile()
 write.table(df, file = tempFile, sep = "\t")
 
 array <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b"))
 
 ###########################################################
 ### Check plMonteCarlo
@@ -56,15 +56,15 @@ arrays <- splitStratify(array, percent.include = 50, colBy = NULL)
 
 # Build ensemble with plGrid
 set.seed(12345)
-pl <- plGrid(arrays[[1]], probes = 0, how = "buildSVM", fold = NULL,
+pl <- plGrid(arrays[[1]], top = 0, how = "buildSVM", fold = NULL,
              kernel = "linear", cost = 10^(c(-3, 1, 3)))
 ens1 <- buildEnsemble(pl)
 
 # Build ensemble manually
 set.seed(12345)
-mach1 <- buildSVM(arrays[[1]], probes = 0, kernel = "linear", cost = 10^-3)
-mach2 <- buildSVM(arrays[[1]], probes = 0, kernel = "linear", cost = 10^1)
-mach3 <- buildSVM(arrays[[1]], probes = 0, kernel = "linear", cost = 10^3)
+mach1 <- buildSVM(arrays[[1]], top = 0, kernel = "linear", cost = 10^-3)
+mach2 <- buildSVM(arrays[[1]], top = 0, kernel = "linear", cost = 10^1)
+mach3 <- buildSVM(arrays[[1]], top = 0, kernel = "linear", cost = 10^3)
 ens2 <- buildEnsemble(mach1, mach2, mach3, "notMachine")
 
 test_that("buildEnsemble and conjoin work the same", {

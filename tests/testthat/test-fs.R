@@ -42,55 +42,55 @@ tempFile <- tempfile()
 write.table(df, file = tempFile, sep = "\t")
 
 array <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b"))
 
 arrayMulti <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b", "c"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b", "c"))
 
 ###########################################################
 ### Test ExprsBinary feature selection
 
-test_that("probes argument to fs ExprsBinary method works", {
+test_that("top argument to fs ExprsBinary method works", {
 
   expect_equal(
-    rownames(fsStats(array, probes = 0)@exprs),
-    rownames(fsStats(array, probes = c("feat4", "feat3", "feat2", "feat1"))@exprs)
+    rownames(fsStats(array, top = 0)@exprs),
+    rownames(fsStats(array, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
   )
 
   expect_equal(
-    rownames(fsStats(array, probes = 0)@exprs),
+    rownames(fsStats(array, top = 0)@exprs),
     c("feat4", "feat1", "feat2", "feat3")
   )
 
   expect_equal(
-    rownames(fsStats(array, probes = 0, how = "ks.test")@exprs),
+    rownames(fsStats(array, top = 0, how = "ks.test")@exprs),
     c("feat2", "feat4", "feat1", "feat3")
   )
 
   expect_equal(
-    rownames(fsEbayes(array, probes = 0)@exprs),
-    rownames(fsEbayes(array, probes = c("feat4", "feat3", "feat2", "feat1"))@exprs)
+    rownames(fsEbayes(array, top = 0)@exprs),
+    rownames(fsEbayes(array, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
   )
 
   expect_equal(
-    rownames(fsEbayes(array, probes = 0)@exprs),
+    rownames(fsEbayes(array, top = 0)@exprs),
     c("feat1", "feat3", "feat2", "feat4")
   )
 
   expect_equal(
-    rownames(fsMrmre(array, probes = 0)@exprs),
-    rownames(fsMrmre(array, probes = c("feat4", "feat3", "feat2", "feat1"))@exprs)
+    rownames(fsMrmre(array, top = 0)@exprs),
+    rownames(fsMrmre(array, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
   )
 
   expect_equal(
-    rownames(fsMrmre(array, probes = 0)@exprs),
+    rownames(fsMrmre(array, top = 0)@exprs),
     c("feat4", "feat2", "feat1", "feat3")
   )
 
   expect_equal(
-    rownames(fsPathClassRFE(array, probes = 0)@exprs),
+    rownames(fsPathClassRFE(array, top = 0)@exprs),
     c("feat2", "feat4")
   )
 })
@@ -98,7 +98,7 @@ test_that("probes argument to fs ExprsBinary method works", {
 ###########################################################
 ### Test ExprsMulti feature selection
 
-fsStats.multi <- doMulti(arrayMulti, probes = 0, what = "fsStats")
+fsStats.multi <- doMulti(arrayMulti, top = 0, what = "fsStats")
 
 test_that("doMulti performs 1 vs. all fs", {
 
@@ -146,16 +146,16 @@ test_that("reRank does not yield egregious error", {
   )
 })
 
-test_that("probes argument to fs ExprsBinary method works", {
+test_that("top argument to fs ExprsBinary method works", {
 
   expect_equal(
-    rownames(fsStats(arrayMulti, probes = 0)@exprs),
+    rownames(fsStats(arrayMulti, top = 0)@exprs),
     c("feat4", "feat1", "feat2", "feat3")
   )
 
   expect_equal(
 
-    rownames(fsStats(arrayMulti, probes = 0)@exprs),
-    rownames(fsStats(arrayMulti, probes = c("feat4", "feat3", "feat2", "feat1"))@exprs)
+    rownames(fsStats(arrayMulti, top = 0)@exprs),
+    rownames(fsStats(arrayMulti, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
   )
 })

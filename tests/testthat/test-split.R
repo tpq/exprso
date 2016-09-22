@@ -39,12 +39,12 @@ tempFile <- tempfile()
 write.table(df, file = tempFile, sep = "\t")
 
 array <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b"))
 
 arrayMulti <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b", "c"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b", "c"))
 
 test_that("ExprsBinary imports correctly", {
 

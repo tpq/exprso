@@ -43,8 +43,8 @@ tempFile <- tempfile()
 write.table(df, file = tempFile, sep = "\t")
 
 array <-
-  arrayRead(tempFile, probes.begin = 4, colID = "id", colBy = "class",
-            include = list("a", "b"))
+  arrayExprs(tempFile, begin = 4, colID = "id", colBy = "class",
+             include = list("a", "b"))
 
 ###########################################################
 ### Check plGrid
@@ -55,7 +55,7 @@ array.test <- arrays[[2]]
 
 pl <- plGrid(array.train,
              array.test,
-             probes = 0,
+             top = 0,
              how = "buildLDA",
              fold = NULL,
              method = c("mle",
@@ -64,13 +64,13 @@ pl <- plGrid(array.train,
 
 test_that("individual @machs match expectations", {
 
-  mach <- buildLDA(array.train, probes = 0, method = "mle")
+  mach <- buildLDA(array.train, top = 0, method = "mle")
   expect_equal(
     predict(pl@machs[[1]], array.test),
     predict(mach, array.test)
   )
 
-  mach <- buildLDA(array.train, probes = 0, method = "mve")
+  mach <- buildLDA(array.train, top = 0, method = "mve")
   expect_equal(
     predict(pl@machs[[2]], array.test),
     predict(mach, array.test)
@@ -79,13 +79,13 @@ test_that("individual @machs match expectations", {
 
 test_that("@summary match expectations", {
 
-  mach <- buildLDA(array.train, probes = 0, method = "mle")
+  mach <- buildLDA(array.train, top = 0, method = "mle")
   expect_equal(
     matrix(pl@summary[1, c("valid.acc", "valid.sens", "valid.spec", "valid.auc")]),
     matrix(calcStats(predict(mach, array.test)))
   )
 
-  mach <- buildLDA(array.train, probes = 0, method = "mve")
+  mach <- buildLDA(array.train, top = 0, method = "mve")
   expect_equal(
     matrix(pl@summary[2, c("valid.acc", "valid.sens", "valid.spec", "valid.auc")]),
     matrix(calcStats(predict(mach, array.test)))
@@ -101,15 +101,15 @@ arrays <- splitStratify(array, percent.include = 100, colBy = NULL)
 array.train <- arrays[[1]]
 array.test <- arrays[[2]]
 
-acc <- plCV(array.train, probes = 0, how = "buildLDA", fold = 10, method = "mle")
+acc <- plCV(array.train, top = 0, how = "buildLDA", fold = 10, method = "mle")
 
 array.train@annot$defineCase[c(1:2)] <- "Case"
 array.train@annot$defineCase[c(19:20)] <- "Control"
 
-acc.off <- plCV(array.train, probes = 0, how = "buildLDA", fold = 0, method = "mle")
+acc.off <- plCV(array.train, top = 0, how = "buildLDA", fold = 0, method = "mle")
 pl <- plGrid(array.train,
              array.test,
-             probes = 0,
+             top = 0,
              how = "buildLDA",
              fold = 0,
              method = "mle"
