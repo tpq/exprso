@@ -4,12 +4,12 @@
 \alias{ctrlGridSearch}
 \title{Manage \code{plGrid} Arguments}
 \usage{
-ctrlGridSearch(func, probes, ...)
+ctrlGridSearch(func, top, ...)
 }
 \arguments{
 \item{func}{A character string. The \code{pl} function to call.}
 
-\item{probes}{Argument passed to the \code{pl} function.}
+\item{top}{Argument passed to the \code{pl} function.}
 
 \item{...}{Additional arguments passed to the \code{pl} function.}
 }

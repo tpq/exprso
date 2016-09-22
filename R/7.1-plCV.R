@@ -27,10 +27,10 @@
 #'  \code{\link{plCV}}.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
-#' @param probes A numeric scalar or character vector. A numeric scalar indicates
+#' @param top A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
 #'  indicates specifically which features by name should undergo feature selection.
-#'  Set \code{probes = 0} to include all features.
+#'  Set \code{top = 0} to include all features.
 #' @param how A character string. Specifies the \code{\link{build}} method to iterate.
 #' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation.
@@ -41,7 +41,7 @@
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
 #'
 #' @export
-plCV <- function(array, probes, how, fold, ...){
+plCV <- function(array, top, how, fold, ...){
 
   args <- as.list(substitute(list(...)))[-1]
 
@@ -83,7 +83,7 @@ plCV <- function(array, probes, how, fold, ...){
                        reductionModel = array@reductionModel)
 
     # Prepare args for do.call
-    args.v <- append(list("object" = array.train, "probes" = probes), args)
+    args.v <- append(list("object" = array.train, "top" = top), args)
 
     # Build machine and deploy
     mach <- do.call(what = how, args = args.v)

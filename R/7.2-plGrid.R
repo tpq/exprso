@@ -7,7 +7,7 @@
 #'
 #' \code{plGrid} will \code{\link{build}} and \code{\link{exprso-predict}} for
 #'  each combination of parameters listed as additional arguments (\code{...}).
-#'  When using \code{plGrid}, supplying a numeric vector as the \code{probes}
+#'  When using \code{plGrid}, supplying a numeric vector as the \code{top}
 #'  argument will train and deploy a classifier of each mentioned size for
 #'  each combination of parameters listed in \code{...}. To skip prediction,
 #'  set \code{array.valid = NULL}. Either way, this function returns an
@@ -34,12 +34,12 @@
 #'
 #' @param array.train Specifies the \code{ExprsArray} object to use as training set.
 #' @param array.valid Specifies the \code{ExprsArray} object to use as validation set.
-#' @param probes A numeric scalar or character vector. A numeric scalar indicates
+#' @param top A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
 #'  indicates specifically which features by name should undergo feature selection.
-#'  Set \code{probes = 0} to include all features. Note that providing a numeric vector
-#'  for the \code{probes} argument will have \code{plGrid} search across multiple
-#'  top features. However, by providing a list of numeric vectors as the \code{probes}
+#'  Set \code{top = 0} to include all features. Note that providing a numeric vector
+#'  for the \code{top} argument will have \code{plGrid} search across multiple
+#'  top features. However, by providing a list of numeric vectors as the \code{top}
 #'  argument, the user can force the default handling of numeric vectors.
 #' @param how A character string. Specifies the \code{\link{build}} method to iterate.
 #' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
@@ -65,35 +65,35 @@
 #' array <- modTransform(array) # lg transform
 #' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 #' arrays <- splitSample(array, percent.include = 67)
-#' array.train <- fsStats(arrays[[1]], probes = 0, how = "t.test")
+#' array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
 #' pl <- plGrid(array.train, array.valid = arrays[[2]], how = "buildSVM",
 #'              kernel = c("linear", "radial"), cost = 10^(-3:3), gamma = 10^(-3:3))
 #' }
 #' @export
-plGrid <- function(array.train, array.valid = NULL, probes, how, fold = 10,
+plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
                    aucSkip = FALSE, verbose = TRUE, ...){
 
   args <- as.list(substitute(list(...)))[-1]
 
-  if(is.numeric(probes)){
+  if(is.numeric(top)){
 
-    if(any(probes > nrow(array.train@exprs))){
+    if(any(top > nrow(array.train@exprs))){
 
-      message("At least one 'probes' index is too large. Using all probes instead.")
-      probes[probes > nrow(array.train@exprs)] <- nrow(array.train@exprs)
+      message("At least one 'top' index is too large. Using all features instead.")
+      top[top > nrow(array.train@exprs)] <- nrow(array.train@exprs)
     }
 
-    probes <- unique(probes)
+    top <- unique(top)
 
-  }else if(is.character(probes)){
+  }else if(is.character(top)){
 
     # Turn character vector into single list entry
-    probes <- as.list(probes)
+    top <- as.list(top)
 
   } # if list, do nothing here
 
   # Build grid
-  grid <- expand.grid(append(list("probes" = probes), lapply(args, eval)), stringsAsFactors = FALSE)
+  grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
 
   # Refine grid for buildSVM
   if(how == "buildSVM"){

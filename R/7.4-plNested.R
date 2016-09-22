@@ -93,8 +93,8 @@ check.ctrlGS <- function(args){
 #' array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
 #' array <- modTransform(array) # lg transform
 #' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
-#' fs <- ctrlFeatureSelect(func = "fsEbayes", probes = 0)
-#' gs <- ctrlGridSearch(func = "plGrid", how = "buildANN", probes = c(10, 20, 30),
+#' fs <- ctrlFeatureSelect(func = "fsEbayes", top = 0)
+#' gs <- ctrlGridSearch(func = "plGrid", how = "buildANN", top = c(10, 20, 30),
 #'                      size = 1:3, decay = c(0, .5, 1), fold = 0)
 #' nest <- plNested(arrays[[1]], fold = 10, ctrlFS = fs, ctrlGS = gs, save = FALSE)
 #' }

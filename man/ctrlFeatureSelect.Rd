@@ -4,12 +4,12 @@
 \alias{ctrlFeatureSelect}
 \title{Manage \code{fs} Arguments}
 \usage{
-ctrlFeatureSelect(func, probes, ...)
+ctrlFeatureSelect(func, top, ...)
 }
 \arguments{
 \item{func}{A character string. The \code{fs} function to call.}
 
-\item{probes}{Argument passed to the \code{fs} function.}
+\item{top}{Argument passed to the \code{fs} function.}
 
 \item{...}{Additional arguments passed to the \code{fs} function.}
 }

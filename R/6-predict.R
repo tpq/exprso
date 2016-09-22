@@ -63,7 +63,7 @@ setMethod("modHistory", "ExprsArray",
 
               }else{
 
-                # Build data according to the i-th probe set
+                # Build data according to the i-th feature set
                 data <- data.frame(t(object@exprs[reference@preFilter[[i]], ]))
 
                 # Then, apply the i-th reduction model

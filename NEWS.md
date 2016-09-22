@@ -14,6 +14,14 @@
   * Change `probes` argument to `top`.
 * 5.3-doMulti.R
   * Change `probes` argument to `top`.
+* 7.1-plCV.R
+  * Change `probes` argument to `top`.
+* 7.2-plGrid.R
+  * Change `probes` argument to `top`.
+* 7.3-plMonteCarlo.R
+  * Change `probes` argument to `top`.
+* 8.1-pipe.R
+  * []
 
 ## exprso 0.1.5
 ---------------------

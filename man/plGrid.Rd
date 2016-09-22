@@ -4,7 +4,7 @@
 \alias{plGrid}
 \title{Perform High-Throughput Classification}
 \usage{
-plGrid(array.train, array.valid = NULL, probes, how, fold = 10,
+plGrid(array.train, array.valid = NULL, top, how, fold = 10,
   aucSkip = FALSE, verbose = TRUE, ...)
 }
 \arguments{
@@ -12,12 +12,12 @@ plGrid(array.train, array.valid = NULL, probes, how, fold = 10,
 
 \item{array.valid}{Specifies the \code{ExprsArray} object to use as validation set.}
 
-\item{probes}{A numeric scalar or character vector. A numeric scalar indicates
+\item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
-Set \code{probes = 0} to include all features. Note that providing a numeric vector
-for the \code{probes} argument will have \code{plGrid} search across multiple
-top features. However, by providing a list of numeric vectors as the \code{probes}
+Set \code{top = 0} to include all features. Note that providing a numeric vector
+for the \code{top} argument will have \code{plGrid} search across multiple
+top features. However, by providing a list of numeric vectors as the \code{top}
 argument, the user can force the default handling of numeric vectors.}
 
 \item{how}{A character string. Specifies the \code{\link{build}} method to iterate.}
@@ -44,7 +44,7 @@ Trains and deploys multiple classifiers across a vast parameter search space.
 \details{
 \code{plGrid} will \code{\link{build}} and \code{\link{exprso-predict}} for
  each combination of parameters listed as additional arguments (\code{...}).
- When using \code{plGrid}, supplying a numeric vector as the \code{probes}
+ When using \code{plGrid}, supplying a numeric vector as the \code{top}
  argument will train and deploy a classifier of each mentioned size for
  each combination of parameters listed in \code{...}. To skip prediction,
  set \code{array.valid = NULL}. Either way, this function returns an
@@ -78,7 +78,7 @@ array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
 array <- modTransform(array) # lg transform
 array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 arrays <- splitSample(array, percent.include = 67)
-array.train <- fsStats(arrays[[1]], probes = 0, how = "t.test")
+array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
 pl <- plGrid(array.train, array.valid = arrays[[2]], how = "buildSVM",
              kernel = c("linear", "radial"), cost = 10^(-3:3), gamma = 10^(-3:3))
 }

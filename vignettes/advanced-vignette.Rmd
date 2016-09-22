@@ -1,0 +1,168 @@
+---
+title: "Advanced Topics for the exprso Package"
+author: "Thomas Quinn"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Advanced Topics for the exprso Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Although the introductory tutorial showed a lot of what *exprso* has to offer, there is even more you can do once you become familar with the modules included in this package. In this next section, we show some more advanced uses of *exprso* that [push the limit]. Although this vignette contains a lot of exciting stuff, to get the most out of it, we recommend reading first "An Introduction to the exprso Package". This will introduce many of the core features applied throughout this vignette.
+
+## Tidy learning
+
+In this first section, we will show you how you can combine tidy principals with the *exprso* package to execute machine learning even faster than before! The *magrittr* package provides two functions you should know about: `%>%` and `%T>%`. These both pass the result from the previous function call to the first argument of the next function call. However, the latter differs from the other in that it "branches out" and does not return a value (instead passing along the previous pipe). This makes the `%T>%` function useful for side-chain tasks like plotting. At any rate, "piping" through *exprso* will save you time and make your code more readable.
+
+```{r}
+library(exprso)
+library(magrittr)
+library(golubEsets)
+data(Golub_Merge)
+```
+
+Below, we show how we can use the `%>%` function to pre-process a dataset, then split it into a training and test set. Since the data object forks at the level of the `split` method (yielding two `ExprsArray` objects from one), we choose to break the pipe cascade there.
+
+```{r}
+splitSets <- Golub_Merge %>%
+  arrayExprs(colBy = "ALL.AML", include = list("ALL", "AML")) %>%
+  modFilter(20, 16000, 500, 5) %>% modTransform %>% modNormalize %>%
+  splitSample(percent.include = 67)
+```
+
+Next, we pull the training set from the `split` method result using the `trainingSet` function and pipe it through feature selection and classifier construction methods. Similar to `trainingSet`, the `testSet` function (or `validationSet` function) will extract the test set from the `split` method result.
+
+```{r}
+pred <- trainingSet(splitSets) %>%
+  fsStats(how = "t.test") %>%
+  fsPrcomp(probes = 10) %T>%
+  plot(c = 0) %>%
+  buildSVM %>%
+  predict(testSet(splitSets)) %T>%
+  calcStats
+```
+
+Finally, we show how piping can expedite ensemble classifier construction. Here, we split the training set across 10 bootstraps, perform recursive feature elimination on each *training subset*, construct an LDA classifier, then deploy the classifier on an *internal validation set*.
+
+We then select the best three performing classifiers, regardless of the bootstrap origin, by passing the results through `pipeUnboot` and `pipeFilter` (see `?pipeUnboot` and `?pipeFilter` to learn more about how the "boot" column changes `pipeFilter` behavior). Last, we build a classifier ensemble and deploy it on the test set.
+
+For code clarity, we define the argument handler functions `ctrlSplitSet`, `ctrlFeatureSelect`, and `ctrlGridSearch` before the pipe cascade.
+
+```{r}
+ss <- ctrlSplitSet(func = "splitSample", percent.include = 67, replace = TRUE)
+fs <- ctrlFeatureSelect(func = "fsPathClassRFE", probes = 0)
+gs <- ctrlGridSearch(func = "plGrid", probes = 0, how = "buildLDA")
+
+pred <- trainingSet(splitSets) %>%
+  plMonteCarlo(B = 10, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs) %>%
+  pipeUnboot %>%
+  pipeFilter(colBy = "valid.auc", top.N = 3) %>%
+  buildEnsemble %>%
+  predict(testSet(splitSets)) %T>%
+  calcStats
+```
+
+## Implicit clustering
+
+The *exprso* package also provides a wrapper method for clustering subjects based on the top features. Receiving arguments in [][]], `modCluster` returns an `ExprsArray` object with an updated `@annot` slot that contains the results of clustering in the `$cluster` slot. Each number corresponds to a different cluster.
+
+Typically, you call `modCluster` *prior to* feature selection.
+
+We use the result of the `split` method above to carve the dataset into two clusters. Then, subset just one of the clusters to use for building an artificial neural network.
+
+```{r}
+pred <- trainingSet(splitSets) %>%
+  modCluster(probes = 0, how = "pam", k = 2) %>%
+  modSubset(colBy = "cluster", include = 1) %>%
+  fsMrmre(probes = 0) %>%
+  buildANN(probes = 20, size = 5, decay = 1, maxit = 100) %>%
+  predict(testSet(splitSets)) %T>%
+  calcStats
+```
+  
+## GSE
+
+The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a curated version the former. These GDS data files easily convert to an `ExpressionSet` (abbreviated `eSet`) object using the `GDS2eSet` function available from the GEOquery package. However, not all GSE data files have a corresponding GDS data file available. To convert GSE data files into eSet objects, *exprso* provides the `GSE2eSet` function. To acquire GSE data files, use the function `getGEO` from the GEOquery package (e.g., `getGEO("GSExxxxx", GSEMatrix = FALSE)`). For more information, see the `GEOquery` package.
+
+```{r, eval = FALSE}
+data.gse <- getGEO("GSE27383", GSEMatrix = FALSE)
+data.eset <- GSE2eSet(data.gse)
+data.eset@phenoData@data # use to guide colBy and include args
+```
+
+## Deep learning
+
+Deep learning in *exprso* does not differ much from the other approaches to classification. However, supplying arguments to `buildDNN` (via `h2o`) does get a little cumbersome.
+
+```{r, eval = FALSE}
+pred <- trainingSet(splitSets) %>%
+  buildDNN(probes = 0,
+           activation = "TanhWithDropout", # or 'Tanh'
+           input_dropout_ratio = 0.2, # % of inputs dropout
+           hidden_dropout_ratios = c(0.5,0.5,0.5), # % for nodes dropout
+           balance_classes = TRUE,
+           hidden = c(50,50,50), # three layers of 50 nodes
+           epochs = 100) %>%
+  predict(testSet(splitSets)) %T>%
+  calcStats
+```
+
+However, one important difference with `buildDNN` is that you have to take the time to manually clear out the old models from RAM. Unlike with other models, the `ExprsModel` object does not actually store the deep neural net, but rather just holds a "link" to the machine. The machine is located outside of R to allow for parallelization and improved performance.
+
+```{r, eval = FALSE}
+# Frees the RAM for more learning
+h2o::h2o.shutdown()
+```
+  
+When embedding `buildDNN` within a grid search, we run into the problem that each argument typically requires a numeric vector as input, corresponding as a unique argument to each layer of []. We provide a gridpoint of a vector argument using []. (Note that this style of providing a list of vectors as arugments also applies to the `probes` argument, if you ever saw a need to do so).
+
+```{r, eval = FALSE}
+# Make sure plGrid works with list arguments
+pl <- trainingSet(splitSets) %>%
+  plGrid(array.valid = testSet(splitSets), how = "buildDNN", fold = NULL,
+         activation = "TanhWithDropout", # or 'Tanh'
+         input_dropout_ratio = 0.2, # % of inputs dropout
+         hidden_dropout_ratios = list(c(0.5,0.5,0.5)), # % for nodes dropout
+         balance_classes = TRUE,
+         hidden = list(c(50,50,50)), # three layers of 50 nodes
+         epochs = 100)
+```
+
+As a more advanced example, with[]. For details on these arguments, see `?h2o::h2o.deeplearning`.
+
+```{r, eval = FALSE}
+# Run high-throughput grid search
+# NOTE: All deep neural networks within a single plGrid must have the same number of hidden layers
+?h2o::h2o.deeplearning
+plGrid(array.train = arrays[[1]], array.valid = arrays[[2]], probes = 0, how = "buildDNN", fold = NULL,
+             activation = c("Rectifier",
+                            "TanhWithDropout"), # or 'Tanh'
+             input_dropout_ratio = c(0.2,
+                                     0.5,
+                                     0.8), # % of inputs dropout
+             hidden_dropout_ratios = list(c(0.5,0.5,0.5),
+                                          c(0.2,0.2,0.2)), # % for nodes dropout
+             balance_classes = TRUE,
+             hidden = list(c(50,50,50),
+                           c(100,100,100),
+                           c(200,200,200)), # three layers of 50 nodes
+             epochs = c(100))
+pl
+```
+
+Keep in mind that deep learning is a very RAM hungry task. If you're careful, you'll run out and throw an error.
+
+## Multi-class
+
+```{r, eval = FALSE}
+
+
+# ==exprso==
+#   -find good 3 class dataset to use
+# -does compare work for multi-class?
+
+library(datamicroarray)
+data('burczynski', package = 'datamicroarray')
+
+```

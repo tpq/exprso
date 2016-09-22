@@ -58,9 +58,9 @@ array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
 array <- modTransform(array) # lg transform
 array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 ss <- ctrlSplitSet(func = "splitStratify", percent.include = 67, colBy = NULL)
-fs <- list(ctrlFeatureSelect(func = "fsStats", probes = 0, how = "t.test"),
-           ctrlFeatureSelect(func = "fsPrcomp", probes = 50))
-gs <- ctrlGridSearch(func = "plGrid", how = "buildSVM", probes = c(2, 3, 4), fold = 10,
+fs <- list(ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test"),
+           ctrlFeatureSelect(func = "fsPrcomp", top = 50))
+gs <- ctrlGridSearch(func = "plGrid", how = "buildSVM", top = c(2, 3, 4), fold = 10,
                      kernel = c("linear", "radial"), cost = 10^(-3:3), gamma = 10^(-3:3))
 boot <- plMonteCarlo(array, B = 3, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs)
 }

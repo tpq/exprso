@@ -23,15 +23,15 @@ ctrlSplitSet <- function(func, percent.include, ...){
 #' This function organizes \code{fs} arguments passed to \code{pl} functions.
 #'
 #' @param func A character string. The \code{fs} function to call.
-#' @param probes Argument passed to the \code{fs} function.
+#' @param top Argument passed to the \code{fs} function.
 #' @param ... Additional arguments passed to the \code{fs} function.
 #' @return A list of arguments.
 #'
 #' @export
-ctrlFeatureSelect <- function(func, probes, ...){
+ctrlFeatureSelect <- function(func, top, ...){
 
   list("func" = func,
-       "probes" = probes,
+       "top" = top,
        ...)
 }
 
@@ -43,15 +43,15 @@ ctrlFeatureSelect <- function(func, probes, ...){
 #'  only accept \code{\link{plGrid}} as the \code{ctrlGridSearch} \code{func}.
 #'
 #' @param func A character string. The \code{pl} function to call.
-#' @param probes Argument passed to the \code{pl} function.
+#' @param top Argument passed to the \code{pl} function.
 #' @param ... Additional arguments passed to the \code{pl} function.
 #' @return A list of arguments.
 #'
 #' @export
-ctrlGridSearch <- function(func, probes, ...){
+ctrlGridSearch <- function(func, top, ...){
 
   list("func" = func,
-       "probes" = probes,
+       "top" = top,
        ...)
 }
 
@@ -105,9 +105,9 @@ ctrlGridSearch <- function(func, probes, ...){
 #' array <- modTransform(array) # lg transform
 #' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
 #' ss <- ctrlSplitSet(func = "splitStratify", percent.include = 67, colBy = NULL)
-#' fs <- list(ctrlFeatureSelect(func = "fsStats", probes = 0, how = "t.test"),
-#'            ctrlFeatureSelect(func = "fsPrcomp", probes = 50))
-#' gs <- ctrlGridSearch(func = "plGrid", how = "buildSVM", probes = c(2, 3, 4), fold = 10,
+#' fs <- list(ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test"),
+#'            ctrlFeatureSelect(func = "fsPrcomp", top = 50))
+#' gs <- ctrlGridSearch(func = "plGrid", how = "buildSVM", top = c(2, 3, 4), fold = 10,
 #'                      kernel = c("linear", "radial"), cost = 10^(-3:3), gamma = 10^(-3:3))
 #' boot <- plMonteCarlo(array, B = 3, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs)
 #' }
