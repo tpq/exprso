@@ -17,8 +17,8 @@
 #' \code{\link{ExprsEnsemble-class}}\cr
 #' \code{\link{ExprsPredict-class}}
 #' @export
-setGeneric("getProbeSet",
-           function(object, ...) standardGeneric("getProbeSet")
+setGeneric("getFeatures",
+           function(object, ...) standardGeneric("getFeatures")
 )
 
 ###########################################################
@@ -190,7 +190,7 @@ setMethod("summary", "ExprsArray",
 #' @describeIn ExprsArray Method to return features within an \code{ExprsArray} object.
 #'
 #' @export
-setMethod("getProbeSet", "ExprsArray",
+setMethod("getFeatures", "ExprsArray",
           function(object){
 
             return(rownames(object@exprs))
@@ -224,7 +224,7 @@ setMethod("show", "ExprsModel",
 #' @describeIn ExprsModel Method to return features within an \code{ExprsModel} object.
 #'
 #' @export
-setMethod("getProbeSet", "ExprsModel",
+setMethod("getFeatures", "ExprsModel",
           function(object){
 
             return(object@preFilter[[length(object@preFilter)]])
@@ -359,10 +359,10 @@ setMethod("summary", "ExprsPipeline",
 #' @describeIn ExprsPipeline Method to return features within an \code{ExprsPredict} model.
 #'
 #' @param index A numeric scalar. The i-th model from which to retrieve features.
-#'  If missing, \code{getProbeSet} will tabulate features across all models.
+#'  If missing, \code{getFeatures} will tabulate features across all models.
 #'
 #' @export
-setMethod("getProbeSet", "ExprsPipeline",
+setMethod("getFeatures", "ExprsPipeline",
           function(object, index){
 
             if(!missing(index)){
@@ -371,9 +371,9 @@ setMethod("getProbeSet", "ExprsPipeline",
 
             }else{
 
-              probes <- unlist(lapply(object@machs, getProbeSet))
-              probes <- table(probes)[order(table(probes), decreasing = TRUE)]
-              return(probes)
+              features <- unlist(lapply(object@machs, getFeatures))
+              features <- table(features)[order(table(features), decreasing = TRUE)]
+              return(features)
             }
           }
 )
@@ -384,7 +384,7 @@ setMethod("getProbeSet", "ExprsPipeline",
 #' @describeIn ExprsEnsemble Method to show \code{ExprsEnsemble} object.
 #'
 #' @param index A numeric scalar. The i-th model from which to retrieve features.
-#'  If missing, \code{getProbeSet} will tabulate features across all models.
+#'  If missing, \code{getFeatures} will tabulate features across all models.
 #'
 #' @export
 setMethod("show", "ExprsEnsemble",
@@ -408,10 +408,10 @@ setMethod("show", "ExprsEnsemble",
 
 #' @describeIn ExprsEnsemble Method to return features within an \code{ExprsEnsemble} model.
 #'
-#' @inheritParams getProbeSet
+#' @inheritParams getFeatures
 #'
 #' @export
-setMethod("getProbeSet", "ExprsEnsemble",
+setMethod("getFeatures", "ExprsEnsemble",
           function(object, index){
 
             if(!missing(index)){
@@ -420,9 +420,9 @@ setMethod("getProbeSet", "ExprsEnsemble",
 
             }else{
 
-              probes <- unlist(lapply(object@machs, getProbeSet))
-              probes <- table(probes)[order(table(probes), decreasing = TRUE)]
-              return(probes)
+              features <- unlist(lapply(object@machs, getFeatures))
+              features <- table(features)[order(table(features), decreasing = TRUE)]
+              return(features)
             }
           }
 )

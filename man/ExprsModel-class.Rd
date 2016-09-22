@@ -3,13 +3,13 @@
 \docType{class}
 \name{ExprsModel-class}
 \alias{ExprsModel-class}
-\alias{getProbeSet,ExprsModel-method}
+\alias{getFeatures,ExprsModel-method}
 \alias{show,ExprsModel-method}
 \title{An S4 class to store the classification model}
 \usage{
 \S4method{show}{ExprsModel}(object)
 
-\S4method{getProbeSet}{ExprsModel}(object)
+\S4method{getFeatures}{ExprsModel}(object)
 }
 \arguments{
 \item{object}{An object of class \code{ExprsModel}.}
@@ -21,7 +21,7 @@ An S4 class to store the classification model
 \itemize{
 \item \code{show}: Method to show \code{ExprsModel} object.
 
-\item \code{getProbeSet}: Method to return features within an \code{ExprsModel} object.
+\item \code{getFeatures}: Method to return features within an \code{ExprsModel} object.
 }}
 \section{Slots}{
 

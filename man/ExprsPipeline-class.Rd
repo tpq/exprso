@@ -6,7 +6,7 @@
 \alias{ExprsPipeline-class}
 \alias{[,ExprsPipeline,ANY,ANY,ANY-method}
 \alias{[,ExprsPipeline-method}
-\alias{getProbeSet,ExprsPipeline-method}
+\alias{getFeatures,ExprsPipeline-method}
 \alias{show,ExprsPipeline-method}
 \alias{subset,ExprsPipeline-method}
 \alias{summary,ExprsPipeline-method}
@@ -22,7 +22,7 @@
 
 \S4method{summary}{ExprsPipeline}(object)
 
-\S4method{getProbeSet}{ExprsPipeline}(object, index)
+\S4method{getFeatures}{ExprsPipeline}(object, index)
 }
 \arguments{
 \item{object, x}{An object of class \code{ExprsPipeline}.}
@@ -40,7 +40,7 @@ argument \code{i} is missing.}
 \code{object@summary[, select]}. Can be used to rearrange summary table.}
 
 \item{index}{A numeric scalar. The i-th model from which to retrieve features.
-If missing, \code{getProbeSet} will tabulate features across all models.}
+If missing, \code{getFeatures} will tabulate features across all models.}
 }
 \description{
 An S4 class to store models built during high-throughput learning
@@ -57,7 +57,7 @@ An S4 class to store models built during high-throughput learning
 
 \item \code{summary}: Method to summarize \code{ExprsPipeline} parameters and performances.
 
-\item \code{getProbeSet}: Method to return features within an \code{ExprsPredict} model.
+\item \code{getFeatures}: Method to return features within an \code{ExprsPredict} model.
 }}
 \section{Slots}{
 

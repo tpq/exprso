@@ -3,20 +3,20 @@
 \docType{class}
 \name{ExprsEnsemble-class}
 \alias{ExprsEnsemble-class}
-\alias{getProbeSet,ExprsEnsemble-method}
+\alias{getFeatures,ExprsEnsemble-method}
 \alias{show,ExprsEnsemble-method}
 \title{An S4 class to store multiple classification models}
 \usage{
 \S4method{show}{ExprsEnsemble}(object)
 
-\S4method{getProbeSet}{ExprsEnsemble}(object, index)
+\S4method{getFeatures}{ExprsEnsemble}(object, index)
 }
 \arguments{
 \item{object}{An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline},
 \code{ExprsEnsemble}, or \code{ExprsPredict} object.}
 
 \item{index}{A numeric scalar. The i-th model from which to retrieve features.
-If missing, \code{getProbeSet} will tabulate features across all models.}
+If missing, \code{getFeatures} will tabulate features across all models.}
 }
 \description{
 An S4 class to store multiple classification models
@@ -25,7 +25,7 @@ An S4 class to store multiple classification models
 \itemize{
 \item \code{show}: Method to show \code{ExprsEnsemble} object.
 
-\item \code{getProbeSet}: Method to return features within an \code{ExprsEnsemble} model.
+\item \code{getFeatures}: Method to return features within an \code{ExprsEnsemble} model.
 }}
 \section{Slots}{
 

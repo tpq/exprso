@@ -6,7 +6,7 @@
 \alias{ExprsArray-class}
 \alias{[,ExprsArray,ANY,ANY,ANY-method}
 \alias{[,ExprsArray-method}
-\alias{getProbeSet,ExprsArray-method}
+\alias{getFeatures,ExprsArray-method}
 \alias{plot,ExprsArray,missing-method}
 \alias{show,ExprsArray-method}
 \alias{subset,ExprsArray-method}
@@ -26,7 +26,7 @@
 
 \S4method{summary}{ExprsArray}(object)
 
-\S4method{getProbeSet}{ExprsArray}(object)
+\S4method{getFeatures}{ExprsArray}(object)
 }
 \arguments{
 \item{object, x}{An object of class \code{ExprsArray}.}
@@ -71,7 +71,7 @@ An S4 class to store feature and annotation data
 
 \item \code{summary}: Method to plot summary graphs for a sub-sample of expression data.
 
-\item \code{getProbeSet}: Method to return features within an \code{ExprsArray} object.
+\item \code{getFeatures}: Method to return features within an \code{ExprsArray} object.
 }}
 \section{Slots}{
 
