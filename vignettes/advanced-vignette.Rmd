@@ -19,14 +19,14 @@ In this first section, we will show you how you can combine tidy principals with
 library(exprso)
 library(magrittr)
 library(golubEsets)
-data(Golub_Merge)
+
 set.seed(1)
 ```
 
 Below, we show how we can use the `%>%` function to pre-process a dataset, then split it into a training and test set. Since the data object forks at the level of the `split` method (yielding two `ExprsArray` objects from one), we choose to break the pipe cascade there.
 
 ```{r}
-splitSets <- Golub_Merge %>%
+splitSets <- data(Golub_Merge) %>% get %>%
   arrayExprs(colBy = "ALL.AML", include = list("ALL", "AML")) %>%
   modFilter(20, 16000, 500, 5) %>% modTransform %>% modNormalize %>%
   splitSample(percent.include = 67)
@@ -64,11 +64,11 @@ pred <- trainingSet(splitSets) %>%
   calcStats
 ```
 
-## Implicit clustering
+## Clustering
 
 The *exprso* package also provides a wrapper method for clustering subjects based on the top features. Receiving arguments in [][]], `modCluster` returns an `ExprsArray` object with an updated `@annot` slot that contains the results of clustering in the `$cluster` slot. Each number corresponds to a different cluster.
 
-Typically, you call `modCluster` *prior to* feature selection.
+Typically, you would call `modCluster` prior to feature selection, but after splitting. You might find that subdividing 
 
 We use the result of the `split` method above to carve the dataset into two clusters. Then, subset just one of the clusters to use for building an artificial neural network.
 
@@ -81,8 +81,18 @@ pred <- trainingSet(splitSets) %>%
   predict(testSet(splitSets)) %T>%
   calcStats
 ```
-  
-## GSE
+
+A few additional commands will allow you to cluster either the cases only, or controls only.
+
+```{r}
+trainingSet(splitSets) %>%
+  modSubset(colBy = "defineCase", include = "Case") %>%
+  modCluster %>%
+  conjoin(trainingSet(splitSets) %>%
+            modSubset(colBy = "defineCase", include = "Control"))
+```
+
+## GSE files
 
 The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a curated version the former. These GDS data files easily convert to an `ExpressionSet` (abbreviated `eSet`) object using the `GDS2eSet` function available from the GEOquery package. However, not all GSE data files have a corresponding GDS data file available. To convert GSE data files into eSet objects, *exprso* provides the `GSE2eSet` function. To acquire GSE data files, use the function `getGEO` from the GEOquery package (e.g., `getGEO("GSExxxxx", GSEMatrix = FALSE)`). For more information, see the `GEOquery` package.
 
@@ -152,18 +162,42 @@ plGrid(array.train = arrays[[1]], array.valid = arrays[[2]], top = 0, how = "bui
 pl
 ```
 
-Keep in mind that deep learning is a very RAM hungry task. If you're careful, you'll run out and throw an error.
+Keep in mind that deep learning is a very RAM hungry task. If you're not careful, you'll run out RAM and throw an error.
 
 ## Multi-class
 
-```{r, eval = FALSE}
 
 
-# ==exprso==
-#   -find good 3 class dataset to use
-# -does compare work for multi-class?
+```{r}
+splitSets <- data(arrayMulti) %>% get %>%
+  splitStratify(percent.include = 67, colBy = "sex")
 
-library(datamicroarray)
-data('burczynski', package = 'datamicroarray')
-
+trainingSet(splitSets) %>%
+  fsSample %>%
+  buildNB %>% # any build method can become multi with 1-vs-all
+  predict(testSet(splitSets)) %T>%
+  calcStats
 ```
+
+All the pipelines developed for binary classification work equally well for multi-class classification. However, not all feature selection methods work for multi-class data. As long as you choose a valid multi-class feature selection method, `plGrid`, `plMonteCarlo`, and `plNested` will work without fail.
+
+```{r}
+fs <- ctrlFeatureSelect(func = "fsSample", top = 0)
+gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildRF", fold = 2)
+
+pl <- trainingSet(splitSets) %>%
+  plNested(fold = 5, ctrlFS = fs, ctrlGS = gs) %T>%
+  calcNested(colBy = "valid.acc")
+```
+
+However, *exprso* does not yet support multi-class classifier ensembles.
+
+```{r}
+testthat::expect_error(
+  pl %>% buildEnsemble %>%
+  predict(testSet(splitSets)) %>%
+  calcStats
+)
+```
+
+A special `plGrid` variant, called `plGridMulti` exists for *multi-class data only*. This variant uses 1-vs-all feature selection instead of multi-class feature selection, whereby the 1-vs-all feature selection occurs just prior to the 1-vs-all classifier construction. As a result, each component of the multi-class classification `ExprsModule` will have its own unique feature selection history that will get passed on to the target [].

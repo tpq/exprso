@@ -1,4 +1,4 @@
-## exprso 0.1.5.9000
+## exprso 0.1.6
 ---------------------
 * 1.2-methods.R
   * Rename `getProbeSet` to `getFeatures`.
@@ -34,6 +34,8 @@
   * Change `top.N` argument to `top`.
 * 8.2-ens.R
   * Change `top.N` argument to `top`.
+* 9-global.R
+  * Add documentation for `data`.
 
 ## exprso 0.1.5
 ---------------------

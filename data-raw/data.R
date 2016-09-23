@@ -45,4 +45,5 @@ arrayMulti <-
              include = list("a", "b", "c"))
 
 devtools::use_data(array, arrayMulti)
-save(array, arrayMulti, file = paste0(getwd(), "/tests/testthat/data.RData"))
+test.file <- paste0(getwd(), "/tests/testthat/data.RData")
+save(array, arrayMulti, file = test.file)

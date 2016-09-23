@@ -1,6 +1,6 @@
 Package: exprso
 Title: Rapid Implementation of Machine Learning Algorithms for Genomic Data
-Version: 0.1.5.9000
+Version: 0.1.6
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
@@ -21,8 +21,6 @@ License: GPL-2
 LazyData: TRUE
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
-Depends:
-    R (>= 3.2.2)
 Imports:
     Biobase,
     cluster,
@@ -41,6 +39,7 @@ Imports:
     ROCR,
     sampling
 Depends:
+    R (>= 3.2.2),
     kernlab
 Suggests:
     golubEsets,
