@@ -18,8 +18,12 @@
 * 5.3-doMulti.R
   * Change `probes` argument to `top`.
   * Change `what` agument to `method` to allow for `do.call`.
+  * Use `NA` instead of `NULL` for empty `ExprsMachine`.
   * Remove `ExprsMulti` method for `fsSample`.
   * Remove `ExprsMulti` method for `fsStats`.
+* 6-predict.R
+  * Use `NA` instead of `NULL` for empty `ExprsMachine`.
+  * Fix `ExprsMulti` tie breaker warning.
 * 7.1-plCV.R
   * Change `probes` argument to `top`.
 * 7.2-plGrid.R

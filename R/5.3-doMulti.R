@@ -60,10 +60,10 @@ setMethod("doMulti", "ExprsMulti",
             for(i in 1:length(levels(object@annot$defineCase))){
 
               # If the i-th ExprsMachine would not have any representative cases
-              if(all(!as.numeric(object@annot$defineCase) == i)){
+              if(all(as.numeric(object@annot$defineCase) != i)){
 
-                cat("Missing class ", i, ". Using a NULL placeholder instead.\n", sep = "")
-                multi[[i]] <- NULL
+                cat("Missing class ", i, ". Using a NA placeholder instead.\n", sep = "")
+                multi[[i]] <- NA
 
               }else{
 

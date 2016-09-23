@@ -271,24 +271,12 @@ setMethod("predict", "ExprsModule",
               stop("Uh oh! ExprsModule and ExprsMulti must have same number of classes.")
             }
 
-            # Initialize preds container
-            preds <- vector("list", length(object@mach))
-
             # For each ExprsMachine stored in @mach
+            preds <- vector("list", length(object@mach))
             for(i in 1:length(object@mach)){
 
               # If the i-th ExprsMachine is missing due to lack of cases during build phase
-              if(is.null(object@mach[[i]])){
-
-                cat("The ExprsMachine corresponding to class", i, "is missing. Setting probability to 0.\n")
-                missingCase <- rep(0, nrow(array@annot))
-                preds[[i]] <- new("ExprsPredict",
-                                  pred = as.factor(missingCase),
-                                  decision.values = as.matrix(missingCase),
-                                  probability = as.matrix(data.frame("Control" = missingCase,
-                                                                     "Case" = missingCase)),
-                                  actual = array@annot$defineCase)
-              }else{
+              if(class(object@mach[[i]]) == "ExprsMachine"){
 
                 # Turn the ExprsMulti object into the i-th ExprsBinary object
                 array.i <- array
@@ -298,6 +286,21 @@ setMethod("predict", "ExprsModule",
                 # Predict the i-th ExprsBinary with the i-th ExprsMachine
                 cat("Performing a one-vs-all ExprsMachine prediction with class", i, "set as \"Case\".\n")
                 preds[[i]] <- predict(object@mach[[i]], array.i)
+
+              }else if(is.na(object@mach[[i]])){
+
+                cat("The ExprsMachine corresponding to class", i, "is missing. Setting probability to 0.\n")
+                missingCase <- rep(0, nrow(array@annot))
+                preds[[i]] <- new("ExprsPredict",
+                                  pred = as.factor(missingCase),
+                                  decision.values = as.matrix(missingCase),
+                                  probability = as.matrix(data.frame("Control" = missingCase,
+                                                                     "Case" = missingCase)),
+                                  actual = array@annot$defineCase)
+
+              }else{
+
+                stop("Uh oh! DEBUG ERROR: 003")
               }
             }
 
@@ -307,14 +310,12 @@ setMethod("predict", "ExprsModule",
             px <- do.call(cbind, px); colnames(px) <- 1:ncol(px)
             dv <- do.call(cbind, dv); colnames(dv) <- 1:ncol(dv)
 
-            # Initialize pred container
-            pred <- vector("character", nrow(px))
-
             # calculate weight vector for random sampling during ties
             tieBreaker <- sapply(1:ncol(px), function(case) sum(array@annot$defineCase == case))
             tieBreaker <- tieBreaker / nrow(array@annot)
 
             # Assign classes based on maximum probability
+            pred <- vector("character", nrow(px))
             for(i in 1:nrow(px)){
 
               # Index maximum probabilities for the i-th subject
@@ -332,7 +333,7 @@ setMethod("predict", "ExprsModule",
                 if(all(tieBreaker[max.i] %in% 0)) max.i <- 1:ncol(px)
 
                 # Take weighted sample based on weight vector
-                pred[i] <- sample(levels(array@annot$defineCase)[max.i], prob = tieBreaker[max.i])
+                pred[i] <- sample(levels(array@annot$defineCase)[max.i], size = 1, prob = tieBreaker[max.i])
               }
             }
 
