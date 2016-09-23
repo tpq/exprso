@@ -20,6 +20,7 @@ library(exprso)
 library(magrittr)
 library(golubEsets)
 data(Golub_Merge)
+set.seed(1)
 ```
 
 Below, we show how we can use the `%>%` function to pre-process a dataset, then split it into a training and test set. Since the data object forks at the level of the `split` method (yielding two `ExprsArray` objects from one), we choose to break the pipe cascade there.
