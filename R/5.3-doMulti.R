@@ -38,7 +38,6 @@
 #' \code{\link{fs}}\cr
 #' \code{\link{build}}\cr
 #' \code{\link{doMulti}}\cr
-#' \code{\link{reRank}}\cr
 #' \code{\link{exprso-predict}}\cr
 #' \code{\link{plCV}}\cr
 #' \code{\link{plGrid}}\cr
@@ -122,7 +121,6 @@ setMethod("doMulti", "ExprsMulti",
 #' \code{\link{fs}}\cr
 #' \code{\link{build}}\cr
 #' \code{\link{doMulti}}\cr
-#' \code{\link{reRank}}\cr
 #' \code{\link{exprso-predict}}\cr
 #' \code{\link{plCV}}\cr
 #' \code{\link{plGrid}}\cr

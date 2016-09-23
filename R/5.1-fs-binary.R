@@ -26,11 +26,8 @@
 #'  \code{ExprsBinary} methods, this is typically the desired approach. However, the exprso package
 #'  also provides \code{pl} methods which automate integrated machine learning pipelines.
 #'  However, these feature selection methods do not necessarily generalize to multi-class classification.
-#'  As such, the \code{ExprsMulti} methods instead harness the \code{\link{doMulti}} function
-#'  to perform "1 vs. all" binary feature selection, aggregating the final results with
-#'  \code{\link{reRank}}. A better approach would perform "1 vs. all" feature selection and classifier
-#'  construction simultaneously, rather than "1 vs. all" feature selection followed by "1 vs. all"
-#'  classifier construction. We hope to provide a \code{pl} method for this in the future.
+#'  As such, a feature selection method will fail when applied to an \code{ExprsMulti} object
+#'  unless that feature selection method has an explicitly defined \code{ExprsMulti} method.
 #'
 #' For all feature selection methods, \code{@@preFilter} and \code{@@reductionModel} stores the
 #'  feature selection and dimension reduction history, respectively. This history gets passed
@@ -63,7 +60,6 @@
 #' \code{\link{fs}}\cr
 #' \code{\link{build}}\cr
 #' \code{\link{doMulti}}\cr
-#' \code{\link{reRank}}\cr
 #' \code{\link{exprso-predict}}\cr
 #' \code{\link{plCV}}\cr
 #' \code{\link{plGrid}}\cr

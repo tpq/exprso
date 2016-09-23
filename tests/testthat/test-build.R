@@ -163,7 +163,7 @@ test_that("built models can detect wrong classes", {
 set.seed(12345)
 
 arraysMulti <- splitStratify(arrayMulti, percent.include = 80, colBy = NULL)
-arrayMulti.train <- fsStats(arraysMulti[[1]], top = 0)
+arrayMulti.train <- fsSample(arraysMulti[[1]], top = 0)
 arrayMulti.test <- arraysMulti[[2]]
 
 set.seed(12345)
