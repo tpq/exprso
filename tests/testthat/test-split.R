@@ -2,7 +2,7 @@ library(exprso)
 context("split")
 
 ###########################################################
-### Prepare ExprsBinary and ExprsMulti objects
+### Test ExprsBinary and ExprsMulti imports
 
 set.seed(1235)
 
