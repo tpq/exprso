@@ -179,7 +179,7 @@ test_that("ExprsMulti models predict only on ExprsMulti datasets", {
   )
 })
 
-mach.multi <- doMulti(arrayMulti.train, top = 0, what = "buildSVM")
+mach.multi <- doMulti(arrayMulti.train, top = 0, method = "buildSVM")
 
 test_that("doMulti performs 1 vs. all build", {
 

@@ -98,7 +98,7 @@ test_that("top argument to fs ExprsBinary method works", {
 ###########################################################
 ### Test ExprsMulti feature selection
 
-fsStats.multi <- doMulti(arrayMulti, top = 0, what = "fsStats")
+fsStats.multi <- doMulti(arrayMulti, top = 0, method = "fsStats")
 
 test_that("doMulti performs 1 vs. all fs", {
 

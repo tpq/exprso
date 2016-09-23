@@ -6,3 +6,4 @@
 ^NEWS\.md$
 ^cran-comments\.md$
 ^TODO\.md$
+^data-raw$

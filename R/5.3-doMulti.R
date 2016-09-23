@@ -31,8 +31,8 @@
 #'  in the training set.
 #'
 #' @inheritParams fs
-#' @param what A character string. The \code{ExprsBinary} method to execute multiple times.
-#' @return A list of the results given by \code{what}.
+#' @param method A character string. The \code{ExprsBinary} method to execute multiple times.
+#' @return A list of the results given by \code{method}.
 #'
 #' @seealso
 #' \code{\link{fs}}\cr
@@ -46,16 +46,16 @@
 #'
 #' @export
 setGeneric("doMulti",
-           function(object, top, what, ...) standardGeneric("doMulti")
+           function(object, top, method, ...) standardGeneric("doMulti")
 )
 
 #' @describeIn doMulti Method to execute multiple "1 vs. all" binary tasks.
 #' @export
 setMethod("doMulti", "ExprsMulti",
-          function(object, top, what, ...){
+          function(object, top, method, ...){
 
             # Perform N binary tasks
-            args <- as.list(substitute(list(...)))[-1]
+            args <- getArgs(...)
             multi <- vector("list", length(levels(object@annot$defineCase)))
             for(i in 1:length(levels(object@annot$defineCase))){
 
@@ -75,7 +75,7 @@ setMethod("doMulti", "ExprsMulti",
                 # Perform the binary task
                 cat("Performing a one-vs-all binary task with class", i, "set as \"Case\".\n")
                 args.i <- append(list("object" = temp, "top" = top), args)
-                multi[[i]] <- do.call(what = what, args = args.i)
+                multi[[i]] <- do.call(method, args.i)
               }
             }
 
@@ -171,102 +171,3 @@ reRank <- function(fss){
 
   return(final)
 }
-
-###########################################################
-### Perform ExprsMulti build
-
-#' @rdname build
-#' @export
-setMethod("buildNB", "ExprsMulti",
-          function(object, top, ...){
-
-            # Pass arguments to doMulti
-            machs <- doMulti(object, top, what = "buildNB", ...)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            new("ExprsModule",
-                preFilter = append(object@preFilter, list(top)),
-                reductionModel = append(object@reductionModel, list(NA)),
-                mach = machs)
-          }
-)
-
-#' @rdname build
-#' @export
-setMethod("buildLDA", "ExprsMulti",
-          function(object, top, ...){
-
-            # Pass arguments to doMulti
-            machs <- doMulti(object, top, what = "buildLDA", ...)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            new("ExprsModule",
-                preFilter = append(object@preFilter, list(top)),
-                reductionModel = append(object@reductionModel, list(NA)),
-                mach = machs)
-          }
-)
-
-#' @rdname build
-#' @export
-setMethod("buildSVM", "ExprsMulti",
-          function(object, top, ...){
-
-            # Pass arguments to doMulti
-            machs <- doMulti(object, top, what = "buildSVM", ...)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            new("ExprsModule",
-                preFilter = append(object@preFilter, list(top)),
-                reductionModel = append(object@reductionModel, list(NA)),
-                mach = machs)
-          }
-)
-
-#' @rdname build
-#' @export
-setMethod("buildANN", "ExprsMulti",
-          function(object, top, ...){
-
-            # Pass arguments to doMulti
-            machs <- doMulti(object, top, what = "buildANN", ...)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            new("ExprsModule",
-                preFilter = append(object@preFilter, list(top)),
-                reductionModel = append(object@reductionModel, list(NA)),
-                mach = machs)
-          }
-)
-
-#' @rdname build
-#' @export
-setMethod("buildRF", "ExprsMulti",
-          function(object, top, ...){
-
-            # Pass arguments to doMulti
-            machs <- doMulti(object, top, what = "buildRF", ...)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            new("ExprsModule",
-                preFilter = append(object@preFilter, list(top)),
-                reductionModel = append(object@reductionModel, list(NA)),
-                mach = machs)
-          }
-)
-
-#' @rdname build
-#' @export
-setMethod("buildDNN", "ExprsMulti",
-          function(object, top, ...){
-
-            # Pass arguments to doMulti
-            machs <- doMulti(object, top, what = "buildDNN", ...)
-
-            # Carry through and append fs history as stored in the ExprsArray object
-            new("ExprsModule",
-                preFilter = append(object@preFilter, list(top)),
-                reductionModel = append(object@reductionModel, list(NA)),
-                mach = machs)
-          }
-)

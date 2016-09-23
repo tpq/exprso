@@ -127,19 +127,37 @@ build. <- function(object, top, uniqueFx, ...){
     }
   }
 
-  data <- t(object@exprs[top, ])
-  labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-  model <- do.call("uniqueFx", list(data, labels, ...))
+  if(class(object) == "ExprsMulti"){
 
-  # Carry through and append fs history as stored in the ExprsArray object
-  # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-  machine <- new("ExprsMachine",
-                 preFilter = append(object@preFilter, list(top)),
-                 reductionModel = append(object@reductionModel, list(NA)),
-                 mach = model
-  )
+    args <- getArgs(...)
+    args <- append(args, list("object" = object, "top" = top, "method" = "build.", "uniqueFx" = uniqueFx))
+    machs <- do.call("doMulti", args)
 
-  return(machine)
+    new("ExprsModule",
+        preFilter = append(object@preFilter, list(top)),
+        reductionModel = append(object@reductionModel, list(NA)),
+        mach = machs)
+
+  }else if(class(object) == "ExprsBinary"){
+
+    data <- t(object@exprs[top, ])
+    labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
+    model <- do.call("uniqueFx", list(data, labels, ...))
+
+    # Carry through and append fs history as stored in the ExprsArray object
+    # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
+    machine <- new("ExprsMachine",
+                   preFilter = append(object@preFilter, list(top)),
+                   reductionModel = append(object@reductionModel, list(NA)),
+                   mach = model
+    )
+
+    return(machine)
+
+  }else{
+
+    stop("Uh oh! No 'build.' method in place for this object type.")
+  }
 }
 
 #' @rdname build
@@ -147,7 +165,7 @@ build. <- function(object, top, uniqueFx, ...){
 #' \code{buildNB:} Method to build classifiers using e1071::naiveBayes.
 #' @importFrom e1071 naiveBayes
 #' @export
-setMethod("buildNB", "ExprsBinary",
+setMethod("buildNB", "ExprsArray",
           function(object, top, ...){ # args to naiveBayes
 
             build.(object, top,
@@ -167,7 +185,7 @@ setMethod("buildNB", "ExprsBinary",
 #' \code{buildLDA:} Method to build classifiers using MASS::lda.
 #' @importFrom MASS lda
 #' @export
-setMethod("buildLDA", "ExprsBinary",
+setMethod("buildLDA", "ExprsArray",
           function(object, top, ...){ # args to lda
 
             build.(object, top,
@@ -187,7 +205,7 @@ setMethod("buildLDA", "ExprsBinary",
 #' \code{buildSVM:} Method to build classifiers using e1071::svm.
 #' @importFrom e1071 svm
 #' @export
-setMethod("buildSVM", "ExprsBinary",
+setMethod("buildSVM", "ExprsArray",
           function(object, top, ...){ # args to svm
 
             build.(object, top,
@@ -209,7 +227,7 @@ setMethod("buildSVM", "ExprsBinary",
 #' \code{buildANN:} Method to build classifiers using nnet::nnet.
 #' @importFrom nnet nnet
 #' @export
-setMethod("buildANN", "ExprsBinary",
+setMethod("buildANN", "ExprsArray",
           function(object, top, ...){ # args to nnet
 
             build.(object, top,
@@ -233,7 +251,7 @@ setMethod("buildANN", "ExprsBinary",
 #' \code{buildRF:} Method to build classifiers using randomForest::randomForest.
 #' @importFrom randomForest randomForest
 #' @export
-setMethod("buildRF", "ExprsBinary",
+setMethod("buildRF", "ExprsArray",
           function(object, top, ...){ # args to randomForest
 
             build.(object, top,
@@ -254,7 +272,7 @@ setMethod("buildRF", "ExprsBinary",
 #' @importFrom utils write.csv
 #' @importFrom h2o h2o.init h2o.importFile h2o.deeplearning h2o.predict
 #' @export
-setMethod("buildDNN", "ExprsBinary",
+setMethod("buildDNN", "ExprsArray",
           function(object, top, ...){ # args to h2o.deeplearning
 
             args <- getArgs(...)

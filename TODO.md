@@ -5,6 +5,7 @@
   * [] Add `RegrsModel` class
   * [] Watch out for `x[,,drop=TRUE]` errors
   * [] Make ExprsBinary $defineCase a factor?
+    * This change alone crashes downstream code
   * [x] Make `calcStats` tidy
   * [x] Add 2D plot
   * [x] Rename `getProbeSet` function.
@@ -22,13 +23,14 @@
 * `pl` expansion:
   * [] Consider "random Plains" wrapper
   * [] Consider `plRFE` with embedded RFE
-  * [] `plMulti`
+  * [] `plGridMulti`
     * Performs fs before each 1-vs-all build
   * [x] Disable ROC plotting during high-throughput `pl`
   * [] `plGridPlus` with "better" plCV?
+    * Would feature select anew at each fold
   
 * `fs` expansion:
-  * [] Remove `doMulti` fs methods?
+  * [x] Remove `doMulti` fs methods?
   * [] F-test
   * [] ANOVA
     * Add as a true multi-class method

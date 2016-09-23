@@ -13,8 +13,11 @@
   * Make `fsSample` an `ExprsArray` method.
 * 5.2-build-binary.R
   * Change `probes` argument to `top`.
+  * Add `ExprsArray` signature to all `build` methods.
+  * Add `doMulti` call to `build.` function.
 * 5.3-doMulti.R
   * Change `probes` argument to `top`.
+  * Change `what` agument to `method` to allow for `do.call`.
   * Remove `ExprsMulti` method for `fsSample`.
   * Remove `ExprsMulti` method for `fsStats`.
 * 7.1-plCV.R

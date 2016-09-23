@@ -6,9 +6,9 @@
 \alias{doMulti,ExprsMulti-method}
 \title{Perform "1 vs. all" Task}
 \usage{
-doMulti(object, top, what, ...)
+doMulti(object, top, method, ...)
 
-\S4method{doMulti}{ExprsMulti}(object, top, what, ...)
+\S4method{doMulti}{ExprsMulti}(object, top, method, ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to undergo feature selection.}
@@ -19,12 +19,12 @@ indicates specifically which features by name should undergo feature selection.
 Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
-\item{what}{A character string. The \code{ExprsBinary} method to execute multiple times.}
+\item{method}{A character string. The \code{ExprsBinary} method to execute multiple times.}
 
 \item{...}{Arguments passed to the respective wrapped function.}
 }
 \value{
-A list of the results given by \code{what}.
+A list of the results given by \code{method}.
 }
 \description{
 A function to execute multiple "1 vs. all" binary tasks.
