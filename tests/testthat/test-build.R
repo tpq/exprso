@@ -4,8 +4,7 @@ context("build")
 ###########################################################
 ### Build and predict ExprsMachine objects
 
-data(array)
-data(arrayMulti)
+load(file.path("data.RData"))
 
 set.seed(12345)
 

@@ -5,7 +5,7 @@ context("mod")
 ###########################################################
 ### Check modSwap, modSubset, and modCluster
 
-data(array)
+load(file.path("data.RData"))
 
 arrays <- splitStratify(array, percent.include = 50, colBy = "sex")
 array.train <- arrays[[1]]

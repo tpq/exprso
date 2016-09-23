@@ -4,8 +4,7 @@ context("compare")
 ###########################################################
 ### Compare ExprsBinary and ExprsMulti objects
 
-data(array)
-data(arrayMulti)
+load(file.path("data.RData"))
 
 arrays <- splitStratify(array, percent.include = 50, colBy = "sex")
 array.train <- arrays[[1]]

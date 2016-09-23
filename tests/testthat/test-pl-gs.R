@@ -5,7 +5,7 @@ context("plCV")
 ###########################################################
 ### Check plGrid
 
-data(array)
+load(file.path("data.RData"))
 
 arrays <- splitStratify(array, percent.include = 50, colBy = NULL)
 array.train <- arrays[[1]]

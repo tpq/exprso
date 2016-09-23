@@ -4,8 +4,7 @@ context("ens")
 ###########################################################
 ### Check plMonteCarlo
 
-data(array)
-data(arrayMulti)
+load(file.path("data.RData"))
 
 array@annot$defineCase[1:2] <- "Case"
 array@annot$defineCase[29:30] <- "Control"

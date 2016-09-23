@@ -4,8 +4,7 @@ context("fs")
 ###########################################################
 ### Test ExprsBinary feature selection
 
-data(array)
-data(arrayMulti)
+load(file.path("data.RData"))
 
 test_that("top argument to fs ExprsBinary method works", {
 

@@ -5,7 +5,7 @@ context("plNested")
 ###########################################################
 ### Check plMonteCarlo
 
-data(array)
+load(file.path("data.RData"))
 
 array@annot$defineCase[1:2] <- "Case"
 array@annot$defineCase[25:30] <- "Control"
