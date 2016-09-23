@@ -1,3 +1,4 @@
+library(exprso)
 set.seed(1235) # changing seed may break tests!
 
 df.a <- data.frame(
@@ -44,3 +45,4 @@ arrayMulti <-
              include = list("a", "b", "c"))
 
 devtools::use_data(array, arrayMulti)
+save(array, arrayMulti, file = paste0(getwd(), "/tests/testthat/data.RData"))
