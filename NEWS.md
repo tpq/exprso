@@ -10,10 +10,13 @@
   * Change `probes` argument to `top`.
 * 5.1-fs-binary.R
   * Change `probes` argument to `top`.
+  * Make `fsSample` an `ExprsArray` method.
 * 5.2-build-binary.R
   * Change `probes` argument to `top`.
 * 5.3-doMulti.R
   * Change `probes` argument to `top`.
+  * Remove `ExprsMulti` method for `fsSample`.
+  * Remove `ExprsMulti` method for `fsStats`.
 * 7.1-plCV.R
   * Change `probes` argument to `top`.
 * 7.2-plGrid.R

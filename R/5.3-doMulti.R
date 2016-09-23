@@ -30,6 +30,10 @@
 #'  weights proportional to the relative class frequencies
 #'  in the training set.
 #'
+#' @inheritParams fs
+#' @param what A character string. The \code{ExprsBinary} method to execute multiple times.
+#' @return A list of the results given by \code{what}.
+#'
 #' @seealso
 #' \code{\link{fs}}\cr
 #' \code{\link{build}}\cr
@@ -43,34 +47,23 @@
 #'
 #' @export
 setGeneric("doMulti",
-           function(object, ...) standardGeneric("doMulti")
+           function(object, top, what, ...) standardGeneric("doMulti")
 )
 
 #' @describeIn doMulti Method to execute multiple "1 vs. all" binary tasks.
-#'
-#' @inheritParams fs
-#' @param what A character string. The \code{ExprsBinary} method to execute multiple times.
-#'
 #' @export
 setMethod("doMulti", "ExprsMulti",
           function(object, top, what, ...){
 
-            args <- as.list(substitute(list(...)))[-1]
-
-            # Initialize multi container
-            multi <- vector("list", length(levels(object@annot$defineCase)))
-
             # Perform N binary tasks
+            args <- as.list(substitute(list(...)))[-1]
+            multi <- vector("list", length(levels(object@annot$defineCase)))
             for(i in 1:length(levels(object@annot$defineCase))){
 
               # If the i-th ExprsMachine would not have any representative cases
               if(all(!as.numeric(object@annot$defineCase) == i)){
 
-                cat(
-                  paste0("Missing a representative of class ", i,
-                         ". Object replaced with NULL placeholder.\n")
-                )
-
+                cat("Missing class ", i, ". Using a NULL placeholder instead.\n", sep = "")
                 multi[[i]] <- NULL
 
               }else{
@@ -123,7 +116,6 @@ setMethod("doMulti", "ExprsMulti",
 #'  undergone dimension reduction does not make sense.
 #'
 #' @param fss The result of a \code{doMulti} function call.
-#'
 #' @return A vector of re-ranked features. See Details.
 #'
 #' @seealso
@@ -181,43 +173,6 @@ reRank <- function(fss){
 
   return(final)
 }
-
-###########################################################
-### Perform ExprsMulti feature selection
-
-#' @rdname fs
-#' @export
-setMethod("fsSample", "ExprsMulti",
-          function(object, top, ...){
-
-            # Call doMulti and make single rank list
-            fss <- doMulti(object, top, what = "fsSample", ...)
-            final <- reRank(fss)
-
-            new("ExprsMulti",
-                exprs = object@exprs[final,],
-                annot = object@annot,
-                preFilter = append(object@preFilter, list(final)),
-                reductionModel = append(object@reductionModel, list(NA)))
-          }
-)
-
-#' @rdname fs
-#' @export
-setMethod("fsStats", "ExprsMulti",
-          function(object, top, ...){
-
-            # Call doMulti and make single rank list
-            fss <- doMulti(object, top, what = "fsStats", ...)
-            final <- reRank(fss)
-
-            new("ExprsMulti",
-                exprs = object@exprs[final,],
-                annot = object@annot,
-                preFilter = append(object@preFilter, list(final)),
-                reductionModel = append(object@reductionModel, list(NA)))
-          }
-)
 
 ###########################################################
 ### Perform ExprsMulti build

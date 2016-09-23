@@ -145,17 +145,3 @@ test_that("reRank does not yield egregious error", {
     "feat3"
   )
 })
-
-test_that("top argument to fs ExprsBinary method works", {
-
-  expect_equal(
-    rownames(fsStats(arrayMulti, top = 0)@exprs),
-    c("feat4", "feat1", "feat2", "feat3")
-  )
-
-  expect_equal(
-
-    rownames(fsStats(arrayMulti, top = 0)@exprs),
-    rownames(fsStats(arrayMulti, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
-  )
-})

@@ -183,7 +183,7 @@ fs. <- function(object, top, uniqueFx, ...){
 #' @section Methods (by generic):
 #' \code{fsSample:} Method to perform random feature selection using base::sample.
 #' @export
-setMethod("fsSample", "ExprsBinary",
+setMethod("fsSample", "ExprsArray",
           function(object, top, ...){ #args to sample
 
             fs.(object, top,
