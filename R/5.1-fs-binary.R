@@ -89,6 +89,12 @@ setGeneric("fsSample",
 
 #' @rdname fs
 #' @export
+setGeneric("fsNULL",
+           function(object, top = 0, ...) standardGeneric("fsNULL")
+)
+
+#' @rdname fs
+#' @export
 setGeneric("fsStats",
            function(object, top = 0, ...) standardGeneric("fsStats")
 )
@@ -186,6 +192,21 @@ setMethod("fsSample", "ExprsArray",
                 uniqueFx = function(data, top, ...){
 
                   sample(top, ...)
+                }, ...)
+          }
+)
+
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsNULL:} Method to perform a NULL feature selection.
+#' @export
+setMethod("fsNULL", "ExprsArray",
+          function(object, top, ...){ #args to sample
+
+            fs.(object, top,
+                uniqueFx = function(data, top, ...){
+
+                  top
                 }, ...)
           }
 )

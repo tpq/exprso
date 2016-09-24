@@ -7,6 +7,8 @@
 \alias{fsEbayes,ExprsBinary-method}
 \alias{fsMrmre}
 \alias{fsMrmre,ExprsBinary-method}
+\alias{fsNULL}
+\alias{fsNULL,ExprsArray-method}
 \alias{fsPathClassRFE}
 \alias{fsPathClassRFE,ExprsBinary-method}
 \alias{fsPrcomp}
@@ -19,6 +21,8 @@
 \usage{
 fsSample(object, top = 0, ...)
 
+fsNULL(object, top = 0, ...)
+
 fsStats(object, top = 0, ...)
 
 fsPrcomp(object, top = 0, ...)
@@ -30,6 +34,8 @@ fsEbayes(object, top = 0, ...)
 fsMrmre(object, top = 0, ...)
 
 \S4method{fsSample}{ExprsArray}(object, top = 0, ...)
+
+\S4method{fsNULL}{ExprsArray}(object, top = 0, ...)
 
 \S4method{fsStats}{ExprsBinary}(object, top = 0, how = c("t.test",
   "ks.test"), ...)
@@ -101,6 +107,9 @@ Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count}
 \section{Methods (by generic)}{
 
 \code{fsSample:} Method to perform random feature selection using base::sample.
+
+
+\code{fsNULL:} Method to perform a NULL feature selection.
 
 
 \code{fsStats:} Method to perform statistics based feature selection using stats::t.test and others.
