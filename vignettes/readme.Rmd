@@ -11,7 +11,7 @@ vignette: >
 
 ## Disclaimer
 
-This is a stable release of a work-in-progress in active development. We make no guarantees about its quality. To the best of knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know! File any and all issues at [github.com/tpq/exprso/issues](http://www.github.com/tpq/exprso/issues). Read documentation carefully before using this package. In some cases, you need to know about the implicit assumptions that make for a smooth user experience. In other cases, you need to know about the key terminology that could prevent gross negligence. Otherwise, happy learning!
+This is a stable release of a work-in-progress in active development. We make no guarantees about its quality. To the best of knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know! File any and all issues at [GitHub](http://www.github.com/tpq/exprso/issues). Read documentation carefully before using this package. In some cases, you need to know about the implicit assumptions that make for a smooth user experience. In other cases, you need to know about the key terminology that could prevent gross negligence. Otherwise, happy learning!
 
 ## Warnings against improper use
 
