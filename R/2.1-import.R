@@ -132,20 +132,22 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 #'
 #' @param gse A GSE data object retrieved using GEOquery.
 #' @param colBy A character string. The GSE column name that contains the feature value.
+#'  If missing, function will prompt user for a choice after previewing options.
 #' @param colID A character string. The GSE column name that contains the feature identity.
+#'  If missing, function will prompt user for a choice after previewing options.
 #' @return An \code{ExpressionSet} object.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{arrayExprs}}
 #' @export
-GSE2eSet <- function(gse, colBy = "VALUE", colID = "ID_REF"){
+GSE2eSet <- function(gse, colBy = NULL, colID = NULL){
 
   # Check for non-unique platforms
   gsms <- unlist(lapply(GEOquery::GSMList(gse), function(g){ GEOquery::Meta(g)$platform}))
   if(length(unique(gsms)) > 1) stop("GSE contains non-unique platforms!")
 
   # Provide an opportunity for user to select a new platform ID column
-  if(is.null(colID)){
+  if(missing(colID)){
 
     cat("The columns available for platform ID include:\n")
     print(Columns(GEOquery::GSMList(gse)[[1]]))
@@ -154,7 +156,7 @@ GSE2eSet <- function(gse, colBy = "VALUE", colID = "ID_REF"){
   }
 
   # Provide an opportunity for user to select a new platform VALUE column
-  if(is.null(colBy)){
+  if(missing(colBy)){
 
     cat("The columns available for platform VALUE include:\n")
     print(Columns(GEOquery::GSMList(gse)[[1]]))
