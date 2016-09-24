@@ -109,7 +109,7 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
 
   if(fold > nrow(array@annot)){
 
-    warning("Insufficient subjects for outer-loop v-fold cross-validation. Performing LOOCV instead.")
+    warning("Insufficient subjects for plNested v-fold cross-validation. Performing LOOCV instead.")
     fold <- nrow(array@annot)
   }
 

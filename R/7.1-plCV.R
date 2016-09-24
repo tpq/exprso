@@ -50,7 +50,7 @@ plCV <- function(array, top, how, fold, ...){
 
   if(fold > nrow(array@annot)){
 
-    warning("Insufficient subjects for inner-loop v-fold cross-validation. Performing LOOCV instead.")
+    warning("Insufficient subjects for plCV v-fold cross-validation. Performing LOOCV instead.")
     fold <- nrow(array@annot)
   }
 
