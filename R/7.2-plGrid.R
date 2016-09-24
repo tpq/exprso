@@ -1,6 +1,63 @@
 ###########################################################
 ### High-throughput classification
 
+#' Build Argument Grid
+#'
+#' This function builds an argument grid from any number of arguments.
+#'  Used to prepare a grid search for the \code{plGrid} function.
+#'
+#' @param array.train The \code{array.train} argument as fed to \code{plGrid}.
+#' @param top The \code{top} argument as fed to \code{plGrid}.
+#' @param how The \code{how} argument as fed to \code{plGrid}.
+#' @param ... Additional arguments as fed to \code{plGrid}.
+makeGridFromArgs <- function(array.train, top, how, ...){
+
+  if(is.numeric(top)){
+
+    if(any(top > nrow(array.train@exprs))){
+
+      message("At least one 'top' index is too large. Using all features instead.")
+      top[top > nrow(array.train@exprs)] <- nrow(array.train@exprs)
+    }
+
+    top <- unique(top)
+
+  }else if(is.character(top)){
+
+    # Turn character vector into single list entry
+    top <- as.list(top)
+
+  } # if list, do nothing here
+
+  # Build grid
+  args <- getArgs(...)
+
+  # Refine grid for buildSVM
+  if(how == "buildSVM"){
+
+    if(!"kernel" %in% names(args)) args <- defaultArg("kernel", "linear", args)
+    if(!"cost" %in% names(args)) args <- defaultArg("cost", 1, args)
+    if("radial" %in% eval(args$kernel)){
+
+      if(!"gamma" %in% names(args)) stop("Uh oh! 'gamma' argument missing!")
+      grid[grid$kernel %in% "linear", "gamma"] <- NA
+    }
+
+    if("polynomial" %in% eval(args$kernel)){
+
+      if(!"degree" %in% names(args)) stop("Uh oh! 'degree' argument missing!")
+      if(!"coef0" %in% names(args)) stop("Uh oh! 'coef0' argument missing!")
+      grid[grid$kernel %in% c("linear", "kernel"), "degree"] <- NA
+      grid[grid$kernel %in% c("linear", "kernel"), "coef0"] <- NA
+    }
+
+    grid <- unique(grid)
+  }
+
+  grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
+  return(grid)
+}
+
 #' Perform High-Throughput Classification
 #'
 #' Trains and deploys multiple classifiers across a vast parameter search space.
@@ -48,8 +105,8 @@
 #' @param aucSkip A logical scalar. Argument passed to \code{\link{calcStats}}.
 #' @param verbose A logical scalar. Argument passed to \code{\link{exprso-predict}}.
 #' @param ... Arguments passed to the \code{how} method. Unlike the \code{how} wrapper,
-#'  \code{plGrid} will accept multiple terms for each argument, supplied as a vector.
-#'  \code{plGrid} will train and deploy a classifier for each combination of
+#'  this function will accept multiple terms for each argument, supplied as a vector.
+#'  this function will train and deploy a classifier for each combination of
 #'  parameters provided in this way.
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
@@ -73,51 +130,13 @@
 plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
                    aucSkip = FALSE, verbose = TRUE, ...){
 
-  args <- as.list(substitute(list(...)))[-1]
+  if(missing(how)){
 
-  if(is.numeric(top)){
-
-    if(any(top > nrow(array.train@exprs))){
-
-      message("At least one 'top' index is too large. Using all features instead.")
-      top[top > nrow(array.train@exprs)] <- nrow(array.train@exprs)
-    }
-
-    top <- unique(top)
-
-  }else if(is.character(top)){
-
-    # Turn character vector into single list entry
-    top <- as.list(top)
-
-  } # if list, do nothing here
-
-  # Build grid
-  grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
-
-  # Refine grid for buildSVM
-  if(how == "buildSVM"){
-
-    if(!"kernel" %in% names(args)) stop("Uh oh! 'kernel' argument missing!")
-    if(!"cost" %in% names(args)) stop("Uh oh! 'cost' argument missing!")
-    if("radial" %in% eval(args$kernel)){
-
-      if(!"gamma" %in% names(args)) stop("Uh oh! 'gamma' argument missing!")
-      grid[grid$kernel %in% "linear", "gamma"] <- NA
-    }
-
-    if("polynomial" %in% eval(args$kernel)){
-
-      if(!"degree" %in% names(args)) stop("Uh oh! 'degree' argument missing!")
-      if(!"coef0" %in% names(args)) stop("Uh oh! 'coef0' argument missing!")
-      grid[grid$kernel %in% c("linear", "kernel"), "degree"] <- NA
-      grid[grid$kernel %in% c("linear", "kernel"), "coef0"] <- NA
-    }
-
-    grid <- unique(grid)
+    stop("Uh oh! You must provide a valid build method for the 'how' argument.")
   }
 
   # For each gridpoint in grid
+  grid <- makeGridFromArgs(array.train, top, how, ...)
   statistics <- vector("list", nrow(grid))
   models <- vector("list", nrow(grid))
   for(i in 1:nrow(grid)){

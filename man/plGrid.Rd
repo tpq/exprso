@@ -31,8 +31,8 @@ to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogethe
 \item{verbose}{A logical scalar. Argument passed to \code{\link{exprso-predict}}.}
 
 \item{...}{Arguments passed to the \code{how} method. Unlike the \code{how} wrapper,
-\code{plGrid} will accept multiple terms for each argument, supplied as a vector.
-\code{plGrid} will train and deploy a classifier for each combination of
+this function will accept multiple terms for each argument, supplied as a vector.
+this function will train and deploy a classifier for each combination of
 parameters provided in this way.}
 }
 \value{

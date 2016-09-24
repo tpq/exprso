@@ -1,3 +1,20 @@
+## exprso 0.1.6.9000
+---------------------
+* 7.2-plGrid.R
+  * Add back-end argument handler `makeGridFromArgs`.
+  * Add default arguments for `how = buildSVM`.
+* 7.3-plGridMulti.R
+  * New function for 1-vs.all classification with `ctrlFS`.
+* 7.4-plMonteCarlo.R
+  * Renamed from 7.3-plMonteCarlo.R.
+  * `ctrlGS` will now accept any `pl` function.
+  * Use `rbind.fill` instead of `rbind` to prevent error.
+* 7.5-plNested.R
+  * Renamed from 7.4-plNested.R.
+  * `ctrlGS` will now accept any `pl` function.
+  * Use `rbind.fill` instead of `rbind` to prevent error.
+  * Add `plGridMulti` check to `check.ctrlGS`.
+
 ## exprso 0.1.6
 ---------------------
 * 1.2-methods.R
