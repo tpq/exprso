@@ -32,7 +32,7 @@
 * `fs` expansion:
   * [x] Remove `doMulti` fs methods?
   * [] F-test
-  * [] ANOVA
+  * [x] ANOVA
     * Add as a true multi-class method
     
 * `build` expansion:

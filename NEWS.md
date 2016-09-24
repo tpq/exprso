@@ -1,7 +1,11 @@
 ## exprso 0.1.6.9000
 ---------------------
-* 5.1-fs-binary.R
+* 5.1-fs-methods.R
+  * Renamed from 5.1-fs-binary.R.
   * Add `fsNULL` method to return feature input unaltered.
+  * Add `fsANOVA` feature selection method.
+* 5.2-build-methods.R
+  * Renamed from 5.2-build-binary.R.
 * 7.2-plGrid.R
   * Add back-end argument handler `makeGridFromArgs`.
   * Add default arguments for `how = buildSVM`.

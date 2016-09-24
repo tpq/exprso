@@ -21,9 +21,9 @@ array2data <- function(object, top){
   t(object@exprs[top, ])
 }
 
-labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-data <- array2data(array)
-dataMulti <- array2data(arrayMulti)
+data <- array2data(array, top = 0)
+labels <- factor(array@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
+dataMulti <- array2data(arrayMulti, top = 0)
 
 # Use for new build method:
 uniqueFx <- function(data, labels, ...){

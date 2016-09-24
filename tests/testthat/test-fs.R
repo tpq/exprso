@@ -49,6 +49,36 @@ test_that("top argument to fs ExprsBinary method works", {
   )
 })
 
+test_that("fsANOVA matches fsStats for ExprsBinary objects", {
+
+  expect_equal(
+    fsStats(array, var.equal = TRUE)@preFilter,
+    fsANOVA(array)@preFilter
+  )
+
+  expect_failure(
+    expect_equal(
+      fsStats(array)@preFilter,
+      fsANOVA(array)@preFilter
+    )
+  )
+})
+
+test_that("fsANOVA works for ExprsMulti objects", {
+
+  expect_equal(
+    fsANOVA(arrayMulti)@preFilter[[1]][1],
+    "feat4"
+  )
+
+  temp <- arrayMulti
+  temp@exprs["feat3", temp$defineCase == 3] <- 1000
+  expect_equal(
+    fsANOVA(temp)@preFilter[[1]][1],
+    "feat3"
+  )
+})
+
 ###########################################################
 ### Test ExprsMulti feature selection
 

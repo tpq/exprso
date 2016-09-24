@@ -95,6 +95,12 @@ setGeneric("fsNULL",
 
 #' @rdname fs
 #' @export
+setGeneric("fsANOVA",
+           function(object, top = 0, ...) standardGeneric("fsANOVA")
+)
+
+#' @rdname fs
+#' @export
 setGeneric("fsStats",
            function(object, top = 0, ...) standardGeneric("fsStats")
 )
@@ -201,12 +207,37 @@ setMethod("fsSample", "ExprsArray",
 #' \code{fsNULL:} Method to perform a NULL feature selection and return input unaltered.
 #' @export
 setMethod("fsNULL", "ExprsArray",
-          function(object, top, ...){ #args to sample
+          function(object, top, ...){ #args to NULL
 
             fs.(object, top,
                 uniqueFx = function(data, top, ...){
 
                   top
+                }, ...)
+          }
+)
+
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsANOVA:} Method to perform ANOVA feature selection using stats::aov.
+#' @export
+setMethod("fsANOVA", "ExprsArray",
+          function(object, top, ...){ #args to aov
+
+            fs.(object, top,
+                uniqueFx = function(data, top, ...){
+
+                  # Perform an ANOVA for each feature in data
+                  df <- data.frame(data, "label" = object@annot[rownames(data), "defineCase"])
+                  p <- vector("numeric", length(top))
+                  for(i in 1:length(top)){
+
+                    formula <- stats::as.formula(paste(top[i], "~", "label"))
+                    fit <- stats::aov(formula, data = df, ...)
+                    p[i] <- summary(fit)[[1]][1, "Pr(>F)"]
+                  }
+
+                  top[order(p)]
                 }, ...)
           }
 )
