@@ -199,7 +199,7 @@ trainingSet(splitSets) %>%
 
 All the pipelines developed for binary classification work equally well for multi-class classification. However, not all feature selection methods work for multi-class data. As long as you choose a valid multi-class feature selection method, `plGrid`, `plMonteCarlo`, and `plNested` will work without fail.
 
-```{r, results =}
+```{r, results = "hide"}
 fs <- ctrlFeatureSelect(func = "fsANOVA", top = 0)
 gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildRF", fold = 2)
 
