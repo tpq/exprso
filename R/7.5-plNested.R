@@ -164,17 +164,16 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
     # Perform some gridsearch function (e.g. plGrid)
     if(ctrlGS$func %in% c("plGrid", "plGridMulti")){
 
-      func <- ctrlGS$func
       args <- append(list("array.train" = array.boot,
                           "array.valid" = array.demi),
-                     ctrlGS[!ctrlGS %in% func])
-      pl <- do.call(what = func, args = args)
+                     ctrlGS)
+      args <- check.ctrlGS(args)
+      func <- ctrlGS$func
 
     }else if(ctrlGS$func %in% c("plMonteCarlo", "plNested")){
 
+      args <- append(list("array" = array.boot), ctrlGS)
       func <- ctrlGS$func
-      args <- append(list("array" = array.boot), ctrlGS[!ctrlGS %in% func])
-      pl <- do.call(what = func, args = args)
 
     }else{
 
