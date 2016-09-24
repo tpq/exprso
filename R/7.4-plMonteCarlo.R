@@ -50,9 +50,16 @@ ctrlFeatureSelect <- function(func, top, ...){
 #' @export
 ctrlGridSearch <- function(func, top, ...){
 
-  list("func" = func,
-       "top" = top,
-       ...)
+  if(missing(top)){
+
+    list("func" = func,
+         ...)
+  }else{
+
+    list("func" = func,
+         "top" = top,
+         ...)
+  }
 }
 
 ###########################################################
@@ -114,17 +121,6 @@ ctrlGridSearch <- function(func, top, ...){
 #' @export
 plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
 
-  if(ctrlGS$func != "plGrid"){
-
-    stop("Uh oh! This function currently only supports 'ctrlGS$func = \"plGrid\"'!")
-  }
-
-  if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
-
-    warning("Prior use of feature selection may result in ",
-            "overly optimistic cross-validation accuracies!")
-  }
-
   # For each bootstrap
   pls <- lapply(1:B,
                 function(boot){
@@ -158,11 +154,25 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
                   }
 
                   # Perform some gridsearch function (e.g. plGrid)
-                  func <- ctrlGS$func
-                  args <- append(list("array.train" = array.boot,
-                                      "array.valid" = array.demi),
-                                 ctrlGS[!ctrlGS %in% func])
-                  pl <- do.call(what = func, args = args)
+                  if(ctrlGS$func %in% c("plGrid", "plGridMulti")){
+
+                    func <- ctrlGS$func
+                    args <- append(list("array.train" = array.boot,
+                                        "array.valid" = array.demi),
+                                   ctrlGS[!ctrlGS %in% func])
+                    pl <- do.call(what = func, args = args)
+
+                  }else if(ctrlGS$func %in% c("plMonteCarlo", "plNested")){
+
+                    func <- ctrlGS$func
+                    args <- append(list("array" = array.boot), ctrlGS[!ctrlGS %in% func])
+                    pl <- do.call(what = func, args = args)
+
+                  }else{
+
+                    stop("Uh oh! No method in place for this 'pl' pipeline.")
+                  }
+
 
                   # Append pl@summary
                   pl@summary <- cbind(boot, pl@summary)
@@ -172,7 +182,7 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
   )
 
   pl <- new("ExprsPipeline",
-            summary = do.call(rbind, lapply(pls, function(obj) obj@summary)),
+            summary = do.call(plyr::rbind.fill, lapply(pls, function(obj) obj@summary)),
             machs = unlist(lapply(pls, function(obj) obj@machs))
   )
 

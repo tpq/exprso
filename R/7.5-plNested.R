@@ -12,28 +12,31 @@
 #' @param args A list of arguments to check.
 check.ctrlGS <- function(args){
 
-  if(args$func == "plGrid" & !"aucSkip" %in% names(args)){
+  if(args$func == "plGrid" | args$func == "plGridMulti"){
 
-    cat("Setting 'aucSkip' to TRUE (default behavior, override explicitly)...\n")
-    args <- append(args, list("aucSkip" = TRUE))
-  }
+    if(!"aucSkip" %in% names(args)){
 
-  if(args$func == "plGrid" & !args$aucSkip){
+      cat("Setting 'aucSkip' to TRUE (default behavior, override explicitly)...\n")
+      args <- append(args, list("aucSkip" = TRUE))
+    }
 
-    cat("Uh oh! This function requires TRUE 'aucSkip'. Setting 'aucSkip' to TRUE...\n")
-    args$aucSkip <- TRUE
-  }
+    if(!args$aucSkip){
 
-  if(args$func == "plGrid" & !"plotSkip" %in% names(args)){
+      cat("Uh oh! This function requires TRUE 'aucSkip'. Setting 'aucSkip' to TRUE...\n")
+      args$aucSkip <- TRUE
+    }
 
-    cat("Setting 'plotSkip' to TRUE (default behavior, override explicitly)...\n")
-    args <- append(args, list("plotSkip" = TRUE))
-  }
+    if(!"plotSkip" %in% names(args)){
 
-  if(args$func == "plGrid" & !args$plotSkip){
+      cat("Setting 'plotSkip' to TRUE (default behavior, override explicitly)...\n")
+      args <- append(args, list("plotSkip" = TRUE))
+    }
 
-    cat("Uh oh! This function requires TRUE 'plotSkip'. Setting 'plotSkip' to TRUE...\n")
-    args$plotSkip <- TRUE
+    if(!args$plotSkip){
+
+      cat("Uh oh! This function requires TRUE 'plotSkip'. Setting 'plotSkip' to TRUE...\n")
+      args$plotSkip <- TRUE
+    }
   }
 
   return(args)
@@ -101,17 +104,6 @@ check.ctrlGS <- function(args){
 #' @export
 plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
 
-  if(ctrlGS$func != "plGrid"){
-
-    stop("Uh oh! This function currently only supports 'ctrlGS$func = plGrid'!")
-  }
-
-  if(!is.null(array@preFilter) | !is.null(array@reductionModel)){
-
-    warning("Prior use of feature selection may result in ",
-            "overly optimistic cross-validation accuracies!")
-  }
-
   # Perform LOOCV if 0 fold
   if(fold == 0) fold <- nrow(array@annot)
 
@@ -170,11 +162,24 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
     }
 
     # Perform some gridsearch function (e.g. plGrid)
-    args <- append(list("array.train" = array.boot,
-                        "array.valid" = array.demi),
-                   ctrlGS)
-    args <- check.ctrlGS(args)
-    func <- ctrlGS$func
+    if(ctrlGS$func %in% c("plGrid", "plGridMulti")){
+
+      func <- ctrlGS$func
+      args <- append(list("array.train" = array.boot,
+                          "array.valid" = array.demi),
+                     ctrlGS[!ctrlGS %in% func])
+      pl <- do.call(what = func, args = args)
+
+    }else if(ctrlGS$func %in% c("plMonteCarlo", "plNested")){
+
+      func <- ctrlGS$func
+      args <- append(list("array" = array.boot), ctrlGS[!ctrlGS %in% func])
+      pl <- do.call(what = func, args = args)
+
+    }else{
+
+      stop("Uh oh! No method in place for this 'pl' pipeline.")
+    }
 
     # Save pl object
     pl <- do.call(what = func, args = args[!args %in% func])
@@ -183,7 +188,7 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
   }
 
   pl <- new("ExprsPipeline",
-            summary = do.call(rbind, lapply(pls, function(obj) obj@summary)),
+            summary = do.call(plyr::rbind.fill, lapply(pls, function(obj) obj@summary)),
             machs = unlist(lapply(pls, function(obj) obj@machs))
   )
 }
