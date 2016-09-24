@@ -20,6 +20,7 @@
 #' @inheritParams plGrid
 #' @param array.train Specifies the \code{ExprsMulti} object to use as training set.
 #' @param array.valid Specifies the \code{ExprsMulti} object to use as validation set.
+#' @param ctrlFS A list of arguments handled by \code{\link{ctrlFeatureSelect}}.
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso

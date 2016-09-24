@@ -22,6 +22,8 @@ argument, the user can force the default handling of numeric vectors.}
 
 \item{how}{A character string. Specifies the \code{\link{build}} method to iterate.}
 
+\item{ctrlFS}{A list of arguments handled by \code{\link{ctrlFeatureSelect}}.}
+
 \item{aucSkip}{A logical scalar. Argument passed to \code{\link{calcStats}}.}
 
 \item{verbose}{A logical scalar. Argument passed to \code{\link{exprso-predict}}.}
