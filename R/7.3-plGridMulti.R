@@ -40,7 +40,7 @@ plGridMulti <- function(array.train, array.valid = NULL, top, how, ctrlFS,
   }
 
   # For each gridpoint in grid
-  grid <- makeGridFromArgs(array.train, top, how, ...)
+  grid <- makeGridFromArgs(array.train = array.train, top = top, how = how, ...)
   statistics <- vector("list", nrow(grid))
   models <- vector("list", nrow(grid))
   for(i in 1:nrow(grid)){

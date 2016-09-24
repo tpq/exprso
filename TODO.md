@@ -23,11 +23,11 @@
 * `pl` expansion:
   * [] Consider "random Plains" wrapper
   * [] Consider `plRFE` with embedded RFE
-  * [] `plGridMulti`
+  * [x] `plGridMulti`
     * Performs fs before each 1-vs-all build
   * [x] Disable ROC plotting during high-throughput `pl`
-  * [] `plGridPlus` with "better" plCV?
-    * Would feature select anew at each fold
+  * [x] `plGridPlus` with "better" plCV?
+    * Achieved with plNested(plNested) method
   
 * `fs` expansion:
   * [x] Remove `doMulti` fs methods?

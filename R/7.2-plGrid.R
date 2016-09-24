@@ -29,7 +29,6 @@ makeGridFromArgs <- function(array.train, top, how, ...){
 
   } # if list, do nothing here
 
-  # Build grid
   args <- getArgs(...)
 
   # Refine grid for buildSVM
@@ -40,21 +39,25 @@ makeGridFromArgs <- function(array.train, top, how, ...){
     if("radial" %in% eval(args$kernel)){
 
       if(!"gamma" %in% names(args)) stop("Uh oh! 'gamma' argument missing!")
-      grid[grid$kernel %in% "linear", "gamma"] <- NA
+      args[args$kernel %in% "linear", "gamma"] <- NA
     }
 
     if("polynomial" %in% eval(args$kernel)){
 
       if(!"degree" %in% names(args)) stop("Uh oh! 'degree' argument missing!")
       if(!"coef0" %in% names(args)) stop("Uh oh! 'coef0' argument missing!")
-      grid[grid$kernel %in% c("linear", "kernel"), "degree"] <- NA
-      grid[grid$kernel %in% c("linear", "kernel"), "coef0"] <- NA
+      args[args$kernel %in% c("linear", "kernel"), "degree"] <- NA
+      args[args$kernel %in% c("linear", "kernel"), "coef0"] <- NA
     }
 
+    grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
     grid <- unique(grid)
+
+  }else{
+
+    grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
   }
 
-  grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
   return(grid)
 }
 
@@ -136,7 +139,7 @@ plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
   }
 
   # For each gridpoint in grid
-  grid <- makeGridFromArgs(array.train, top, how, ...)
+  grid <- makeGridFromArgs(array.train = array.train, top = top, how = how, ...)
   statistics <- vector("list", nrow(grid))
   models <- vector("list", nrow(grid))
   for(i in 1:nrow(grid)){
