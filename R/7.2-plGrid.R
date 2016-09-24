@@ -30,35 +30,29 @@ makeGridFromArgs <- function(array.train, top, how, ...){
   } # if list, do nothing here
 
   args <- getArgs(...)
+  grid <- expand.grid(append(list("probes" = probes), lapply(args, eval)), stringsAsFactors = FALSE)
 
   # Refine grid for buildSVM
   if(how == "buildSVM"){
 
-    if(!"kernel" %in% names(args)) args <- defaultArg("kernel", "linear", args)
-    if(!"cost" %in% names(args)) args <- defaultArg("cost", 1, args)
+    if(!"kernel" %in% names(args)) grid$kernel <- "linear"
+    if(!"cost" %in% names(args)) grid$cost <- 1
     if("radial" %in% eval(args$kernel)){
 
-      if(!"gamma" %in% names(args)) stop("Uh oh! 'gamma' argument missing!")
-      args[args$kernel %in% "linear", "gamma"] <- NA
+      if(!"gamma" %in% names(args)) grid$gamma <- 0.1
+      grid[grid$kernel %in% "linear", "gamma"] <- NA
     }
 
     if("polynomial" %in% eval(args$kernel)){
 
-      if(!"degree" %in% names(args)) stop("Uh oh! 'degree' argument missing!")
-      if(!"coef0" %in% names(args)) stop("Uh oh! 'coef0' argument missing!")
-      args[args$kernel %in% c("linear", "kernel"), "degree"] <- NA
-      args[args$kernel %in% c("linear", "kernel"), "coef0"] <- NA
+      if(!"degree" %in% names(args)) grid$degree <- 2
+      if(!"coef0" %in% names(args)) grid$coef0 <- 1
+      grid[grid$kernel %in% c("linear", "kernel"), "degree"] <- NA
+      grid[grid$kernel %in% c("linear", "kernel"), "coef0"] <- NA
     }
 
-    grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
     grid <- unique(grid)
-
-  }else{
-
-    grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
   }
-
-  return(grid)
 }
 
 #' Perform High-Throughput Classification
