@@ -30,20 +30,20 @@ makeGridFromArgs <- function(array.train, top, how, ...){
   } # if list, do nothing here
 
   args <- getArgs(...)
-  grid <- expand.grid(append(list("probes" = probes), lapply(args, eval)), stringsAsFactors = FALSE)
+  grid <- expand.grid(append(list("top" = top), lapply(args, eval)), stringsAsFactors = FALSE)
 
   # Refine grid for buildSVM
   if(how == "buildSVM"){
 
     if(!"kernel" %in% names(args)) grid$kernel <- "linear"
     if(!"cost" %in% names(args)) grid$cost <- 1
-    if("radial" %in% eval(args$kernel)){
+    if("radial" %in% grid$kernel){
 
       if(!"gamma" %in% names(args)) grid$gamma <- 0.1
       grid[grid$kernel %in% "linear", "gamma"] <- NA
     }
 
-    if("polynomial" %in% eval(args$kernel)){
+    if("polynomial" %in% grid$kernel){
 
       if(!"degree" %in% names(args)) grid$degree <- 2
       if(!"coef0" %in% names(args)) grid$coef0 <- 1
@@ -53,6 +53,8 @@ makeGridFromArgs <- function(array.train, top, how, ...){
 
     grid <- unique(grid)
   }
+
+  return(grid)
 }
 
 #' Perform High-Throughput Classification

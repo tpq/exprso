@@ -51,6 +51,7 @@ plGridMulti <- function(array.train, array.valid = NULL, top, how, ctrlFS,
 
     # Format gridpoint args to pass along to build do.call
     args <- as.list(grid[i, , drop = FALSE])
+    args <- args[!is.na(args)]
 
     # Build and save N binary models
     multi <- vector("list", length(levels(array.train@annot$defineCase)))

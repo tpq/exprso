@@ -198,7 +198,7 @@ setMethod("fsSample", "ExprsArray",
 
 #' @rdname fs
 #' @section Methods (by generic):
-#' \code{fsNULL:} Method to perform a NULL feature selection.
+#' \code{fsNULL:} Method to perform a NULL feature selection and return input unaltered.
 #' @export
 setMethod("fsNULL", "ExprsArray",
           function(object, top, ...){ #args to sample

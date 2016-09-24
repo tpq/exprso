@@ -109,7 +109,7 @@ Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count}
 \code{fsSample:} Method to perform random feature selection using base::sample.
 
 
-\code{fsNULL:} Method to perform a NULL feature selection.
+\code{fsNULL:} Method to perform a NULL feature selection and return input unaltered.
 
 
 \code{fsStats:} Method to perform statistics based feature selection using stats::t.test and others.
