@@ -136,6 +136,7 @@ plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
 
   # For each gridpoint in grid
   grid <- makeGridFromArgs(array.train = array.train, top = top, how = how, ...)
+  grid <- grid[, !colnames(grid) %in% "plotSkip", drop = FALSE]
   statistics <- vector("list", nrow(grid))
   models <- vector("list", nrow(grid))
   for(i in 1:nrow(grid)){
