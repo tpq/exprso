@@ -3,7 +3,6 @@
 ^README\.Rmd$
 ^README_.*\.png$
 ^OLDNEWS\.txt$
-^NEWS\.md$
 ^cran-comments\.md$
 ^TODO\.md$
 ^data-raw$

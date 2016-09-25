@@ -32,24 +32,24 @@ A function to execute multiple "1 vs. all" binary tasks.
 \details{
 \code{doMulti} depends on the total number of levels in the
  \code{$defineCase} factor. If a training set is missing any
- one of the factor levels (e.g. owing to random cuts during
+ one of the factor levels (e.g., owing to random cuts during
  cross-validation), the \code{ExprsModule} component that
- would refer to that class label gets replaced with a NULL
- placeholder. This NULL placeholder gets handled as a
+ would refer to that class label gets replaced with an NA
+ placeholder. This NA placeholder gets handled as a
  special case when predicting with an \code{ExprsModule}.
 
 During \code{ExprsModule} class prediction, the absence
- of a class during training (i.e. a NULL placeholder)
+ of a class during training (i.e., an NA placeholder)
  will prevent an \code{ExprsModule} object from possibly
- predicting that class. Instead, it will make a prediction
- for class labels included in the training set. However,
- classes present in the validation set but missing in the
- training set will still undergo prediction and therefore
- impact metrics of classifier performance.
+ predicting that class in a validation set. Rather, an
+ \code{ExprsModule} can only make predictions about class
+ labels that it "knows". However, all "unknown" classes
+ in the validation set (i.e., those missing from the training
+ set) still impact metrics of classifier performance.
 
 An \code{ExprsModule} object can only make predictions on
  an \code{ExprsMulti} object with the same number of recorded
- class labels (i.e. the total number of levels in the
+ class labels (i.e., the total number of levels in the
  \code{$defineCase} factor). As with all functions included
  in this package, all ties get broken using probability
  weights proportional to the relative class frequencies
@@ -66,6 +66,7 @@ An \code{ExprsModule} object can only make predictions on
 \code{\link{exprso-predict}}\cr
 \code{\link{plCV}}\cr
 \code{\link{plGrid}}\cr
+\code{\link{plGridMulti}}\cr
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }

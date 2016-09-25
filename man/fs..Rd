@@ -27,7 +27,7 @@ Used as a back-end wrapper for creating new fs methods.
 }
 \details{
 If the uniqueFx returns a character vector, it is assumed
- that the fs method is a feature selection only. If the
+ that the fs method is for feature selection only. If the
  uniqueFx returns a list, it is assumed that the fs method
  is a reduction model method only.
 }

@@ -45,6 +45,7 @@
 #' \code{\link{exprso-predict}}\cr
 #' \code{\link{plCV}}\cr
 #' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
 #' \code{\link{plMonteCarlo}}\cr
 #' \code{\link{plNested}}
 #'

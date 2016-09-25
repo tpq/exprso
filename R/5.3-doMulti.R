@@ -7,24 +7,24 @@
 #'
 #' \code{doMulti} depends on the total number of levels in the
 #'  \code{$defineCase} factor. If a training set is missing any
-#'  one of the factor levels (e.g. owing to random cuts during
+#'  one of the factor levels (e.g., owing to random cuts during
 #'  cross-validation), the \code{ExprsModule} component that
-#'  would refer to that class label gets replaced with a NULL
-#'  placeholder. This NULL placeholder gets handled as a
+#'  would refer to that class label gets replaced with an NA
+#'  placeholder. This NA placeholder gets handled as a
 #'  special case when predicting with an \code{ExprsModule}.
 #'
 #' During \code{ExprsModule} class prediction, the absence
-#'  of a class during training (i.e. a NULL placeholder)
+#'  of a class during training (i.e., an NA placeholder)
 #'  will prevent an \code{ExprsModule} object from possibly
-#'  predicting that class. Instead, it will make a prediction
-#'  for class labels included in the training set. However,
-#'  classes present in the validation set but missing in the
-#'  training set will still undergo prediction and therefore
-#'  impact metrics of classifier performance.
+#'  predicting that class in a validation set. Rather, an
+#'  \code{ExprsModule} can only make predictions about class
+#'  labels that it "knows". However, all "unknown" classes
+#'  in the validation set (i.e., those missing from the training
+#'  set) still impact metrics of classifier performance.
 #'
 #' An \code{ExprsModule} object can only make predictions on
 #'  an \code{ExprsMulti} object with the same number of recorded
-#'  class labels (i.e. the total number of levels in the
+#'  class labels (i.e., the total number of levels in the
 #'  \code{$defineCase} factor). As with all functions included
 #'  in this package, all ties get broken using probability
 #'  weights proportional to the relative class frequencies
@@ -41,6 +41,7 @@
 #' \code{\link{exprso-predict}}\cr
 #' \code{\link{plCV}}\cr
 #' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
 #' \code{\link{plMonteCarlo}}\cr
 #' \code{\link{plNested}}
 #'
@@ -88,31 +89,29 @@ setMethod("doMulti", "ExprsMulti",
 
 #' Serialize "1 vs. all" Feature Selection
 #'
-#' A function to convert multiple feature rank lists from "1 vs. all"
-#'  binary feature selection into a single feature rank list.
+#' This experimental function converts multiple feature rank lists,
+#'  derived from "1 vs. all" binary feature selection, into a single
+#'  feature rank list. This function is not in use in this package.
 #'
 #' After passing a feature selection method through \code{doMulti},
 #'  a set of ranked features gets returned for each one of the
 #'  total number of levels in the \code{$defineCase} factor. In
 #'  order to proceed with model deployment (at least in the setting
 #'  of a conventional pipeline where feature selection occurs
-#'  prior to classifier construction), these multiple feature
-#'  rankings must get serialized into a single feature rank list.
+#'  prior to classifier construction), multiple feature rankings
+#'  would need to get serialized into a single feature rank list.
 #'  \code{reRank} accomplishes this by calculating the rank sum
 #'  for each feature across all "1 vs. all" feature selection
 #'  tasks. Features found in one rank list but not in another
 #'  receive a numeric rank equal to one more than the maximum rank
-#'  in that feature rank list. The presence of a NULL placeholder
+#'  in that feature rank list. The presence of a NA placeholder
 #'  (see: \code{\link{doMulti}}) will not impact \code{reRank}.
 #'
-#' We note here, however, that a better approach would perform
+#' We note here, however, that a better approach would deploy
 #'  "1 vs. all" feature selection and classifier construction
 #'  simultaneously, rather than "1 vs. all" feature selection
-#'  followed by "1 vs. all" classifier construction. We hope to
-#'  provide a \code{pl} method for this in the future.
-#'
-#' We also note here that applying \code{reRank} to data that have
-#'  undergone dimension reduction does not make sense.
+#'  followed by "1 vs. all" classifier construction. This is
+#'  now implemented as \code{\link{plGridMulti}}.
 #'
 #' @param fss The result of a \code{doMulti} function call.
 #' @return A vector of re-ranked features. See Details.
@@ -124,6 +123,7 @@ setMethod("doMulti", "ExprsMulti",
 #' \code{\link{exprso-predict}}\cr
 #' \code{\link{plCV}}\cr
 #' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
 #' \code{\link{plMonteCarlo}}\cr
 #' \code{\link{plNested}}
 #'

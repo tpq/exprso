@@ -11,29 +11,18 @@
 #' @details
 #'
 #' Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary
-#'  to prioritize which features to include during classifier construction. There exists a myriad of
-#'  ways to perform the task of feature selection. This package provides methods for some of the most
-#'  frequently used feature selection methods. Each function works as a self-contained wrapper that
-#'  (1) pre-processes the ExprsArray input, (2) performs the feature selection, and (3) returns an
-#'  ExprsArray output with an updated feature selection history. The user may deploy, in tandem, any
-#'  number of these functions in whatever order they choose, limited only by computational power and
-#'  imagination. These feature selection histories get passed along at every step of the way until
-#'  they eventually get used in order to pre-process an unlabelled dataset during classifier deployment
-#'  (i.e. prediction). In the spirit of open source programming, we encourage users to submit their
-#'  own feature selection functions, modeled after those provided in this library.
-#'
-#' All feature selection methods here perform feature selection prior to classifier construction. For
-#'  \code{ExprsBinary} methods, this is typically the desired approach. However, the exprso package
-#'  also provides \code{pl} methods which automate integrated machine learning pipelines.
-#'  However, these feature selection methods do not necessarily generalize to multi-class classification.
-#'  As such, a feature selection method will fail when applied to an \code{ExprsMulti} object
-#'  unless that feature selection method has an explicitly defined \code{ExprsMulti} method.
+#'  to prioritize which features to include during classifier construction. Although there exists
+#'  many feature selection methods, this package provides wrappers for some of the most popular ones.
+#'  Each wrapper (1) pre-processes the \code{ExprsArray} input, (2) performs the feature selection,
+#'  and (3) returns an \code{ExprsArray} output with an updated feature selection history.
+#'  You can use, in tandem, any number of feature selection methods, and in any order.
 #'
 #' For all feature selection methods, \code{@@preFilter} and \code{@@reductionModel} stores the
 #'  feature selection and dimension reduction history, respectively. This history gets passed
 #'  along to prepare the test or validation set during model deployment, ensuring that these
-#'  sets undergo the same feature selection and dimension reduction in the appropriate steps.
-#'  Under the scenarios where users plan to apply multiple feature selection or dimension
+#'  sets undergo the same feature selection and dimension reduction as the training set.
+#'
+#' Under the scenarios where users plan to apply multiple feature selection or dimension
 #'  reduction steps, the \code{top} argument manages which features (e.g., gene expression values)
 #'  to send through each feature selection or dimension reduction procedure. For \code{top},
 #'  a numeric scalar indicates the number of top features to use, while a character vector
@@ -41,6 +30,10 @@
 #'  to feed INTO the \code{fs} method (NOT which features the user expects OUT). The example
 #'  below shows how to apply dimension reduction to the top 50 features as selected by the
 #'  Student's t-test. Set \code{top = 0} to pass all features through an \code{fs} method.
+#'
+#' Note that not all feature selection methods will generalize to multi-class data.
+#'  A feature selection method will fail when applied to an \code{ExprsMulti} object
+#'  unless that feature selection method has an \code{ExprsMulti} method.
 #'
 #' Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count} argument
 #'  owing to its implementation in the imported package \code{mRMRe}.
@@ -54,6 +47,7 @@
 #' @param how Specifics which function to call in \code{fsStats}. Recognized arguments
 #'  include \code{"t.test"} and \code{"ks.test"}.
 #' @param ... Arguments passed to the respective wrapped function.
+#'
 #' @return Returns an \code{ExprsArray} object.
 #'
 #' @seealso
@@ -63,6 +57,7 @@
 #' \code{\link{exprso-predict}}\cr
 #' \code{\link{plCV}}\cr
 #' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
 #' \code{\link{plMonteCarlo}}\cr
 #' \code{\link{plNested}}
 #'
@@ -137,7 +132,7 @@ setGeneric("fsMrmre",
 #' Used as a back-end wrapper for creating new fs methods.
 #'
 #' If the uniqueFx returns a character vector, it is assumed
-#'  that the fs method is a feature selection only. If the
+#'  that the fs method is for feature selection only. If the
 #'  uniqueFx returns a list, it is assumed that the fs method
 #'  is a reduction model method only.
 #'
@@ -192,7 +187,7 @@ fs. <- function(object, top, uniqueFx, ...){
 #' \code{fsSample:} Method to perform random feature selection using base::sample.
 #' @export
 setMethod("fsSample", "ExprsArray",
-          function(object, top, ...){ #args to sample
+          function(object, top, ...){ # args to sample
 
             fs.(object, top,
                 uniqueFx = function(data, top, ...){
@@ -207,7 +202,7 @@ setMethod("fsSample", "ExprsArray",
 #' \code{fsNULL:} Method to perform a NULL feature selection and return input unaltered.
 #' @export
 setMethod("fsNULL", "ExprsArray",
-          function(object, top, ...){ #args to NULL
+          function(object, top, ...){ # args to NULL
 
             fs.(object, top,
                 uniqueFx = function(data, top, ...){
@@ -222,7 +217,7 @@ setMethod("fsNULL", "ExprsArray",
 #' \code{fsANOVA:} Method to perform ANOVA feature selection using stats::aov.
 #' @export
 setMethod("fsANOVA", "ExprsArray",
-          function(object, top, ...){ #args to aov
+          function(object, top, ...){ # args to aov
 
             fs.(object, top,
                 uniqueFx = function(data, top, ...){
