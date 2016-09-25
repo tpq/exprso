@@ -24,7 +24,7 @@ Returns an \code{ExprsArray} object.
 Duplicates the feature selection history of a reference \code{ExprsArray}
  object. Called directly by \code{predict.ExprsMachine} and indirectly by
  \code{predict.ExprsModule}. Ensures that the validation set has undergone
- the same process of feature selection and dimension reduction as the
+ the same steps of feature selection and dimension reduction as the
  training set.
 }
 \section{Methods (by class)}{

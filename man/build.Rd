@@ -81,7 +81,8 @@ Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
  that any test or validation sets will undergo the same feature selection and
  dimension reduction in the appropriate steps when deploying the classifier.
  Set \code{top = 0} to pass all features through a \code{build} method.
- See \code{\link{modHistory}} to read more about feature selection history.
+
+See \code{\link{modHistory}} to learn more about feature selection history.
 }
 \section{Methods (by generic)}{
 

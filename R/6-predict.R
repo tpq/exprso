@@ -6,13 +6,14 @@
 #' Duplicates the feature selection history of a reference \code{ExprsArray}
 #'  object. Called directly by \code{predict.ExprsMachine} and indirectly by
 #'  \code{predict.ExprsModule}. Ensures that the validation set has undergone
-#'  the same process of feature selection and dimension reduction as the
+#'  the same steps of feature selection and dimension reduction as the
 #'  training set.
 #'
 #' @param object An \code{ExprsArray} object. The validation set that should undergo
 #'  feature selection and dimension reduction.
 #' @param reference An \code{ExprsArray} or \code{ExprsModel} object. The object with
 #'  feature selection history used as a template for the validation set.
+#'
 #' @return Returns an \code{ExprsArray} object.
 #'
 #' @seealso
@@ -109,11 +110,9 @@ setMethod("modHistory", "ExprsArray",
 #'  object. An \code{ExprsModule} object can only predict against an
 #'  \code{ExprsMulti} object. The validation set should never get modified
 #'  once separated from the training set. If the training set used to build
-#'  an \code{ExprsModule} had a class missing (i.e. a NULL placeholder),
-#'  the \code{ExprsModule} cannot predict the missing class. As with
-#'  all functions included in this package, ties get resolved using
-#'  probability weights based on the relative frequency of the tied
-#'  classes.
+#'  an \code{ExprsModule} had a class missing (i.e., has an NA placeholder),
+#'  the \code{ExprsModule} cannot predict the missing class. To learn how
+#'  this scenario gets handled, read more at \code{\link{doMulti}}.
 #'
 #' \code{ExprsPredict} objects store predictions in three slots: \code{@@pred},
 #'  \code{@@decision.values}, and \code{@@probability}. The first slot
@@ -128,7 +127,7 @@ setMethod("modHistory", "ExprsArray",
 #' For an \code{ExprsEnsemble}:
 #'
 #' At the moment, \code{ExprsEnsemble} can only make predictions
-#'  with \code{ExprsMachine} objects. Therefore, it can only predict
+#'  using \code{ExprsMachine} objects. Therefore, it can only predict
 #'  against \code{ExprsBinary} objets. Predicting with ensembles poses
 #'  a unique challenge with regard to how to translate multiple
 #'  performance scores (one for each classifier in the ensemble) into
@@ -144,7 +143,7 @@ setMethod("modHistory", "ExprsArray",
 #'  returned \code{ExprsPredict} object (corresponding to each constituent
 #'  \code{ExprsModel} object). When \code{how = "majority"}, this method
 #'  will let the final decision from each returned \code{ExprsPredict}
-#'  object (i.e., \code{@@binary}) cast a single (all-or-nothing) vote.
+#'  object (i.e., \code{@@pred}) cast a single (all-or-nothing) vote.
 #'  Each subject gets assigned the class that received the most number
 #'  of votes (i.e., winner takes all). In both scenarios, ties get
 #'  broken randomly with equal weights given to each class.
@@ -155,7 +154,9 @@ setMethod("modHistory", "ExprsArray",
 #' @param how A character string. Select from "probability" or "majority".
 #'  See Details for the implication of this choice. Argument applies to
 #'  \code{ExprsEnsemble} prediction only.
-#' @param verbose A logical scalar. Toggles whether to print \code{calcStats}.
+#' @param verbose A logical scalar. Toggles whether to print from
+#'  \code{calcStats}.
+#'
 #' @return Returns an \code{ExprsPredict} object.
 #'
 #' @seealso
@@ -359,15 +360,15 @@ setMethod("predict", "ExprsModule",
 
 #' Calculate Classifier Performance
 #'
-#' \code{calcStats} calculates classifier performance based on class predictions
+#' \code{calcStats} calculates classifier performance based on the class predictions
 #'  and actual class labels stored in an \code{ExprsPredict} object.
 #'
 #' This function calculates classifier performance based on the predicted
 #'  class labels and the actual class labels in one of two ways. If the argument
-#'  \code{aucSkip = FALSE} *and* the \code{ExprsArray} object was an \code{ExprsBinary}
-#'  object with at least one case and one control *and* \code{ExprsPredict} contains
+#'  \code{aucSkip = FALSE} AND the \code{ExprsArray} object was an \code{ExprsBinary}
+#'  object with at least one case and one control AND \code{ExprsPredict} contains
 #'  a coherent \code{@@probability} slot, \code{calcStats} will calculate classifier
-#'  performance using the area under the receiver operating characteristic (ROCR) curve
+#'  performance using the area under the receiver operating characteristic (ROC) curve
 #'  via the \code{ROCR} package. Otherwise, \code{calcStats} will calculate classifier
 #'  performance traditionally using a confusion matrix. Note that accuracies calculated
 #'  using \code{ROCR} may differ from accuracies calculated using a confusion
@@ -380,6 +381,7 @@ setMethod("predict", "ExprsModule",
 #'  receiver operating characteristic curve. See details.
 #' @param plotSkip A logical scalar. Toggles whether to plot the receiver
 #'  operating characteristic curve.
+#'
 #' @return Returns a \code{data.frame} of performance metrics.
 #'
 #' @seealso

@@ -21,7 +21,8 @@ The classifier to deploy.}
 
 \item{array}{An \code{ExprsArray} object. The validation set.}
 
-\item{verbose}{A logical scalar. Toggles whether to print \code{calcStats}.}
+\item{verbose}{A logical scalar. Toggles whether to print from
+\code{calcStats}.}
 
 \item{how}{A character string. Select from "probability" or "majority".
 See Details for the implication of this choice. Argument applies to
@@ -40,11 +41,9 @@ An \code{ExprsMachine} object can only predict against an \code{ExprsBinary}
  object. An \code{ExprsModule} object can only predict against an
  \code{ExprsMulti} object. The validation set should never get modified
  once separated from the training set. If the training set used to build
- an \code{ExprsModule} had a class missing (i.e. a NULL placeholder),
- the \code{ExprsModule} cannot predict the missing class. As with
- all functions included in this package, ties get resolved using
- probability weights based on the relative frequency of the tied
- classes.
+ an \code{ExprsModule} had a class missing (i.e., has an NA placeholder),
+ the \code{ExprsModule} cannot predict the missing class. To learn how
+ this scenario gets handled, read more at \code{\link{doMulti}}.
 
 \code{ExprsPredict} objects store predictions in three slots: \code{@pred},
  \code{@decision.values}, and \code{@probability}. The first slot
@@ -59,7 +58,7 @@ An \code{ExprsMachine} object can only predict against an \code{ExprsBinary}
 For an \code{ExprsEnsemble}:
 
 At the moment, \code{ExprsEnsemble} can only make predictions
- with \code{ExprsMachine} objects. Therefore, it can only predict
+ using \code{ExprsMachine} objects. Therefore, it can only predict
  against \code{ExprsBinary} objets. Predicting with ensembles poses
  a unique challenge with regard to how to translate multiple
  performance scores (one for each classifier in the ensemble) into
@@ -75,7 +74,7 @@ When \code{how = "probability"}, this method will take the average
  returned \code{ExprsPredict} object (corresponding to each constituent
  \code{ExprsModel} object). When \code{how = "majority"}, this method
  will let the final decision from each returned \code{ExprsPredict}
- object (i.e., \code{@binary}) cast a single (all-or-nothing) vote.
+ object (i.e., \code{@pred}) cast a single (all-or-nothing) vote.
  Each subject gets assigned the class that received the most number
  of votes (i.e., winner takes all). In both scenarios, ties get
  broken randomly with equal weights given to each class.

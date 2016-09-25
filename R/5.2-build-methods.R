@@ -31,11 +31,13 @@
 #'  that any test or validation sets will undergo the same feature selection and
 #'  dimension reduction in the appropriate steps when deploying the classifier.
 #'  Set \code{top = 0} to pass all features through a \code{build} method.
-#'  See \code{\link{modHistory}} to read more about feature selection history.
+#'
+#' See \code{\link{modHistory}} to learn more about feature selection history.
 #'
 #' @inheritParams fs
 #' @param object Specifies the \code{ExprsArray} object to use as a training set
 #'  for classification.
+#'
 #' @return Returns an \code{ExprsModel} object.
 #'
 #' @seealso

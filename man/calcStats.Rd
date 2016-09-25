@@ -24,16 +24,16 @@ operating characteristic curve.}
 Returns a \code{data.frame} of performance metrics.
 }
 \description{
-\code{calcStats} calculates classifier performance based on class predictions
+\code{calcStats} calculates classifier performance based on the class predictions
  and actual class labels stored in an \code{ExprsPredict} object.
 }
 \details{
 This function calculates classifier performance based on the predicted
  class labels and the actual class labels in one of two ways. If the argument
- \code{aucSkip = FALSE} *and* the \code{ExprsArray} object was an \code{ExprsBinary}
- object with at least one case and one control *and* \code{ExprsPredict} contains
+ \code{aucSkip = FALSE} AND the \code{ExprsArray} object was an \code{ExprsBinary}
+ object with at least one case and one control AND \code{ExprsPredict} contains
  a coherent \code{@probability} slot, \code{calcStats} will calculate classifier
- performance using the area under the receiver operating characteristic (ROCR) curve
+ performance using the area under the receiver operating characteristic (ROC) curve
  via the \code{ROCR} package. Otherwise, \code{calcStats} will calculate classifier
  performance traditionally using a confusion matrix. Note that accuracies calculated
  using \code{ROCR} may differ from accuracies calculated using a confusion

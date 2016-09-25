@@ -65,8 +65,8 @@ to indicate specific features by location, similar to a character vector.}
 
 \item{...}{Arguments passed to the respective wrapped function.}
 
-\item{how}{Specifics which function to call in \code{fsStats}. Recognized arguments
-include \code{"t.test"} and \code{"ks.test"}.}
+\item{how}{A character string. Toggles between the sub-routines "t.test" and
+"ks.test". Argument applies to \code{fsStats} only.}
 }
 \value{
 Returns an \code{ExprsArray} object.

@@ -44,8 +44,8 @@
 #'  indicates specifically which features by name should undergo feature selection.
 #'  Set \code{top = 0} to include all features. A numeric vector can also be used
 #'  to indicate specific features by location, similar to a character vector.
-#' @param how Specifics which function to call in \code{fsStats}. Recognized arguments
-#'  include \code{"t.test"} and \code{"ks.test"}.
+#' @param how A character string. Toggles between the sub-routines "t.test" and
+#'  "ks.test". Argument applies to \code{fsStats} only.
 #' @param ... Arguments passed to the respective wrapped function.
 #'
 #' @return Returns an \code{ExprsArray} object.
