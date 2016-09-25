@@ -42,7 +42,7 @@ df.build <- data.frame(
   
   "Method" = c("`buildNB`", "`buildLDA`", "`buildSVM`", "`buildANN`", "`buildRF`", "`buildDNN`"),
   "Data" = rep("Binary / Multi", 6),
-  "Notes" = c(rep("Default behavior", 5), "Clear RAM with `h2o::h2o.shutdown`"),
+  "Notes" = c(rep("Default behavior", 5), "Clear RAM with `h2o::h2o.shutdown()`"),
   "Details" = c("See `e1071::naiveBayes`", "See `MASS::lda`", "See `e1071::svm`", "See `nnet::nnet`", "See `randomForest::randomForest`", "See `h2o::h2o.deeplearning`")
 )
 
