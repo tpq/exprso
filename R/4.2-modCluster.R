@@ -4,7 +4,7 @@
 #' Cluster Subjects
 #'
 #' This method clusters subjects based on feature data using any one of
-#'  several available clustering algorithms. See Arguments below.
+#'  seven available clustering algorithms. See Arguments below.
 #'
 #' Note that this function will expect the argument \code{k} to define the returned
 #'  number of clusters, except when \code{how = "kmeans"} in which case this
@@ -23,7 +23,7 @@
 #'  \code{cutree}).
 #'
 #' @return Typically an \code{ExprsArray} object with subject cluster assignments
-#'  added to the "cluster" column of the \code{@@anot} slot.
+#'  added to the \code{$cluster} column of the \code{@@anot} slot.
 #'
 #' @export
 setGeneric("modCluster",

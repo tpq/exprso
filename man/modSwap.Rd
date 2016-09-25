@@ -15,8 +15,8 @@ modSwap(object, how = "fp", percent = 10, theta = 1)
 \item{object}{An \code{ExprsBinary} object to mutate.}
 
 \item{how}{A character string. The method used to mutate case subjects. Select from
-"rp.1", "rp.2", "fp", "ng", or "tg". Alternatively, supply another \code{ExprsBinary}
-object (see Details).}
+"rp.1", "rp.2", "fp", "ng", or "tg". Alternatively, another \code{ExprsBinary}
+object. See Details.}
 
 \item{percent}{A numeric scalar. The percentage of subjects to mutate.}
 
@@ -28,7 +28,7 @@ An \code{ExprsBinary} object containing mutated subjects with an index
  appended to the \code{$mutated} column of the \code{@annot} slot.
 }
 \description{
-This experimental function mutates (i.e., changes) a percentage of case subjects
+This experimental function mutates a percentage of case subjects
  into noisy positives, false positives, or defined out-groups.
 }
 \details{

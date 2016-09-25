@@ -4,7 +4,7 @@
 #' Compare \code{ExprsArray} Objects
 #'
 #' This method compares the values of all \code{ExprsArray} annotations across a
-#'  specified annotation term for one or more \code{ExprsArray} objects.
+#'  specified annotation term for up to two \code{ExprsArray} objects.
 #'  Depending on the composition of each annotation, \code{compare}
 #'  will perform either a chi-squared test or an ANOVA test.
 #'
@@ -14,13 +14,12 @@
 #'  the \code{colBy} argument determines which annotation to use as the
 #'  independent variable for "internal" comparisons. Second, it tests
 #'  all annotation variables between the provided \code{ExprsArray} objects.
-#'  However, providing \code{array.valid = NULL} will skip all testing
-#'  except one "internal" comparison.
+#'  Providing \code{array.valid = NULL} will skip the between comparisons.
 #'
 #' This method will test annotations using either a chi-squared test or an
 #'  ANOVA test depending on the class of the values stored by the tested column.
-#'  Either "character" or "factor" values in the tested column will trigger
-#'  a chi-squared test. Therefore, this method requires the user to select
+#'  The presence of a "character" or "factor" in the tested column will trigger
+#'  a chi-squared test. As such, this method requires the user to select
 #'  a \code{colBy} annotation that contains categorical data (i.e., to use as
 #'  the independent variable).
 #'
@@ -98,7 +97,7 @@ setMethod("compare", "ExprsArray",
                 colBy <- "array"
               }
 
-              # Make sure colBy contains categorical data
+              # Make sure colBy contains categorical data for both 'object' and 'array.valid'
               if(!class(test.data[, colBy]) %in% c("character", "factor")){
 
                 stop("Uh oh! The 'colBy' variable must contain categorical data.")

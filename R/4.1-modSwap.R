@@ -3,7 +3,7 @@
 
 #' Swap Case Subjects
 #'
-#' This experimental function mutates (i.e., changes) a percentage of case subjects
+#' This experimental function mutates a percentage of case subjects
 #'  into noisy positives, false positives, or defined out-groups.
 #'
 #' This function includes several methods for distoring the features of \code{ExprsBinary}
@@ -27,8 +27,8 @@
 #'
 #' @param object An \code{ExprsBinary} object to mutate.
 #' @param how A character string. The method used to mutate case subjects. Select from
-#'  "rp.1", "rp.2", "fp", "ng", or "tg". Alternatively, supply another \code{ExprsBinary}
-#'  object (see Details).
+#'  "rp.1", "rp.2", "fp", "ng", or "tg". Alternatively, another \code{ExprsBinary}
+#'  object. See Details.
 #' @param percent A numeric scalar. The percentage of subjects to mutate.
 #' @param theta A numeric scalar. Applies a weight to the distribution of means when
 #'  mutating subjects via the "ng" or "tg" method.
@@ -111,8 +111,9 @@ setMethod("modSwap", "ExprsBinary",
 
               for(mut.col in mut.name){
 
-                object@exprs[, mut.col] <- unlist(lapply(1:length(ng.means),
-                                                         function(i) stats::rnorm(1, mean = ng.means[i], sd = sds[i])))
+                object@exprs[, mut.col] <-
+                  unlist(lapply(1:length(ng.means),
+                                function(i) stats::rnorm(1, mean = ng.means[i], sd = sds[i])))
               }
 
             }else if(how == "tg"){
@@ -125,8 +126,9 @@ setMethod("modSwap", "ExprsBinary",
 
               for(mut.col in mut.name){
 
-                object@exprs[, mut.col] <- unlist(lapply(1:length(tg.means),
-                                                         function(i) stats::rnorm(1, mean = tg.means[i], sd = sds[i])))
+                object@exprs[, mut.col] <-
+                  unlist(lapply(1:length(tg.means),
+                                function(i) stats::rnorm(1, mean = tg.means[i], sd = sds[i])))
               }
 
             }else{

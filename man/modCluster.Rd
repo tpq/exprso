@@ -34,11 +34,11 @@ other functions used for clustering (e.g., \code{dist} and
 }
 \value{
 Typically an \code{ExprsArray} object with subject cluster assignments
- added to the "cluster" column of the \code{@anot} slot.
+ added to the \code{$cluster} column of the \code{@anot} slot.
 }
 \description{
 This method clusters subjects based on feature data using any one of
- several available clustering algorithms. See Arguments below.
+ seven available clustering algorithms. See Arguments below.
 }
 \details{
 Note that this function will expect the argument \code{k} to define the returned
