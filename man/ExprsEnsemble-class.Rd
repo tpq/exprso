@@ -13,7 +13,7 @@
 }
 \arguments{
 \item{object}{An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline},
-\code{ExprsEnsemble}, or \code{ExprsPredict} object.}
+or \code{ExprsEnsemble} object.}
 
 \item{index}{A numeric scalar. The i-th model from which to retrieve features.
 If missing, \code{getFeatures} will tabulate features across all models.}

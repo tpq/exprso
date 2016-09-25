@@ -55,7 +55,7 @@ An S4 class to store models built during high-throughput learning
 
 \item \code{subset}: Method to subset \code{ExprsPipeline} object.
 
-\item \code{summary}: Method to summarize \code{ExprsPipeline} parameters and performances.
+\item \code{summary}: Method to summarize \code{ExprsPipeline} classification results.
 
 \item \code{getFeatures}: Method to return features within an \code{ExprsPredict} model.
 }}

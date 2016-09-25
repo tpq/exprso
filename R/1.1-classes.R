@@ -26,7 +26,7 @@ setClass("ExprsArray",
 
 #' An S4 class to store feature and annotation data
 #'
-#' An \code{ExprsArray} subclass for data with binary class labels.
+#' An \code{ExprsArray} sub-class for data with binary class labels.
 #'
 #' @export
 setClass("ExprsBinary",
@@ -35,7 +35,7 @@ setClass("ExprsBinary",
 
 #' An S4 class to store feature and annotation data
 #'
-#' An \code{ExprsArray} subclass for data with many class labels.
+#' An \code{ExprsArray} sub-class for data with many class labels.
 #'
 #' @export
 setClass("ExprsMulti",
@@ -68,7 +68,7 @@ setClass("ExprsModel",
 
 #' An S4 class to store the classification model
 #'
-#' An \code{ExprsModel} subclass for dichotomous classifiers.
+#' An \code{ExprsModel} sub-class for dichotomous classifiers.
 #'
 #' @export
 setClass("ExprsMachine",
@@ -77,7 +77,7 @@ setClass("ExprsMachine",
 
 #' An S4 class to store the classification model
 #'
-#' An \code{ExprsModel} subclass for multi-class classifiers.
+#' An \code{ExprsModel} sub-class for multi-class classifiers.
 #'
 #' @export
 setClass("ExprsModule",
@@ -139,7 +139,8 @@ setClass("ExprsEnsemble",
 #'  as a decision value.
 #' @slot probability Typically a matrix. Stores class predictions
 #'  as a probability.
-#' @slot actual Known class labels. Used by \code{\link{calcStats}}.
+#' @slot actual Typically a factor. Stores known class labels.
+#'  Used by \code{\link{calcStats}}.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}\cr

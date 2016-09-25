@@ -5,6 +5,6 @@
 \alias{ExprsModule-class}
 \title{An S4 class to store the classification model}
 \description{
-An \code{ExprsModel} subclass for multi-class classifiers.
+An \code{ExprsModel} sub-class for multi-class classifiers.
 }
 

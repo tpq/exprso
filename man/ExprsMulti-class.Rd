@@ -5,6 +5,6 @@
 \alias{ExprsMulti-class}
 \title{An S4 class to store feature and annotation data}
 \description{
-An \code{ExprsArray} subclass for data with many class labels.
+An \code{ExprsArray} sub-class for data with many class labels.
 }
 

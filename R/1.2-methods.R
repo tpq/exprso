@@ -1,12 +1,12 @@
 ###########################################################
 ### Define generic functions
 
-#' Retrieve \code{exprso} Feature Set
+#' Retrieve Feature Set
 #'
 #' See the respective S4 class for method details.
 #'
 #' @param object An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline},
-#'  \code{ExprsEnsemble}, or \code{ExprsPredict} object.
+#'  or \code{ExprsEnsemble} object.
 #' @param ... See \code{\link{ExprsPipeline-class}} or
 #'  \code{\link{ExprsEnsemble-class}}.
 #'
@@ -113,8 +113,6 @@ setMethod("subset", signature(x = "ExprsArray"),
 #' @param y Leave missing. Argument exists because of \code{\link{plot}} generic definition.
 #' @param a,b,c A numeric scalar. Indexes the first, second, and third dimensions to plot.
 #'  Set \code{c = 0} to plot two dimensions.
-#' @param colors A character vector. Optional. Manually assign a color to each subject point.
-#' @param shapes A numeric vector. Optional. Manually assign a shape to each subject point.
 #' @param ... Additional arguments passed to\code{plot} or \code{lattice::cloud}.
 #'
 #' @importFrom stats as.formula
@@ -122,7 +120,7 @@ setMethod("subset", signature(x = "ExprsArray"),
 #' @importFrom lattice cloud
 #' @export
 setMethod("plot", signature(x = "ExprsArray", y = "missing"),
-          function(x, y, a = 1, b = 2, c = 3, colors, shapes, ...){
+          function(x, y, a = 1, b = 2, c = 3, ...){
 
             args <- getArgs(...)
 
@@ -160,7 +158,7 @@ setMethod("plot", signature(x = "ExprsArray", y = "missing"),
           }
 )
 
-#' @describeIn ExprsArray Method to plot summary graphs for a sub-sample of expression data.
+#' @describeIn ExprsArray Method to plot summary graphs for a sub-sample of feature data.
 #'
 #' @importFrom stats qqnorm density
 #' @importFrom graphics layout boxplot
@@ -178,7 +176,7 @@ setMethod("summary", "ExprsArray",
             # Plot charts
             qqnorm(v)
             plot(density(v), main = "Density Plot")
-            boxplot(v, horizontal = TRUE, main = "Box Plot", xlab = "Expression Values")
+            boxplot(v, horizontal = TRUE, main = "Box Plot", xlab = "Feature Values")
 
             layout(matrix(c(1), 1, 1, byrow = TRUE))
 
@@ -332,7 +330,7 @@ setMethod("subset", signature(x = "ExprsPipeline"),
           }
 )
 
-#' @describeIn ExprsPipeline Method to summarize \code{ExprsPipeline} parameters and performances.
+#' @describeIn ExprsPipeline Method to summarize \code{ExprsPipeline} classification results.
 #'
 #' @importFrom stats sd
 #' @export

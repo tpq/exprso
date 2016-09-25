@@ -2,13 +2,13 @@
 % Please edit documentation in R/1.2-methods.R
 \name{getFeatures}
 \alias{getFeatures}
-\title{Retrieve \code{exprso} Feature Set}
+\title{Retrieve Feature Set}
 \usage{
 getFeatures(object, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline},
-\code{ExprsEnsemble}, or \code{ExprsPredict} object.}
+or \code{ExprsEnsemble} object.}
 
 \item{...}{See \code{\link{ExprsPipeline-class}} or
 \code{\link{ExprsEnsemble-class}}.}

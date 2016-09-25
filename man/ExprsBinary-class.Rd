@@ -5,6 +5,6 @@
 \alias{ExprsBinary-class}
 \title{An S4 class to store feature and annotation data}
 \description{
-An \code{ExprsArray} subclass for data with binary class labels.
+An \code{ExprsArray} sub-class for data with binary class labels.
 }
 
