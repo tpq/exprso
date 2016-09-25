@@ -28,10 +28,9 @@ argument, the user can force the default handling of numeric vectors.}
 
 \item{verbose}{A logical scalar. Argument passed to \code{\link{exprso-predict}}.}
 
-\item{...}{Arguments passed to the \code{how} method. Unlike the \code{how} wrapper,
-this function will accept multiple terms for each argument, supplied as a vector.
-this function will train and deploy a classifier for each combination of
-parameters provided in this way.}
+\item{...}{Arguments passed to the \code{how} method. Unlike the \code{build} method,
+\code{plGrid} allows multiple parameters for each argument, supplied as a vector.
+See Details.}
 }
 \value{
 An \code{\link{ExprsPipeline-class}} object.
@@ -42,17 +41,23 @@ Trains and deploys multiple classifiers across a vast parameter search space.
 \details{
 Unlike \code{plGrid}, the \code{plGridMulti} function accepts a \code{ctrlFS}
  argument, allowing for 1-vs-all classification with implicit feature selection.
-
-In other words, instead of performing multi-class feature selection followed by
  1-vs-all classification, this function divides the data into 1-vs-all bins,
  performs a 1-vs-all feature selection for each bin, and then performs a 1-vs-all
- classification for each bin. As such, each \code{ExprsMachine} within the
+ classification for that same bin. As such, each \code{ExprsMachine} within the
  \code{ExprsModule} will have its own unique feature selection history.
 
 Take note, that \code{plGridMulti} does not have built-in \code{plCV} support.
  To use \code{plGridMulti} with cross-validation, use \code{plNested}.
 }
 \seealso{
-\code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+\code{\link{fs}}\cr
+\code{\link{build}}\cr
+\code{\link{doMulti}}\cr
+\code{\link{exprso-predict}}\cr
+\code{\link{plCV}}\cr
+\code{\link{plGrid}}\cr
+\code{\link{plGridMulti}}\cr
+\code{\link{plMonteCarlo}}\cr
+\code{\link{plNested}}
 }
 

@@ -26,32 +26,24 @@ Perform nested cross-validation.
 }
 \details{
 Analogous to how \code{\link{plGrid}} manages multiple \code{build} and
- \code{predict} tasks, \code{plNested} effectively manages multiple
- \code{plGrid} tasks.
+ \code{predict} tasks, one can think of \code{plNested} as managing
+ multiple \code{pl} tasks.
 
 Specifically, \code{plNested} segregates the data into v-folds,
- treating each fold as a validation set to a training set built from
- the remaining subjects. Then, some \code{fold} times, it performs all
+ treating each fold as a validation set and the subjects not in that fold
+ as a training set. Then, some \code{fold} times, it performs all
  feature selection tasks (listed via \code{ctrlFS}) on each split
- training set, and executing \code{plGrid} (via \code{ctrlGS}) on the
- training set. The resultant \code{ExprsPipeline} object contains the
- "outer" fold performance metrics in the columns whose names begin with
- "valid" (as carried over by \code{plGrid}).
+ of the data, and executes the \code{pl} function (via \code{ctrlGS})
+ using the training set.
 
 To perform multiple feature selection tasks, supply a list of multiple
  \code{\link{ctrlFeatureSelect}} argument wrappers to \code{ctrlFS}.
  To reduce the results of \code{plNested} to a single performance metric,
- feed the returned \code{ExprsPipeline} object through
- \code{\link{calcNested}}.
+ you can feed the returned \code{ExprsPipeline} object through the helper
+ function \code{\link{calcNested}}.
 
-Note that \code{plGrid} uses \code{\link{plCV}} to calculate the "inner"
- cross-validation accuracy. Depending on the use case, may not represent
- the most appropriate choice. We hope future implementations will accomodate
- other \code{ctrlGS} functions beyond \code{plGrid}.
-
-When calculating classifier performance, this function forces
- \code{aucSkip = TRUE} and \code{plotSkip = TRUE}, not unlike
- \code{\link{plCV}}.
+When calculating classifier performance with \code{\link{calcStats}}, this
+ function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 }
 \examples{
 \dontrun{
@@ -68,6 +60,14 @@ nest <- plNested(arrays[[1]], fold = 10, ctrlFS = fs, ctrlGS = gs, save = FALSE)
 }
 }
 \seealso{
-\code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+\code{\link{fs}}\cr
+\code{\link{build}}\cr
+\code{\link{doMulti}}\cr
+\code{\link{exprso-predict}}\cr
+\code{\link{plCV}}\cr
+\code{\link{plGrid}}\cr
+\code{\link{plGridMulti}}\cr
+\code{\link{plMonteCarlo}}\cr
+\code{\link{plNested}}
 }
 

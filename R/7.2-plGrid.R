@@ -4,7 +4,8 @@
 #' Build Argument Grid
 #'
 #' This function builds an argument grid from any number of arguments.
-#'  Used to prepare a grid search for the \code{plGrid} function.
+#'  Used to prepare a grid-search for the \code{plGrid} and
+#'  \code{plGridMulti} functions.
 #'
 #' @param array.train The \code{array.train} argument as fed to \code{plGrid}.
 #' @param top The \code{top} argument as fed to \code{plGrid}.
@@ -62,14 +63,13 @@ makeGridFromArgs <- function(array.train, top, how, ...){
 #' Trains and deploys multiple classifiers across a vast parameter search space.
 #'
 #' \code{plGrid} will \code{\link{build}} and \code{\link{exprso-predict}} for
-#'  each combination of parameters listed as additional arguments (\code{...}).
+#'  each combination of parameters provided as additional arguments (\code{...}).
 #'  When using \code{plGrid}, supplying a numeric vector as the \code{top}
 #'  argument will train and deploy a classifier of each mentioned size for
-#'  each combination of parameters listed in \code{...}. To skip prediction,
-#'  set \code{array.valid = NULL}. Either way, this function returns an
+#'  each combination of parameters provided in \code{...}. To skip validation set
+#'  prediction, use \code{array.valid = NULL}. Either way, this function returns an
 #'  \code{\link{ExprsPipeline-class}} object which contains the build parameters,
-#'  classifier performances, and \code{ExprsModel} objects for all trained
-#'  and deployed models.
+#'  classifier performances, and \code{ExprsModel} objects for all trained models.
 #'
 #' \code{plGrid} will perform v-fold or leave-one-out cross-validation for the
 #'  using \code{\link{plCV}}. The argument \code{fold} specifies the number
@@ -103,14 +103,22 @@ makeGridFromArgs <- function(array.train, top, how, ...){
 #'  to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogether.
 #' @param aucSkip A logical scalar. Argument passed to \code{\link{calcStats}}.
 #' @param verbose A logical scalar. Argument passed to \code{\link{exprso-predict}}.
-#' @param ... Arguments passed to the \code{how} method. Unlike the \code{how} wrapper,
-#'  this function will accept multiple terms for each argument, supplied as a vector.
-#'  this function will train and deploy a classifier for each combination of
-#'  parameters provided in this way.
+#' @param ... Arguments passed to the \code{how} method. Unlike the \code{build} method,
+#'  \code{plGrid} allows multiple parameters for each argument, supplied as a vector.
+#'  See Details.
+#'
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @examples
 #' \dontrun{

@@ -7,11 +7,10 @@
 #'
 #' Unlike \code{plGrid}, the \code{plGridMulti} function accepts a \code{ctrlFS}
 #'  argument, allowing for 1-vs-all classification with implicit feature selection.
-#'
-#' In other words, instead of performing multi-class feature selection followed by
+#   In other words, instead of performing multi-class feature selection followed by
 #'  1-vs-all classification, this function divides the data into 1-vs-all bins,
 #'  performs a 1-vs-all feature selection for each bin, and then performs a 1-vs-all
-#'  classification for each bin. As such, each \code{ExprsMachine} within the
+#'  classification for that same bin. As such, each \code{ExprsMachine} within the
 #'  \code{ExprsModule} will have its own unique feature selection history.
 #'
 #' Take note, that \code{plGridMulti} does not have built-in \code{plCV} support.
@@ -21,10 +20,19 @@
 #' @param array.train Specifies the \code{ExprsMulti} object to use as training set.
 #' @param array.valid Specifies the \code{ExprsMulti} object to use as validation set.
 #' @param ctrlFS A list of arguments handled by \code{\link{ctrlFeatureSelect}}.
+#'
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @export
 plGridMulti <- function(array.train, array.valid = NULL, ctrlFS, top, how,

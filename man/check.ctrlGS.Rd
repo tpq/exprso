@@ -14,7 +14,7 @@ This function ensures that the list of arguments for \code{ctrlGS} meets
  the criteria required by the \code{\link{plNested}} function.
 }
 \details{
-This function mandates \code{aucSkip = TRUE} and \code{plotSkip = TRUE}
- arguments, not unlike \code{\link{plCV}}.
+When calculating classifier performance with \code{\link{calcStats}}, this
+ function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 }
 

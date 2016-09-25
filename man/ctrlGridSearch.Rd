@@ -9,7 +9,8 @@ ctrlGridSearch(func, top, ...)
 \arguments{
 \item{func}{A character string. The \code{pl} function to call.}
 
-\item{top}{Argument passed to the \code{pl} function.}
+\item{top}{Argument passed to the \code{pl} function. Leave missing
+when handling \code{plMonteCarlo} or \code{plNested} arguments.}
 
 \item{...}{Additional arguments passed to the \code{pl} function.}
 }
@@ -18,9 +19,5 @@ A list of arguments.
 }
 \description{
 This function organizes \code{plGrid} arguments passed to \code{pl} functions.
-}
-\details{
-\code{\link{plMonteCarlo}} and \code{\link{plNested}} functions currently
- only accept \code{\link{plGrid}} as the \code{ctrlGridSearch} \code{func}.
 }
 

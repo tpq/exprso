@@ -22,23 +22,28 @@
 #'  a more "sophisticated" form of cross-validation as implemented in
 #'  \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
 #'
-#' When calculating classifier performance, this function forces
-#'  \code{aucSkip = TRUE} and \code{plotSkip = TRUE}, not unlike
-#'  \code{\link{plCV}}.
+#' When calculating classifier performance with \code{\link{calcStats}}, this
+#'  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
-#' @param top A numeric scalar or character vector. A numeric scalar indicates
-#'  the number of top features that should undergo feature selection. A character vector
-#'  indicates specifically which features by name should undergo feature selection.
-#'  Set \code{top = 0} to include all features.
+#' @inheritParams fs
 #' @param how A character string. Specifies the \code{\link{build}} method to iterate.
 #' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation.
 #' @param ... Arguments passed to the \code{how} method.
+#'
 #' @return A numeric scalar. The cross-validation accuracy.
 #'
 #' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @export
 plCV <- function(array, top, how, fold, ...){

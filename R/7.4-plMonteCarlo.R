@@ -39,11 +39,9 @@ ctrlFeatureSelect <- function(func, top, ...){
 #'
 #' This function organizes \code{plGrid} arguments passed to \code{pl} functions.
 #'
-#' \code{\link{plMonteCarlo}} and \code{\link{plNested}} functions currently
-#'  only accept \code{\link{plGrid}} as the \code{ctrlGridSearch} \code{func}.
-#'
 #' @param func A character string. The \code{pl} function to call.
-#' @param top Argument passed to the \code{pl} function.
+#' @param top Argument passed to the \code{pl} function. Leave missing
+#'  when handling \code{plMonteCarlo} or \code{plNested} arguments.
 #' @param ... Additional arguments passed to the \code{pl} function.
 #' @return A list of arguments.
 #'
@@ -70,26 +68,20 @@ ctrlGridSearch <- function(func, top, ...){
 #' Perform Monte Carlo style cross-validation.
 #'
 #' Analogous to how \code{\link{plGrid}} manages multiple \code{build} and
-#'  \code{predict} tasks, \code{plMonteCarlo} effectively manages multiple
-#'  \code{\link{plGrid}} tasks.
+#'  \code{predict} tasks, one can think of \code{plMonteCarlo} as managing
+#'  multiple \code{pl} tasks.
 #'
 #' Specifically, \code{plMonteCarlo} will call the provided \code{split}
-#'  function (via \code{ctrlSS}) some \code{B} times, performing all
-#'  feature selection tasks (listed via \code{ctrlFS}) on each split
-#'  training set, and executing \code{plGrid} (via \code{ctrlGS}) on the
-#'  training set. We hope future implementations will accomodate
-#'  other \code{ctrlGS} functions beyond \code{plGrid}.
+#'  function (via \code{ctrlSS}) some \code{B} times, perform all
+#'  feature selection tasks (listed via \code{ctrlFS}) on each split of
+#'  the data, and execute the \code{pl} function (via \code{ctrlGS})
+#'  using the bootstrapped set.
 #'
 #' To perform multiple feature selection tasks, supply a list of multiple
 #'  \code{\link{ctrlFeatureSelect}} argument wrappers to \code{ctrlFS}.
 #'  To reduce the results of \code{plMonteCarlo} to a single performance metric,
-#'  feed the returned \code{ExprsPipeline} object through
-#'  \code{\link{calcMonteCarlo}}.
-#'
-#' Note that \code{plGrid} uses \code{\link{plCV}} to calculate the "inner"
-#'  cross-validation accuracy. Depending on the use case, may not represent
-#'  the most appropriate choice. We hope future implementations will accomodate
-#'  other \code{ctrlGS} functions beyond \code{plGrid}.
+#'  you can feed the returned \code{ExprsPipeline} object through the helper
+#'  function \code{\link{calcMonteCarlo}}.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
 #' @param B A numeric scalar. The number of times to \code{split} the data.
@@ -98,10 +90,19 @@ ctrlGridSearch <- function(func, top, ...){
 #' @param ctrlGS Arguments handled by \code{\link{ctrlGridSearch}}.
 #' @param save A logical scalar. Toggles whether to save randomly split
 #'  training and validation sets.
+#'
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{fs}}\cr
+#' \code{\link{build}}\cr
+#' \code{\link{doMulti}}\cr
+#' \code{\link{exprso-predict}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @examples
 #' \dontrun{
