@@ -12,9 +12,9 @@ arrayExprs(object, colBy, include, colID, begin, ...)
 \item{colBy}{A numeric or character index. The column that contains group annotations.}
 
 \item{include}{A list of character vectors. Specifies which annotations in \code{colBy}
-to include into which groups. Each element of a list specifies a unique group while
-each element of the character vector specifies an annotation to fit to that group. For
-binary classification, the first list element defines the negative or control group.}
+to include in which groups. Each element of the list specifies a unique group while
+each element of the character vector specifies which annotations define that group. For
+binary classification, the first list element defines the negative, or control, group.}
 
 \item{colID}{A numeric or character index. The column used to name subjects.
 For \code{data.frame} or file import only.}
@@ -29,27 +29,27 @@ For file import only.}
 An \code{ExprsArray} object.
 }
 \description{
-A convenience function that builds an \code{ExprsArray} object from an object.
+A convenience function that builds an \code{ExprsArray} object.
 }
 \details{
-For a \code{data.frame} object:
+Importing a \code{data.frame} object:
 
-This function expects that the delimited data file has the following format:
+This function expects that the imported \code{data.frame} has the following format:
  rows indicate subject entries while columns indicate measured variables.
  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
- The remaining columns should contain feature data (e.g. expression values).
+ The remaining columns should contain feature data (e.g., expression values).
  The argument \code{begin} defines the j-th column at which the feature
  data starts. This function automatically removes any features with \code{NA} values.
  Take care to remove any \code{factor} columns before importing.
 
-For an \code{ExpressionSet} object:
+Importing an \code{ExpressionSet} object:
 
 The package Biobase maintains a popular class object called \code{ExpressionSet} that
  often gets used to store expression data. This function converts this \code{eSet}
  object into an \code{ExprsArray} object. This function automatically removes any
  features with \code{NA} values.
 
-For a \code{file}:
+Importing a \code{file}:
 
 \code{arrayExprs} can also build an \code{ExprsArray} object from a tab-delimited
  data file, passing along the \code{file} and \code{...} argument(s) to

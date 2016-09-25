@@ -40,8 +40,8 @@ This method reproduces the hard filter described by Deb and Reddy (2003)
  and all values greater than \code{maximum} to \code{maximum}.
 
 Next, this method includes only those features with (a) a range greater
- than \code{beta1}, and also (b) a ratio of maximum gene expression to
- minimum gene expression greater than \code{beta2}.
+ than \code{beta1}, and also (b) a ratio of maximum feature expression to
+ minimum feature expression greater than \code{beta2}.
 }
 \section{Methods (by class)}{
 \itemize{

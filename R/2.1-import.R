@@ -3,26 +3,26 @@
 
 #' Import Data as ExprsArray
 #'
-#' A convenience function that builds an \code{ExprsArray} object from an object.
+#' A convenience function that builds an \code{ExprsArray} object.
 #'
-#' For a \code{data.frame} object:
+#' Importing a \code{data.frame} object:
 #'
-#' This function expects that the delimited data file has the following format:
+#' This function expects that the imported \code{data.frame} has the following format:
 #'  rows indicate subject entries while columns indicate measured variables.
 #'  The first several columns should contain annotation information (e.g., age, sex, diagnosis).
-#'  The remaining columns should contain feature data (e.g. expression values).
+#'  The remaining columns should contain feature data (e.g., expression values).
 #'  The argument \code{begin} defines the j-th column at which the feature
 #'  data starts. This function automatically removes any features with \code{NA} values.
 #'  Take care to remove any \code{factor} columns before importing.
 #'
-#' For an \code{ExpressionSet} object:
+#' Importing an \code{ExpressionSet} object:
 #'
 #' The package Biobase maintains a popular class object called \code{ExpressionSet} that
 #'  often gets used to store expression data. This function converts this \code{eSet}
 #'  object into an \code{ExprsArray} object. This function automatically removes any
 #'  features with \code{NA} values.
 #'
-#' For a \code{file}:
+#' Importing a \code{file}:
 #'
 #' \code{arrayExprs} can also build an \code{ExprsArray} object from a tab-delimited
 #'  data file, passing along the \code{file} and \code{...} argument(s) to
@@ -32,9 +32,9 @@
 #' @param object What to import as an \code{ExprsArray} object. See Details.
 #' @param colBy A numeric or character index. The column that contains group annotations.
 #' @param include A list of character vectors. Specifies which annotations in \code{colBy}
-#'  to include into which groups. Each element of a list specifies a unique group while
-#'  each element of the character vector specifies an annotation to fit to that group. For
-#'  binary classification, the first list element defines the negative or control group.
+#'  to include in which groups. Each element of the list specifies a unique group while
+#'  each element of the character vector specifies which annotations define that group. For
+#'  binary classification, the first list element defines the negative, or control, group.
 #' @param colID A numeric or character index. The column used to name subjects.
 #'  For \code{data.frame} or file import only.
 #' @param begin A numeric scalar. The j-th column at which feature data starts.
@@ -132,15 +132,15 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 #'
 #' @param gse A GSE data object retrieved using GEOquery.
 #' @param colBy A character string. The GSE column name that contains the feature value.
-#'  If missing, function will prompt user for a choice after previewing options.
+#'  If missing, function will prompt user for a column name after previewing options.
 #' @param colID A character string. The GSE column name that contains the feature identity.
-#'  If missing, function will prompt user for a choice after previewing options.
+#'  If missing, function will prompt user for a column name after previewing options.
 #' @return An \code{ExpressionSet} object.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{arrayExprs}}
 #' @export
-GSE2eSet <- function(gse, colBy = NULL, colID = NULL){
+GSE2eSet <- function(gse, colBy, colID){
 
   # Check for non-unique platforms
   gsms <- unlist(lapply(GEOquery::GSMList(gse), function(g){ GEOquery::Meta(g)$platform}))
