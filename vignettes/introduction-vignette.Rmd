@@ -197,15 +197,15 @@ For more information, we refer the user to the package documentation, `?'exprso-
 
 ## Pipeline methods
 
-This package includes several functions named with the prefix `pl`. These "pipeline" functions exist to help consolidate high-throughput analyses. In other words, they wrap repetitive tasks into a single operation. Such tasks include high-throughput parameter searches as well as some elaborate cross-validation designs. As we will see, some of these `pl` functions will even have other `pl` functions embedded within them. For example, the function `plGrid` contains the function `plCV` for managing *v*-fold and leave-one-out cross-validation.
+This package includes several functions named with the prefix `pl`. These "pipeline" functions exist to help consolidate high-throughput analyses. In other words, they wrap repetitive tasks into a single operation. Such tasks include high-throughput parameter searches as well as some elaborate cross-validation designs. As we will see, some of these `pl` functions will even have other `pl` functions embedded within them. For example, the function `plGrid` contains the function `plCV` for managing simple *v*-fold and leave-one-out cross-validation.
 
 ## High-throughput parameter searches
 
 When constructing a classifier using a **build** method, we can only specify one set of parameters at a time. However, we often want to test models across a vast range of parameters. For this task, we provide the `plGrid` function. This function builds and deploys a model for each combination of all provided arguments. For example, calling `plGrid` with the arguments `how = "buildSVM"`, `top = c(3, 5, 10)`, `cost = 10^(-3:3)`, and `kernel = c("linear", "radial")` will yield  42 classifiers.
 
-We note here that this function only accepts one `how` per run. To analyze the results of multiple `build` parameter searches jointly, combine the results of those `plGrid` function calls using `?conjoin`. We will also note that `plGrid` does not execute any data splitting or feature selection, both of which the user may perform beforehand. However, `plGrid` does allow the user to specify multiple *classifier sizes* by providing a numeric vector as the `top` argument.
+We note here that this function only accepts one `how` per run. To analyze the results of multiple `build` parameter searches jointly, combine the results of multiple `plGrid` function calls using `?conjoin`. We will also note that `plGrid` does not execute any data splitting or feature selection, both of which the user may perform beforehand. However, `plGrid` does allow the user to specify multiple *classifier sizes* by providing a numeric vector as the `top` argument.
 
-The `plGrid` function can also calculate *v*-fold cross-validation accuracy at each step of the parameter search (toggled by supplying a non-`NULL` argument to `fold`). We emphasize, however, that the cross-validation method embedded within `plGrid` (i.e., `plCV`) does not re-select features with each fold, which may lead to overly-optimistic measures of classifier performance in the setting of prior feature selection.
+The `plGrid` function can also calculate *v*-fold cross-validation accuracy at each step of the parameter search (toggled by supplying a non-`NULL` argument to `fold`). We emphasize, however, that the cross-validation method embedded within `plGrid` (i.e., `plCV`) does not re-select features with each fold, which may lead to overly-optimistic measures of classifier performance in the setting of prior feature selection, as is the case in the example here.
 
 Below, we will run through a few different support vector machine (SVM) builds, calculating the leave-one-out cross-validation accuracy (by setting `fold = 0`) at each step.
 
@@ -213,7 +213,7 @@ Below, we will run through a few different support vector machine (SVM) builds, 
 gs <-
   plGrid(array.train = array.train,
          array.valid = array.test,
-         top = 0,
+         top = c(5, 10),
          how = "buildSVM",
          fold = 0,
          kernel = "linear",
@@ -221,7 +221,7 @@ gs <-
 )
 ```
 
-The returned object contains two slots, `@summary` and `@machs`, which store the performance summary and corresponding `ExprsModel` objects, respectively. The performance summary contains columns detailing the parameter used to build each machine along with performance metrics for the training set (and test set, if provided). Columns named with "train" describe training set performances. Columns named with "valid" describe test set performances. The column, `"train.plCV"`, contains the cross-validation accuracy, if performed. The returned `ExprsPipeline` object also contains an `ExprsModel` object for each entry in the performance summary.
+The returned object contains two slots, `@summary` and `@machs`, which store the performance summary and corresponding `ExprsModel` objects, respectively. The performance summary contains columns detailing the parameters used to build each machine along with performance metrics for the training set (and test set, if provided). Columns named with "train" describe training set performances. Columns named with "valid" describe test set performances. The column, `"train.plCV"`, contains the cross-validation accuracy, if performed. The returned `ExprsPipeline` object also contains an `ExprsModel` object for each entry in the performance summary.
 
 We can subset `ExprsPipeline` objects based on the performance summary (i.e., `@summary`) by using the `[` and `$` operators, similar to how `ExprsArray` object subsetting works. Below, we extract the column that contains the cross-validation accuracies using `[` and `$`.
 
@@ -233,21 +233,21 @@ gs$train.plCV
 As above, the `pipeSubset` function and the `subset` method offer two alternatives for subsetting data.
 
 ```{r}
-pipeSubset(gs, colBy = "kernel", include = "linear")
-subset(gs, subset = gs$kernel == "linear")
+pipeSubset(gs, colBy = "cost", include = 1)
+subset(gs, subset = gs$cost == 1)
 ```
 
 ## Other cross-validation
 
 The *exprso* package also provides a means by which to perform elaborate cross-validation, including Monte Carlo style and 2-layer "nested" cross-validation. Analogous to how `plGrid` manages multiple build and predict tasks, these pipelines (i.e., `plMonteCarlo` and `plNested`) effectively manage multiple `plGrid` tasks. In order to organize the sheer number of arguments necessary to execute these functions, we have implemented argument handler functions. These argument handler functions (i.e., `ctrlSplitSet`, `ctrlFeatureSelect`, and `ctrlGridSearch`) handle the data splitting, feature selection, and grid searching arguments, respectively.
 
-In simplest terms, `plMonteCarlo` and `plNested` use a single training set to calculate classifier performances on a withheld *internal validation set*. This *internal validation set* serves as a kind of proxy for a statistically independent test set. The main difference between `plMonteCarlo` and `plNested` stems from how *internal validation set* gets constructed. On one hand, the `plMonteCarlo` method uses the `ctrlSplitSet` argument handler to split the training set into a *training subset* and an *intenral validation set* with each bootstrap. On the other hand, the `plNested` method splits the training set into *v*-folds, treating each fold as an *internal validation set*, with the remaining subjects comprising the *training subset*.
+In simplest terms, `plMonteCarlo` and `plNested` use a single training set to calculate classifier performances on a withheld *internal validation set*. This *internal validation set* serves as a kind of proxy for a statistically independent test set. The main difference between `plMonteCarlo` and `plNested` stems from how the *internal validation set* gets constructed. On one hand, the `plMonteCarlo` method uses the `ctrlSplitSet` argument handler to split the training set into a *training subset* and an *intenral validation set* with each bootstrap. On the other hand, the `plNested` method splits the training set into *v*-folds, treating each fold as an *internal validation set* while treating those outside that fold as the *training subset*.
 
 For the sake of simplicity, we will call any performance measured on an *internal validation set* as the **outer-loop** cross-validation performance. Then, we will call any cross-validation accuracy measured using the *training subset* (i.e., via `plGrid`) the **inner-loop** cross-validation performance. In the performance summaries of the `ExprsPipeline` objects returned by `plMonteCarlo` and `plNested`, columns named with "train" describe *training subset* performances while columns named with "valid" describe *internal validation set* performances.
 
 Although the **inner-loop** cross-validation performances (i.e., via `plCV`) can still over-estimate cross-validation through prior feature selection, the **outer-loop** cross-validation performances derive from classifiers that have undergone feature selection anew with each bootstrap or fold. However, we emphasize here that performing feature selection on a training set *prior* to the use of `plMonteCarlo` or `plNested` can still result in overly optimistic **outer-loop** cross-validation performances.
 
-In the example below, we perform five iterations of `plMonteCarlo` using the original training set as it existed before it underwent any feature selection (i.e., the first slot of the object `balance`). With each iteration, we (1) sample the subjects randomly through bagging (i.e., random sampling with replacement), (2) perform feature selection using the Student's t-test, and then (3) execute a gridsearch across multiple support vector machine (SVM) parameters and classifier sizes. In this framework, the user could instead perform multiple feature selection tasks with each step, simply by supplying a list of multiple `ctrlFeatureSelect` argument handlers to the `ctrlFS` argument below.
+In the example below, we perform five iterations of `plMonteCarlo` using the original training set as it existed before it underwent any feature selection (i.e., the first slot of the object `arrays`). With each iteration, we (1) sample the subjects randomly through bagging (i.e., random sampling with replacement), (2) perform feature selection using the Student's t-test, and then (3) execute a grid-search across multiple support vector machine (SVM) parameters and classifier sizes. In this framework, the user could instead perform any number of feature selection tasks simply by supplying a list of multiple `ctrlFeatureSelect` argument handlers to the `ctrlFS` argument below.
 
 ```{r}
 ss <-
@@ -257,7 +257,7 @@ fs <-
 gs <-
   ctrlGridSearch(func = "plGrid",
                  how = "buildSVM",
-                 top = c(10, 25, 50),
+                 top = c(10, 25),
                  kernel = "linear",
                  cost = 10^(-3:3),
                  fold = 10)
@@ -265,14 +265,14 @@ gs <-
 
 ```{r, results = "hide", warning = FALSE}
 boot <-
-  plMonteCarlo(balance[[1]],
+  plMonteCarlo(arrays[[1]],
                B = 5,
                ctrlSS = ss,
                ctrlFS = fs,
                ctrlGS = gs)
 ```
 
-Next, we reduce the results of `plMonteCarlo` to a single performance metric by feeding the returned `ExprsPipeline` object through `calcMonteCarlo`.
+Next, we reduce the results of `plMonteCarlo` to a single performance metric by feeding the returned `ExprsPipeline` object through `calcMonteCarlo`. Note that this helper function will fail unless `plGrid` has called `plCV` during the parameter grid-search.
 
 ```{r}
 calcMonteCarlo(boot, colBy = "valid.auc")
@@ -282,26 +282,27 @@ calcMonteCarlo(boot, colBy = "valid.auc")
 
 This package provides two ways to build ensemble classifiers. The first involves manually combining multiple `ExprsModel` objects together through the function `buildEnsemble` (or `?conjoin`). The second involves an orchestrated manipulation of an `ExprsPipeline` object through the `pipeFilter` function.
 
-This latter approach filters an `ExprsPipeline` object in (up to) three steps. First, a threshold filter gets imposed, whereby any model with a performance less than the threshold filter, `how`, gets excluded. Second, a ceiling filter gets imposed, whereby any model with a performance less than the ceiling filter, `gate`, gets excluded. Third, an arbitrary subset occurs, whereby the top *N* models in the `ExprsPipeline` object get selected based on the argument `top`. In the case that the `@summary` slot contains the column "boot" (e.g., in the results of `plMonteCarlo`), `pipeFilter` selects the top *N* models for *each* unique bootstrap. The user may skip any one of these filter steps by setting the respective argument to 0.
+This latter approach filters an `ExprsPipeline` object in (up to) three steps. First, a threshold filter gets imposed, whereby any model with a performance less than the threshold filter, `how`, gets excluded. Second, a ceiling filter gets imposed, whereby any model with a performance less than the ceiling filter, `gate`, gets excluded. Third, an arbitrary subset occurs, whereby the top *N* models in the `ExprsPipeline` object get selected based on the argument `top`. In the case that the `@summary` slot contains the column "boot" (e.g., in the results of `plMonteCarlo`), `pipeFilter` selects the top *N* models for *each* unique bootstrap. The user may skip any one of these three filter steps by setting the respective argument to 0.
 
 When calling the `buildEnsemble` method for an `ExprsPipeline` object, any classifiers remaining after the `pipeFilter` filter will get assembled into a single ensemble classifier. Ensemble classifiers get stored as an `ExprsEnsemble` object which is nothing more than object-oriented container for a list of multiple `ExprsModel` objects.
 
-In the example below, we we will build an ensemble using the single best classifier from each `plMonteCarlo` bootstrap, and then deploy that ensemble on the withheld test set from above (i.e., the second slot of the object `balance`).
+In the example below, we we will build an ensemble using the single best classifier from each `plMonteCarlo` bootstrap, and then deploy that ensemble on the withheld test set from above.
 
-```{r}
+```{r, results = "hide"}
 ens <- buildEnsemble(boot, top = 1, colBy = "valid.auc")
+pred <- predict(ens, array.test, how = "majority")
 ```
 
-```{r}
-predict(ens, array.test, how = "probability")
+```{r, echo = FALSE}
+calcStats(pred)
 ```
 
 Owing to how the `pipeFilter` function handles `ExprsPipeline` objects that contain a "boot" column in the performance summary (i.e., `@summary`), we include the `pipeUnboot` function to rename this "boot" column to "unboot". To learn more about how `ExprsEnsemble` predicts class labels, we refer the user to the package documentation, `?'exprso-predict'`. In addition, we encourage the user to visit the package documentation, `?'ExprsPipeline-class'` and `?'ExprsEnsemble-class'`, for more information on pipelines and ensembles, respectively.
 
 ## Multi-class methods
 
-We conclude this vignette by alerting the user that the *exprso* package also includes a framework for performing multi-class classification in an automated manner. These methods use the "1-vs-all" approach to multi-class classification, whereby each individual class label has a turn getting treated as the positive class label in a dichotomous (binary) scheme. Then, the results of each iteration get integrated into a single construct. To learn more about multi-class classification, we refer the user to the package documentation, `?arrayExprs` and `?doMulti`. However, we wish to emphasize here that multi-class feature selection is still under heavy development. In the near future, we plan to introduce novel `pl` methods that implement multi-class feature selection in an optimal manner.
+We conclude this vignette by alerting the user that the *exprso* package also includes a framework for performing multi-class classification in an automated manner. These methods use the "1-vs-all" approach to multi-class classification, whereby each individual class label has a turn getting treated as the positive class label in a dichotomous (binary) scheme. Then, the results of each iteration get integrated into a single construct. To learn more about multi-class classification, we refer the user to the package documentation, `?arrayExprs` and `?doMulti`, as well as the companion vignette, "Advanced Topics for the *exprso* package".
 
 ## Final remarks
 
-Thank you for your interest in *exprso*. Although we have made tremendous progress in formalizing this library in a reliable package framework, some of the tools included here may change. We will do our best to keep this vignette and other documentation as up-to-date as possible. However, we may sometimes fall short on this goal. To the best of knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know! File any and all issues at [GitHub](http://www.github.com/tpq/exprso/issues). In addition, we always welcome suggestions for new tools that we include in future releases. Happy learning!
+Thank you for your interest in *exprso*. Although we have made tremendous progress in formalizing this library in a reliable package framework, some of the tools included here may change. To the best of knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know! File any and all issues at [GitHub](http://www.github.com/tpq/exprso/issues). In addition, we always welcome suggestions for new tools that we could include in future releases. Happy learning!
