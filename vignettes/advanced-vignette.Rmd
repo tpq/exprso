@@ -171,13 +171,15 @@ For illustrative purposes, we perform "perfect" cross-validation using support v
 
 ```{r, results = "hide"}
 fs.inner <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
-fs.outer <- ctrlFeatureSelect(func = "fsNULL", top = 0)
 gs.inner <- ctrlGridSearch(func = "plGrid", top = 3, how = "buildSVM", fold = NULL)
-gs.outer <- ctrlGridSearch(func = "plNested", fold = 10, ctrlFS = fs.inner, ctrlGS = gs.inner)
+
+fs.outer <- ctrlFeatureSelect(func = "fsNULL", top = 0)
+gs.outer <- ctrlGridSearch(func = "plNested", fold = 2, ctrlFS = fs.inner, ctrlGS = gs.inner)
+
 pl <- data(Golub_Merge) %>% get %>%
   arrayExprs(colBy = "ALL.AML", include = list("ALL", "AML")) %>%
   modFilter(20, 16000, 500, 5) %>% modTransform %>% modNormalize %>%
-  plNested(fold = 10, ctrlFS = fs.outer, ctrlGS = gs.outer)
+  plNested(fold = 2, ctrlFS = fs.outer, ctrlGS = gs.outer)
 ```
 
 ## Multi-class classification
@@ -204,7 +206,7 @@ fs <- ctrlFeatureSelect(func = "fsANOVA", top = 0)
 gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildRF", fold = 2)
 
 pl <- trainingSet(splitSets) %>%
-  plNested(fold = 5, ctrlFS = fs, ctrlGS = gs) %T>%
+  plNested(fold = 2, ctrlFS = fs, ctrlGS = gs) %T>%
   calcNested(colBy = "valid.acc")
 ```
 
@@ -222,18 +224,19 @@ A special `plGrid` variant, called `plGridMulti`, is also available for multi-cl
 
 ```{r, results = "hide"}
 fs <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
-pl <- plGridMulti(trainingSet(splitSets), testSet(splitSets), ctrlFS = fs, top = c(2, 3, 0),
+
+pl <- plGridMulti(trainingSet(splitSets), testSet(splitSets), ctrlFS = fs, top = c(2, 3),
                   how = "buildSVM", kernel = c("linear", "radial"), gamma = c(.1, .2))
 ```
 
 However, `plGridMulti` does not have built-in `plCV` support. To run `plGridMulti` with cross-validation, use `plNested`.
 
 ```{r, results = "hide"}
-fs <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
-gs <- ctrlGridSearch(func = "plGridMulti", ctrlFS = fs, top = 3,
-                     how = "buildSVM", kernel = c("linear", "radial"), gamma = c(.1, .2))
+fs.inner <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
 fs.outer <- ctrlFeatureSelect(func = "fsNULL", top = 0)
+gs.outer <- ctrlGridSearch(func = "plGridMulti", ctrlFS = fs.inner, top = c(2, 3),
+                     how = "buildSVM", kernel = c("linear", "radial"), gamma = c(.1, .2))
 
-pl <- plNested(trainingSet(splitSets), fold = 10,
-               ctrlFS = fs.outer, ctrlGS = gs)
+pl <- plNested(trainingSet(splitSets), fold = 2,
+               ctrlFS = fs.outer, ctrlGS = gs.outer)
 ```
