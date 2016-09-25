@@ -9,13 +9,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Although this vignette contains a lot of exciting stuff, to get the most out of it, we recommend first reading the vignette, "An Introduction to the *exprso* Package", which introduces many of the core features upon which the "Advanced Topics for the *exprso* Package" depends. Then, once you become familiar with the fundamental modules of this package, read this vignette to learn more about the true power and flexibility of *exprso*.
+## Foreword
+
+Although this vignette contains a lot of exciting stuff, to get the most out of it, we recommend first reading the companion vignette, "An Introduction to the *exprso* Package", which introduces many of the core features upon which this package depends. Then, once you become familiar with the fundamental modules of this package, read this vignette to learn more about the true power and flexibility of *exprso*.
 
 ## Tidy learning
 
-In this first section, we will show how you can combine tidy principles with the *exprso* package to execute machine learning even faster than before. We do this using the *magrittr* package which provides two main functions you should know about: `%>%` and `%T>%`. Both of these functions pass the result from the previous function call to the first argument of the next function call, colloquially known as "piping". However, the latter differs from the other in that it "branches out" and does not return a value. Instead, `%T>%` pipes along the result of the previous function. This makes `%T>%` useful for "side-chain" tasks like plotting.
+In this first section, we will show how you can combine tidy principles with the *exprso* package to execute machine learning even faster than before. We do this using the *magrittr* package which provides two key functions: `%>%` and `%T>%`. Both of these functions pass on the result from a prior function call to the first argument of the next function call, an operation known as *piping*. However, the latter differs from the former in that it "branches out" and does not pass on its own result. Instead, `%T>%` pipes along the result from the previous function. This makes `%T>%` useful for "side-chain" tasks like plotting.
 
-First, we must load the necessary packages, including the Golub data used in the introductory vignette.
+To begin, we load the necessary packages, including the *golubEsets* data package used extensively in the introductory vignette.
 
 ```{r, message = FALSE}
 library(exprso)
@@ -27,7 +29,7 @@ library(golubEsets)
 set.seed(1)
 ```
 
-Now, we will see how piping can help save you time while also making your code more readable. Here, we use the `%>%` function to pre-process the Golub dataset, then split it into a training and test set. Since the data object forks at the level of the `split` method (yielding two `ExprsArray` objects from one), it makes sense to break the pipe cascade there.
+Now, we will see how piping can help save you time, all while making your code more readable. Here, we use the `%>%` function to pre-process the Golub dataset and split it into a training and test set. Since the data object forks at the level of the `split` method (yielding two `ExprsArray` objects from one), it makes sense to break the pipe cascade there.
 
 ```{r, results = "hide"}
 splitSets <- data(Golub_Merge) %>% get %>%
@@ -36,7 +38,7 @@ splitSets <- data(Golub_Merge) %>% get %>%
   splitSample(percent.include = 67)
 ```
 
-Next, we use the `%>%` function to pull the training set from the `split` method result using the `trainingSet` function and pipe it through a chain of feature selection and classifier construction methods. Similar to `trainingSet`, the `testSet` function (or, equivalently, the `validationSet` function) will extract the test set from the `split` method result.
+Next, we use the `%>%` function to pull the training set from the `split` method result (via the `trainingSet` function) and pipe it through a chain of feature selection and classifier construction methods. Similar to `trainingSet`, the `testSet` function (or, equivalently, the `validationSet` function) will extract the test set from the `split` method result.
 
 ```{r, results = "hide"}
 pred <- trainingSet(splitSets) %>%
@@ -48,7 +50,7 @@ pred <- trainingSet(splitSets) %>%
   calcStats
 ```
 
-Piping can expedite ensemble classifier construction as well. Here, we use the `%>%` function with `plMonteCarlo` to first (a) split the *training set* across 10 bootstraps, (b) perform recursive feature elimination on each *training subset*, (c) construct an LDA classifier, and (d) deploy the classifier on an *internal validation set*. Then, we select the best three performing classifiers, regardless of the bootstrap origin, by passing the results through `pipeUnboot` and `pipeFilter` (see `?pipeUnboot` and `?pipeFilter` to learn more about how the "boot" column changes `pipeFilter` behavior). Last, we build a classifier ensemble and deploy it on the *test set*. For code clarity, we define the argument handler functions `ctrlSplitSet`, `ctrlFeatureSelect`, and `ctrlGridSearch` before the pipe cascade.
+Piping can expedite ensemble classifier construction as well. Here, we use the `%>%` function in conjunction with `plMonteCarlo` to (a) split the *training set* across 10 bootstraps, (b) perform recursive feature elimination on each *training subset*, (c) construct an LDA classifier, and (d) deploy the classifier on an *internal validation set*. Then, we select the best three performing classifiers, regardless of the bootstrap origin, by passing the results through `pipeUnboot` and `pipeFilter` (see `?pipeUnboot` and `?pipeFilter` to learn more about how the "boot" column changes `pipeFilter` behavior). Last, we build a classifier ensemble and deploy it on the *test set*. For code clarity, we define the argument handler functions `ctrlSplitSet`, `ctrlFeatureSelect`, and `ctrlGridSearch` outside of the pipe cascade.
 
 ```{r, results = "hide"}
 ss <- ctrlSplitSet(func = "splitSample", percent.include = 67, replace = TRUE)
@@ -66,11 +68,9 @@ pred <- trainingSet(splitSets) %>%
 
 ## Clustering before classifying
 
-The *exprso* package also includes the `modCluster` function, a wrapper for easy clustering of subjects based on feature data. In terms of expected arguments, this function works analogously to the feature selection and classification methods, and uses a `how` argument to toggle between one of seven clustering algorithms. The `modCluster` function returns an `ExprsArray` object with updated `@annot` slot that contains the results of clustering, where each number refers to the cluster assignment.
+The *exprso* package also includes a wrapper function for quickly clustering subjects based on feature data, named `modCluster`. In terms of the expected arguments, this function works analogously to the feature selection and classification methods, using the familiar `how` argument to toggle between one of seven clustering algorithms. The `modCluster` function returns an `ExprsArray` object with updated `@annot` slot that contains the results of clustering, and typically would run after splitting but before feature selection.
 
-Typically, you would call `modCluster` after splitting and before feature selection. Since there are so many ways you could cluster within a classification pipeline, we show the simplest example here and leave it up to you to experiment on your own. Who knows, you might find that perfect way of subdividing your data that maximizes classification accuracy!
-
-Next, we use the `%>%` function to carve the *training set* into two clusters, and then use just one of the clustered groups to build an artificial neural network. Although this example is a bit absurd since it sacrifices power so blatantly, it should help illustrate how `modCluster` works in the context of other modules.
+Since there are so many ways you could cluster within a classification pipeline, we will show here the simplest example and leave it up to you to experiment on your own. Who knows, you might find that perfect way of subdividing your data that maximizes classification accuracy! In this example, we use the `%>%` function to carve the *training set* into two clusters, and then use just one of the clustered groups to build an artificial neural network. Although this example is a bit absurd since it sacrifices power so blatantly, it should help illustrate how `modCluster` works in the context of other modules.
 
 ```{r, results = "hide"}
 pred <- trainingSet(splitSets) %>%
@@ -82,7 +82,7 @@ pred <- trainingSet(splitSets) %>%
   calcStats
 ```
 
-Next, we show how a few additional commands can let you to cluster by cases *only*. Take note that you could apply this same approach to any data annotation. In this example, we use the `conjoin` function to undo the `subset`. For your own safety, using `conjoin` after feature selection will throw an error.
+Next, we show how you can cluster by cases *only*, using a small trick that works just as well for any data annotation. In this example, we use the `conjoin` function to undo the `subset`. Note, however, that using `conjoin` after feature selection will throw an error.
 
 ```{r, results = "hide"}
 clusteredCases <- trainingSet(splitSets) %>%
@@ -95,7 +95,7 @@ clusteredCases <- trainingSet(splitSets) %>%
 
 ## Importing GSE files
 
-The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a curated version the former. These GDS data files easily convert to an `ExpressionSet` (abbreviated `eSet`) object using the `GDS2eSet` function available from the GEOquery package. However, not all GSE data files have a corresponding GDS data file available. To convert GSE data files into eSet objects, *exprso* provides the `GSE2eSet` function. To acquire GSE data files, use the function `getGEO` from the GEOquery package (e.g., `getGEO("GSExxxxx", GSEMatrix = FALSE)`). For more information, see the `GEOquery` package.
+The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a curated version the former. These GDS data files easily convert to an `ExpressionSet` (abbreviated `eSet`) object using the `GDS2eSet` function available from the *GEOquery* package. However, not all GSE data files have a corresponding GDS data file available. To convert GSE data files into eSet objects, *exprso* provides the `GSE2eSet` function. Below, we download a GSE file and import it as an `ExprsArray` object.
 
 ```{r, eval = FALSE}
 data.gse <- getGEO("GSE5847", GSEMatrix = FALSE)
@@ -105,7 +105,7 @@ data.eset@phenoData@data
 
 ## Deep learning
 
-Deep learning in *exprso* does not differ much from the other approaches to classification. However, supplying arguments to the build wrapper, `buildDNN` (via `h2o`), does get a little cumbersome.
+Deep learning in *exprso* does not differ much from the other approaches to classification. However, supplying arguments to the deep learning build wrapper (via `h2o`) does get a little cumbersome.
 
 ```{r, eval = FALSE}
 pred <- trainingSet(splitSets) %>%
@@ -120,14 +120,14 @@ pred <- trainingSet(splitSets) %>%
   calcStats
 ```
 
-One important difference with `buildDNN` is that you have to take the time to manually clear out the old models from RAM. Unlike with other models, the `ExprsModel` object does not actually store the deep neural net, but rather just holds a "link" to the classifier. The actual classifier is stored outside of R to allow for parallelization and improved performance.
+One important difference with `buildDNN` is that you have to take the time to manually clear out the old classification models from RAM. Unlike with other models, the `ExprsModel` object does not actually store the deep neural net, but rather just holds a "link" to the classifier. The actual classifier is stored outside of R to allow for parallelization and improved performance.
 
 ```{r, eval = FALSE}
 # Frees RAM for more learning
 h2o::h2o.shutdown()
 ```
   
-When embedding `buildDNN` within a grid-search, we run into the difficulty that most `buildDNN` arguments require a numeric vector as input. These vector inputs typically correspond to a unique value for each layer of the deep neural net. We can provide `plGrid` a vector argument by wrapping it in a list. Take note that this approach of providing argument vectors in a list would also work for other arguments, such as `top`.
+When embedding `buildDNN` within a grid-search, we run into the difficulty that most `buildDNN` arguments require a numeric vector as input. These vector inputs typically correspond to a unique value for each layer of the deep neural net. We can provide `plGrid` a vector argument by wrapping it in a list. Take note that this approach of providing argument vectors in a list would also work for other arguments (e.g., `top`).
 
 ```{r, eval = FALSE}
 pl <- trainingSet(splitSets) %>%
@@ -140,7 +140,7 @@ pl <- trainingSet(splitSets) %>%
          epochs = 100)
 ```
 
-Below, we show a more elaborate grid-search. For details on these arguments, see `?h2o::h2o.deeplearning`.
+Below, we show a more elaborate deep learning grid-search. For details on these arguments, see `?h2o::h2o.deeplearning`.
 
 ```{r, eval = FALSE}
 pl <- trainingSet(splitSets) %>%
@@ -159,15 +159,15 @@ pl <- trainingSet(splitSets) %>%
          epochs = c(100))
 ```
 
-Keep in mind that deep learning is a very RAM hungry task. If you're not careful, you'll run out RAM and throw an error. Also remember to call `h2o::h2o.shutdown` whenever you finish deep learning!
+Keep in mind that deep learning is a very RAM hungry task. If you're not careful, you'll run out RAM and throw an error. Remember to call `h2o::h2o.shutdown()` whenever you finish deep learning!
 
 ## Perfect cross-validation
 
-The perfect cross-validation pipeline would have two layers of cross-validation such that the *outer-layer* divides the data without feature selection or classification while the *inner-layer* divides the data with feature selection and classification. We can achieve this in *exprso* by embedding a `plNested` pipeline within another `plNested` pipeline.
+The "perfect" cross-validation pipeline would have two layers of cross-validation such that the *outer-layer* divides the data *without* feature selection while the *inner-layer* divides the data *with* feature selection. We can achieve this in *exprso* by embedding a `plNested` pipeline within another `plNested` pipeline.
 
-If you use this approach, you should not need a test set as long as you calculate classification accuracy in a way that respects the independence of each fold. In other words, if you opt out of a *test set*, you must never let a *validation set* accuracy guide the selection of which training sets to use when calculating classification accuracy.
+If you use this approach, you should not need a test set as long as you calculate classification accuracy in a way that respects the independence of each fold. In other words, if you opt out of a *test set*, you must never let a *validation set* accuracy guide the selection of which training sets to use when calculating the final classification accuracy.
 
-For illustrative purposes, we perform "perfect" cross-validation using support vector machines built across a single set of parameters. Extending this pipeline to a larger parameter grid-search will require cautious analysis of the results.
+For illustrative purposes, we perform "perfect" cross-validation using support vector machines built across a single set of parameters. Extending this pipeline to a larger parameter grid-search will require a cautious analysis of the results.
 
 ```{r, results = "hide"}
 fs.inner <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
@@ -182,7 +182,7 @@ pl <- data(Golub_Merge) %>% get %>%
 
 ## Multi-class classification
 
-The *exprso* package also contains a growing number of methods made specifically for dealing with multi-class data. For one, all of the `build` methods available for binary classification also work for multi-class classification thanks to a back-end wrapper called `doMulti`. In addition, *exprso* also contains feature selection methods that work for binary and multi-class data alike.
+The *exprso* package also contains a growing number of methods made specifically for dealing with multi-class data. For example, all of the `build` methods available for binary classification also work for multi-class classification. In addition, *exprso* also contains some feature selection methods that work for binary and multi-class data alike.
 
 Below, we use mock multi-class data to illustrate a simple multi-class classification pipeline.
 
@@ -208,7 +208,7 @@ pl <- trainingSet(splitSets) %>%
   calcNested(colBy = "valid.acc")
 ```
 
-However, *exprso* does not yet support multi-class classifier ensembles. Sorry!
+Note that *exprso* does not yet support multi-class classifier ensembles. Sorry!
 
 ```{r, results = "hide"}
 testthat::expect_error(
@@ -218,12 +218,22 @@ testthat::expect_error(
 )
 ```
 
-A special `plGrid` variant, called `plGridMulti`, is also available for multi-class data. This variant uses *1-vs-all feature selection* instead of multi-class feature selection. In this implementation, 1-vs-all feature selection occurs just prior to 1-vs-all classifier construction. As such, each individual `ExprsMachine` within the `ExprsModule` will have its own unique feature selection history to pass along to the test set during classifier deployment. For `plGridMulti`, the 1-vs-all feature selection is managed just like the other `pl` functions, with the `ctrlFeatureSelection` argument handler.
+A special `plGrid` variant, called `plGridMulti`, is also available for multi-class data. This variant uses *1-vs-all feature selection* instead of multi-class feature selection. In this implementation, 1-vs-all feature selection occurs just prior to 1-vs-all classifier construction. As such, each individual `ExprsMachine` within the `ExprsModule` will have its own unique feature selection history to pass on to the test set during classifier deployment. For `plGridMulti`, the 1-vs-all feature selection is managed just like the other `pl` functions, using the `ctrlFeatureSelect` argument handler.
 
 ```{r, results = "hide"}
 fs <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
-pl <- plGridMulti(trainingSet(splitSets), testSet(splitSets), top = c(2, 3, 0), ctrlFS = fs,
+pl <- plGridMulti(trainingSet(splitSets), testSet(splitSets), ctrlFS = fs, top = c(2, 3, 0),
                   how = "buildSVM", kernel = c("linear", "radial"), gamma = c(.1, .2))
 ```
 
-Note, however, that `plGridMulti` does not have built-in `plCV` support. To use `plGridMulti` with cross-validation, use `plNested`.
+However, `plGridMulti` does not have built-in `plCV` support. To run `plGridMulti` with cross-validation, use `plNested`.
+
+```{r, results = "hide"}
+fs <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
+gs <- ctrlGridSearch(func = "plGridMulti", ctrlFS = fs, top = 3,
+                     how = "buildSVM", kernel = c("linear", "radial"), gamma = c(.1, .2))
+fs.outer <- ctrlFeatureSelect(func = "fsNULL", top = 0)
+
+pl <- plNested(trainingSet(splitSets), fold = 10,
+               ctrlFS = fs.outer, ctrlGS = gs)
+```
