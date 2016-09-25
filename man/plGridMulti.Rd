@@ -4,13 +4,15 @@
 \alias{plGridMulti}
 \title{Perform High-Throughput Classification}
 \usage{
-plGridMulti(array.train, array.valid = NULL, top, how, ctrlFS,
+plGridMulti(array.train, array.valid = NULL, ctrlFS, top, how,
   aucSkip = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{array.train}{Specifies the \code{ExprsMulti} object to use as training set.}
 
 \item{array.valid}{Specifies the \code{ExprsMulti} object to use as validation set.}
+
+\item{ctrlFS}{A list of arguments handled by \code{\link{ctrlFeatureSelect}}.}
 
 \item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
@@ -21,8 +23,6 @@ top features. However, by providing a list of numeric vectors as the \code{top}
 argument, the user can force the default handling of numeric vectors.}
 
 \item{how}{A character string. Specifies the \code{\link{build}} method to iterate.}
-
-\item{ctrlFS}{A list of arguments handled by \code{\link{ctrlFeatureSelect}}.}
 
 \item{aucSkip}{A logical scalar. Argument passed to \code{\link{calcStats}}.}
 

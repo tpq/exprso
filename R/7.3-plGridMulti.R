@@ -27,7 +27,7 @@
 #' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
 #'
 #' @export
-plGridMulti <- function(array.train, array.valid = NULL, top, how, ctrlFS,
+plGridMulti <- function(array.train, array.valid = NULL, ctrlFS, top, how,
                         aucSkip = FALSE, verbose = TRUE, ...){
 
   if(class(array.train) != "ExprsMulti"){
