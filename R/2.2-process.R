@@ -23,6 +23,7 @@
 #'  include the feature. Inclusive with \code{beta1}.
 #' @param plotSkip A logical scalar. Toggles whether to produce side-by-side plots
 #'  of the before and after \code{ExprsArray} summary.
+#'
 #' @return A pre-processed \code{ExprsArray} object.
 #'
 #' @seealso

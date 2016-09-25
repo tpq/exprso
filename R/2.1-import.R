@@ -41,6 +41,7 @@
 #'  For \code{data.frame} or file import only.
 #' @param ... Additional arguments passed along to \code{read.delim}.
 #'  For file import only.
+#'
 #' @return An \code{ExprsArray} object.
 #'
 #' @seealso
@@ -135,6 +136,7 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 #'  If missing, function will prompt user for a column name after previewing options.
 #' @param colID A character string. The GSE column name that contains the feature identity.
 #'  If missing, function will prompt user for a column name after previewing options.
+#'
 #' @return An \code{ExpressionSet} object.
 #'
 #' @seealso

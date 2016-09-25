@@ -15,7 +15,7 @@
 #'  is not truly random. Instead, \code{splitSample} iterates through the random sampling
 #'  process until it settles on a solution such that both the training and validation set
 #'  contain at least one subject for each class label. If this method finds no solution
-#'  within 10 iterations, the function will post an error. Set \code{percent.include = 100}
+#'  after 10 iterations, the function will post an error. Set \code{percent.include = 100}
 #'  to skip random sampling and return a \code{NULL} validation set. Additional arguments
 #'  (e.g., \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
 #'  for all (i.e., binary and multi-class) \code{ExprsArray} objects.
@@ -28,6 +28,26 @@
 #'  how to apply binning, although the user might find it easier to instead bin
 #'  annotations beforehand. When applied to an \code{ExprsMulti} object, this function
 #'  stratifies subjects across all classes found in that dataset.
+#'
+#' @param object Specifies the \code{ExprsArray} object to split.
+#' @param percent.include Specifies the percent of the total number
+#'  of subjects to include in the training set.
+#' @param ... For \code{splitSample}: additional arguments passed
+#'  along to \code{\link{sample}}. For \code{splitStratify}: additional
+#'  arguments passed along to \code{\link{cut}}.
+#' @param colBy Specifies a vector of column names by which to stratify in
+#'  addition to class labels annotation. If \code{colBy = NULL}, random
+#'  sampling will occur across the class label annotation only.
+#'  For \code{splitStratify} only.
+#' @param bin A logical vector indicating whether to bin the respective
+#'  \code{colBy} column using \code{cut} (e.g., \code{bin = c(FALSE, TRUE)}).
+#'  For \code{splitStratify} only.
+#' @param breaks A list. Each element of the list should correspond to a
+#'  \code{breaks} argment passed to \code{cut} for the respective
+#'  \code{colBy} column. Set an element to \code{NA} when not binning
+#'  that \code{colBy}. For \code{splitStratify} only.
+#'
+#' @return Returns a list of two \code{ExprsArray} objects.
 #'
 #' @seealso
 #' \code{\link{ExprsArray-class}}
@@ -52,15 +72,6 @@ setGeneric("splitStratify",
 ### Split data
 
 #' @rdname split
-#'
-#' @param object Specifies the \code{ExprsArray} object to split.
-#' @param percent.include Specifies the percent of the total number
-#'  of subjects to include in the training set.
-#' @param ... For \code{splitSample}: additional arguments passed
-#'  along to \code{\link{sample}}. For \code{splitSample}: additional
-#'  arguments passed along to \code{\link{cut}}.
-#' @return Returns a list of two \code{ExprsArray} objects.
-#'
 #' @export
 setMethod("splitSample", "ExprsArray",
           function(object, percent.include, ...){
@@ -103,18 +114,6 @@ setMethod("splitSample", "ExprsArray",
 )
 
 #' @rdname split
-#'
-#' @inheritParams splitSample
-#' @param colBy Specifies a vector of column names by which to stratify in
-#'  addition to class labels annotation. If \code{colBy = NULL}, random
-#'  sampling will occur across the class label annotation only.
-#' @param bin A logical vector indicating whether to bin the respective
-#'  \code{colBy} column using \code{cut} (e.g., \code{bin = c(FALSE, TRUE)}).
-#' @param breaks A list. Each element of the list should correspond to a
-#'  \code{breaks} argment passed to \code{cut} for the respective
-#'  \code{colBy} column. Set an element to \code{NA} when not binning
-#'  that \code{colBy}.
-#'
 #' @export
 setMethod("splitStratify", "ExprsArray",
           function(object, percent.include, colBy, bin, breaks, ...){

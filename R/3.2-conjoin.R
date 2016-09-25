@@ -9,7 +9,7 @@
 #'  \code{ExprsArray} object as output. This only works on \code{ExprsArray} objects
 #'  that have not undergone feature selection. Any missing annotations in \code{@annot}
 #'  will get replaced with \code{NA} values. Note that all combined \code{ExprsArray}
-#'  objects must initially have the same features in the same order.
+#'  objects must initially have had the same features in the same order.
 #'
 #' When applied to two or more \code{ExprsModel} objects, this function returns one
 #'  \code{ExprsEnsemble} object as output. In this way, this function works similar to
