@@ -18,7 +18,7 @@ df.split <- data.frame(
   "Details" = c("See `stats::sample`", "See `base::cut`")
 )
 
-knitr::kable(df.split)
+knitr::kable(df.split, format = "markdown")
 ```
 
 ## Available `fs` methods
@@ -32,7 +32,7 @@ df.fs <- data.frame(
   "Details" = c("See `stats::sample`", "No additional arguments", "See `stats::aov`", "See `stats::t.test` or `stats::ks.test`", "See `stats::prcomp`", "See `pathClass::fit.rfe`", "See `limma::ebayes`", "See `mRMRe::mRMR.classic`")
 )
 
-knitr::kable(df.fs)
+knitr::kable(df.fs, format = "markdown")
 ```
 
 ## Available `build` methods
@@ -46,7 +46,7 @@ df.build <- data.frame(
   "Details" = c("See `e1071::naiveBayes`", "See `MASS::lda`", "See `e1071::svm`", "See `nnet::nnet`", "See `randomForest::randomForest`", "See `h2o::h2o.deeplearning`")
 )
 
-knitr::kable(df.build)
+knitr::kable(df.build, format = "markdown")
 ```
 
 ## Available `pl` methods
@@ -60,5 +60,5 @@ df.pl <- data.frame(
   "Details" = c(rep("Validation set optional", 2), rep("Training set only", 2))
 )
 
-knitr::kable(df.pl)
+knitr::kable(df.pl, format = "markdown")
 ```
