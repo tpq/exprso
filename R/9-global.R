@@ -2,9 +2,9 @@
 #' @importFrom plyr rbind.fill
 #' @importMethodsFrom kernlab predict
 #' @importClassesFrom Biobase ExpressionSet
+#' @importClassesFrom GEOquery GEODataTable
 #' @importMethodsFrom ROCR plot
 #' @importFrom graphics plot
-#' @import GEOquery
 NULL
 
 #' Sample ExprsBinary Data

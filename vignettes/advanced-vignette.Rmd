@@ -98,7 +98,7 @@ clusteredCases <- trainingSet(splitSets) %>%
 The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a curated version the former. These GDS data files easily convert to an `ExpressionSet` (abbreviated `eSet`) object using the `GDS2eSet` function available from the *GEOquery* package. However, not all GSE data files have a corresponding GDS data file available. To convert GSE data files into eSet objects, *exprso* provides the `GSE2eSet` function. Below, we download a GSE file and import it as an `ExprsArray` object.
 
 ```{r, eval = FALSE}
-data.gse <- getGEO("GSE5847", GSEMatrix = FALSE)
+data.gse <- GEOquery::getGEO("GSE5847", GSEMatrix = FALSE)
 data.eset <- GSE2eSet(data.gse)
 data.eset@phenoData@data
 ```

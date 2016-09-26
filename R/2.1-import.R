@@ -152,22 +152,22 @@ GSE2eSet <- function(gse, colBy, colID){
   if(missing(colID)){
 
     cat("The columns available for platform ID include:\n")
-    print(Columns(GEOquery::GSMList(gse)[[1]]))
+    print(GEOquery::Columns(GEOquery::GSMList(gse)[[1]]))
     cat("\n")
-    colID <- readline(prompt = "Which column will you use for platform ID?\n")
+    colID <- readline(prompt = "Which column (by name) will you use for platform ID?\n")
   }
 
   # Provide an opportunity for user to select a new platform VALUE column
   if(missing(colBy)){
 
     cat("The columns available for platform VALUE include:\n")
-    print(Columns(GEOquery::GSMList(gse)[[1]]))
+    print(GEOquery::Columns(GEOquery::GSMList(gse)[[1]]))
     cat("\n")
-    colBy <- readline(prompt = "Which column will you use for platform VALUE?\n")
+    colBy <- readline(prompt = "Which column (by name) will you use for platform VALUE?\n")
   }
 
   # Establish a template for all features
-  featsets <- Table(GEOquery::GPLList(gse)[[1]])$ID
+  featsets <- GEOquery::Table(GEOquery::GPLList(gse)[[1]])$ID
 
   # Retrieve feature values for each sample
   vals <- lapply(GEOquery::GSMList(gse),
