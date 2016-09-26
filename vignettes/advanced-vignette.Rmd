@@ -31,7 +31,7 @@ set.seed(1)
 
 Now, we will see how piping can help save you time, all while making your code more readable. Here, we use the `%>%` function to pre-process the Golub dataset and split it into a training and test set. Since the data object forks at the level of the `split` method (yielding two `ExprsArray` objects from one), it makes sense to break the pipe cascade there.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 splitSets <- data(Golub_Merge) %>% get %>%
   arrayExprs(colBy = "ALL.AML", include = list("ALL", "AML")) %>%
   modFilter(20, 16000, 500, 5) %>% modTransform %>% modNormalize %>%
@@ -40,7 +40,7 @@ splitSets <- data(Golub_Merge) %>% get %>%
 
 Next, we use the `%>%` function to pull the training set from the `split` method result (via the `trainingSet` function) and pipe it through a chain of feature selection and classifier construction methods. Similar to `trainingSet`, the `testSet` function (or, equivalently, the `validationSet` function) will extract the test set from the `split` method result.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 pred <- trainingSet(splitSets) %>%
   fsStats(how = "t.test") %>%
   fsPrcomp(top = 10) %T>%
@@ -72,7 +72,7 @@ The *exprso* package also includes a wrapper function for quickly clustering sub
 
 Since there are so many ways you could cluster within a classification pipeline, we will show here the simplest example and leave it up to you to experiment on your own. Who knows, you might find that perfect way of subdividing your data that maximizes classification accuracy! In this example, we use the `%>%` function to carve the *training set* into two clusters, and then use just one of the clustered groups to build an artificial neural network. Although this example is a bit absurd since it sacrifices power so blatantly, it should help illustrate how `modCluster` works in the context of other modules.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 pred <- trainingSet(splitSets) %>%
   modCluster(top = 0, how = "hclust", k = 2) %>%
   modSubset(colBy = "cluster", include = 1) %>%
@@ -84,7 +84,7 @@ pred <- trainingSet(splitSets) %>%
 
 Next, we show how you can cluster by cases *only*, using a small trick that works just as well for any data annotation. In this example, we use the `conjoin` function to undo the `subset`. Note, however, that using `conjoin` after feature selection will throw an error.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 clusteredCases <- trainingSet(splitSets) %>%
   modSubset(colBy = "defineCase", include = "Case") %>%
   modCluster %>%
@@ -169,7 +169,7 @@ If you use this approach, you should not need a test set as long as you calculat
 
 For illustrative purposes, we perform "perfect" cross-validation using support vector machines built across a single set of parameters. Extending this pipeline to a larger parameter grid-search will require a cautious analysis of the results.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 fs.inner <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
 gs.inner <- ctrlGridSearch(func = "plGrid", top = 3, how = "buildSVM", fold = NULL)
 
@@ -188,7 +188,7 @@ The *exprso* package also contains a growing number of methods made specifically
 
 Below, we use mock multi-class data to illustrate a simple multi-class classification pipeline.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 splitSets <- data(arrayMulti) %>% get %>%
   splitStratify(percent.include = 67, colBy = "sex")
 
@@ -201,9 +201,9 @@ trainingSet(splitSets) %>%
 
 All the pipelines developed for binary classification work equally well for multi-class classification. However, not all feature selection methods work for multi-class data. As long as you choose a valid multi-class feature selection method, `plGrid`, `plMonteCarlo`, and `plNested` will work without fail.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 fs <- ctrlFeatureSelect(func = "fsANOVA", top = 0)
-gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildRF", fold = 2)
+gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildRF", fold = 10)
 
 pl <- trainingSet(splitSets) %>%
   plNested(fold = 2, ctrlFS = fs, ctrlGS = gs) %T>%
@@ -212,7 +212,7 @@ pl <- trainingSet(splitSets) %>%
 
 Note that *exprso* does not yet support multi-class classifier ensembles. Sorry!
 
-```{r, results = "hide", eval = FALSE}
+```{r, eval = FALSE}
 testthat::expect_error(
   pl %>% buildEnsemble %>%
     predict(testSet(splitSets)) %>%
@@ -222,7 +222,7 @@ testthat::expect_error(
 
 A special `plGrid` variant, called `plGridMulti`, is also available for multi-class data. This variant uses *1-vs-all feature selection* instead of multi-class feature selection. In this implementation, 1-vs-all feature selection occurs just prior to 1-vs-all classifier construction. As such, each individual `ExprsMachine` within the `ExprsModule` will have its own unique feature selection history to pass on to the test set during classifier deployment. For `plGridMulti`, the 1-vs-all feature selection is managed just like the other `pl` functions, using the `ctrlFeatureSelect` argument handler.
 
-```{r, results = "hide", eval = FALSE}
+```{r, results = "hide"}
 fs <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
 
 pl <- plGridMulti(trainingSet(splitSets), testSet(splitSets), ctrlFS = fs, top = c(2, 3),
