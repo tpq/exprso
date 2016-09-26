@@ -1,5 +1,7 @@
 ---
 title: "The exprso Cheatsheet"
+author: "Thomas Quinn"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{The exprso Cheatsheet}
@@ -7,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Available `split` methods
+## Available split methods
 
 ```{r, echo = FALSE}
 df.split <- data.frame(
@@ -21,7 +23,7 @@ df.split <- data.frame(
 knitr::kable(df.split, format = "markdown")
 ```
 
-## Available `fs` methods
+## Available fs methods
 
 ```{r, echo = FALSE}
 df.fs <- data.frame(
@@ -35,7 +37,7 @@ df.fs <- data.frame(
 knitr::kable(df.fs, format = "markdown")
 ```
 
-## Available `build` methods
+## Available build methods
 
 ```{r, echo = FALSE}
 df.build <- data.frame(
@@ -49,7 +51,7 @@ df.build <- data.frame(
 knitr::kable(df.build, format = "markdown")
 ```
 
-## Available `pl` methods
+## Available pl methods
 
 ```{r, echo = FALSE}
 df.pl <- data.frame(

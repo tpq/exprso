@@ -215,6 +215,7 @@ setMethod("fsNULL", "ExprsArray",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsANOVA:} Method to perform ANOVA feature selection using stats::aov.
+#' @importFrom stats aov
 #' @export
 setMethod("fsANOVA", "ExprsArray",
           function(object, top, ...){ # args to aov
