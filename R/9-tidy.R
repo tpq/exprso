@@ -43,7 +43,7 @@ validationSet <- function(splitSets){
   }
 }
 
-#' @describeIn trainingSet Identical to the \code{validationSet} function.
+#' @describeIn validationSet Identical to the \code{validationSet} function.
 #' @export
 testSet <- function(splitSets){
 
