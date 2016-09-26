@@ -60,6 +60,7 @@ testSet <- function(splitSets){
 #' @param object An \code{ExprsArray} or \code{ExprsPipeline} object to subset.
 #' @param include A character vector. Specifies which annotations in \code{colBy}
 #'  to include in the subset.
+#'
 #' @return An \code{ExprsArray} or \code{ExprsPipeline} object.
 #'
 #' @export

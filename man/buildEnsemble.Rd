@@ -17,7 +17,8 @@ buildEnsemble(object, ...)
 \arguments{
 \item{object}{An \code{\link{ExprsModel-class}} object.}
 
-\item{...}{Additional \code{ExprsModel} objects to use in an ensemble.}
+\item{...}{Additional \code{ExprsModel} objects to use in the ensemble.
+Argument applies to \code{\link{ExprsModel-class}} method only.}
 
 \item{colBy}{A character vector or string. Specifies column(s) to use when
 filtering by classifier performance. Listing multiple columns will result
@@ -53,17 +54,18 @@ An \code{\link{ExprsEnsemble-class}} object.
 Aggregates multiple classifiers into a single ensemble classifier.
 }
 \details{
-The \code{buildEnsemble} function allows a user to quickly build an ensemble
- classifier. Using the \code{\link{ExprsModel-class}} method, one can specify
- manually any number of \code{ExprsModel} objects to include in the ensemble.
- These models do not necessarily have to derive from the same \code{build}
- method.
+The \code{\link{ExprsModel-class}} method:
 
-Using the \code{\link{ExprsPipeline-class}} method, one can also quickly
- build an ensemble from an \code{ExprsPipeline} object. This method works
- by first passing all arguments to \code{\link{pipeFilter}}, then aggregating
- the remaining models into a classifier. As an adjunct to this method, consider
- joining multiple \code{ExprsPipeline} objects with \code{\link{conjoin}}.
+Combine any number of \code{ExprsModel} objects into an ensemble. These models
+ do not necessarily have to derive from the same \code{build} method. This
+ method works identically to the \code{\link{conjoin}} \code{ExprsModel} method.
+
+The \code{\link{ExprsPipeline-class}} method:
+
+Build an ensemble from an \code{ExprsPipeline} object. This method works by
+ calling \code{\link{pipeFilter}}, then aggregating those results into an ensemble.
+ As an adjunct to this method, consider first combining multiple
+ \code{ExprsPipeline} objects together with \code{\link{conjoin}}.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -72,6 +74,12 @@ Using the \code{\link{ExprsPipeline-class}} method, one can also quickly
 \item \code{ExprsPipeline}: Method to build ensemble from \code{ExprsPipeline} objects.
 }}
 \seealso{
-\code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+\code{\link{pipeFilter}}\cr
+\code{\link{pipeUnboot}}\cr
+\code{\link{plCV}}\cr
+\code{\link{plGrid}}\cr
+\code{\link{plGridMulti}}\cr
+\code{\link{plMonteCarlo}}\cr
+\code{\link{plNested}}
 }
 

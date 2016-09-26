@@ -65,6 +65,12 @@ First, a threshold filter gets imposed. Any model with a performance
 \item \code{ExprsPipeline}: Method to filter \code{ExprsPipeline} objects.
 }}
 \seealso{
-\code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+\code{\link{pipeFilter}}\cr
+\code{\link{pipeUnboot}}\cr
+\code{\link{plCV}}\cr
+\code{\link{plGrid}}\cr
+\code{\link{plGridMulti}}\cr
+\code{\link{plMonteCarlo}}\cr
+\code{\link{plNested}}
 }
 

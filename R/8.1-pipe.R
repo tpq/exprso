@@ -42,10 +42,17 @@
 #'  In the case that the \code{@@summary} slot contains the column
 #'  "boot", this determines the top N models for each unique bootstrap.
 #'  Set \code{top = 0} to skip this subset.
+#'
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{pipeFilter}}\cr
+#' \code{\link{pipeUnboot}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @export
 setGeneric("pipeFilter",
@@ -188,7 +195,13 @@ setMethod("pipeFilter", "ExprsPipeline",
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #'
 #' @seealso
-#' \code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+#' \code{\link{pipeFilter}}\cr
+#' \code{\link{pipeUnboot}}\cr
+#' \code{\link{plCV}}\cr
+#' \code{\link{plGrid}}\cr
+#' \code{\link{plGridMulti}}\cr
+#' \code{\link{plMonteCarlo}}\cr
+#' \code{\link{plNested}}
 #'
 #' @export
 setGeneric("pipeUnboot",

@@ -29,6 +29,12 @@ This method provides a convenient adjunct to \code{\link{pipeFilter}} owing to
 \item \code{ExprsPipeline}: Method to rename \code{ExprsPipeline} object columns.
 }}
 \seealso{
-\code{\link{plCV}}, \code{\link{plGrid}}, \code{\link{plMonteCarlo}}, \code{\link{plNested}}
+\code{\link{pipeFilter}}\cr
+\code{\link{pipeUnboot}}\cr
+\code{\link{plCV}}\cr
+\code{\link{plGrid}}\cr
+\code{\link{plGridMulti}}\cr
+\code{\link{plMonteCarlo}}\cr
+\code{\link{plNested}}
 }
 
