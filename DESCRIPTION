@@ -23,7 +23,6 @@ VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 Imports:
     cluster,
-    h2o,
     MASS,
     e1071,
     lattice,
@@ -42,6 +41,7 @@ Depends:
 Suggests:
     Biobase,
     GEOquery,
+    h2o,
     golubEsets,
     knitr,
     limma,

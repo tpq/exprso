@@ -273,10 +273,14 @@ setMethod("buildRF", "ExprsArray",
 #' @section Methods (by generic):
 #' \code{buildDNN:} Method to build feed-forward networks using h2o::h2o.deeplearning.
 #' @importFrom utils write.csv
-#' @importFrom h2o h2o.init h2o.importFile h2o.deeplearning h2o.predict
 #' @export
 setMethod("buildDNN", "ExprsArray",
           function(object, top, ...){ # args to h2o.deeplearning
+
+            if(!requireNamespace("h2o", quietly = TRUE)){
+              stop("h2o needed for this function to work. Please install it.",
+                   call. = FALSE)
+            }
 
             args <- getArgs(...)
 
