@@ -11,9 +11,9 @@ Description: Supervised machine learning has an increasingly important role in b
     studies. However, the sheer complexity of classification pipelines poses a significant
     barrier to the expert biologist unfamiliar with machine learning. Moreover,
     many biologists lack the time or technical skills necessary to establish their own
-    pipelines. The exprso package introduces a framework for the rapid implementation of
+    pipelines. This package introduces a framework for the rapid implementation of
     high-throughput supervised machine learning built with the biologist user in mind.
-    Written by biologists, for biologists, exprso provides a user-friendly R interface
+    Written by biologists, for biologists, this package provides a user-friendly interface
     that empowers investigators to execute state-of-the-art binary and multi-class
     classification, including deep learning, with minimal programming
     experience necessary.
