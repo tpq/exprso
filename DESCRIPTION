@@ -1,6 +1,6 @@
 Package: exprso
 Title: Rapid Implementation of Machine Learning Algorithms for Genomic Data
-Version: 0.1.6.9000
+Version: 0.1.7
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
@@ -22,14 +22,11 @@ LazyData: TRUE
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 Imports:
-    Biobase,
     cluster,
-    GEOquery,
     h2o,
     MASS,
     e1071,
     lattice,
-    limma,
     methods,
     mRMRe,
     nnet,
@@ -43,8 +40,11 @@ Depends:
     R (>= 3.2.2),
     kernlab
 Suggests:
+    Biobase,
+    GEOquery,
     golubEsets,
     knitr,
+    limma,
     magrittr,
     rmarkdown,
     testthat

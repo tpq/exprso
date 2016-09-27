@@ -1,6 +1,9 @@
-## exprso 0.1.6.9000
+## exprso 0.1.7
 ---------------------
+* 2.1-import.R
+  * Make `Biobase` and `GEOquery` optional packages.
 * 5.1-fs.R
+  * Make `limma` an optional package.
   * Renamed from 5.1-fs-binary.R.
   * Add `fsNULL` method to return feature input unaltered.
   * Add `fsANOVA` feature selection method.

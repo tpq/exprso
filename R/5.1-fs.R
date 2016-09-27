@@ -366,10 +366,14 @@ setMethod("fsPathClassRFE", "ExprsBinary",
 #' @rdname fs
 #' @section Methods (by generic):
 #' \code{fsEbayes:} Method to perform empiric Bayes feature selection using limma::ebayes.
-#' @importFrom limma ebayes lmFit
 #' @export
 setMethod("fsEbayes", "ExprsBinary",
           function(object, top, ...){ # args to ebayes
+
+            if(!requireNamespace("limma", quietly = TRUE)){
+              stop("limma needed for this function to work. Please install it.",
+                   call. = FALSE)
+            }
 
             fs.(object, top,
                 uniqueFx = function(data, top, ...){

@@ -47,7 +47,6 @@
 #' @seealso
 #' \code{\link{ExprsArray-class}}, \code{\link{GSE2eSet}}
 #' @importFrom utils read.delim
-#' @importFrom Biobase exprs
 #' @export
 arrayExprs <- function(object, colBy, include, colID, begin, ...){
 
@@ -60,6 +59,11 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
     annot <- object[, 1:(begin-1)]
 
   }else if(class(object) == "ExpressionSet"){
+
+    if(!requireNamespace("Biobase", quietly = TRUE)){
+      stop("Biobase needed for this function to work. Please install it.",
+           call. = FALSE)
+    }
 
     exprs <- Biobase::exprs(object)
     annot <- object@phenoData@data
@@ -113,7 +117,6 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
   return(array)
 }
 
-#'
 #' Convert GSE to eSet
 #'
 #' A convenience function that builds an \code{eSet} object from a GSE data source.
@@ -144,6 +147,16 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 #' @export
 GSE2eSet <- function(gse, colBy, colID){
 
+  if(!requireNamespace("Biobase", quietly = TRUE)){
+    stop("Biobase needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
+  if(!requireNamespace("GEOquery", quietly = TRUE)){
+    stop("GEOquery needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
   # Check for non-unique platforms
   gsms <- unlist(lapply(GEOquery::GSMList(gse), function(g){ GEOquery::Meta(g)$platform}))
   if(length(unique(gsms)) > 1) stop("GSE contains non-unique platforms!")
@@ -154,7 +167,7 @@ GSE2eSet <- function(gse, colBy, colID){
     cat("The columns available for platform ID include:\n")
     print(GEOquery::Columns(GEOquery::GSMList(gse)[[1]]))
     cat("\n")
-    colID <- readline(prompt = "Which column (by name) will you use for platform ID?\n")
+    colID <- readline(prompt = "Which column (by name) will you use for platform ID? \n")
   }
 
   # Provide an opportunity for user to select a new platform VALUE column
@@ -163,7 +176,7 @@ GSE2eSet <- function(gse, colBy, colID){
     cat("The columns available for platform VALUE include:\n")
     print(GEOquery::Columns(GEOquery::GSMList(gse)[[1]]))
     cat("\n")
-    colBy <- readline(prompt = "Which column (by name) will you use for platform VALUE?\n")
+    colBy <- readline(prompt = "Which column (by name) will you use for platform VALUE? \n")
   }
 
   # Establish a template for all features
