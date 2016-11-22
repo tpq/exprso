@@ -1,0 +1,19 @@
+citHeader("To cite exprso in publications use:")
+
+citEntry(entry = "Article",
+         title        = "exprso: an R-package for the rapid implementation of machine learning algorithms",
+         author       = personList(as.person("Thomas Quinn"),
+                                   as.person("Daniel Tylee"),
+                                   as.person("Stephen Glatt")),
+         journal      = "F1000Research",
+         year         = "2016",
+         volume       = "5",
+         number       = "2588",
+         url          = "http://f1000research.com/articles/5-2588/",
+
+         textVersion  =
+           paste("Quinn T, Tylee D and Glatt S. 2016. exprso: an R-package for",
+                 "the rapid implementation of machine learning algorithms.",
+                 "F1000Research, 5:2588.",
+                 "URL http://f1000research.com/articles/5-2588/.")
+)
