@@ -21,7 +21,7 @@
     * Add multi-class `calcStats`
     
 * `pl` expansion:
-  * [] Consider "random Plains" wrapper
+  * [x] Consider "random Plains" wrapper
   * [] Consider `plRFE` with embedded RFE
   * [x] `plGridMulti`
     * Performs fs before each 1-vs-all build

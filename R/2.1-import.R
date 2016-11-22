@@ -50,11 +50,16 @@
 #' @export
 arrayExprs <- function(object, colBy, include, colID, begin, ...){
 
+  if(missing(colBy)) stop("Uh oh! User must specify 'colBy' argument!")
+  if(missing(include)) stop("Uh oh! User must specify 'include' argument!")
   if(!class(include) == "list") stop("Uh oh! User must provide 'include' argument as list!")
   if(length(include) < 2) stop("Uh oh! User must provide at least two classes!")
 
   if(class(object) == "data.frame"){
 
+    if(missing(colID)) stop("Uh oh! User must specify 'colID' argument!")
+    if(missing(begin)) stop("Uh oh! User must specify 'begin' argument!")
+    rownames(object) <- object[, colID]
     exprs <- exprs <- t(object[, begin:ncol(object)])
     annot <- object[, 1:(begin-1)]
 
@@ -70,10 +75,13 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 
   }else if(class(object) == "character" & file.exists(object)){
 
+    if(missing(colID)) stop("Uh oh! User must specify 'colID' argument!")
+    if(missing(begin)) stop("Uh oh! User must specify 'begin' argument!")
     args <- getArgs(...)
     args <- forceArg("stringsAsFactors", FALSE, args)
     args <- append(args, list("file" = object))
     object <- do.call("read.delim", args)
+    rownames(object) <- object[, colID]
     exprs <- t(object[, begin:ncol(object)])
     annot <- object[, 1:(begin-1)]
 

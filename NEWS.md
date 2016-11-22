@@ -1,3 +1,8 @@
+## exprso 0.1.7.9000
+---------------------
+* Fixed `arrayExprs` error when reading directly from file.
+* Added F1000Research citation to `inst/CITATION`.
+
 ## exprso 0.1.7
 ---------------------
 * 2.1-import.R
