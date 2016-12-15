@@ -22,6 +22,8 @@ LazyData: TRUE
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 Imports:
+    affy,
+    Biobase,
     cluster,
     MASS,
     e1071,
@@ -39,7 +41,6 @@ Depends:
     R (>= 3.2.2),
     kernlab
 Suggests:
-    Biobase,
     GEOquery,
     h2o,
     golubEsets,
