@@ -118,7 +118,7 @@ plGridMulti <- function(array.train, array.valid = NULL, ctrlFS, top, how,
     }
 
     # Save summary statistics
-    statistics[[i]] <- data.frame(grid[i, , drop = FALSE], acc)
+    statistics[[i]] <- data.frame("build" = how, grid[i, , drop = FALSE], acc)
   }
 
   pl <- new("ExprsPipeline",
