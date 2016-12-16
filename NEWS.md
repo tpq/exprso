@@ -1,7 +1,7 @@
 ## exprso 0.1.7.9000
 ---------------------
 * Fixed `arrayExprs` error when reading directly from file.
-* All `pl` functions will now store `build` method in results.
+* `pl` functions now store some run parameters in results.
 * Added F1000Research citation to `inst/CITATION`.
 
 ## exprso 0.1.7

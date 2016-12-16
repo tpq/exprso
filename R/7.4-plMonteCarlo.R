@@ -176,8 +176,14 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
 
 
                   # Append pl@summary
-                  pl@summary <- cbind(boot, pl@summary)
+                  pl@summary <- cbind("pl" = "plMonteCarlo", boot,
+                                      "ss" = ctrlSS$func,
+                                      "fs" = paste(sapply(ctrlFS, "[", "func"),
+                                                   collapse = ", "),
+                                      "gs" = ctrlGS$func,
+                                      pl@summary)
 
+                  colnames(pl@summary) <- make.names(colnames(pl@summary), unique = TRUE)
                   return(pl)
                 }
   )

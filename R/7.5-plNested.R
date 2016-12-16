@@ -183,7 +183,14 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
 
     # Save pl object
     pl <- do.call(what = func, args = args[!args %in% func])
-    pl@summary <- cbind(v, pl@summary)
+    pl@summary <- cbind("pl" = "plNested", v,
+                        "ss" = paste0(fold, "-fold"),
+                        "fs" = paste(sapply(ctrlFS, "[", "func"),
+                                     collapse = ", "),
+                        "gs" = ctrlGS$func,
+                        pl@summary)
+
+    colnames(pl@summary) <- make.names(colnames(pl@summary), unique = TRUE)
     pls[[v]] <- pl
   }
 
