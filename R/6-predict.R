@@ -415,7 +415,9 @@ setMethod("calcStats", "ExprsPredict",
               spec <- ROCR::performance(p, "spec")@y.values[[1]][index]
               auc <- ROCR::performance(p, "auc")@y.values[[1]]
 
-              return(data.frame(acc, sens, spec, auc))
+              df <- data.frame(acc, sens, spec, auc)
+              df[is.na(df)] <- 0
+              return(df)
 
             }else{
 
@@ -449,7 +451,11 @@ setMethod("calcStats", "ExprsPredict",
                 }else{
 
                   # NOTE: class == 2 refers to "Case"
-                  if(class == 2) return(data.frame(acc, sens, spec))
+                  if(class == 2){
+                    df <- data.frame(acc, sens, spec)
+                    df[is.na(df)] <- 0
+                    return(df)
+                  }
                 }
               }
 
@@ -462,7 +468,9 @@ setMethod("calcStats", "ExprsPredict",
 
               cat("Total accuracy of ExprsModule:", acc, "\n")
 
-              return(data.frame(acc))
+              df <- data.frame(acc)
+              df[is.na(df)] <- 0
+              return(df)
             }
           }
 )
