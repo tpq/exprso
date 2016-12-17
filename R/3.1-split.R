@@ -167,7 +167,7 @@ setMethod("splitStratify", "ExprsArray",
 
               # Perform stratification with remaining non-NA colBy values (e.g., those introduced by binning)
               s <- sampling::strata(df, stratanames = colnames(df), size = sizes, method = "srswor")
-              if(!identical(rownames(s), rownames(df)[s$ID_unit])) stop("Uh-oh! DEBUG ERROR: 001")
+              if(!identical(rownames(s), rownames(df)[s$ID_unit])) stop("Uh oh! DEBUG ERROR: 001")
 
               cat("\nWeighted stratification results:\n")
               print(table(s[, colnames(df)]))
