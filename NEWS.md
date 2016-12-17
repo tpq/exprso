@@ -1,11 +1,13 @@
 ## exprso 0.1.7.9000
 ---------------------
-* Improvements to data import
-  * Fixed `arrayExprs` error when reading directly from file
+* Improvements to `arrayExprs`
+  * Fixed an import error when reading directly from file
 * Improvements to `pl` functions
   * `pl` functions now store run parameters in results
   * Embedding `plMonteCarlo` now calculates outer-fold accuracy
   * Embedding `plNested` now calculates outer-fold accuracy
+* Improvements to `pipeFilter`
+  * `top` now chooses simplest classifier in case of tie
 * Added F1000Research citation to `inst/CITATION`
 
 ## exprso 0.1.7

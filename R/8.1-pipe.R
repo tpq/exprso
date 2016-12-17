@@ -141,12 +141,10 @@ setMethod("pipeFilter", "ExprsPipeline",
                            top <- 0
                          }
 
-                         if(top == 0) top <- sum(object@summary$boot == boot)
-
                          # Order 'top' accMeasures for this boot
-                         topMachs <- rev(order(accMeasures[object@summary$boot == boot]))[1:top]
-
-                         # Index by rowname for this boot
+                         if(top == 0) top <- sum(object@summary$boot == boot)
+                         topMachs <- order(accMeasures[object@summary$boot == boot],
+                                           decreasing = TRUE)[1:top]
                          rownames(object@summary[object@summary$boot == boot,])[topMachs]
                        }
                 )
@@ -162,12 +160,10 @@ setMethod("pipeFilter", "ExprsPipeline",
                 top <- 0
               }
 
-              if(top == 0) top <- nrow(object@summary)
-
               # Order 'top' accMeasures for entire object
-              topMachs <- order(accMeasures, decreasing = TRUE)[1:top]
-
-              # Index by rowname
+              if(top == 0) top <- nrow(object@summary)
+              topMachs <- order(accMeasures,
+                                decreasing = TRUE)[1:top]
               index <- rownames(object@summary)[topMachs]
             }
 
