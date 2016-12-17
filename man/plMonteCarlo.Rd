@@ -42,6 +42,10 @@ To perform multiple feature selection tasks, supply a list of multiple
  To reduce the results of \code{plMonteCarlo} to a single performance metric,
  you can feed the returned \code{ExprsPipeline} object through the helper
  function \code{\link{calcMonteCarlo}}.
+
+When embedding another \code{plMonteCarlo} or \code{plNested} call within
+ this function (i.e., via \code{ctrlGS}), outer-fold classifier performance
+ will force \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 }
 \examples{
 \dontrun{

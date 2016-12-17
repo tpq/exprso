@@ -69,6 +69,10 @@ check.ctrlGS <- function(args){
 #' When calculating classifier performance with \code{\link{calcStats}}, this
 #'  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 #'
+#' When embedding another \code{plMonteCarlo} or \code{plNested} call within
+#'  this function (i.e., via \code{ctrlGS}), outer-fold classifier performance
+#'  will force \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
+#'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
 #' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation.
@@ -162,7 +166,7 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
       array.boot <- do.call(what = func, args = args)
     }
 
-    # Perform some gridsearch function (e.g. plGrid)
+    # Perform some gridsearch function (e.g., plGrid)
     if(ctrlGS$func %in% c("plGrid", "plGridMulti")){
 
       args <- append(list("array.train" = array.boot,
@@ -170,19 +174,25 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
                      ctrlGS)
       args <- check.ctrlGS(args)
       func <- ctrlGS$func
+      pl <- do.call(what = func, args = args[!args %in% func])
 
     }else if(ctrlGS$func %in% c("plMonteCarlo", "plNested")){
 
       args <- append(list("array" = array.boot), ctrlGS)
       func <- ctrlGS$func
+      pl <- do.call(what = func, args = args[!args %in% func])
+
+      # Calculate outer fold accuracy for embedded pipelines
+      preds <- sapply(pl@machs, predict, array.demi)
+      stats <- lapply(preds, calcStats, aucSkip = TRUE, plotSkip = TRUE)
+      pl@summary <- cbind("outer" = do.call(rbind, stats), pl@summary)
 
     }else{
 
       stop("Uh oh! No method in place for this 'pl' pipeline.")
     }
 
-    # Save pl object
-    pl <- do.call(what = func, args = args[!args %in% func])
+    # Append pl@summary
     pl@summary <- cbind("pl" = "plNested", v,
                         "ss" = paste0(fold, "-fold"),
                         "fs" = paste(sapply(ctrlFS, "[", "func"),

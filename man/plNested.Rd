@@ -44,6 +44,10 @@ To perform multiple feature selection tasks, supply a list of multiple
 
 When calculating classifier performance with \code{\link{calcStats}}, this
  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
+
+When embedding another \code{plMonteCarlo} or \code{plNested} call within
+ this function (i.e., via \code{ctrlGS}), outer-fold classifier performance
+ will force \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 }
 \examples{
 \dontrun{

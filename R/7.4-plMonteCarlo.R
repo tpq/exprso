@@ -83,6 +83,10 @@ ctrlGridSearch <- function(func, top, ...){
 #'  you can feed the returned \code{ExprsPipeline} object through the helper
 #'  function \code{\link{calcMonteCarlo}}.
 #'
+#' When embedding another \code{plMonteCarlo} or \code{plNested} call within
+#'  this function (i.e., via \code{ctrlGS}), outer-fold classifier performance
+#'  will force \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
+#'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
 #' @param B A numeric scalar. The number of times to \code{split} the data.
 #' @param ctrlSS Arguments handled by \code{\link{ctrlSplitSet}}.
@@ -154,7 +158,7 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
                     array.boot <- do.call(what = func, args = args)
                   }
 
-                  # Perform some gridsearch function (e.g. plGrid)
+                  # Perform some gridsearch function (e.g., plGrid)
                   if(ctrlGS$func %in% c("plGrid", "plGridMulti")){
 
                     func <- ctrlGS$func
@@ -169,11 +173,15 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
                     args <- append(list("array" = array.boot), ctrlGS[!ctrlGS %in% func])
                     pl <- do.call(what = func, args = args)
 
+                    # Calculate outer fold accuracy for embedded pipelines
+                    preds <- sapply(pl@machs, predict, array.demi)
+                    stats <- lapply(preds, calcStats, aucSkip = TRUE, plotSkip = TRUE)
+                    pl@summary <- cbind("outer" = do.call(rbind, stats), pl@summary)
+
                   }else{
 
                     stop("Uh oh! No method in place for this 'pl' pipeline.")
                   }
-
 
                   # Append pl@summary
                   pl@summary <- cbind("pl" = "plMonteCarlo", boot,
