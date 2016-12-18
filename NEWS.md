@@ -6,6 +6,7 @@
   * All `NaN` and `NA` performance metrics now replaced with 0
 * Improvements to `fs` functions
   * New `fsInclude` ranks stated features above all others
+  * Add `fs.` check for non-numeric features
 * Improvements to `pl` functions
   * `pl` functions now store run parameters in results
   * Embedding `plMonteCarlo` now calculates outer-fold accuracy

@@ -166,6 +166,7 @@ fs. <- function(object, top, uniqueFx, ...){
   }
 
   data <- t(object@exprs[top, ])
+  if(!all(sapply(data, is.numeric))) stop("Uh oh! Non-numeric features detected.")
   final <- do.call("uniqueFx", list(data, top, ...))
 
   if(class(final) == "character"){
