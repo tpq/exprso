@@ -1,4 +1,4 @@
-## exprso 0.1.7.9000
+## exprso 0.1.8
 ---------------------
 * Improvements to `arrayExprs`
   * Fixed an import error when reading directly from file
