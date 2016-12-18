@@ -182,6 +182,32 @@ pl <- data(Golub_Merge) %>% get %>%
   plNested(fold = 2, ctrlFS = fs.outer, ctrlGS = gs.outer)
 ```
 
+## Cross-validation variants
+
+Typically, we summarize rounds of cross-validation using accuracy. However, we could conceive of situations where we might want to emphasize sensitivity over specificity (or *vice versa*). Below, we show how we can use `plNested` in lieu of `plCV` to select `plMonteCarlo` bootstraps based on sensitivity.
+
+In this example, each iteration of `plMonteCarlo` will split the dataset, then call `plNested` on the training subset. Next, `plNested` will manage *v*-fold cross-validation, splitting the data into *v* equal folds. Finally, each fold will undergo a grid-search according to `plGrid`. Since we have chosen to use `plNested` in lieu of `plCV`, we disable `plCV` by setting the `plGrid` argument `fold = NULL`. Note that, as above, we only perform feature selection within the *inner-layer*. This ensures that the *outer-layer* serves as a truly independent *validation set*.
+
+```{r, results = "hide"}
+fs.inner <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
+gs.inner <- ctrlGridSearch(func = "plGrid", top = c(2, 3, 4), how = "buildSVM", fold = NULL)
+
+ss.outer <- ctrlSplitSet(func = "splitStratify", percent.include = 67)
+fs.outer <- ctrlFeatureSelect(func = "fsNULL", top = 0)
+gs.outer <- ctrlGridSearch(func = "plNested", fold = 10, ctrlFS = fs.inner, ctrlGS = gs.inner)
+
+pl <- data(Golub_Merge) %>% get %>%
+  arrayExprs(colBy = "ALL.AML", include = list("ALL", "AML")) %>%
+  modFilter(20, 16000, 500, 5) %>% modTransform %>% modNormalize %>%
+  plMonteCarlo(B = 5, ctrlSS = ss.outer, ctrlFS = fs.outer, ctrlGS = gs.outer)
+```
+
+The resultant object now contains the necessary information to rank `plMonteCarlo` bootstraps based on *v*-fold cross-validation sensitivity or specificity. Alternatively, we could aggregate the results by selecting the best fold from each bootstrap using `pipeFilter`, emphasizing sensitivity over specificity with `colBy`. Although neither of these options mirror `plCV` exactly, we hope future updates will offer more with respect to these kinds of analyses.
+
+```{r, results = "hide"}
+top <- pipeFilter(pl, colBy = c("valid.sens", "valid.sens", "valid.spec"), top = 1)
+```
+
 ## Multi-class classification
 
 The *exprso* package also contains a growing number of methods made specifically for dealing with multi-class data. For example, all of the `build` methods available for binary classification also work for multi-class classification. In addition, *exprso* also contains some feature selection methods that work for binary and multi-class data alike.
