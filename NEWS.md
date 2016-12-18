@@ -4,6 +4,8 @@
   * Fixed an import error when reading directly from file
 * Improvements to `calcStats`
   * All `NaN` and `NA` performance metrics now replaced with 0
+* Improvements to `fs` functions
+  * New `fsInclude` ranks stated features above all others
 * Improvements to `pl` functions
   * `pl` functions now store run parameters in results
   * Embedding `plMonteCarlo` now calculates outer-fold accuracy

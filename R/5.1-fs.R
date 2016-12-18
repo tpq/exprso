@@ -45,7 +45,9 @@
 #'  Set \code{top = 0} to include all features. A numeric vector can also be used
 #'  to indicate specific features by location, similar to a character vector.
 #' @param how A character string. Toggles between the sub-routines "t.test" and
-#'  "ks.test". Argument applies to \code{fsStats} only.
+#'  "ks.test". Argument for \code{fsStats} only.
+#' @param include A character vector. The names of features to rank above all others.
+#'  This preserves the feature order otherwise. Argument for \code{fsInclude} only.
 #' @param ... Arguments passed to the respective wrapped function.
 #'
 #' @return Returns an \code{ExprsArray} object.
@@ -92,6 +94,12 @@ setGeneric("fsNULL",
 #' @export
 setGeneric("fsANOVA",
            function(object, top = 0, ...) standardGeneric("fsANOVA")
+)
+
+#' @rdname fs
+#' @export
+setGeneric("fsInclude",
+           function(object, top = 0, include) standardGeneric("fsInclude")
 )
 
 #' @rdname fs
@@ -209,6 +217,30 @@ setMethod("fsNULL", "ExprsArray",
 
                   top
                 }, ...)
+          }
+)
+
+#' @rdname fs
+#' @section Methods (by generic):
+#' \code{fsInclude:} Method to rank explicitly stated features above all others.
+#' @export
+setMethod("fsInclude", "ExprsBinary",
+          function(object, top, include){
+
+            fs.(object, top,
+                uniqueFx = function(data, top, include){
+
+                  if(class(include) != "character"){
+                    stop("Uh oh! 'include' requires features specified by name.")
+                  }
+
+                  if(!all(include %in% colnames(data))){
+                    stop("Uh oh! Not all 'include' found in data.")
+                  }
+
+                  index <- colnames(data) %in% include
+                  c(colnames(data)[index], colnames(data)[!index])
+                }, include)
           }
 )
 

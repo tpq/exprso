@@ -7,6 +7,8 @@
 \alias{fsANOVA,ExprsArray-method}
 \alias{fsEbayes}
 \alias{fsEbayes,ExprsBinary-method}
+\alias{fsInclude}
+\alias{fsInclude,ExprsBinary-method}
 \alias{fsMrmre}
 \alias{fsMrmre,ExprsBinary-method}
 \alias{fsNULL}
@@ -27,6 +29,8 @@ fsNULL(object, top = 0, ...)
 
 fsANOVA(object, top = 0, ...)
 
+fsInclude(object, top = 0, include)
+
 fsStats(object, top = 0, ...)
 
 fsPrcomp(object, top = 0, ...)
@@ -40,6 +44,8 @@ fsMrmre(object, top = 0, ...)
 \S4method{fsSample}{ExprsArray}(object, top = 0, ...)
 
 \S4method{fsNULL}{ExprsArray}(object, top = 0, ...)
+
+\S4method{fsInclude}{ExprsBinary}(object, top = 0, include)
 
 \S4method{fsANOVA}{ExprsArray}(object, top = 0, ...)
 
@@ -65,8 +71,11 @@ to indicate specific features by location, similar to a character vector.}
 
 \item{...}{Arguments passed to the respective wrapped function.}
 
+\item{include}{A character vector. The names of features to rank above all others.
+This preserves the feature order otherwise. Argument for \code{fsInclude} only.}
+
 \item{how}{A character string. Toggles between the sub-routines "t.test" and
-"ks.test". Argument applies to \code{fsStats} only.}
+"ks.test". Argument for \code{fsStats} only.}
 }
 \value{
 Returns an \code{ExprsArray} object.
@@ -109,6 +118,9 @@ Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count}
 
 
 \code{fsNULL:} Method to perform a NULL feature selection and return input unaltered.
+
+
+\code{fsInclude:} Method to rank explicitly stated features above all others.
 
 
 \code{fsANOVA:} Method to perform ANOVA feature selection using stats::aov.

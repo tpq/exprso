@@ -19,6 +19,11 @@ test_that("top argument to fs ExprsBinary method works", {
   )
 
   expect_equal(
+    rownames(fsInclude(fsStats(array, top = 0), include = "feat2")@exprs),
+    c("feat2", "feat4", "feat1", "feat3")
+  )
+
+  expect_equal(
     rownames(fsStats(array, top = 0, how = "ks.test")@exprs),
     c("feat2", "feat4", "feat1", "feat3")
   )
