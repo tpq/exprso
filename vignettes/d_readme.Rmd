@@ -4,7 +4,7 @@ author: "Thomas Quinn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Use Disclaimer, Please Read}
+  %\VignetteIndexEntry{4. Use Disclaimer, Please Read}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,6 +22,6 @@ This is a stable release of a work-in-progress under active development. We make
 
 ## Known issues
 
-* **fsMrmre:** This feature selection method will crash when used with too many (> 46340) features. Unfortunately, this has to do with the implementation of the `mRMRe` package and we can do nothing about it.
+* **fsMrmre:** This feature selection method will crash when used with too many (> 46340) features. Unfortunately, this has to do with the implementation of the `mRMRe` package.
 * **buildDNN:** This classification method will exhaust RAM unless you manually clear old models with `h2o::h2o.shutdown()`. The `ExprsModel` objects for deep learning store links to back-end classifiers and do not contain the classifiers themselves. These back-end classifiers will continue to exist long after the R object has been destroyed *unless manually cleared*. Unfortunately, this has to do with the implementation of the `h2o` package and we can do nothing about it.
 * **buildRF:** This classification method will crash sometimes when working with very small or unbalanced datasets within a large high-throughput classification pipeline. We are actively working on finding a solution for this problem.

@@ -4,7 +4,7 @@ author: "Thomas Quinn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{An Introduction to the exprso Package}
+  %\VignetteIndexEntry{1. An Introduction to the exprso Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -79,7 +79,7 @@ array <-
              include = list("AML", "ALL"))
 ```
 
-Third, we can make an `ExprsArray` object manually using the `new` function. To accomplish this, we need to define the four slots which comprise an `ExprsArray` object. The `@exprs` slot must contain a feature value `matrix` with subject names as columns. The `@annot` slot must contain an annotation `data.frame` with subject names as rows. It is critical to make sure that the subject names appear in the same order across both data structures. The two additional slots, `@preFilter` and `@reductionModel`, pass along the feature selection history while deploying built machines. When constructing an `ExprsArray` object manually, we should set both of these to `NULL`.
+Third, we can make an `ExprsArray` object manually using the `new` function. To accomplish this, we need to define the four slots which comprise an `ExprsArray` object. The `@exprs` slot must contain a feature value `matrix` with subject names as columns. The `@annot` slot must contain an annotation `data.frame` with subject names as rows. It is critical to make sure that the subject names appear in the same order across both data structures. The two additional slots, `@preFilter` and `@reductionModel`, pass along the feature selection history while deploying built machines. When constructing an `ExprsArray` object manually, we should set these to `NULL`.
 
 ```{r, eval = FALSE}
 array <-
@@ -122,7 +122,7 @@ array.train <- arrays[[1]]
 
 ## Balancing data
 
-Above, all subjects not included in the training set (based on `percent.include`) will automatically get assigned to the test set. When using `splitStratify` on a dataset with an unequal number of annotated subjects (e.g., more cases than controls), the resultant test set may contain relative annotation frequencies that differ from the training set. We can fix this so-called "imbalance" at the cost of reducing sample size by performing `splitStratify` a second time. Now, we will use the test set as the input and let `percent.include = 100` (keeping the other parameters the same). This will split the test set such that the new "training set" (i.e., slot 1) now contains the *balanced test set* and the new "test set" (i.e., slot 2) now contains the "spillover" due to balancing.
+Above, all subjects not included in the training set (based on `percent.include`) will automatically get assigned to the test set. When using `splitStratify` on a dataset with an unequal number of annotated subjects (e.g., more cases than controls), the resultant test set may contain relative annotation frequencies that differ from the training set. We can fix this so-called "imbalance" at the cost of reducing sample size by performing `splitStratify` a second time. Now, we will use the test set as the input and let `percent.include = 100` (keeping the other parameters the same). This will split the test set such that the new "training set" (i.e., slot 1) now contains the *balanced test set* and the new "test set" (i.e., slot 2) now contains the "spillover".
 
 ```{r}
 balance <-
@@ -148,7 +148,7 @@ array.train <-
   fsStats(array.train, top = 0, how = "t.test")
 ```
 
-On first exposure, we acknowledge that the argument `top` might seem confusing. Therefore, we wish to emphasize the role of this argument: it specifies either the names or the number of features to supply *to* the feature selection method. It does not refer to what the user intends to retrieve *from* the feature selection method.
+On first exposure, we acknowledge that the argument `top` might seem confusing. Therefore, we wish to emphasize the role of this argument: it specifies either the names or the number of features to supply *to* the feature selection method, not what the user intends to retrieve *from* the feature selection method.
 
 When calling the *first* feature selection method (or the *first* build method, if skipping feature selection), a numeric `top` argument will select a "top ranked" feature set according to their default order in the `ExprsArray` input. Then, because each feature selection method returns an `ExprsArray` object with the features implicitly (re-)ranked, all subsequent numeric `top` arguments will select a "top ranked" feature set according to the results of the previous feature selection method. For example, the third feature selection call draws the top features from the second feature ranking. The user may deploy, in tandem, any number of these functions in whatever order they choose, limited only by computational power and imagination.
 
@@ -284,7 +284,7 @@ This package provides two ways to build ensemble classifiers. The first involves
 
 This latter approach filters an `ExprsPipeline` object in (up to) three steps. First, a threshold filter gets imposed, whereby any model with a performance less than the threshold filter, `how`, gets excluded. Second, a ceiling filter gets imposed, whereby any model with a performance greater than the ceiling filter, `gate`, gets excluded. Third, an arbitrary subset occurs, whereby the top *N* models in the `ExprsPipeline` object get selected based on the argument `top`. In the case that the `@summary` slot contains the column "boot" (e.g., in the results of `plMonteCarlo`), `pipeFilter` selects the top *N* models for *each* unique bootstrap. The user may skip any one of these three filter steps by setting the respective argument to 0.
 
-When calling the `buildEnsemble` method for an `ExprsPipeline` object, any classifiers remaining after the `pipeFilter` filter will get assembled into a single ensemble classifier. Ensemble classifiers get stored as an `ExprsEnsemble` object which is nothing more than object-oriented container for a list of multiple `ExprsModel` objects.
+When calling the `buildEnsemble` method for an `ExprsPipeline` object, any classifiers remaining after the `pipeFilter` filter will get assembled into a single ensemble classifier. Ensemble classifiers get stored as an `ExprsEnsemble` object which is simply a container for a list of multiple `ExprsModel` objects.
 
 In the example below, we we will build an ensemble using the single best classifier from each `plMonteCarlo` bootstrap, and then deploy that ensemble on the withheld test set from above.
 

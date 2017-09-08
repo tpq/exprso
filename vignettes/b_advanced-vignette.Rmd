@@ -4,7 +4,7 @@ author: "Thomas Quinn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Advanced Topics for the exprso Package}
+  %\VignetteIndexEntry{2. Advanced Topics for the exprso Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -202,7 +202,7 @@ pl <- data(Golub_Merge) %>% get %>%
   plMonteCarlo(B = 5, ctrlSS = ss.outer, ctrlFS = fs.outer, ctrlGS = gs.outer)
 ```
 
-The resultant object now contains the necessary information to rank `plMonteCarlo` bootstraps based on *v*-fold cross-validation sensitivity or specificity. Alternatively, we could aggregate the results by selecting the best fold from each bootstrap using `pipeFilter`, emphasizing sensitivity over specificity with `colBy`. Although neither of these options mirror `plCV` exactly, we hope future updates will offer more with respect to these kinds of analyses.
+The resultant object now contains the necessary information to rank `plMonteCarlo` bootstraps based on *v*-fold cross-validation sensitivity or specificity. Alternatively, we could aggregate the results by selecting the best fold from each bootstrap using `pipeFilter`, emphasizing sensitivity over specificity with `colBy`.
 
 ```{r, results = "hide"}
 top <- pipeFilter(pl, colBy = c("valid.sens", "valid.sens", "valid.spec"), top = 1)
@@ -255,7 +255,7 @@ pl <- plGridMulti(trainingSet(splitSets), testSet(splitSets), ctrlFS = fs, top =
                   how = "buildSVM", kernel = c("linear", "radial"), gamma = c(.1, .2))
 ```
 
-However, `plGridMulti` does not have built-in `plCV` support. To run `plGridMulti` with cross-validation, use `plNested`.
+However, `plGridMulti` does not have built-in `plCV` support. Instead, use `plNested`.
 
 ```{r, results = "hide", eval = FALSE}
 fs.inner <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
