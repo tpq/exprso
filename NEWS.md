@@ -1,6 +1,9 @@
 ## exprso 0.1.8.9000
 ---------------------
 * Reformat NOTES and vignettes for CRAN
+* Improve data import
+    * New `exprso` function provides `x` and `y` style import
+    * New `ExprsRegrs` class handles continuous outcomes
 
 ## exprso 0.1.8
 ---------------------

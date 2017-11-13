@@ -26,7 +26,7 @@ setClass("ExprsArray",
 
 #' An S4 class to store feature and annotation data
 #'
-#' An \code{ExprsArray} sub-class for data with binary class labels.
+#' An \code{ExprsArray} sub-class for data with binary class outcomes.
 #'
 #' @export
 setClass("ExprsBinary",
@@ -35,10 +35,19 @@ setClass("ExprsBinary",
 
 #' An S4 class to store feature and annotation data
 #'
-#' An \code{ExprsArray} sub-class for data with many class labels.
+#' An \code{ExprsArray} sub-class for data with multiple class outcomes.
 #'
 #' @export
 setClass("ExprsMulti",
+         contains = "ExprsArray"
+)
+
+#' An S4 class to store feature and annotation data
+#'
+#' An \code{ExprsArray} sub-class for data with continuous outcomes.
+#'
+#' @export
+setClass("ExprsRegrs",
          contains = "ExprsArray"
 )
 
