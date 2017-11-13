@@ -7,6 +7,8 @@
 * Revise pre-filters
     * New `modTMM` function performs TMM normalization
     * Replace formal methods with class checks
+* Minor changes
+    * `split` now defaults to `percent.include = 67`
 
 ## exprso 0.1.8
 ---------------------

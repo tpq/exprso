@@ -56,13 +56,13 @@ NULL
 #' @rdname split
 #' @export
 setGeneric("splitSample",
-           function(object, percent.include, ...) standardGeneric("splitSample")
+           function(object, percent.include = 67, ...) standardGeneric("splitSample")
 )
 
 #' @rdname split
 #' @export
 setGeneric("splitStratify",
-           function(object, percent.include, colBy = NULL,
+           function(object, percent.include = 67, colBy = NULL,
                     bin = rep(FALSE, length(colBy)),
                     breaks = rep(list(NA), length(colBy)),
                     ...) standardGeneric("splitStratify")

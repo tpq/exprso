@@ -9,16 +9,16 @@
 \alias{splitStratify,ExprsArray-method}
 \title{split \code{ExprsArray} objects}
 \usage{
-splitSample(object, percent.include, ...)
+splitSample(object, percent.include = 67, ...)
 
-splitStratify(object, percent.include, colBy = NULL, bin = rep(FALSE,
+splitStratify(object, percent.include = 67, colBy = NULL, bin = rep(FALSE,
   length(colBy)), breaks = rep(list(NA), length(colBy)), ...)
 
-\S4method{splitSample}{ExprsArray}(object, percent.include, ...)
+\S4method{splitSample}{ExprsArray}(object, percent.include = 67, ...)
 
-\S4method{splitStratify}{ExprsArray}(object, percent.include, colBy = NULL,
-  bin = rep(FALSE, length(colBy)), breaks = rep(list(NA), length(colBy)),
-  ...)
+\S4method{splitStratify}{ExprsArray}(object, percent.include = 67,
+  colBy = NULL, bin = rep(FALSE, length(colBy)), breaks = rep(list(NA),
+  length(colBy)), ...)
 }
 \arguments{
 \item{object}{Specifies the \code{ExprsArray} object to split.}
