@@ -169,7 +169,7 @@ exprso <- function(x, y){
     }
   }else{
     print("Preparing data for regression.")
-    class(array) <- "ExprsRegrs"
+    class(array) <- "ExprsCont"
     array@annot$defineCase <- labels
   }
 

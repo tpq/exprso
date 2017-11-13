@@ -47,7 +47,7 @@ setClass("ExprsMulti",
 #' An \code{ExprsArray} sub-class for data with continuous outcomes.
 #'
 #' @export
-setClass("ExprsRegrs",
+setClass("ExprsCont",
          contains = "ExprsArray"
 )
 
