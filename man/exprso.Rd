@@ -39,4 +39,6 @@ See \code{\link{buildEnsemble}} to build ensembles.
 See \code{\link{pipeFilter}} to pre-process ensembles.
 
 See \code{\link{exprso-predict}} to deply models.
+
+See \code{\link{conjoin}} to merge objects.
 }

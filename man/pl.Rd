@@ -2,7 +2,7 @@
 % Please edit documentation in R/2.1-exprso.R
 \name{pl}
 \alias{pl}
-\title{Classification Pipelines}
+\title{Deploy Pipeline}
 \description{
 The \code{exprso} package includes these automated pipeline modules:
 

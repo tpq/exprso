@@ -22,7 +22,7 @@
 #' @export
 modFilter <- function(object, threshold, maximum, beta1, beta2){
 
-  classCheck(object, c("ExprsArray"),
+  classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
   # Set minimum and maximum threshold
@@ -48,7 +48,7 @@ modFilter <- function(object, threshold, maximum, beta1, beta2){
 #' @export
 modTransform <- function(object){
 
-  classCheck(object, c("ExprsArray"),
+  classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
   object@exprs <- log(object@exprs, base = 2)
@@ -72,7 +72,7 @@ modTransform <- function(object){
 #' @export
 modNormalize <- function(object, MARGIN = c(1, 2)){
 
-  classCheck(object, c("ExprsArray"),
+  classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
   if(2 %in% MARGIN) object@exprs <- apply(object@exprs, MARGIN = 2,
@@ -97,7 +97,7 @@ modNormalize <- function(object, MARGIN = c(1, 2)){
 modTMM <- function(object, method = "TMM"){
 
   packageCheck("edgeR")
-  classCheck(object, c("ExprsArray"),
+  classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
   dgelist <- edgeR::DGEList(counts = object@exprs, group = object@annot$defineCase)

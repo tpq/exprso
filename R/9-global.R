@@ -26,7 +26,7 @@ packageCheck <- function(package){
 #' @param x An object.
 #' @param what A character vector. The classes any of which \code{x} should have.
 #' @param msg A string. An error message if \code{x} is not \code{what}.
-checkClass <- function(x, what){
+classCheck <- function(x, what, msg){
 
   if(class(x) %in% what){ return(TRUE)
   }else if(any(sapply(what, function(cl) inherits(x, cl)))){ return(TRUE)

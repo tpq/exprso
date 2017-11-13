@@ -21,6 +21,8 @@
 #'
 #' See \code{\link{exprso-predict}} to deply models.
 #'
+#' See \code{\link{conjoin}} to merge objects.
+#'
 #' @param x A matrix of feature data for all samples. Rows should
 #'  contain samples and columns should contain features.
 #' @param y A vector of outcomes for all samples. If
@@ -92,7 +94,7 @@ NULL
 #' @name pl
 #' @rdname pl
 #'
-#' @title Classification Pipelines
+#' @title Deploy Pipeline
 #'
 #' @description
 #' The \code{exprso} package includes these automated pipeline modules:

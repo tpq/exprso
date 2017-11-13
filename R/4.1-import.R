@@ -65,10 +65,8 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 
   }else if(class(object) == "ExpressionSet"){
 
-    if(!requireNamespace("Biobase", quietly = TRUE)){
-      stop("Biobase needed for this function to work. Please install it.",
-           call. = FALSE)
-    }
+    packageCheck("Biobase")
+    packageCheck("affy")
 
     exprs <- Biobase::exprs(object)
     annot <- object@phenoData@data
@@ -155,15 +153,9 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 #' @export
 GSE2eSet <- function(gse, colBy, colID){
 
-  if(!requireNamespace("Biobase", quietly = TRUE)){
-    stop("Biobase needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-
-  if(!requireNamespace("GEOquery", quietly = TRUE)){
-    stop("GEOquery needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
+  packageCheck("GEOquery")
+  packageCheck("Biobase")
+  packageCheck("affy")
 
   # Check for non-unique platforms
   gsms <- unlist(lapply(GEOquery::GSMList(gse), function(g){ GEOquery::Meta(g)$platform}))
