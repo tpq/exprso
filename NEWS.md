@@ -6,7 +6,7 @@
     * New `ExprsCont` class handles continuous outcomes
 * Revise pre-filters
     * New `modTMM` function performs TMM normalization
-    * Replace methods with custom class checks
+    * Replace formal methods with class checks
 
 ## exprso 0.1.8
 ---------------------

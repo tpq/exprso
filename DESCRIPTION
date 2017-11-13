@@ -22,12 +22,11 @@ LazyData: TRUE
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 Imports:
-    affy,
-    Biobase,
     cluster,
     MASS,
     e1071,
     lattice,
+    magrittr,
     methods,
     mRMRe,
     nnet,
@@ -41,12 +40,13 @@ Depends:
     R (>= 3.2.2),
     kernlab
 Suggests:
+    affy,
+    Biobase,
     edgeR,
     GEOquery,
     h2o,
     golubEsets,
     knitr,
     limma,
-    magrittr,
     rmarkdown,
     testthat
