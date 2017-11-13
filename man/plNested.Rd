@@ -74,4 +74,3 @@ nest <- plNested(arrays[[1]], fold = 10, ctrlFS = fs, ctrlGS = gs, save = FALSE)
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

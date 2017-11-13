@@ -60,4 +60,3 @@ When calculating classifier performance with \code{\link{calcStats}}, this
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

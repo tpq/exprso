@@ -18,6 +18,7 @@ An S4 class to store class predictions
 \itemize{
 \item \code{show}: Method to show \code{ExprsPredict} object.
 }}
+
 \section{Slots}{
 
 \describe{
@@ -33,6 +34,7 @@ as a probability.}
 \item{\code{actual}}{Typically a factor. Stores known class labels.
 Used by \code{\link{calcStats}}.}
 }}
+
 \seealso{
 \code{\link{ExprsArray-class}}\cr
 \code{\link{ExprsModel-class}}\cr
@@ -40,4 +42,3 @@ Used by \code{\link{calcStats}}.}
 \code{\link{ExprsEnsemble-class}}\cr
 \code{\link{ExprsPredict-class}}
 }
-

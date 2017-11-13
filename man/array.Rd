@@ -12,4 +12,3 @@ data(array)
 Sample ExprsBinary Data
 }
 \keyword{datasets}
-

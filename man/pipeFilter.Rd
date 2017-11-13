@@ -64,6 +64,7 @@ First, a threshold filter gets imposed. Any model with a performance
 \itemize{
 \item \code{ExprsPipeline}: Method to filter \code{ExprsPipeline} objects.
 }}
+
 \seealso{
 \code{\link{pipeFilter}}\cr
 \code{\link{pipeUnboot}}\cr
@@ -73,4 +74,3 @@ First, a threshold filter gets imposed. Any model with a performance
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

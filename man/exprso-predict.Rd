@@ -3,9 +3,9 @@
 \docType{methods}
 \name{exprso-predict}
 \alias{exprso-predict}
-\alias{predict,ExprsEnsemble-method}
 \alias{predict,ExprsMachine-method}
 \alias{predict,ExprsModule-method}
+\alias{predict,ExprsEnsemble-method}
 \title{Predict Class Labels}
 \usage{
 \S4method{predict}{ExprsMachine}(object, array, verbose = TRUE)
@@ -82,4 +82,3 @@ When \code{how = "probability"}, this method will take the average
 \seealso{
 \code{\link{modHistory}}, \code{\link{calcStats}}
 }
-

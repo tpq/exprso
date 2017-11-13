@@ -19,4 +19,3 @@ A list of arguments.
 \description{
 This function organizes \code{fs} arguments passed to \code{pl} functions.
 }
-

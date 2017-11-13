@@ -7,4 +7,3 @@
 \description{
 An \code{ExprsArray} sub-class for data with binary class labels.
 }
-

@@ -47,7 +47,7 @@ Next, this method includes only those features with (a) a range greater
 \itemize{
 \item \code{ExprsArray}: Method to filter an \code{ExprsArray} object.
 }}
+
 \seealso{
 \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
 }
-

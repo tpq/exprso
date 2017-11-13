@@ -3,18 +3,18 @@
 \docType{methods}
 \name{build}
 \alias{build}
-\alias{buildANN}
-\alias{buildANN,ExprsArray-method}
-\alias{buildDNN}
-\alias{buildDNN,ExprsArray-method}
-\alias{buildLDA}
-\alias{buildLDA,ExprsArray-method}
 \alias{buildNB}
-\alias{buildNB,ExprsArray-method}
-\alias{buildRF}
-\alias{buildRF,ExprsArray-method}
+\alias{buildLDA}
 \alias{buildSVM}
+\alias{buildANN}
+\alias{buildRF}
+\alias{buildDNN}
+\alias{buildNB,ExprsArray-method}
+\alias{buildLDA,ExprsArray-method}
 \alias{buildSVM,ExprsArray-method}
+\alias{buildANN,ExprsArray-method}
+\alias{buildRF,ExprsArray-method}
+\alias{buildDNN,ExprsArray-method}
 \title{Build Classifiers}
 \usage{
 buildNB(object, top = 0, ...)
@@ -103,6 +103,7 @@ See \code{\link{modHistory}} to learn more about feature selection history.
 
 \code{buildDNN:} Method to build feed-forward networks using h2o::h2o.deeplearning.
 }
+
 \examples{
 \dontrun{
 library(golubEsets)
@@ -128,4 +129,3 @@ mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

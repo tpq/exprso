@@ -20,4 +20,3 @@ This function builds an argument grid from any number of arguments.
  Used to prepare a grid-search for the \code{plGrid} and
  \code{plGridMulti} functions.
 }
-

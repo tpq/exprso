@@ -45,7 +45,7 @@ This function calculates classifier performance based on the predicted
 \itemize{
 \item \code{ExprsPredict}: Method to calculate the performance of a deployed classifier.
 }}
+
 \seealso{
 \code{\link{exprso-predict}}
 }
-

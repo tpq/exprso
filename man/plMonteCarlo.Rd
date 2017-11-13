@@ -74,4 +74,3 @@ boot <- plMonteCarlo(array, B = 3, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs)
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

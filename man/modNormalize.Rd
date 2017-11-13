@@ -37,7 +37,7 @@ This method normalizes subject and/or feature vectors according to the
 \itemize{
 \item \code{ExprsArray}: Method to normalize an \code{ExprsArray} object.
 }}
+
 \seealso{
 \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
 }
-

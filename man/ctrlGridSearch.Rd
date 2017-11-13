@@ -20,4 +20,3 @@ A list of arguments.
 \description{
 This function organizes \code{plGrid} arguments passed to \code{pl} functions.
 }
-

@@ -7,4 +7,3 @@
 \description{
 An \code{ExprsModel} sub-class for dichotomous classifiers.
 }
-

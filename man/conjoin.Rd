@@ -4,9 +4,9 @@
 \name{conjoin}
 \alias{conjoin}
 \alias{conjoin,ExprsArray-method}
-\alias{conjoin,ExprsEnsemble-method}
 \alias{conjoin,ExprsModel-method}
 \alias{conjoin,ExprsPipeline-method}
+\alias{conjoin,ExprsEnsemble-method}
 \title{Combine \code{exprso} Objects}
 \usage{
 conjoin(object, ...)
@@ -67,6 +67,7 @@ When applied to two or more \code{ExprsEnsemble} objects, this function returns 
 
 \item \code{ExprsEnsemble}: Method to join \code{ExprsEnsemble} objects.
 }}
+
 \seealso{
 \code{\link{ExprsArray-class}}\cr
 \code{\link{ExprsModel-class}}\cr
@@ -74,4 +75,3 @@ When applied to two or more \code{ExprsEnsemble} objects, this function returns 
 \code{\link{ExprsEnsemble-class}}\cr
 \code{\link{ExprsPredict-class}}
 }
-

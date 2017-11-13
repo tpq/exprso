@@ -31,4 +31,3 @@ If the uniqueFx returns a character vector, it is assumed
  uniqueFx returns a list, it is assumed that the fs method
  is a reduction model method only.
 }
-

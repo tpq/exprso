@@ -27,4 +27,3 @@ For each dataset split (i.e., bootstrap), \code{calcNested} averages
  accuracy, \code{max($train.plCV)}). The validation set performance
  ultimately averaged depends on the supplied \code{colBy} argument.
 }
-

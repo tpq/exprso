@@ -3,8 +3,8 @@
 \docType{class}
 \name{ExprsEnsemble-class}
 \alias{ExprsEnsemble-class}
-\alias{getFeatures,ExprsEnsemble-method}
 \alias{show,ExprsEnsemble-method}
+\alias{getFeatures,ExprsEnsemble-method}
 \title{An S4 class to store multiple classification models}
 \usage{
 \S4method{show}{ExprsEnsemble}(object)
@@ -27,12 +27,14 @@ An S4 class to store multiple classification models
 
 \item \code{getFeatures}: Method to return features within an \code{ExprsEnsemble} model.
 }}
+
 \section{Slots}{
 
 \describe{
 \item{\code{machs}}{Typically a list. Stores the classification models
 referenced in \code{summary} slot.}
 }}
+
 \seealso{
 \code{\link{ExprsArray-class}}\cr
 \code{\link{ExprsModel-class}}\cr
@@ -40,4 +42,3 @@ referenced in \code{summary} slot.}
 \code{\link{ExprsEnsemble-class}}\cr
 \code{\link{ExprsPredict-class}}
 }
-

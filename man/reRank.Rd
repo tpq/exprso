@@ -49,4 +49,3 @@ We note here, however, that a better approach would deploy
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

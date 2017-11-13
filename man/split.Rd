@@ -4,8 +4,8 @@
 \name{split}
 \alias{split}
 \alias{splitSample}
-\alias{splitSample,ExprsArray-method}
 \alias{splitStratify}
+\alias{splitSample,ExprsArray-method}
 \alias{splitStratify,ExprsArray-method}
 \title{split \code{ExprsArray} objects}
 \usage{
@@ -73,4 +73,3 @@ A collection of functions to build the training and validation sets.
 \seealso{
 \code{\link{ExprsArray-class}}
 }
-

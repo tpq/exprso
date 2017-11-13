@@ -92,4 +92,3 @@ pl <- plGrid(array.train, array.valid = arrays[[2]], how = "buildSVM",
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

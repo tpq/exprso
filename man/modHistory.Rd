@@ -31,7 +31,7 @@ Duplicates the feature selection history of a reference \code{ExprsArray}
 \itemize{
 \item \code{ExprsArray}: Method to duplicate \code{ExprsArray} feature selection history.
 }}
+
 \seealso{
 \code{\link{exprso-predict}}
 }
-

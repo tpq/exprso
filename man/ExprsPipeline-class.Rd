@@ -2,14 +2,14 @@
 % Please edit documentation in R/1.1-classes.R, R/1.2-methods.R
 \docType{class}
 \name{ExprsPipeline-class}
-\alias{$,ExprsPipeline-method}
 \alias{ExprsPipeline-class}
+\alias{show,ExprsPipeline-method}
 \alias{[,ExprsPipeline,ANY,ANY,ANY-method}
 \alias{[,ExprsPipeline-method}
-\alias{getFeatures,ExprsPipeline-method}
-\alias{show,ExprsPipeline-method}
+\alias{$,ExprsPipeline-method}
 \alias{subset,ExprsPipeline-method}
 \alias{summary,ExprsPipeline-method}
+\alias{getFeatures,ExprsPipeline-method}
 \title{An S4 class to store models built during high-throughput learning}
 \usage{
 \S4method{show}{ExprsPipeline}(object)
@@ -59,6 +59,7 @@ An S4 class to store models built during high-throughput learning
 
 \item \code{getFeatures}: Method to return features within an \code{ExprsPredict} model.
 }}
+
 \section{Slots}{
 
 \describe{
@@ -68,6 +69,7 @@ performances for classification models.}
 \item{\code{machs}}{Typically a list. Stores the classification models
 referenced in \code{summary} slot.}
 }}
+
 \seealso{
 \code{\link{ExprsArray-class}}\cr
 \code{\link{ExprsModel-class}}\cr
@@ -75,4 +77,3 @@ referenced in \code{summary} slot.}
 \code{\link{ExprsEnsemble-class}}\cr
 \code{\link{ExprsPredict-class}}
 }
-

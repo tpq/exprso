@@ -38,4 +38,3 @@ To acquire GSE data files, use the function \code{getGEO} from the GEOquery pack
 \seealso{
 \code{\link{ExprsArray-class}}, \code{\link{arrayExprs}}
 }
-

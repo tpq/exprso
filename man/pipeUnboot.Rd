@@ -28,6 +28,7 @@ This method provides a convenient adjunct to \code{\link{pipeFilter}} owing to
 \itemize{
 \item \code{ExprsPipeline}: Method to rename \code{ExprsPipeline} object columns.
 }}
+
 \seealso{
 \code{\link{pipeFilter}}\cr
 \code{\link{pipeUnboot}}\cr
@@ -37,4 +38,3 @@ This method provides a convenient adjunct to \code{\link{pipeFilter}} owing to
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

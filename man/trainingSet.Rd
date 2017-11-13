@@ -16,4 +16,3 @@ An \code{ExprsArray} object.
 This function extracts the training set from the result of a
  \code{split} method call such as \code{splitSample} or \code{splitStratify}.
 }
-

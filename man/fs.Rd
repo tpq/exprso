@@ -3,24 +3,24 @@
 \docType{methods}
 \name{fs}
 \alias{fs}
-\alias{fsANOVA}
-\alias{fsANOVA,ExprsArray-method}
-\alias{fsEbayes}
-\alias{fsEbayes,ExprsBinary-method}
-\alias{fsInclude}
-\alias{fsInclude,ExprsBinary-method}
-\alias{fsMrmre}
-\alias{fsMrmre,ExprsBinary-method}
-\alias{fsNULL}
-\alias{fsNULL,ExprsArray-method}
-\alias{fsPathClassRFE}
-\alias{fsPathClassRFE,ExprsBinary-method}
-\alias{fsPrcomp}
-\alias{fsPrcomp,ExprsBinary-method}
 \alias{fsSample}
-\alias{fsSample,ExprsArray-method}
+\alias{fsNULL}
+\alias{fsANOVA}
+\alias{fsInclude}
 \alias{fsStats}
+\alias{fsPrcomp}
+\alias{fsPathClassRFE}
+\alias{fsEbayes}
+\alias{fsMrmre}
+\alias{fsSample,ExprsArray-method}
+\alias{fsNULL,ExprsArray-method}
+\alias{fsInclude,ExprsBinary-method}
+\alias{fsANOVA,ExprsArray-method}
 \alias{fsStats,ExprsBinary-method}
+\alias{fsPrcomp,ExprsBinary-method}
+\alias{fsPathClassRFE,ExprsBinary-method}
+\alias{fsEbayes,ExprsBinary-method}
+\alias{fsMrmre,ExprsBinary-method}
 \title{Perform Feature Selection}
 \usage{
 fsSample(object, top = 0, ...)
@@ -140,6 +140,7 @@ Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count}
 
 \code{fsMrme:} Method to perform mRMR feature selection using mRMRe::mRMR.classic.
 }
+
 \examples{
 \dontrun{
 library(golubEsets)
@@ -165,4 +166,3 @@ mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

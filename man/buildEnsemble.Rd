@@ -73,6 +73,7 @@ Build an ensemble from an \code{ExprsPipeline} object. This method works by
 
 \item \code{ExprsPipeline}: Method to build ensemble from \code{ExprsPipeline} objects.
 }}
+
 \seealso{
 \code{\link{pipeFilter}}\cr
 \code{\link{pipeUnboot}}\cr
@@ -82,4 +83,3 @@ Build an ensemble from an \code{ExprsPipeline} object. This method works by
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

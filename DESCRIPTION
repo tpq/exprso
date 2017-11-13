@@ -20,7 +20,7 @@ Description: Supervised machine learning has an increasingly important role in b
 License: GPL-2
 LazyData: TRUE
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Imports:
     affy,
     Biobase,

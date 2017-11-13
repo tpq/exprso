@@ -59,6 +59,7 @@ An \code{ExprsModule} object can only make predictions on
 \itemize{
 \item \code{ExprsMulti}: Method to execute multiple "1 vs. all" binary tasks.
 }}
+
 \seealso{
 \code{\link{fs}}\cr
 \code{\link{build}}\cr
@@ -70,4 +71,3 @@ An \code{ExprsModule} object can only make predictions on
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

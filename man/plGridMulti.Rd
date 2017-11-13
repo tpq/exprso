@@ -60,4 +60,3 @@ Take note, that \code{plGridMulti} does not have built-in \code{plCV} support.
 \code{\link{plMonteCarlo}}\cr
 \code{\link{plNested}}
 }
-

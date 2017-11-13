@@ -26,7 +26,7 @@ A pre-processed \code{ExprsArray} object.
 \itemize{
 \item \code{ExprsArray}: Method to transform an \code{ExprsArray} object.
 }}
+
 \seealso{
 \code{\link{modFilter}}, \code{\link{modTransform}}, \code{\link{modNormalize}}
 }
-

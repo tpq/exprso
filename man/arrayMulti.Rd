@@ -12,4 +12,3 @@ data(arrayMulti)
 Sample ExprsMulti Data
 }
 \keyword{datasets}
-

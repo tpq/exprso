@@ -23,4 +23,3 @@ See the respective S4 class for method details.
 \code{\link{ExprsEnsemble-class}}\cr
 \code{\link{ExprsPredict-class}}
 }
-

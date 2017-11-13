@@ -17,4 +17,3 @@ This function ensures that the list of arguments for \code{ctrlGS} meets
 When calculating classifier performance with \code{\link{calcStats}}, this
  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 }
-

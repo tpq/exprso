@@ -59,4 +59,3 @@ Importing a \code{file}:
 \seealso{
 \code{\link{ExprsArray-class}}, \code{\link{GSE2eSet}}
 }
-
