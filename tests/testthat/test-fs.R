@@ -29,16 +29,6 @@ test_that("top argument to fs ExprsBinary method works", {
   )
 
   expect_equal(
-    rownames(fsEbayes(array, top = 0)@exprs),
-    rownames(fsEbayes(array, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
-  )
-
-  expect_equal(
-    rownames(fsEbayes(array, top = 0)@exprs),
-    c("feat1", "feat3", "feat2", "feat4")
-  )
-
-  expect_equal(
     rownames(fsMrmre(array, top = 0)@exprs),
     rownames(fsMrmre(array, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
   )

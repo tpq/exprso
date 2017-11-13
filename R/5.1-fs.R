@@ -403,10 +403,7 @@ setMethod("fsPathClassRFE", "ExprsBinary",
 setMethod("fsEbayes", "ExprsBinary",
           function(object, top, ...){ # args to ebayes
 
-            if(!requireNamespace("limma", quietly = TRUE)){
-              stop("limma needed for this function to work. Please install it.",
-                   call. = FALSE)
-            }
+            packageCheck("limma")
 
             fs.(object, top,
                 uniqueFx = function(data, top, ...){
