@@ -50,8 +50,6 @@
 #' @export
 arrayExprs <- function(object, colBy, include, colID, begin, ...){
 
-  warning("arrayExprs is now deprecated. Please use ?exprso instead.")
-
   if(missing(colBy)) stop("Uh oh! User must specify 'colBy' argument!")
   if(missing(include)) stop("Uh oh! User must specify 'include' argument!")
   if(!class(include) == "list") stop("Uh oh! User must provide 'include' argument as list!")
@@ -122,62 +120,6 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
 
     cat("Removing features with missing values...\n")
     array@exprs <- array@exprs[apply(array@exprs, 1, function(x) !any(is.na(x))), ]
-  }
-
-  return(array)
-}
-
-#' Import Data as ExprsArray
-#'
-#' A convenience function that builds an \code{ExprsArray} object.
-#'
-#' @param x A matrix of feature data for all samples. Rows should
-#'  contain samples and columns should contain features.
-#' @param y A vector of outcomes for all samples. If
-#'  \code{class(y) == "character"}, \code{exprso} prepares data
-#'  for binary or multi-class classification. Else, \code{exprso}
-#'  prepares data for regression. If \code{y} is a matrix, the
-#'  program assumes the first column is the outcome.
-#' @return An \code{ExprsArray} object.
-#'
-#' @export
-exprso <- function(x, y){
-
-  if(length(y) != nrow(x)) stop("Incorrect number of outcomes.")
-  array <-
-    new("ExprsArray",
-        exprs = t(as.data.frame(x)), annot = as.data.frame(y),
-        preFilter = NULL, reductionModel = NULL
-    )
-
-  # Prepare ExprsArray object using x and y input
-  colnames(array@exprs) <- paste0("x", 1:ncol(array@exprs))
-  colnames(array@exprs) <- make.names(colnames(array@exprs), unique = TRUE)
-  rownames(array@annot) <- colnames(array@exprs)
-  labels <- array@annot[,1]
-
-  # Set sub-class to guide fs and build modules
-  if(class(labels) == "character" | class(labels) == "factor"){
-    if(length(unique(y)) == 2){
-      print("Preparing data for binary classification.")
-      class(array) <- "ExprsBinary"
-      array@annot$defineCase <- ifelse(labels == unique(labels)[1], "Control", "Case")
-    }else{
-      print("Preparing data for multi-class classification.")
-      class(array) <- "ExprsMulti"
-      array@annot$defineCase <- factor(labels)
-    }
-  }else{
-    print("Preparing data for regression.")
-    class(array) <- "ExprsCont"
-    array@annot$defineCase <- labels
-  }
-
-  # Remove features with any NA values
-  if(any(is.na(array@exprs))){
-    print("Removing features with NA values.")
-    noNAs <- apply(array@exprs, 1, function(x) !any(is.na(x)))
-    array@exprs <- array@exprs[noNAs, ]
   }
 
   return(array)
