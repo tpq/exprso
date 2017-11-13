@@ -4,6 +4,9 @@
 * Improve data import
     * New `exprso` function provides `x` and `y` style import
     * New `ExprsCont` class handles continuous outcomes
+* Revise pre-filters
+    * New `modTMM` function performs TMM normalization
+    * Replace methods with custom class checks
 
 ## exprso 0.1.8
 ---------------------

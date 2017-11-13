@@ -41,6 +41,7 @@ Depends:
     R (>= 3.2.2),
     kernlab
 Suggests:
+    edgeR,
     GEOquery,
     h2o,
     golubEsets,
