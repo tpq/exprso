@@ -15,6 +15,10 @@
     * `split` now defaults to `percent.include = 67`
     * `split` modules now have own documentation
     * New `?split` help file
+* Revise fs modules
+    * New `fsPropd` function selects features using `propr` package
+    * [`fs` modules now have own documentation]
+    * [New `?fs` help file]
 
 ## exprso 0.1.8
 ---------------------

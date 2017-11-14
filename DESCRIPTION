@@ -47,5 +47,6 @@ Suggests:
     h2o,
     knitr,
     limma,
+    propr,
     rmarkdown,
     testthat
