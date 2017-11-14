@@ -1,14 +1,20 @@
 ## exprso 0.1.8.9000
 ---------------------
-* Reformat NOTES and vignettes for CRAN
+* General changes
+    * Reformat NOTES and vignettes for CRAN
+    * All Bioconductor packages now listed in Suggests:
+    * Remove `golubEsets` dependency
 * Improve data import
     * New `exprso` function provides `x` and `y` style import
     * New `ExprsCont` class handles continuous outcomes
-* Revise pre-filters
+* Revise pre-filter modules
     * New `modTMM` function performs TMM normalization
     * Replace formal methods with class checks
-* Minor changes
+    * New `?mod` help file
+* Revise split modules
     * `split` now defaults to `percent.include = 67`
+    * `split` modules now have own documentation
+    * New `?split` help file
 
 ## exprso 0.1.8
 ---------------------

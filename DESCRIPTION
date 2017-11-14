@@ -45,7 +45,6 @@ Suggests:
     edgeR,
     GEOquery,
     h2o,
-    golubEsets,
     knitr,
     limma,
     rmarkdown,

@@ -91,6 +91,19 @@ exprso <- function(x, y){
 #' - \code{\link{modTMM}}
 NULL
 
+#' @name split
+#' @rdname split
+#'
+#' @title Split Data
+#'
+#' @description
+#' The \code{exprso} package includes these split modules:
+#'
+#' - \code{\link{splitSample}}
+#'
+#' - \code{\link{splitStratify}}
+NULL
+
 #' @name pl
 #' @rdname pl
 #'
