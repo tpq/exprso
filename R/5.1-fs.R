@@ -452,3 +452,38 @@ setMethod("fsMrmre", "ExprsBinary",
                 }, ...)
           }
 )
+
+#' Select Features by Differential Proportionality Analysis
+#'
+#' \code{fsPropd} selects features using the \code{propd} function
+#'  from the \code{propr} package.
+#'
+#' @inheritParams fsSample
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsPropd <- function(object, top = 0){
+
+  packageCheck("propr")
+  classCheck(object, "ExprsBinary",
+             "This feature selection method only works for binary classification tasks.")
+
+  fs.(object, top,
+      uniqueFx = function(data, top){
+
+        # Order pairs by theta
+        pd <- propr:::propd(t(object@exprs[top, ]), object@annot$defineCase)
+        pd@theta <- pd@theta[order(pd@theta$theta),]
+
+        # Index features by when they first appear
+        nrows <- nrow(pd@theta)
+        index <- floor(seq(1, nrows+.5, .5))
+        odds <- as.logical(1:(nrows*2) %% 2)
+        index[odds] <- index[odds] + nrows
+        join <- c(pd@theta$Partner, pd@theta$Pair)
+        join <- join[index]
+
+        # Rank features by first appearance
+        rankedfeats <- unique(join)
+        top[rankedfeats]
+      })
+}
