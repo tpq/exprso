@@ -30,6 +30,9 @@ To showcase this package, we make use of the publicly available hallmark Golub 1
 
 ``` r
 library(golubEsets)
+```
+
+``` r
 data(Golub_Merge)
 ```
 
@@ -98,13 +101,6 @@ pred <- predict(mach, array.test)
 ``` r
 calcStats(pred)
 ```
-
-    ## Calculating accuracy using ROCR based on prediction probabilities...
-
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
-
-    ##   acc sens spec auc
-    ## 1   1    1    1   1
 
 When constructing a classifier using **build** modules, we can only specify one set of parameters at a time. However, investigators often want to test models across a vast range of parameters. We provide the `plGrid` function for high-throughput parameter searches. This function wraps not only classifier construction, but deployment as well. By supplying a non-`NULL` argument to `fold`, this function will also calculate *v*-fold cross-validation using the training set.
 
