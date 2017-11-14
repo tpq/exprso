@@ -471,7 +471,7 @@ fsPropd <- function(object, top = 0){
       uniqueFx = function(data, top){
 
         # Order pairs by theta
-        pd <- propr:::propd(t(object@exprs[top, ]), object@annot$defineCase)
+        pd <- propr::propd(t(object@exprs[top, ]), object@annot$defineCase)
         pd@theta <- pd@theta[order(pd@theta$theta),]
 
         # Index features by when they first appear
