@@ -70,8 +70,11 @@ array <-
 
 Second, we can also use `arrayExprs` to directly import an `eSet` object, a popular container for storing gene expression data. In the example below, we convert the classic ALL/AML Golub gene expression dataset from an `eSet` object (provided by the *golubEsets* package) into an `ExprsArray` object.
 
-```{r, message = FALSE}
+```{r, eval = FALSE}
 library(golubEsets)
+```
+
+```{r, message = FALSE}
 data(Golub_Merge)
 array <-
   arrayExprs(Golub_Merge, # an ExpressionSet (abrv. eSet) object

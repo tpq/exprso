@@ -40,3 +40,7 @@ classCheck <- function(x, what, msg){
 #' Sample ExprsMulti Data
 #' @usage data(arrayMulti)
 "arrayMulti"
+
+#' Golub Data Copy
+#' @usage data(Golub_Merge)
+"Golub_Merge"

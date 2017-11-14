@@ -19,10 +19,15 @@ In this first section, we will show how you can combine tidy principles with the
 
 To begin, we load the necessary packages, including the *golubEsets* data package used extensively in the introductory vignette.
 
-```{r, message = FALSE}
+```{r, eval = FALSE}
 library(exprso)
 library(magrittr)
 library(golubEsets)
+```
+
+```{r, message = FALSE, echo = FALSE}
+library(exprso)
+library(magrittr)
 ```
 
 ```{r, echo = FALSE}
