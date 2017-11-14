@@ -86,7 +86,7 @@ modNormalize <- function(object, MARGIN = c(1, 2)){
 #'
 #' \code{modTMM} normalizes feature data.
 #'
-#' This method normalizes data using \code{cpm} and \code{calcNormFactors}
+#' This method normalizes data using the \code{cpm} and \code{calcNormFactors}
 #'  functions from the \code{edgeR} package.
 #'
 #' @inheritParams modFilter
