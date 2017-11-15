@@ -1,4 +1,4 @@
-## exprso 0.1.8.9000
+## exprso 0.1.9
 ---------------------
 * General changes
     * Reformat NOTES and vignettes for CRAN
