@@ -27,21 +27,6 @@ test_that("top argument to fs ExprsBinary method works", {
     rownames(fsStats(array, top = 0, how = "ks.test")@exprs),
     c("feat2", "feat4", "feat1", "feat3")
   )
-
-  expect_equal(
-    rownames(fsMrmre(array, top = 0)@exprs),
-    rownames(fsMrmre(array, top = c("feat4", "feat3", "feat2", "feat1"))@exprs)
-  )
-
-  expect_equal(
-    rownames(fsMrmre(array, top = 0)@exprs),
-    c("feat4", "feat2", "feat1", "feat3")
-  )
-
-  expect_equal(
-    rownames(fsPathClassRFE(array, top = 0)@exprs),
-    c("feat2", "feat4")
-  )
 })
 
 test_that("fsANOVA matches fsStats for ExprsBinary objects", {

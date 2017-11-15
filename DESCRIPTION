@@ -28,9 +28,7 @@ Imports:
     lattice,
     magrittr,
     methods,
-    mRMRe,
     nnet,
-    pathClass,
     plyr,
     stats,
     randomForest,
@@ -47,6 +45,8 @@ Suggests:
     h2o,
     knitr,
     limma,
+    mRMRe,
+    pathClass,
     propr,
     rmarkdown,
     testthat
