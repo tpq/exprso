@@ -21,7 +21,7 @@ to indicate specific features by location, similar to a character vector.}
 
 \item{method}{A character string. The \code{ExprsBinary} method to execute multiple times.}
 
-\item{...}{Arguments passed to the respective wrapped function.}
+\item{...}{Arguments passed to the detailed function.}
 }
 \value{
 A list of the results given by \code{method}.

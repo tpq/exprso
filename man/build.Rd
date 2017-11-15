@@ -51,7 +51,7 @@ indicates specifically which features by name should undergo feature selection.
 Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
-\item{...}{Arguments passed to the respective wrapped function.}
+\item{...}{Arguments passed to the detailed function.}
 }
 \value{
 Returns an \code{ExprsModel} object.

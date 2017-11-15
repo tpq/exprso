@@ -18,7 +18,7 @@ to indicate specific features by location, similar to a character vector.}
 
 \item{uniqueFx}{A function call unique to that fs method.}
 
-\item{...}{Arguments passed to the respective wrapped function.}
+\item{...}{Arguments passed to the detailed function.}
 }
 \value{
 Returns an \code{ExprsModel} object.

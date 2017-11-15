@@ -30,7 +30,7 @@
 #'  weights proportional to the relative class frequencies
 #'  in the training set.
 #'
-#' @inheritParams fs
+#' @inheritParams fs.
 #' @param method A character string. The \code{ExprsBinary} method to execute multiple times.
 #' @return A list of the results given by \code{method}.
 #'

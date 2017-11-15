@@ -166,7 +166,7 @@ setMethod("modSwap", "ExprsBinary",
 #'  number of clusters, except when \code{how = "kmeans"} in which case this
 #'  function will expect the argument \code{centers} instead.
 #'
-#' @inheritParams fs
+#' @inheritParams fs.
 #' @param object An \code{ExprsArray} object. The object containing the subject
 #'  data to cluster.
 #' @param how A character string. The name of the function used to cluster.

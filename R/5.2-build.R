@@ -34,7 +34,7 @@
 #'
 #' See \code{\link{modHistory}} to learn more about feature selection history.
 #'
-#' @inheritParams fs
+#' @inheritParams fs.
 #' @param object Specifies the \code{ExprsArray} object to use as a training set
 #'  for classification.
 #'

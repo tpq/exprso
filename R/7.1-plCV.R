@@ -26,7 +26,7 @@
 #'  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
-#' @inheritParams fs
+#' @inheritParams fs.
 #' @param how A character string. Specifies the \code{\link{build}} method to iterate.
 #' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation.
