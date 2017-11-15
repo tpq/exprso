@@ -31,6 +31,21 @@
 #'  Else, \code{exprso} prepares data for regression. If \code{y} is a
 #'  matrix, the program assumes the first column is the outcome.
 #' @return An \code{ExprsArray} object.
+#'
+#' @examples
+#' \dontrun{
+#' library(exprso)
+#' library(golubEsets)
+#' data(Golub_Merge)
+#' array <- arrayEset(Golub_Merge, colBy = "ALL.AML", include = list("ALL", "AML"))
+#' array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
+#' array <- modTransform(array) # lg transform
+#' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
+#' arrays <- splitSample(array, percent.include = 67)
+#' array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
+#' array.train <- fsPrcomp(array.train, top = 50)
+#' mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
+#' }
 #' @export
 exprso <- function(x, y){
 
@@ -102,6 +117,59 @@ NULL
 #' - \code{\link{splitSample}}
 #'
 #' - \code{\link{splitStratify}}
+NULL
+
+#' @name fs
+#' @rdname fs
+#'
+#' @title Select Features
+#'
+#' @description
+#' The \code{exprso} package includes these feature selection modules:
+#'
+#' - \code{\link{fsSample}}
+#'
+#' - \code{\link{fsNULL}}
+#'
+#' - \code{\link{fsANOVA}}
+#'
+#' - \code{\link{fsInclude}}
+#'
+#' - \code{\link{fsStats}}
+#'
+#' - \code{\link{fsPrcomp}}
+#'
+#' - \code{\link{fsEbayes}}
+#'
+#' - \code{\link{fsMrmre}}
+#'
+#' - \code{\link{fsPropd}}
+#'
+#' @details
+#' Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary
+#'  to prioritize which features to include during classifier construction. Although there exists
+#'  many feature selection methods, this package provides wrappers for some of the most popular ones.
+#'  Each wrapper (1) pre-processes the \code{ExprsArray} input, (2) performs the feature selection,
+#'  and (3) returns an \code{ExprsArray} output with an updated feature selection history.
+#'  You can use, in tandem, any number of feature selection methods, and in any order.
+#'
+#' For all feature selection methods, \code{@@preFilter} and \code{@@reductionModel} stores the
+#'  feature selection and dimension reduction history, respectively. This history gets passed
+#'  along to prepare the test or validation set during model deployment, ensuring that these
+#'  sets undergo the same feature selection and dimension reduction as the training set.
+#'
+#' Under the scenarios where users plan to apply multiple feature selection or dimension
+#'  reduction steps, the \code{top} argument manages which features (e.g., gene expression values)
+#'  to send through each feature selection or dimension reduction procedure. For \code{top},
+#'  a numeric scalar indicates the number of top features to use, while a character vector
+#'  indicates specifically which features to use. In this way, the user sets which features
+#'  to feed INTO the \code{fs} method (NOT which features the user expects OUT). The example
+#'  below shows how to apply dimension reduction to the top 50 features as selected by the
+#'  Student's t-test. Set \code{top = 0} to pass all features through an \code{fs} method.
+#'
+#' Note that not all feature selection methods will generalize to multi-class data.
+#'  A feature selection method will fail when applied to an \code{ExprsMulti} object
+#'  unless that feature selection method has an \code{ExprsMulti} method.
 NULL
 
 #' @name pl
