@@ -1,140 +1,3 @@
-###########################################################
-### Define generic functions
-
-#' @name fs
-#' @rdname fs
-#'
-#' @title Perform Feature Selection
-#'
-#' @description A collection of functions to select features.
-#'
-#' @details
-#'
-#' Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary
-#'  to prioritize which features to include during classifier construction. Although there exists
-#'  many feature selection methods, this package provides wrappers for some of the most popular ones.
-#'  Each wrapper (1) pre-processes the \code{ExprsArray} input, (2) performs the feature selection,
-#'  and (3) returns an \code{ExprsArray} output with an updated feature selection history.
-#'  You can use, in tandem, any number of feature selection methods, and in any order.
-#'
-#' For all feature selection methods, \code{@@preFilter} and \code{@@reductionModel} stores the
-#'  feature selection and dimension reduction history, respectively. This history gets passed
-#'  along to prepare the test or validation set during model deployment, ensuring that these
-#'  sets undergo the same feature selection and dimension reduction as the training set.
-#'
-#' Under the scenarios where users plan to apply multiple feature selection or dimension
-#'  reduction steps, the \code{top} argument manages which features (e.g., gene expression values)
-#'  to send through each feature selection or dimension reduction procedure. For \code{top},
-#'  a numeric scalar indicates the number of top features to use, while a character vector
-#'  indicates specifically which features to use. In this way, the user sets which features
-#'  to feed INTO the \code{fs} method (NOT which features the user expects OUT). The example
-#'  below shows how to apply dimension reduction to the top 50 features as selected by the
-#'  Student's t-test. Set \code{top = 0} to pass all features through an \code{fs} method.
-#'
-#' Note that not all feature selection methods will generalize to multi-class data.
-#'  A feature selection method will fail when applied to an \code{ExprsMulti} object
-#'  unless that feature selection method has an \code{ExprsMulti} method.
-#'
-#' Note that \code{fsMrmre} crashes when supplied a very large \code{feature_count} argument
-#'  owing to its implementation in the imported package \code{mRMRe}.
-#'
-#' @param object Specifies the \code{ExprsArray} object to undergo feature selection.
-#' @param top A numeric scalar or character vector. A numeric scalar indicates
-#'  the number of top features that should undergo feature selection. A character vector
-#'  indicates specifically which features by name should undergo feature selection.
-#'  Set \code{top = 0} to include all features. A numeric vector can also be used
-#'  to indicate specific features by location, similar to a character vector.
-#' @param how A character string. Toggles between the sub-routines "t.test" and
-#'  "ks.test". Argument for \code{fsStats} only.
-#' @param include A character vector. The names of features to rank above all others.
-#'  This preserves the feature order otherwise. Argument for \code{fsInclude} only.
-#' @param ... Arguments passed to the respective wrapped function.
-#'
-#' @return Returns an \code{ExprsArray} object.
-#'
-#' @seealso
-#' \code{\link{fs}}\cr
-#' \code{\link{build}}\cr
-#' \code{\link{doMulti}}\cr
-#' \code{\link{exprso-predict}}\cr
-#' \code{\link{plCV}}\cr
-#' \code{\link{plGrid}}\cr
-#' \code{\link{plGridMulti}}\cr
-#' \code{\link{plMonteCarlo}}\cr
-#' \code{\link{plNested}}
-#'
-#' @examples
-#' \dontrun{
-#' library(golubEsets)
-#' data(Golub_Merge)
-#' array <- arrayEset(Golub_Merge, colBy = "ALL.AML", include = list("ALL", "AML"))
-#' array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
-#' array <- modTransform(array) # lg transform
-#' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
-#' arrays <- splitSample(array, percent.include = 67)
-#' array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
-#' array.train <- fsPrcomp(array.train, top = 50)
-#' mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
-#' }
-NULL
-
-#' @rdname fs
-#' @export
-setGeneric("fsSample",
-           function(object, top = 0, ...) standardGeneric("fsSample")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsNULL",
-           function(object, top = 0, ...) standardGeneric("fsNULL")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsANOVA",
-           function(object, top = 0, ...) standardGeneric("fsANOVA")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsInclude",
-           function(object, top = 0, include) standardGeneric("fsInclude")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsStats",
-           function(object, top = 0, ...) standardGeneric("fsStats")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsPrcomp",
-           function(object, top = 0, ...) standardGeneric("fsPrcomp")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsPathClassRFE",
-           function(object, top = 0, ...) standardGeneric("fsPathClassRFE")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsEbayes",
-           function(object, top = 0, ...) standardGeneric("fsEbayes")
-)
-
-#' @rdname fs
-#' @export
-setGeneric("fsMrmre",
-           function(object, top = 0, ...) standardGeneric("fsMrmre")
-)
-
-###########################################################
-### Select features
-
 #' Workhorse for fs Methods
 #'
 #' Used as a back-end wrapper for creating new fs methods.
@@ -144,321 +7,347 @@ setGeneric("fsMrmre",
 #'  uniqueFx returns a list, it is assumed that the fs method
 #'  is a reduction model method only.
 #'
-#' @inheritParams fs
-#' @param uniqueFx A function call unique to that fs method.
+#' @param object Specifies the \code{ExprsArray} object to undergo feature selection.
+#' @param top A numeric scalar or character vector. A numeric scalar indicates
+#'  the number of top features that should undergo feature selection. A character vector
+#'  indicates specifically which features by name should undergo feature selection.
+#'  Set \code{top = 0} to include all features. A numeric vector can also be used
+#'  to indicate specific features by location, similar to a character vector.
+#' @param uniqueFx A function call unique to the fs method.
+#' @param ... Arguments passed to the detailed function.
 #' @return Returns an \code{ExprsArray} object.
-#'
 #' @export
 fs. <- function(object, top, uniqueFx, ...){
 
+  # Convert top input to explicit feature reference
   if(class(top) == "numeric"){
-
     if(length(top) == 1){
-
       if(top > nrow(object@exprs)) top <- 0
       if(top == 0) top <- nrow(object@exprs)
       top <- rownames(object@exprs[1:top, ])
-
     }else{
-
       top <- rownames(object@exprs[top, ])
     }
   }
 
+  # Build data from top subset for uniqueFx
   data <- t(object@exprs[top, ])
-  if(!all(sapply(data, is.numeric))) stop("Uh oh! Non-numeric features detected.")
-  final <- do.call("uniqueFx", list(data, top, ...))
+  outcome <- object@annot$defineCase
+  final <- do.call("uniqueFx", list(data, outcome, top, ...))
 
-  if(class(final) == "character"){
-
+  # Append uniqueFx results to object
+  if(class(final) == "character"){ # fill @preFilter slot
     array <- new(class(object), exprs = object@exprs[final,], annot = object@annot,
                  preFilter = append(object@preFilter, list(final)),
-                 reductionModel = append(object@reductionModel, list(NA))
-    )
-
-  }else if(class(final) == "list"){
-
+                 reductionModel = append(object@reductionModel, list(NA)))
+  }else if(class(final) == "list"){ # fill @reductionModel slot
     array <- new(class(object), exprs = final[[1]], annot = object@annot,
                  preFilter = append(object@preFilter, list(top)),
-                 reductionModel = append(object@reductionModel, list(final[[2]]))
-    )
-
-  }else{
-
-    stop("Uh oh! DEBUG ERROR: 002")
-  }
+                 reductionModel = append(object@reductionModel, list(final[[2]])))
+  }else{ stop("Uh oh! DEBUG ERROR: 002")}
 
   return(array)
 }
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsSample:} Method to perform random feature selection using base::sample.
+#' Select Features by Random Sampling
+#'
+#' \code{fsSample} selects features using the \code{sample} function.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsSample", "ExprsArray",
-          function(object, top, ...){ # args to sample
+fsSample <- function(object, top = 0, ...){ # args to sample
 
-            fs.(object, top,
-                uniqueFx = function(data, top, ...){
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
-                  sample(top, ...)
-                }, ...)
-          }
-)
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsNULL:} Method to perform a NULL feature selection and return input unaltered.
+        sample(top, ...)
+      }, ...)
+}
+
+#' Null Feature Selection
+#'
+#' \code{fsNULL} selects features by interpreting the \code{top} argument.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsNULL", "ExprsArray",
-          function(object, top, ...){ # args to NULL
+fsNULL <- function(object, top = 0, ...){ # args to NULL
 
-            fs.(object, top,
-                uniqueFx = function(data, top, ...){
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
-                  top
-                }, ...)
-          }
-)
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsInclude:} Method to rank explicitly stated features above all others.
+        top
+      }, ...)
+}
+
+#' Select Features by Explicit Reference
+#'
+#' \code{fsInclude} selects features passed to the \code{include} argument.
+#'
+#' @inheritParams fs.
+#' @param include A character vector. The names of features to rank above all others.
+#'  This preserves the feature order otherwise. Argument for \code{fsInclude} only.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsInclude", "ExprsBinary",
-          function(object, top, include){
+fsInclude <- function(object, top = 0, include){
 
-            fs.(object, top,
-                uniqueFx = function(data, top, include){
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
-                  if(class(include) != "character"){
-                    stop("Uh oh! 'include' requires features specified by name.")
-                  }
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, include){
 
-                  if(!all(include %in% colnames(data))){
-                    stop("Uh oh! Not all 'include' found in data.")
-                  }
+        if(class(include) != "character"){
+          stop("Uh oh! 'include' requires features specified by name.")
+        }
 
-                  index <- colnames(data) %in% include
-                  c(colnames(data)[index], colnames(data)[!index])
-                }, include)
-          }
-)
+        if(!all(include %in% colnames(data))){
+          stop("Uh oh! Not all 'include' found in data.")
+        }
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsANOVA:} Method to perform ANOVA feature selection using stats::aov.
-#' @importFrom stats aov
+        index <- colnames(data) %in% include
+        c(colnames(data)[index], colnames(data)[!index])
+      }, include)
+}
+
+#' Select Features by ANOVA
+#'
+#' \code{fsANOVA} selects features using the \code{aov} function.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsANOVA", "ExprsArray",
-          function(object, top, ...){ # args to aov
+fsANOVA <- function(object, top = 0, ...){ # args to aov
 
-            fs.(object, top,
-                uniqueFx = function(data, top, ...){
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
-                  # Perform an ANOVA for each feature in data
-                  df <- data.frame(data, "label" = object@annot[rownames(data), "defineCase"])
-                  p <- vector("numeric", length(top))
-                  for(i in 1:length(top)){
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
 
-                    formula <- stats::as.formula(paste(top[i], "~", "label"))
-                    fit <- stats::aov(formula, data = df, ...)
-                    p[i] <- summary(fit)[[1]][1, "Pr(>F)"]
-                  }
+        # Perform an ANOVA for each feature in data
+        df <- data.frame(data, "label" = outcome)
+        p <- vector("numeric", length(top))
+        for(i in 1:length(top)){
 
-                  top[order(p)]
-                }, ...)
-          }
-)
+          formula <- stats::as.formula(paste(top[i], "~", "label"))
+          fit <- stats::aov(formula, data = df, ...)
+          p[i] <- summary(fit)[[1]][1, "Pr(>F)"]
+        }
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsStats:} Method to perform statistics based feature selection using stats::t.test and others.
-#' @importFrom stats t.test ks.test
+        top[order(p)]
+      }, ...)
+}
+
+#' Select Features by Statistical Testing
+#'
+#' \code{fsStats} selects features using the \code{t.test} or \code{ks.test}
+#'  function (toggled by the \code{how} argument).
+#'
+#' @inheritParams fs.
+#' @param how A character string. Toggles between the "t.test" and
+#'  "ks.test" method. Argument for \code{fsStats} only.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsStats", "ExprsBinary",
-          function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args to t.test or ks.test
+fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args to t.test or ks.test
 
-            # Choose first "how" from default argument vector
-            how <- how[1]
+  classCheck(object, "ExprsBinary",
+             "This feature selection method only works for binary classification tasks.")
 
-            if(how == "t.test"){
+  if(how[1] == "t.test"){
 
-              fs.(object, top,
-                  uniqueFx = function(data, top, ...){
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
 
-                    # Prepare data for statistical tests
-                    cases <- object@annot$defineCase %in% "Case"
-                    conts <- object@annot$defineCase %in% "Control"
-                    p <- vector("numeric", length(top))
+          # Prepare data for statistical tests
+          cases <- outcome %in% "Case"
+          conts <- outcome %in% "Control"
+          p <- vector("numeric", length(top))
 
-                    for(i in 1:length(top)){
-
-                      tryCatch(
-                        {
-                          p[i] <- t.test(object@exprs[top[i], cases],
-                                         object@exprs[top[i], conts], ...)$p.value
-
-                        }, error = function(e){
-
-                          cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
-                          p[i] <- 1
-                        })
-                    }
-
-                    top[order(p)]
-                  }, ...)
-
-            }else if(how == "ks.test"){
-
-              fs.(object, top,
-                  uniqueFx = function(data, top, ...){
-
-                    # Prepare data for statistical tests
-                    cases <- object@annot$defineCase %in% "Case"
-                    conts <- object@annot$defineCase %in% "Control"
-                    p <- vector("numeric", length(top))
-
-                    for(i in 1:length(top)){
-
-                      tryCatch(
-                        {
-                          p[i] <- ks.test(object@exprs[top[i], cases],
-                                          object@exprs[top[i], conts], ...)$p.value
-
-                        }, error = function(e){
-
-                          cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
-                          p[i] <- 1
-                        })
-                    }
-
-                    top[order(p)]
-                  }, ...)
-
-            }else{
-
-              stop("Uh oh! Provided 'how' argument not recognized!")
-            }
+          for(i in 1:length(top)){
+            tryCatch({
+                p[i] <- t.test(data[cases, top[i]],
+                               data[conts, top[i]], ...)$p.value
+              }, error = function(e){
+                cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
+                p[i] <- 1
+              })
           }
-)
+          top[order(p)]
+        }, ...)
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsPrcomp:} Method to perform principal components analysis using stats::prcomp.
-#' @importFrom stats prcomp
+  }else if(how[1] == "ks.test"){
+
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
+
+          # Prepare data for statistical tests
+          cases <- outcome %in% "Case"
+          conts <- outcome %in% "Control"
+          p <- vector("numeric", length(top))
+
+          for(i in 1:length(top)){
+            tryCatch({
+              p[i] <- ks.test(data[cases, top[i]],
+                              data[conts, top[i]], ...)$p.value
+            }, error = function(e){
+              cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
+              p[i] <- 1
+            })
+          }
+          top[order(p)]
+        }, ...)
+
+  }else{
+
+    stop("Uh oh! Provided 'how' argument not recognized.")
+  }
+}
+
+#' Reduce Dimensions by PCA
+#'
+#' \code{fsPrcomp} reduces dimensions using the \code{prcomp} function.
+#'  The reduction model is saved and deployed automatically on any new
+#'  data during model validation.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsPrcomp", "ExprsBinary",
-          function(object, top, ...){ # args to prcomp
+fsPrcomp <- function(object, top = 0, ...){ # args to prcomp
 
-            fs.(object, top,
-                uniqueFx = function(data, top, ...){
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
-                  # ATTENTION: We want dependent variables as columns
-                  # NOTE: as.data.frame will not rename columns
-                  #  -- I don't understand this note? 19/09/16
-                  reductionModel <- prcomp(data.frame(data), ...)
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
 
-                  # ATTENTION: The value of predict(reductionModel, data) equals $x
-                  # This information will automatically distill the data
-                  #  when calling modHistory
-                  list(t(reductionModel$x),
-                       reductionModel)
-                }, ...)
-          }
-)
+        # ATTENTION: We want dependent variables as columns
+        # NOTE: as.data.frame will not rename columns
+        reductionModel <- prcomp(data.frame(data), ...)
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsPathClassRFE:} Method to perform SVM-RFE feature selection using pathClass::fit.rfe.
-#' @importFrom pathClass fit.rfe
+        # ATTENTION: The value of predict(reductionModel, data) equals $x
+        # This information will automatically distill the data
+        #  when calling modHistory
+        list(t(reductionModel$x),
+             reductionModel)
+      }, ...)
+}
+
+#' Select Features by Recursive Feature Elimination
+#'
+#' \code{fsPathClassRFE} selects features using the \code{fit.rfe} function
+#'  from the \code{pathClass} package.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsPathClassRFE", "ExprsBinary",
-          function(object, top, ...){ # args to fit.rfe
+fsPathClassRFE <- function(object, top = 0, ...){ # args to fit.rfe
 
-            fs.(object, top,
-                uniqueFx = function(data, top, ...){
+  packageCheck("pathClass")
+  classCheck(object, "ExprsBinary",
+             "This feature selection method only works for binary classification tasks.")
 
-                  # Set up "make.names" key for improper @exprs row.names
-                  labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
-                  key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
 
-                  # NOTE: RFE as assembled by pathClass is via a linear kernel only
-                  # NOTE: By default, fit.rfe iterates through C = 10^c(-3:3)
-                  # Run fit.rfe()
-                  rfe <- pathClass::fit.rfe(x = data, y = labels, ...)
+        # Set up "make.names" key for improper @exprs row.names
+        labels <- factor(outcome, levels = c("Control", "Case"))
+        key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
 
-                  # Use "make.names" key to return to original row.names
-                  final <- merge(data.frame("new" = rfe$features), key, sort = FALSE)$old
-                  if(length(final) < 2) stop("Uh oh! fsPathClassRFE did not find enough features!")
-                  as.character(final)
-                }, ...)
-          }
-)
+        # NOTE: RFE as assembled by pathClass is via a linear kernel only
+        # NOTE: By default, fit.rfe iterates through C = 10^c(-3:3)
+        # Run fit.rfe()
+        rfe <- pathClass::fit.rfe(x = data, y = labels, ...)
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsEbayes:} Method to perform empiric Bayes feature selection using limma::ebayes.
+        # Use "make.names" key to return to original row.names
+        final <- merge(data.frame("new" = rfe$features), key, sort = FALSE)$old
+        if(length(final) < 2) stop("Uh oh! fsPathClassRFE did not find enough features!")
+        as.character(final)
+      }, ...)
+}
+
+#' Select Features by Moderated t-test
+#'
+#' \code{fsEbayes} selects features using the \code{lmFit} and
+#'  \code{ebayes} functions from the \code{limma} package.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsEbayes", "ExprsBinary",
-          function(object, top, ...){ # args to ebayes
+fsEbayes <- function(object, top = 0, ...){ # args to ebayes
 
-            packageCheck("limma")
+  packageCheck("limma")
+  classCheck(object, "ExprsBinary",
+             "This feature selection method only works for binary classification tasks.")
 
-            fs.(object, top,
-                uniqueFx = function(data, top, ...){
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
 
-                  design <- as.matrix(ifelse(object@annot$defineCase == "Case", 1, 0))
-                  colnames(design) <- "CaseVCont"
-                  fit <- limma::lmFit(object@exprs[top, ], design)
-                  ebaye <- limma::ebayes(fit, ...)
-                  rownames(ebaye$p.value)[order(ebaye$p.value[, 1])]
-                }, ...)
-          }
-)
+        design <- as.matrix(ifelse(outcome == "Case", 1, 0))
+        colnames(design) <- "CaseVCont"
+        fit <- limma::lmFit(t(data), design)
+        ebaye <- limma::ebayes(fit, ...)
+        rownames(ebaye$p.value)[order(ebaye$p.value[, 1])]
+      }, ...)
+}
 
-#' @rdname fs
-#' @section Methods (by generic):
-#' \code{fsMrme:} Method to perform mRMR feature selection using mRMRe::mRMR.classic.
-#' @importFrom mRMRe mRMR.classic mRMR.data solutions featureNames
+#' Select Features by mRMR
+#'
+#' \code{fsMrmre} selects features using the \code{mRMR.classic} function
+#'  from the \code{mRMRe} package.
+#'
+#' Note that \code{fsMrmre} crashes when supplied a very large
+#'  \code{feature_count} owing to its \code{mRMRe} implementation.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
 #' @export
-setMethod("fsMrmre", "ExprsBinary",
-          function(object, top, ...){ # args to mRMR.classic
+fsMrmre <- function(object, top = 0, ...){ # args to mRMR.classic
 
-            fs.(object, top,
-                uniqueFx = function(data, top, ...){
+  packageCheck("mRMRe")
+  classCheck(object, "ExprsBinary",
+             "This feature selection method only works for binary classification tasks.")
 
-                  args <- getArgs(...)
-                  args <- defaultArg("target_indices", 1, args)
-                  args <- defaultArg("feature_count", 64, args)
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
 
-                  # Set up "make.names" key for improper @exprs row.names
-                  key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
+        args <- getArgs(...)
+        args <- defaultArg("target_indices", 1, args)
+        args <- defaultArg("feature_count", 64, args)
 
-                  labels <- as.numeric(object@annot$defineCase == "Case")
-                  mRMRdata <- mRMRe::mRMR.data(data = data.frame(labels, data))
-                  args <- append(list("data" = mRMRdata), args)
-                  mRMRout <- do.call(mRMRe::mRMR.classic, args)
+        # Set up "make.names" key for improper @exprs row.names
+        key <- data.frame("old" = colnames(data), "new" = make.names(colnames(data)))
 
-                  # Sort features
-                  final <- as.vector(
-                    apply(mRMRe::solutions(mRMRout)[[1]], 2, function(x, y){ return(y[x])},
-                          y = mRMRe::featureNames(mRMRdata))
-                  )
+        labels <- as.numeric(outcome == "Case")
+        mRMRdata <- mRMRe::mRMR.data(data = data.frame(labels, data))
+        args <- append(list("data" = mRMRdata), args)
+        mRMRout <- do.call(mRMRe::mRMR.classic, args)
 
-                  # Use "make.names" key to return to original row.names
-                  final <- merge(data.frame("new" = final), key, sort = FALSE)$old
-                  as.character(final)
-                }, ...)
-          }
-)
+        # Sort features
+        final <- as.vector(
+          apply(mRMRe::solutions(mRMRout)[[1]], 2, function(x, y){ return(y[x])},
+                y = mRMRe::featureNames(mRMRdata))
+        )
+
+        # Use "make.names" key to return to original row.names
+        final <- merge(data.frame("new" = final), key, sort = FALSE)$old
+        as.character(final)
+      }, ...)
+}
 
 #' Select Features by Differential Proportionality Analysis
 #'
 #' \code{fsPropd} selects features using the \code{propd} function
 #'  from the \code{propr} package.
 #'
-#' @inheritParams fsSample
+#' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
 fsPropd <- function(object, top = 0){
@@ -468,10 +357,10 @@ fsPropd <- function(object, top = 0){
              "This feature selection method only works for binary classification tasks.")
 
   fs.(object, top,
-      uniqueFx = function(data, top){
+      uniqueFx = function(data, outcome, top){
 
         # Order pairs by theta
-        pd <- propr::propd(t(object@exprs[top, ]), object@annot$defineCase)
+        pd <- propr::propd(data, outcome)
         pd@theta <- pd@theta[order(pd@theta$theta),]
 
         # Index features by when they first appear
