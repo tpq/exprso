@@ -141,6 +141,8 @@ NULL
 #'
 #' - \code{\link{fsEbayes}}
 #'
+#' - \code{\link{fsEdger}}
+#'
 #' - \code{\link{fsMrmre}}
 #'
 #' - \code{\link{fsPropd}}

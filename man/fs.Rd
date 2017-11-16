@@ -20,6 +20,8 @@ The \code{exprso} package includes these feature selection modules:
 
 - \code{\link{fsEbayes}}
 
+- \code{\link{fsEdger}}
+
 - \code{\link{fsMrmre}}
 
 - \code{\link{fsPropd}}

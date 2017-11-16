@@ -20,7 +20,12 @@ if(requireNamespace("limma", quietly = TRUE) &
 
     expect_equal(
       rownames(fsEbayes(array, top = 0)@exprs),
-      c("feat1", "feat3", "feat2", "feat4")
+      c("feat4", "feat2", "feat3", "feat1")
+    )
+
+    expect_equal(
+      rownames(fsEdger(array, top = 0)@exprs),
+      c("feat1", "feat4", "feat2", "feat3")
     )
 
     expect_equal(

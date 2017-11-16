@@ -173,12 +173,12 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args 
 
           for(i in 1:length(top)){
             tryCatch({
-                p[i] <- t.test(data[cases, top[i]],
-                               data[conts, top[i]], ...)$p.value
-              }, error = function(e){
-                cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
-                p[i] <- 1
-              })
+              p[i] <- t.test(data[cases, top[i]],
+                             data[conts, top[i]], ...)$p.value
+            }, error = function(e){
+              cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
+              p[i] <- 1
+            })
           }
           top[order(p)]
         }, ...)
@@ -276,7 +276,8 @@ fsPathClassRFE <- function(object, top = 0, ...){ # args to fit.rfe
 #' Select Features by Moderated t-test
 #'
 #' \code{fsEbayes} selects features using the \code{lmFit} and
-#'  \code{ebayes} functions from the \code{limma} package.
+#'  \code{eBayes} functions from the \code{limma} package. Features
+#'  ranked by the \code{topTableF} function.
 #'
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
@@ -284,17 +285,49 @@ fsPathClassRFE <- function(object, top = 0, ...){ # args to fit.rfe
 fsEbayes <- function(object, top = 0, ...){ # args to ebayes
 
   packageCheck("limma")
+  classCheck(object, c("ExprsBinary", "ExprsMulti"),
+             "This feature selection method only works for classification tasks.")
+
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
+
+        design <- stats::model.matrix(~0 + outcome)
+        fit <- limma::lmFit(t(data), design)
+        ebaye <- limma::eBayes(fit)
+        tt <- limma::topTableF(ebaye, number = ncol(data))
+        rownames(tt)
+      }, ...)
+}
+
+#' Selects Features by Exact Test
+#'
+#' \code{fsEdger} selects features using the \code{exactTest} function
+#'  from the \code{edgeR} package. This function does not normalize the data,
+#'  but does estimate dispersion using the \code{estimateCommonDisp}
+#'  and \code{estimateTagwiseDisp} functions.
+#'
+#' The user can normalize the data before feature selection using the
+#'  \code{modTMM} function. Note that applying \code{edgeR} to already normalized
+#'  counts differs slightly from applying \code{edgeR} with normalization.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsEdger <- function(object, top = 0, ...){ # args to exactTest
+
+  packageCheck("edgeR")
   classCheck(object, "ExprsBinary",
              "This feature selection method only works for binary classification tasks.")
 
   fs.(object, top,
       uniqueFx = function(data, outcome, top, ...){
 
-        design <- as.matrix(ifelse(outcome == "Case", 1, 0))
-        colnames(design) <- "CaseVCont"
-        fit <- limma::lmFit(t(data), design)
-        ebaye <- limma::ebayes(fit, ...)
-        rownames(ebaye$p.value)[order(ebaye$p.value[, 1])]
+        y <- edgeR::DGEList(counts = t(data), group = outcome)
+        y <- edgeR::estimateCommonDisp(y)
+        y <- edgeR::estimateTagwiseDisp(y)
+        et <- edgeR::exactTest(y)
+        tt <- as.data.frame(edgeR::topTags(et, n = nrow(et)))
+        rownames(tt)
       }, ...)
 }
 
