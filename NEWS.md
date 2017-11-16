@@ -1,3 +1,17 @@
+## exprso 0.1.9.9000
+---------------------
+* General changes
+    * Remove all "Golub_Merge" use in vignettes
+    * [Completely revise documentation and concept map figure]
+* Revise pre-filter modules
+    * `modTMM` now returns effective library size instead of cpm
+* Revise fs modules
+    * New `fsEdger` function ranks features using exact test
+    * `fsEbayes` now uses the correct design matrix
+* Revise build modules
+    * [`build` modules now have own documentation]
+    * [New `?build` help file]
+
 ## exprso 0.1.9
 ---------------------
 * General changes
