@@ -86,8 +86,9 @@ modNormalize <- function(object, MARGIN = c(1, 2)){
 #'
 #' \code{modTMM} normalizes feature data.
 #'
-#' This method normalizes data using the \code{cpm} and \code{calcNormFactors}
-#'  functions from the \code{edgeR} package.
+#' This method normalizes data using the \code{calcNormFactors} function
+#'  from the \code{edgeR} package. It returns the original counts
+#'  multiplied by the effective library size factors.
 #'
 #' @inheritParams modFilter
 #' @param method A character string. The method used by \code{calcNormFactors}.
@@ -100,8 +101,7 @@ modTMM <- function(object, method = "TMM"){
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  dgelist <- edgeR::DGEList(counts = object@exprs, group = object@annot$defineCase)
-  dgelist <- edgeR::calcNormFactors(dgelist, method = method)
-  object@exprs <- edgeR::cpm(dgelist)
+  f <- edgeR::calcNormFactors(object@exprs, method = method)
+  object@exprs <- t(t(object@exprs) * f)
   return(object)
 }

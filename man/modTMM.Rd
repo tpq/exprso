@@ -19,6 +19,7 @@ A pre-processed \code{ExprsArray} object.
 \code{modTMM} normalizes feature data.
 }
 \details{
-This method normalizes data using the \code{cpm} and \code{calcNormFactors}
- functions from the \code{edgeR} package.
+This method normalizes data using the \code{calcNormFactors} function
+ from the \code{edgeR} package. It returns the original counts
+ multiplied by the effective library size factors.
 }
