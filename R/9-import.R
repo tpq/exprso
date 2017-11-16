@@ -66,7 +66,6 @@ arrayExprs <- function(object, colBy, include, colID, begin, ...){
   }else if(class(object) == "ExpressionSet"){
 
     packageCheck("Biobase")
-    packageCheck("affy")
 
     exprs <- Biobase::exprs(object)
     annot <- object@phenoData@data
