@@ -15,7 +15,7 @@ indicates specifically which features by name should undergo feature selection.
 Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
-\item{uniqueFx}{A function call unique to the fs method.}
+\item{uniqueFx}{A function call unique to the method.}
 
 \item{...}{Arguments passed to the detailed function.}
 }

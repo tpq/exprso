@@ -13,7 +13,7 @@
 #'  indicates specifically which features by name should undergo feature selection.
 #'  Set \code{top = 0} to include all features. A numeric vector can also be used
 #'  to indicate specific features by location, similar to a character vector.
-#' @param uniqueFx A function call unique to the fs method.
+#' @param uniqueFx A function call unique to the method.
 #' @param ... Arguments passed to the detailed function.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
@@ -126,8 +126,8 @@ fsInclude <- function(object, top = 0, include){
 #' @export
 fsANOVA <- function(object, top = 0, ...){ # args to aov
 
-  classCheck(object, "ExprsArray",
-             "This function is applied to the results of ?exprso.")
+  classCheck(object, c("ExprsBinary", "ExprsMulti"),
+             "This feature selection method only works for classification tasks.")
 
   fs.(object, top,
       uniqueFx = function(data, outcome, top, ...){
