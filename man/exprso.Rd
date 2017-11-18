@@ -24,7 +24,7 @@ Welcome to the \code{exprso} package!
 
 The \code{exprso} function imports data into the learning environment.
 
-See \code{\link{mod}} to pre-process the data.
+See \code{\link{mod}} to process the data.
 
 See \code{\link{split}} to split off a test set.
 
@@ -34,11 +34,11 @@ See \code{\link{build}} to build models.
 
 See \code{\link{pl}} to build models high-throughput.
 
+See \code{\link{pipe}} to process pipelines.
+
 See \code{\link{buildEnsemble}} to build ensembles.
 
-See \code{\link{pipeFilter}} to pre-process ensembles.
-
-See \code{\link{exprso-predict}} to deply models.
+See \code{\link{exprso-predict}} to deploy models.
 
 See \code{\link{conjoin}} to merge objects.
 }

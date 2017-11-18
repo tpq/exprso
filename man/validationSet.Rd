@@ -21,6 +21,6 @@ This function extracts the validation set from the result of a
 }
 \section{Functions}{
 \itemize{
-\item \code{testSet}: Identical to the \code{validationSet} function.
+\item \code{testSet}: A variant of \code{validationSet}.
 }}
 

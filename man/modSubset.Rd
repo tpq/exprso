@@ -27,6 +27,6 @@ An \code{ExprsArray} or \code{ExprsPipeline} object.
 }
 \section{Functions}{
 \itemize{
-\item \code{pipeSubset}: The \code{ExprsPipeline} analogue of \code{modSubset}.
+\item \code{pipeSubset}: A variant of \code{modSubset}.
 }}
 

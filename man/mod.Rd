@@ -4,7 +4,7 @@
 \alias{mod}
 \title{Process Data}
 \description{
-The \code{exprso} package includes these pre-process modules:
+The \code{exprso} package includes these data process modules:
 
 - \code{\link{modSubset}}
 

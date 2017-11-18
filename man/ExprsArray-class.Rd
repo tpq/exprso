@@ -61,7 +61,7 @@ An S4 class to store feature and annotation data
 
 \item \code{subset}: Method to subset \code{ExprsArray} object.
 
-\item \code{plot}: Method to quickly plot two or three dimensions of data.
+\item \code{plot}: Method to plot two or three dimensions of data.
 
 \item \code{summary}: Method to plot summary graphs for a sub-sample of feature data.
 

@@ -31,8 +31,7 @@ An S4 class to store multiple classification models
 \section{Slots}{
 
 \describe{
-\item{\code{machs}}{Typically a list. Stores the classification models
-referenced in \code{summary} slot.}
+\item{\code{machs}}{Typically a list. Stores the classification models.}
 }}
 
 \seealso{
