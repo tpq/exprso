@@ -108,7 +108,7 @@ setMethod("subset", signature(x = "ExprsArray"),
           }
 )
 
-#' @describeIn ExprsArray Method to quickly plot two or three dimensions of data.
+#' @describeIn ExprsArray Method to plot two or three dimensions of data.
 #'
 #' @param y Leave missing. Argument exists because of \code{\link{plot}} generic definition.
 #' @param a,b,c A numeric scalar. Indexes the first, second, and third dimensions to plot.
@@ -122,11 +122,13 @@ setMethod("subset", signature(x = "ExprsArray"),
 setMethod("plot", signature(x = "ExprsArray", y = "missing"),
           function(x, y, a = 1, b = 2, c = 3, ...){
 
-            args <- getArgs(...)
+            classCheck(x, c("ExprsBinary", "ExprsMulti"),
+                       "This plot method only works for classification tasks.")
 
+            args <- getArgs(...)
+            args <- defaultArg("pch", 19, args)
             args <- defaultArg("col", grDevices::rainbow(length(unique(x$defineCase)))
                                [as.numeric(factor(x$defineCase))], args)
-            args <- defaultArg("pch", 19, args)
 
             if(c > 0){
 
