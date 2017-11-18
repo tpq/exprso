@@ -35,7 +35,7 @@ Calculates v-fold or leave-one-out cross-validation without selecting a new
  of v-folds to use during cross-validation. Set \code{fold = 0} to perform
  leave-one-out cross-validation. This approach to cross-validation
  will work for \code{ExprsBinary} and \code{ExprsMulti} objects alike. The
- peformance metric used to measure cross-validation accuracy is the
+ performance metric used to measure cross-validation accuracy is the
  \code{acc} slot returned by \code{\link{calcStats}}.
 
 This type of cross-validation is most appropriate if the \code{ExprsArray}

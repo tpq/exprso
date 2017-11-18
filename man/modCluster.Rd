@@ -25,7 +25,7 @@ to indicate specific features by location, similar to a character vector.}
 Select from "hclust", "kmeans", "agnes", "clara", "diana", "fanny", or
 "pam".}
 
-\item{onlyCluster}{A logical sclar. Toggles whether to return a processed
+\item{onlyCluster}{A logical scalar. Toggles whether to return a processed
 cluster object or an updated \code{ExprsArray} object.}
 
 \item{...}{Additional arguments to the cluster function and/or
