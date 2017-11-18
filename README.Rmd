@@ -18,6 +18,7 @@ library(exprso)
 
 ```{r, echo = FALSE, message = FALSE}
 library(exprso)
+set.seed(1)
 ```
 
 ## Importing data

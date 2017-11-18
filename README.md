@@ -76,8 +76,8 @@ pred <- predict(mach, array.train)
     ## Classification confusion table:
     ##          actual
     ## predicted Control Case
-    ##   Control      31    0
-    ##   Case          0   23
+    ##   Control      29    0
+    ##   Case          0   25
     ##   acc sens spec
     ## 1   1    1    1
 
@@ -90,8 +90,8 @@ pred <- predict(mach, array.test)
     ## Classification confusion table:
     ##          actual
     ## predicted Control Case
-    ##   Control      19    0
-    ##   Case          0    7
+    ##   Control      21    0
+    ##   Case          0    5
     ##   acc sens spec
     ## 1   1    1    1
 
@@ -121,13 +121,13 @@ pl
     ## Accuracy summary (complete summary stored in @summary slot):
     ## 
     ##      build top kernel  cost train.acc train.sens train.spec train.auc
-    ## 1 buildSVM   2 linear 0.001 0.5740741          0          1         0
-    ## 2 buildSVM   4 linear 0.001 1.0000000          1          1         1
-    ## 3 buildSVM   2 linear 0.010 1.0000000          1          1         1
-    ## 4 buildSVM   4 linear 0.010 1.0000000          1          1         1
+    ## 1 buildSVM   2 linear 0.001  0.537037          0          1         0
+    ## 2 buildSVM   4 linear 0.001  0.537037          0          1         0
+    ## 3 buildSVM   2 linear 0.010  1.000000          1          1         1
+    ## 4 buildSVM   4 linear 0.010  1.000000          1          1         1
     ##   valid.acc valid.sens valid.spec valid.auc
-    ## 1 0.7307692          0          1         0
-    ## 2 1.0000000          1          1         1
+    ## 1 0.8076923          0          1         0
+    ## 2 0.8076923          0          1         0
     ## 3 1.0000000          1          1         1
     ## 4 1.0000000          1          1         1
     ## ...

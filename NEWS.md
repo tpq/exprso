@@ -3,6 +3,8 @@
 * General changes
     * Remove all "Golub_Merge" use in vignettes
     * [Completely revise documentation and concept map figure]
+    * Completely revise README file
+    * New `?pipe` help file
 * Revise pre-filter modules
     * `modTMM` now returns effective library size instead of cpm
 * Revise fs modules
