@@ -1,21 +1,17 @@
 Package: exprso
 Title: Rapid Implementation of Machine Learning Algorithms for Genomic Data
-Version: 0.1.9.9000
+Version: 0.2.0
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
     person("Thomas", "Quinn", email = "contacttomquinn@gmail.com", role = c("aut", "cre")),
     person("Daniel", "Tylee", email = "dantylee@gmail.com", role = "ctb")
     )
-Description: Supervised machine learning has an increasingly important role in biological
-    studies. However, the sheer complexity of classification pipelines poses a significant
-    barrier to the expert biologist unfamiliar with machine learning. Moreover,
-    many biologists lack the time or technical skills necessary to establish their own
-    pipelines. This package introduces a framework for the rapid implementation of
-    high-throughput supervised machine learning built with the biologist user in mind.
-    Written by biologists, for biologists, this package provides a user-friendly interface
-    that empowers investigators to execute state-of-the-art binary and multi-class
-    classification, including deep learning, with minimal programming
+Description: Supervised machine learning has an increasingly important role in data
+    analysis. This package introduces a framework for rapidly implementing supervised
+    machine learning in a high-throughput manner. This package provides a user-friendly
+    interface that empowers investigators to execute state-of-the-art binary and
+    multi-class classification, including deep learning, with minimal programming
     experience necessary.
 License: GPL-2
 LazyData: TRUE

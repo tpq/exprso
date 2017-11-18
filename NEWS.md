@@ -1,8 +1,8 @@
-## exprso 0.1.9.9000
+## exprso 0.2.0
 ---------------------
 * General changes
     * Remove all "Golub_Merge" use in vignettes
-    * [Revise the exprso overview figure]
+    * Revise the exprso overview figure
     * Completely revise all vignettes
     * Completely revise README file
     * New `?pipe` help file
