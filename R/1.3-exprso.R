@@ -97,6 +97,8 @@ exprso <- function(x, y){
 #' @description
 #' The \code{exprso} package includes these pre-process modules:
 #'
+#' - \code{\link{modSubset}}
+#'
 #' - \code{\link{modFilter}}
 #'
 #' - \code{\link{modTransform}}
@@ -191,4 +193,19 @@ NULL
 #' - \code{\link{plMonteCarlo}}
 #'
 #' - \code{\link{plNested}}
+NULL
+
+#' @name pipe
+#' @rdname pipe
+#'
+#' @title Process Pipelines
+#'
+#' @description
+#' The \code{exprso} package includes these pipeline process modules:
+#'
+#' - \code{\link{pipeSubset}}
+#'
+#' - \code{\link{pipeFilter}}
+#'
+#' - \code{\link{pipeUnboot}}
 NULL

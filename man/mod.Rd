@@ -6,6 +6,8 @@
 \description{
 The \code{exprso} package includes these pre-process modules:
 
+- \code{\link{modSubset}}
+
 - \code{\link{modFilter}}
 
 - \code{\link{modTransform}}
