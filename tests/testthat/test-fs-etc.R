@@ -1,9 +1,6 @@
 library(exprso)
 context("fs")
 
-###########################################################
-### Test ExprsBinary feature selection
-
 if(requireNamespace("limma", quietly = TRUE) &
    requireNamespace("mRMRe", quietly = TRUE) &
    requireNamespace("pathClass", quietly = TRUE) &
@@ -49,3 +46,40 @@ if(requireNamespace("limma", quietly = TRUE) &
     )
   })
 }
+
+obj1 <- exprso(iris[1:100, 1:4], iris[1:100, 5])
+obj2 <- exprso(iris[,1:4], iris[,5])
+obj3 <- exprso(iris[,1:3], iris[,4])
+
+test_that("fsANOVA works", {
+
+  expect_equal(
+    fsANOVA(obj1)@preFilter[[1]],
+    fsStats(obj1, var.equal = TRUE)@preFilter[[1]]
+  )
+
+  expect_equal(
+    fsANOVA(obj1)@preFilter[[1]],
+    fsANOVA(obj2)@preFilter[[1]]
+  )
+
+  expect_error(
+    fsANOVA(obj3)
+  )
+})
+
+test_that("fsCor works", {
+
+  expect_error(
+    fsCor(obj1)
+  )
+
+  expect_error(
+    fsCor(obj2)
+  )
+
+  expect_equal(
+    fsCor(obj3)@preFilter[[1]],
+    c("Petal.Length", "Sepal.Length", "Sepal.Width")
+  )
+})

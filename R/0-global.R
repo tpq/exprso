@@ -1,5 +1,5 @@
 #' @importFrom methods new as show
-#' @importFrom stats aov t.test ks.test prcomp
+#' @importFrom stats aov t.test ks.test prcomp cor
 #' @importFrom utils write.csv
 #' @importFrom plyr rbind.fill
 #' @importMethodsFrom kernlab predict

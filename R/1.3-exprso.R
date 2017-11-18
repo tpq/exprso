@@ -139,6 +139,8 @@ NULL
 #'
 #' - \code{\link{fsStats}}
 #'
+#' - \code{\link{fsCor}}
+#'
 #' - \code{\link{fsPrcomp}}
 #'
 #' - \code{\link{fsEbayes}}

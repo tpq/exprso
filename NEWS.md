@@ -5,6 +5,8 @@
     * Revise `?fs` and `?build` help files
     * Rename `ExprsCont` class to `RegrsArray`
     * New `RegrsModel` class
+* Revise fs modules
+    * New `fsCor` function ranks features for `RegrsArray` objects
 
 ## exprso 0.2.0
 ---------------------
