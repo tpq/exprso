@@ -70,7 +70,7 @@ fsSample <- function(object, top = 0, ...){ # args to sample
 
 #' Null Feature Selection
 #'
-#' \code{fsNULL} selects features by interpreting the \code{top} argument.
+#' \code{fsNULL} selects features by passing along the \code{top} argument.
 #'
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
@@ -90,6 +90,7 @@ fsNULL <- function(object, top = 0, ...){ # args to NULL
 #' Select Features by Explicit Reference
 #'
 #' \code{fsInclude} selects features passed to the \code{include} argument.
+#'  Ranks features by the provided order.
 #'
 #' @inheritParams fs.
 #' @param include A character vector. The names of features to rank above all others.
@@ -113,13 +114,14 @@ fsInclude <- function(object, top = 0, include){
         }
 
         index <- colnames(data) %in% include
-        c(colnames(data)[index], colnames(data)[!index])
+        c(include, colnames(data)[!index])
       }, include)
 }
 
 #' Select Features by ANOVA
 #'
 #' \code{fsANOVA} selects features using the \code{aov} function.
+#'  Note that ANOVA assumes equal variances.
 #'
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
@@ -166,15 +168,12 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args 
     fs.(object, top,
         uniqueFx = function(data, outcome, top, ...){
 
-          # Prepare data for statistical tests
           cases <- outcome %in% "Case"
           conts <- outcome %in% "Control"
           p <- vector("numeric", length(top))
-
-          for(i in 1:length(top)){
+          for(i in 1:ncol(data)){
             tryCatch({
-              p[i] <- t.test(data[cases, top[i]],
-                             data[conts, top[i]], ...)$p.value
+              p[i] <- t.test(data[cases, i], data[conts, i], ...)$p.value
             }, error = function(e){
               cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
               p[i] <- 1
@@ -188,15 +187,12 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args 
     fs.(object, top,
         uniqueFx = function(data, outcome, top, ...){
 
-          # Prepare data for statistical tests
           cases <- outcome %in% "Case"
           conts <- outcome %in% "Control"
           p <- vector("numeric", length(top))
-
-          for(i in 1:length(top)){
+          for(i in 1:ncol(data)){
             tryCatch({
-              p[i] <- ks.test(data[cases, top[i]],
-                              data[conts, top[i]], ...)$p.value
+              p[i] <- ks.test(data[cases, i], data[conts, i], ...)$p.value
             }, error = function(e){
               cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
               p[i] <- 1
@@ -209,6 +205,30 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args 
 
     stop("Uh oh! Provided 'how' argument not recognized.")
   }
+}
+
+#' Select Features by Correlation
+#'
+#' \code{fsCor} selects features using the \code{cor} function.
+#'  Ranks features by absolute value of correlation.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsCor <- function(object, top = 0, ...){ # args to cor
+
+  classCheck(object, "RegrsArray",
+             "This feature selection method only works for continuous outcome tasks.")
+
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
+
+        r <- vector("numeric", length(top))
+        for(i in 1:ncol(data)){
+          r[i] <- cor(data[,i], outcome)
+        }
+        top[rev(order(r))]
+      }, ...)
 }
 
 #' Reduce Dimensions by PCA

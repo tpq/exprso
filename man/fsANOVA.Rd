@@ -22,4 +22,5 @@ Returns an \code{ExprsArray} object.
 }
 \description{
 \code{fsANOVA} selects features using the \code{aov} function.
+ Note that ANOVA assumes equal variances.
 }

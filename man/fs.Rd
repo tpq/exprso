@@ -16,6 +16,8 @@ The \code{exprso} package includes these feature selection modules:
 
 - \code{\link{fsStats}}
 
+- \code{\link{fsCor}}
+
 - \code{\link{fsPrcomp}}
 
 - \code{\link{fsEbayes}}

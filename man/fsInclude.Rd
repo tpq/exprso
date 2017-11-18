@@ -23,4 +23,5 @@ Returns an \code{ExprsArray} object.
 }
 \description{
 \code{fsInclude} selects features passed to the \code{include} argument.
+ Ranks features by the provided order.
 }
