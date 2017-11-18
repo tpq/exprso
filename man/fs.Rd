@@ -27,28 +27,20 @@ The \code{exprso} package includes these feature selection modules:
 - \code{\link{fsPropd}}
 }
 \details{
-Considering the high-dimensionality of most genomic datasets, it is prudent and often necessary
- to prioritize which features to include during classifier construction. Although there exists
- many feature selection methods, this package provides wrappers for some of the most popular ones.
- Each wrapper (1) pre-processes the \code{ExprsArray} input, (2) performs the feature selection,
- and (3) returns an \code{ExprsArray} output with an updated feature selection history.
- You can use, in tandem, any number of feature selection methods, and in any order.
+Considering the high-dimensionality of many datasets, it is prudent and
+ often necessary to prioritize which features to include during classifier
+ construction. This package provides functions for some of the most frequently
+ used feature selection methods. Each function works as a self-contained wrapper
+ that (1) pre-processes the \code{ExprsArray} input, (2) performs the feature
+ selection, and (3) returns an \code{ExprsArray} output with an updated feature
+ selection history. These histories get passed along at every step of the way
+ until they eventually get used to pre-process an unlabeled dataset during
+ classifier deployment (i.e., prediction).
 
-For all feature selection methods, \code{@preFilter} and \code{@reductionModel} stores the
- feature selection and dimension reduction history, respectively. This history gets passed
- along to prepare the test or validation set during model deployment, ensuring that these
- sets undergo the same feature selection and dimension reduction as the training set.
-
-Under the scenarios where users plan to apply multiple feature selection or dimension
- reduction steps, the \code{top} argument manages which features (e.g., gene expression values)
- to send through each feature selection or dimension reduction procedure. For \code{top},
- a numeric scalar indicates the number of top features to use, while a character vector
- indicates specifically which features to use. In this way, the user sets which features
- to feed INTO the \code{fs} method (NOT which features the user expects OUT). The example
- below shows how to apply dimension reduction to the top 50 features as selected by the
- Student's t-test. Set \code{top = 0} to pass all features through an \code{fs} method.
-
-Note that not all feature selection methods will generalize to multi-class data.
- A feature selection method will fail when applied to an \code{ExprsMulti} object
- unless that feature selection method has an \code{ExprsMulti} method.
+The argument \code{top} specifies either the names or the number of features
+ to supply TO the feature selection method, not what the user intends to
+ retrieve FROM the feature selection method. When calling the first feature
+ selection method (or the first build method, if skipping feature selection),
+ a numeric \code{top} argument will select a "top ranked" feature set according
+ to their default order in the \code{ExprsArray} input.
 }

@@ -44,7 +44,7 @@ setClass("ExprsMulti",
 #' An \code{ExprsArray} sub-class for data with continuous outcomes.
 #'
 #' @export
-setClass("ExprsCont",
+setClass("RegrsArray",
          contains = "ExprsArray"
 )
 
@@ -84,6 +84,15 @@ setClass("ExprsMachine",
 #'
 #' @export
 setClass("ExprsModule",
+         contains = "ExprsModel"
+)
+
+#' An S4 class to store the classification model
+#'
+#' An \code{ExprsModel} sub-class for continuous outcome classifiers.
+#'
+#' @export
+setClass("RegrsModel",
          contains = "ExprsModel"
 )
 

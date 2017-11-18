@@ -98,7 +98,7 @@ array.test <- balance[[1]]
 
 ## Selecting features
 
-Considering the high-dimensionality of many genomic datasets, it is prudent and often necessary to prioritize which features to include during classifier construction. This package provides functions for some of the most frequently used feature selection methods. Each function works as a self-contained wrapper that (1) pre-processes the `ExprsArray` input, (2) performs the feature selection, and (3) returns an `ExprsArray` output with an updated feature selection history. These histories get passed along at every step of the way until they eventually get used to pre-process an unlabeled dataset during classifier deployment (i.e., prediction).
+Considering the high-dimensionality of many datasets, it is prudent and often necessary to prioritize which features to include during classifier construction. This package provides functions for some of the most frequently used feature selection methods. Each function works as a self-contained wrapper that (1) pre-processes the `ExprsArray` input, (2) performs the feature selection, and (3) returns an `ExprsArray` output with an updated feature selection history. These histories get passed along at every step of the way until they eventually get used to pre-process an unlabeled dataset during classifier deployment (i.e., prediction).
 
 One feature selection function is `fsStats`. This performs basic feature selection based on simple statistical tests. Specifically, this function will rank features using either the Student's $t$-test or the Kolmogorov-Smirnov test. Below, the argument `top = 0` tells tells the program to rank all features.
 

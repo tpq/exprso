@@ -1,3 +1,11 @@
+## exprso 0.2.1
+---------------------
+* General changes
+    * Fix NOTE associated with `magrittr` import
+    * Revise `?fs` and `?build` help files
+    * Rename `ExprsCont` class to `RegrsArray`
+    * New `RegrsModel` class
+
 ## exprso 0.2.0
 ---------------------
 * General changes

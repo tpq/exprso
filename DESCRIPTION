@@ -1,6 +1,6 @@
 Package: exprso
-Title: Rapid Implementation of Machine Learning Algorithms for Genomic Data
-Version: 0.2.0
+Title: Rapid Implementation of Machine Learning Algorithms
+Version: 0.2.1
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
@@ -22,7 +22,6 @@ Imports:
     MASS,
     e1071,
     lattice,
-    magrittr,
     methods,
     nnet,
     plyr,
@@ -40,6 +39,7 @@ Suggests:
     h2o,
     knitr,
     limma,
+    magrittr,
     mRMRe,
     pathClass,
     propr,
