@@ -2,7 +2,8 @@
 ---------------------
 * General changes
     * Remove all "Golub_Merge" use in vignettes
-    * [Completely revise documentation and concept map figure]
+    * [Revise the exprso overview figure]
+    * Completely revise all vignettes
     * Completely revise README file
     * New `?pipe` help file
 * Revise pre-filter modules

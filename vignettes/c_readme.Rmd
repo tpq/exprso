@@ -1,0 +1,27 @@
+---
+title: "Use Disclaimer, Please Read"
+author: "Thomas Quinn"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{4. Use Disclaimer, Please Read}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Disclaimer
+
+This is a stable release of a work-in-progress under active development. We make no guarantees about the quality of this software. To the best of our knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know on [GitHub](http://www.github.com/tpq/exprso/issues).
+
+## Warnings against improper use
+
+* **plGrid, plGridMulti, plMonteCarlo, plNested:** For a high-throughput classification pipeline, if you supply an $x$ number of top features to the `top` argument greater than the number of total number of features available in a training set, exprso will automatically use all features instead.
+* **pipeFilter, buildEnsemble:** For an `ExprsPipeline` model extraction, if you supply an $x$ number of top models to the `top` argument greater than the total number of models available in a filtered cut of models, exprso will automatically use all models instead. If you are concerned about this default behavior, call `pipeFilter` first, then call `buildEnsemble` on the `pipeFilter` results after inspecting them manually.
+* **plCV:** This function calculates a simple metric of cross-validation during high-throughput classification. When the function receives data that have already undergone feature selection, **`plCV` provides an overly-optimistic metric of classifier performance that should never get published**. However, the results of `plCV` do have *relative* validity, so it is fine to use them to choose parameters.
+* **splitSample:** The `splitSample` method builds the training and validation sets by randomly sampling all subjects in an `ExprsArray` object. However, **`splitSample` is not truly random; it iteratively samples until at least one of every class appears in the test set**. This rule makes it easier to run analyses and interpret results, but requires caution when articulating in a report how you chose the test set.
+
+## Known issues
+
+* **fsMrmre:** This feature selection method will crash with too many (> 46340) features.
+* **buildDNN:** This classification method will exhaust RAM unless you manually clear old models.
+* **buildRF:** This classification method will crash sometimes when working with very small or unbalanced datasets within a large high-throughput classification pipeline.
