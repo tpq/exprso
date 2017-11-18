@@ -26,21 +26,21 @@ build. <- function(object, top, uniqueFx, ...){
     args <- getArgs(...)
     args <- append(args, list("object" = object, "top" = top, "method" = "build.", "uniqueFx" = uniqueFx))
     machs <- do.call("doMulti", args)
-    new("ExprsModule",
-        preFilter = append(object@preFilter, list(top)),
-        reductionModel = append(object@reductionModel, list(NA)),
-        mach = machs)
+    m <- new("ExprsModule",
+             preFilter = append(object@preFilter, list(top)),
+             reductionModel = append(object@reductionModel, list(NA)),
+             mach = machs)
   }else if(class(object) == "ExprsBinary"){
     data <- t(object@exprs[top, ])
     labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
     model <- do.call("uniqueFx", list(data, labels, ...))
-    machine <- new("ExprsMachine",
-                   preFilter = append(object@preFilter, list(top)),
-                   reductionModel = append(object@reductionModel, list(NA)),
-                   mach = model)
+    m <- new("ExprsMachine",
+             preFilter = append(object@preFilter, list(top)),
+             reductionModel = append(object@reductionModel, list(NA)),
+             mach = model)
   }else{ stop("Uh oh! No 'build.' method in place for this object type.")}
 
-  return(machine)
+  return(m)
 }
 
 #' Build Naive Bayes Model
