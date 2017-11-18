@@ -1,9 +1,6 @@
 library(exprso)
 context("fs")
 
-###########################################################
-### Test ExprsBinary feature selection
-
 load(file.path("data.RData"))
 
 test_that("top argument to fs ExprsBinary method works", {
@@ -58,9 +55,6 @@ test_that("fsANOVA works for ExprsMulti objects", {
     "feat3"
   )
 })
-
-###########################################################
-### Test ExprsMulti feature selection
 
 fsStats.multi <- doMulti(arrayMulti, top = 0, method = "fsStats")
 

@@ -71,7 +71,7 @@ setClass("ExprsModel",
 
 #' An S4 class to store the classification model
 #'
-#' An \code{ExprsModel} sub-class for dichotomous classifiers.
+#' An \code{ExprsModel} sub-class for dichotomous models.
 #'
 #' @export
 setClass("ExprsMachine",
@@ -80,7 +80,7 @@ setClass("ExprsMachine",
 
 #' An S4 class to store the classification model
 #'
-#' An \code{ExprsModel} sub-class for multi-class classifiers.
+#' An \code{ExprsModel} sub-class for multi-class models.
 #'
 #' @export
 setClass("ExprsModule",
@@ -89,7 +89,7 @@ setClass("ExprsModule",
 
 #' An S4 class to store the classification model
 #'
-#' An \code{ExprsModel} sub-class for continuous outcome classifiers.
+#' An \code{ExprsModel} sub-class for continuous outcome models.
 #'
 #' @export
 setClass("RegrsModel",
