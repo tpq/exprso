@@ -6,7 +6,7 @@
 #' This experimental function mutates a percentage of case subjects
 #'  into noisy positives, false positives, or defined out-groups.
 #'
-#' This function includes several methods for distoring the features of \code{ExprsBinary}
+#' This function includes several methods for distorting the features of \code{ExprsBinary}
 #'  subjects. The "rp.1" method randomizes subject vectors to create "subject noise".
 #'  The "rp.2" method creates a new subject vector by randomly sampling feature values
 #'  from the respective feature vector. The "fp" method creates a new subject vector
@@ -172,7 +172,7 @@ setMethod("modSwap", "ExprsBinary",
 #' @param how A character string. The name of the function used to cluster.
 #'  Select from "hclust", "kmeans", "agnes", "clara", "diana", "fanny", or
 #'  "pam".
-#' @param onlyCluster A logical sclar. Toggles whether to return a processed
+#' @param onlyCluster A logical scalar. Toggles whether to return a processed
 #'  cluster object or an updated \code{ExprsArray} object.
 #' @param ... Additional arguments to the cluster function and/or
 #'  other functions used for clustering (e.g., \code{dist} and

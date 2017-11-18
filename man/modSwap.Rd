@@ -32,7 +32,7 @@ This experimental function mutates a percentage of case subjects
  into noisy positives, false positives, or defined out-groups.
 }
 \details{
-This function includes several methods for distoring the features of \code{ExprsBinary}
+This function includes several methods for distorting the features of \code{ExprsBinary}
  subjects. The "rp.1" method randomizes subject vectors to create "subject noise".
  The "rp.2" method creates a new subject vector by randomly sampling feature values
  from the respective feature vector. The "fp" method creates a new subject vector

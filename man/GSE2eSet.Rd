@@ -29,7 +29,7 @@ The NCBI GEO hosts files in GSE or GDS format, the latter of which exists as a c
  data files into \code{eSet} objects, \code{exprso} provides this convenience function.
 
 However, the user should note that GSE data files do not always get stored in an easy to parse format.
- Although this function has worked succesfully with some GSE data files, we cannot make any
+ Although this function has worked successfully with some GSE data files, we cannot make any
  guarantee that it will work for all GSE data files.
 
 To acquire GSE data files, use the function \code{getGEO} from the GEOquery package (e.g.,

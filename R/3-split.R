@@ -78,7 +78,7 @@ splitSample <- function(object, percent.include = 67, ...){
 #'  \code{colBy} column using \code{cut} (e.g., \code{bin = c(FALSE, TRUE)}).
 #'  For \code{splitStratify} only.
 #' @param breaks A list. Each element of the list should correspond to a
-#'  \code{breaks} argment passed to \code{cut} for the respective
+#'  \code{breaks} argument passed to \code{cut} for the respective
 #'  \code{colBy} column. Set an element to \code{NA} when not binning
 #'  that \code{colBy}. For \code{splitStratify} only.
 #' @return Returns a list of two \code{ExprsArray} objects.
