@@ -12,8 +12,8 @@
     * New `fsEdger` function ranks features using exact test
     * `fsEbayes` now uses the correct design matrix
 * Revise build modules
-    * [`build` modules now have own documentation]
-    * [New `?build` help file]
+    * `build` modules now have own documentation
+    * New `?build` help file
 
 ## exprso 0.1.9
 ---------------------
