@@ -133,7 +133,7 @@ setClass("ExprsEnsemble",
          )
 )
 
-#' An S4 class to store class predictions
+#' An S4 class to store model predictions
 #'
 #' @slot pred A factor. Stores class predictions as an unambiguous
 #'  class assignment.
@@ -156,6 +156,26 @@ setClass("ExprsPredict",
            pred = "factor",
            decision.values = "ANY",
            probability = "ANY",
+           actual = "ANY"
+         )
+)
+
+#' An S4 class to store model predictions
+#'
+#' @slot pred Any. Stores predicted outcome.
+#' @slot actual Any. Stores actual outcome.
+#'  Used by \code{\link{calcStats}}.
+#'
+#' @seealso
+#' \code{\link{ExprsArray-class}}\cr
+#' \code{\link{ExprsModel-class}}\cr
+#' \code{\link{ExprsPipeline-class}}\cr
+#' \code{\link{ExprsEnsemble-class}}\cr
+#' \code{\link{ExprsPredict-class}}
+#' @export
+setClass("RegrsPredict",
+         slots = c(
+           pred = "ANY",
            actual = "ANY"
          )
 )

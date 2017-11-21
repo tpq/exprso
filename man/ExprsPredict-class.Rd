@@ -4,7 +4,7 @@
 \name{ExprsPredict-class}
 \alias{ExprsPredict-class}
 \alias{show,ExprsPredict-method}
-\title{An S4 class to store class predictions}
+\title{An S4 class to store model predictions}
 \usage{
 \S4method{show}{ExprsPredict}(object)
 }
@@ -12,7 +12,7 @@
 \item{object}{An object of class \code{ExprsPredict}.}
 }
 \description{
-An S4 class to store class predictions
+An S4 class to store model predictions
 }
 \section{Methods (by generic)}{
 \itemize{
