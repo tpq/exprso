@@ -3,6 +3,9 @@
 * General changes
     * Have `exprso` throw error if passed boolean outcomes
     * Add new `RegrsPredict` class with two slots
+* Revise pre-filter modules
+    * New `modAcomp` makes all sample vectors have same total sum
+    * New `modCLR` applies centered log-ratio transformation
 * Revise fs modules
     * Pass additional arguments to `fsPropd` function
     * Make `fsStats` run a bit faster

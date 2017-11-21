@@ -105,3 +105,36 @@ modTMM <- function(object, method = "TMM"){
   object@exprs <- t(t(object@exprs) * f)
   return(object)
 }
+
+#' Compositionally Constrain Data
+#'
+#' \code{modAcomp} makes it so that all sample vectors have the same total sum.
+#'
+#' @inheritParams modFilter
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modAcomp <- function(object){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  object@exprs <- apply(object@exprs, 2, function(x) x / sum(x))
+  return(object)
+}
+
+#' Log-ratio Transform Data
+#'
+#' \code{modCLR} applies a centered log-ratio transformation to the data.
+#'
+#' @inheritParams modFilter
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modCLR <- function(object){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  logX <- log(object@exprs)
+  object@exprs <- apply(logX, 2, function(x) x / mean(x))
+  return(object)
+}

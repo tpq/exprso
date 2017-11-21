@@ -107,6 +107,10 @@ exprso <- function(x, y){
 #' - \code{\link{modNormalize}}
 #'
 #' - \code{\link{modTMM}}
+#'
+#' - \code{\link{modAcomp}}
+#'
+#' - \code{\link{modCLR}}
 NULL
 
 #' @name split

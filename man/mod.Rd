@@ -15,4 +15,8 @@ The \code{exprso} package includes these data process modules:
 - \code{\link{modNormalize}}
 
 - \code{\link{modTMM}}
+
+- \code{\link{modAcomp}}
+
+- \code{\link{modCLR}}
 }
