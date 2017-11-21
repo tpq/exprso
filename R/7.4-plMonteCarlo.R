@@ -222,41 +222,23 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
 #' @return A numeric scalar. The cross-validation accuracy.
 #'
 #' @export
-calcMonteCarlo <- function(pl, colBy){
+calcMonteCarlo <- function(pl, colBy = "valid.acc"){
 
-  if(missing(colBy)) stop("Uh oh! Missing 'colBy' argument.")
+  if(!"boot" %in% colnames(pl@summary) | !"train.plCV" %in% colnames(pl@summary)){
+    stop("Summary must have 'boot' and 'train.plCV' columns.")
+  }
 
-  if("boot" %in% colnames(pl@summary)){
+  acc <- vector("numeric", length(unique(pl@summary$boot)))
+  for(b in 1:length(unique(pl@summary$boot))){
 
-    if("train.plCV" %in% colnames(pl@summary)){
+    # Subset only boot 'b'
+    boot <- pl@summary[pl@summary$boot == b, ]
 
-      # Prepare container to store validation accuracy
-      acc <- vector("numeric", length(unique(pl@summary$boot)))
+    # Select best model based on cross-validation accuracy
+    best <- boot[which.max(boot$train.plCV), ]
 
-      for(b in 1:length(unique(pl@summary$boot))){
-
-        cat("Retrieving best accuracy for boot", b, "...\n")
-
-        # Subset only boot 'b'
-        boot <- pl@summary[pl@summary$boot == b, ]
-
-        # Select best model based on cross-validation accuracy
-        best <- boot[which.max(boot$train.plCV), ]
-
-        # Save validation accuracy as colBy product
-        acc[b] <- apply(best[colBy], MARGIN = 1, prod)
-      }
-
-    }else{
-
-      stop("Uh oh! Supplied data not in expected format. ",
-           "Cannot calculate this cross-validation accuracy.")
-    }
-
-  }else{
-
-    stop("Uh oh! Supplied data not in expected format. ",
-         "Cannot calculate this cross-validation accuracy.")
+    # Save validation accuracy as colBy product
+    acc[b] <- apply(best[colBy], MARGIN = 1, prod)
   }
 
   # Return average validation accuracy

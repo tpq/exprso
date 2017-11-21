@@ -1,3 +1,17 @@
+## exprso 0.2.2
+---------------------
+* General changes
+    * Have `exprso` throw error if passed boolean outcomes
+    * [Make `ExprsPredict` and `RegrsPredict` sub-classes]
+* Revise fs modules
+    * Pass additional arguments to `fsPropd` function
+    * Make `fsStats` run a bit faster
+* Revise build modules
+    * [Add `RegrsModel` support to `build.` constructor]
+* Revise pl modules
+    * Add default argument to `calcMonteCarlo`
+    * Add default argument to `calcNested`
+
 ## exprso 0.2.1
 ---------------------
 * General changes

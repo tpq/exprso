@@ -4,7 +4,7 @@
 \alias{calcNested}
 \title{Calculate \code{plNested} Performance}
 \usage{
-calcNested(pl, colBy)
+calcNested(pl, colBy = "valid.acc")
 }
 \arguments{
 \item{pl}{Specifies the \code{ExprsPipeline} object returned by \code{plNested}.}

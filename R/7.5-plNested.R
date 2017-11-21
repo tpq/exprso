@@ -228,41 +228,23 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
 #' @return A numeric scalar. The cross-validation accuracy.
 #'
 #' @export
-calcNested <- function(pl, colBy){
+calcNested <- function(pl, colBy = "valid.acc"){
 
-  if(missing(colBy)) stop("Uh oh! Missing 'colBy' argument.")
+  if(!"v" %in% colnames(pl@summary) | !"train.plCV" %in% colnames(pl@summary)){
+    stop("Summary must have 'v' and 'train.plCV' columns.")
+  }
 
-  if("v" %in% colnames(pl@summary)){
+  acc <- vector("numeric", length(unique(pl@summary$v)))
+  for(b in 1:length(unique(pl@summary$v))){
 
-    if("train.plCV" %in% colnames(pl@summary)){
+    # Subset only fold 'b'
+    fold <- pl@summary[pl@summary$v == b, ]
 
-      # Prepare container to store validation accuracy
-      acc <- vector("numeric", length(unique(pl@summary$v)))
+    # Select best model based on cross-validation accuracy
+    best <- fold[which.max(fold$train.plCV), ]
 
-      for(b in 1:length(unique(pl@summary$v))){
-
-        cat("Retrieving best accuracy for fold", b, "...\n")
-
-        # Subset only fold 'b'
-        fold <- pl@summary[pl@summary$v == b, ]
-
-        # Select best model based on cross-validation accuracy
-        best <- fold[which.max(fold$train.plCV), ]
-
-        # Save validation accuracy as colBy product
-        acc[b] <- apply(best[colBy], MARGIN = 1, prod)
-      }
-
-    }else{
-
-      stop("Uh oh! Supplied data not in expected format. ",
-           "Cannot calculate this cross-validation accuracy.")
-    }
-
-  }else{
-
-    stop("Uh oh! Supplied data not in expected format. ",
-         "Cannot calculate this cross-validation accuracy.")
+    # Save validation accuracy as colBy product
+    acc[b] <- apply(best[colBy], MARGIN = 1, prod)
   }
 
   # Return average validation accuracy

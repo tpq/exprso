@@ -168,12 +168,12 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args 
     fs.(object, top,
         uniqueFx = function(data, outcome, top, ...){
 
-          cases <- outcome %in% "Case"
-          conts <- outcome %in% "Control"
+          dca <- data[outcome == "Case", ]
+          dco <- data[outcome == "Control", ]
           p <- vector("numeric", length(top))
           for(i in 1:ncol(data)){
             tryCatch({
-              p[i] <- t.test(data[cases, i], data[conts, i], ...)$p.value
+              p[i] <- t.test(dca[, i], dco[, i], ...)$p.value
             }, error = function(e){
               cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
               p[i] <- 1
@@ -187,12 +187,12 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args 
     fs.(object, top,
         uniqueFx = function(data, outcome, top, ...){
 
-          cases <- outcome %in% "Case"
-          conts <- outcome %in% "Control"
+          dca <- data[outcome == "Case", ]
+          dco <- data[outcome == "Control", ]
           p <- vector("numeric", length(top))
           for(i in 1:ncol(data)){
             tryCatch({
-              p[i] <- ks.test(data[cases, i], data[conts, i], ...)$p.value
+              p[i] <- ks.test(dca[, i], dco[, i], ...)$p.value
             }, error = function(e){
               cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
               p[i] <- 1
@@ -403,14 +403,14 @@ fsMrmre <- function(object, top = 0, ...){ # args to mRMR.classic
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsPropd <- function(object, top = 0){
+fsPropd <- function(object, top = 0, ...){ # args to propd
 
   packageCheck("propr")
   classCheck(object, "ExprsBinary",
              "This feature selection method only works for binary classification tasks.")
 
   fs.(object, top,
-      uniqueFx = function(data, outcome, top){
+      uniqueFx = function(data, outcome, top, ...){
 
         # Order pairs by theta
         pd <- propr::propd(data, outcome)
@@ -427,5 +427,5 @@ fsPropd <- function(object, top = 0){
         # Rank features by first appearance
         rankedfeats <- unique(join)
         top[rankedfeats]
-      })
+      }, ...)
 }

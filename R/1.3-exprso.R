@@ -63,6 +63,7 @@ exprso <- function(x, y){
   labels <- array@annot[,1]
 
   # Set sub-class to guide fs and build modules
+  if(class(labels) == "logical") stop("Boolean outcomes not supported.")
   if(class(labels) == "character" | class(labels) == "factor"){
     if(length(unique(y)) == 2){
       print("Preparing data for binary classification.")
