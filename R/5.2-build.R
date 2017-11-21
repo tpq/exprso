@@ -38,7 +38,15 @@ build. <- function(object, top, uniqueFx, ...){
              preFilter = append(object@preFilter, list(top)),
              reductionModel = append(object@reductionModel, list(NA)),
              mach = model)
-  }else{ stop("Uh oh! No 'build.' method in place for this object type.")}
+  }else if(class(object) == "RegrsModel"){
+    data <- t(object@exprs[top, ])
+    labels <- outcome
+    model <- do.call("uniqueFx", list(data, labels, ...))
+    m <- new("RegrsModel",
+             preFilter = append(object@preFilter, list(top)),
+             reductionModel = append(object@reductionModel, list(NA)),
+             mach = model)
+  }else{ stop("Uh oh! DEBUG ERROR: 003")}
 
   return(m)
 }
