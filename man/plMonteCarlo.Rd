@@ -4,7 +4,8 @@
 \alias{plMonteCarlo}
 \title{Monte Carlo Cross-Validation}
 \usage{
-plMonteCarlo(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE)
+plMonteCarlo(array, B = 10, ctrlSS, ctrlFS, ctrlGS, ctrlMS = NULL,
+  save = FALSE)
 }
 \arguments{
 \item{array}{Specifies the \code{ExprsArray} object to undergo cross-validation.}
@@ -16,6 +17,8 @@ plMonteCarlo(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE)
 \item{ctrlFS}{A list of arguments handled by \code{\link{ctrlFeatureSelect}}.}
 
 \item{ctrlGS}{Arguments handled by \code{\link{ctrlGridSearch}}.}
+
+\item{ctrlMS}{Arguments handled by \code{\link{ctrlModSet}}. Optional.}
 
 \item{save}{A logical scalar. Toggles whether to save randomly split
 training and validation sets.}

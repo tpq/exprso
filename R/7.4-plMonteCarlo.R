@@ -1,6 +1,21 @@
 ###########################################################
 ### Cross-validation argument handlers
 
+#' Manage \code{mod} Arguments
+#'
+#' This function organizes \code{mod} arguments passed to \code{pl} functions.
+#'
+#' @param func A character string. The \code{mod} function to call.
+#' @param ... Additional arguments passed to the \code{mod} function.
+#' @return A list of arguments.
+#'
+#' @export
+ctrlModSet <- function(func, ...){
+
+  list("func" = func,
+       ...)
+}
+
 #' Manage \code{split} Arguments
 #'
 #' This function organizes \code{split} arguments passed to \code{pl} functions.
@@ -92,6 +107,7 @@ ctrlGridSearch <- function(func, top, ...){
 #' @param ctrlSS Arguments handled by \code{\link{ctrlSplitSet}}.
 #' @param ctrlFS A list of arguments handled by \code{\link{ctrlFeatureSelect}}.
 #' @param ctrlGS Arguments handled by \code{\link{ctrlGridSearch}}.
+#' @param ctrlMS Arguments handled by \code{\link{ctrlModSet}}. Optional.
 #' @param save A logical scalar. Toggles whether to save randomly split
 #'  training and validation sets.
 #'
@@ -124,15 +140,23 @@ ctrlGridSearch <- function(func, top, ...){
 #' boot <- plMonteCarlo(array, B = 3, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs)
 #' }
 #' @export
-plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, save = FALSE){
+plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, ctrlMS = NULL, save = FALSE){
 
   # For each bootstrap
   pls <- lapply(1:B,
                 function(boot){
 
+                  # Optionally apply a mod function here
+                  array.b <- array
+                  if(!is.null(ctrlMS)){
+                    func <- ctrlMS$func
+                    args <- append(list("object" = array), ctrlMS[!ctrlMS %in% func])
+                    array.b <- do.call(what = func, args = args)
+                  }
+
                   # Perform some split function (e.g. splitStrat)
                   func <- ctrlSS$func
-                  args <- append(list("object" = array), ctrlSS[!ctrlSS %in% func])
+                  args <- append(list("object" = array.b), ctrlSS[!ctrlSS %in% func])
                   arrays <- do.call(what = func, args = args)
                   array.boot <- arrays[[1]]
                   array.demi <- arrays[[2]]
