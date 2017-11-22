@@ -40,7 +40,7 @@ build. <- function(object, top, uniqueFx, ...){
              mach = model)
   }else if(class(object) == "RegrsModel"){
     data <- t(object@exprs[top, ])
-    labels <- outcome
+    labels <- object@annot$defineCase
     model <- do.call("uniqueFx", list(data, labels, ...))
     m <- new("RegrsModel",
              preFilter = append(object@preFilter, list(top)),
@@ -61,8 +61,8 @@ build. <- function(object, top, uniqueFx, ...){
 #' @export
 buildNB <- function(object, top = 0, ...){ # args to naiveBayes
 
-  classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This build method only works for classification tasks.")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -85,8 +85,8 @@ buildNB <- function(object, top = 0, ...){ # args to naiveBayes
 #' @export
 buildLDA <- function(object, top = 0, ...){ # args to lda
 
-  classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This build method only works for classification tasks.")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -109,8 +109,8 @@ buildLDA <- function(object, top = 0, ...){ # args to lda
 #' @export
 buildSVM <- function(object, top = 0, ...){ # args to svm
 
-  classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This build method only works for classification tasks.")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -135,8 +135,8 @@ buildSVM <- function(object, top = 0, ...){ # args to svm
 #' @export
 buildANN <- function(object, top = 0, ...){ # args to nnet
 
-  classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This build method only works for classification tasks.")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -163,8 +163,8 @@ buildANN <- function(object, top = 0, ...){ # args to nnet
 #' @export
 buildRF <- function(object, top = 0, ...){ # args to randomForest
 
-  classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This build method only works for classification tasks.")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -188,8 +188,8 @@ buildRF <- function(object, top = 0, ...){ # args to randomForest
 buildDNN <- function(object, top = 0, ...){ # args to h2o.deeplearning
 
   packageCheck("h2o")
-  classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This build method only works for classification tasks.")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){

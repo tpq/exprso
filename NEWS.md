@@ -1,3 +1,11 @@
+## exprso 0.2.3
+---------------------
+* Revise build modules
+    * All build wrapper functions now support continuous outcomes
+* Revise pl modules
+    * New `ctrlModSet` function to handle pre-process arguments
+    * Let `plMonteCarlo` apply pre-process at each bootstrap
+
 ## exprso 0.2.2
 ---------------------
 * General changes
