@@ -19,12 +19,12 @@ indicates specifically which features by name should undergo feature selection.
 Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
-\item{method}{A character string. The \code{ExprsBinary} method to execute multiple times.}
+\item{method}{A character string. The method to apply.}
 
 \item{...}{Arguments passed to the detailed function.}
 }
 \value{
-A list of the results given by \code{method}.
+A list of the results from \code{method}.
 }
 \description{
 A function to execute multiple "1 vs. all" binary tasks.
@@ -35,39 +35,15 @@ A function to execute multiple "1 vs. all" binary tasks.
  one of the factor levels (e.g., owing to random cuts during
  cross-validation), the \code{ExprsModule} component that
  would refer to that class label gets replaced with an NA
- placeholder. This NA placeholder gets handled as a
- special case when predicting with an \code{ExprsModule}.
-
-During \code{ExprsModule} class prediction, the absence
- of a class during training (i.e., an NA placeholder)
- will prevent an \code{ExprsModule} object from possibly
- predicting that class in a validation set. Rather, an
- \code{ExprsModule} can only make predictions about class
- labels that it "knows". However, all "unknown" classes
- in the validation set (i.e., those missing from the training
- set) still impact metrics of classifier performance.
-
-An \code{ExprsModule} object can only make predictions on
- an \code{ExprsMulti} object with the same number of recorded
- class labels (i.e., the total number of levels in the
- \code{$defineCase} factor). As with all functions included
- in this package, all ties get broken using probability
- weights proportional to the relative class frequencies
- in the training set.
+ placeholder. Note that this NA placeholder will prevent a
+ classifier from possibly predicting the NA class (i.e., a
+ classifier can only make predictions about class
+ labels that it "knows"). However, these "unknown" classes
+ still impact metrics of classifier performance.
+ Otherwise, see \code{\link{exprso-predict}}.
 }
 \section{Methods (by class)}{
 \itemize{
 \item \code{ExprsMulti}: Method to execute multiple "1 vs. all" binary tasks.
 }}
 
-\seealso{
-\code{\link{fs}}\cr
-\code{\link{build}}\cr
-\code{\link{doMulti}}\cr
-\code{\link{exprso-predict}}\cr
-\code{\link{plCV}}\cr
-\code{\link{plGrid}}\cr
-\code{\link{plGridMulti}}\cr
-\code{\link{plMonteCarlo}}\cr
-\code{\link{plNested}}
-}

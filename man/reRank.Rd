@@ -38,14 +38,3 @@ We note here, however, that a better approach would deploy
  followed by "1 vs. all" classifier construction. This is
  now implemented as \code{\link{plGridMulti}}.
 }
-\seealso{
-\code{\link{fs}}\cr
-\code{\link{build}}\cr
-\code{\link{doMulti}}\cr
-\code{\link{exprso-predict}}\cr
-\code{\link{plCV}}\cr
-\code{\link{plGrid}}\cr
-\code{\link{plGridMulti}}\cr
-\code{\link{plMonteCarlo}}\cr
-\code{\link{plNested}}
-}

@@ -1,6 +1,3 @@
-###########################################################
-### doMulti for "1 vs. all" tasks
-
 #' Perform "1 vs. all" Task
 #'
 #' A function to execute multiple "1 vs. all" binary tasks.
@@ -10,41 +7,16 @@
 #'  one of the factor levels (e.g., owing to random cuts during
 #'  cross-validation), the \code{ExprsModule} component that
 #'  would refer to that class label gets replaced with an NA
-#'  placeholder. This NA placeholder gets handled as a
-#'  special case when predicting with an \code{ExprsModule}.
-#'
-#' During \code{ExprsModule} class prediction, the absence
-#'  of a class during training (i.e., an NA placeholder)
-#'  will prevent an \code{ExprsModule} object from possibly
-#'  predicting that class in a validation set. Rather, an
-#'  \code{ExprsModule} can only make predictions about class
-#'  labels that it "knows". However, all "unknown" classes
-#'  in the validation set (i.e., those missing from the training
-#'  set) still impact metrics of classifier performance.
-#'
-#' An \code{ExprsModule} object can only make predictions on
-#'  an \code{ExprsMulti} object with the same number of recorded
-#'  class labels (i.e., the total number of levels in the
-#'  \code{$defineCase} factor). As with all functions included
-#'  in this package, all ties get broken using probability
-#'  weights proportional to the relative class frequencies
-#'  in the training set.
+#'  placeholder. Note that this NA placeholder will prevent a
+#'  classifier from possibly predicting the NA class (i.e., a
+#'  classifier can only make predictions about class
+#'  labels that it "knows"). However, these "unknown" classes
+#'  still impact metrics of classifier performance.
+#'  Otherwise, see \code{\link{exprso-predict}}.
 #'
 #' @inheritParams fs.
-#' @param method A character string. The \code{ExprsBinary} method to execute multiple times.
-#' @return A list of the results given by \code{method}.
-#'
-#' @seealso
-#' \code{\link{fs}}\cr
-#' \code{\link{build}}\cr
-#' \code{\link{doMulti}}\cr
-#' \code{\link{exprso-predict}}\cr
-#' \code{\link{plCV}}\cr
-#' \code{\link{plGrid}}\cr
-#' \code{\link{plGridMulti}}\cr
-#' \code{\link{plMonteCarlo}}\cr
-#' \code{\link{plNested}}
-#'
+#' @param method A character string. The method to apply.
+#' @return A list of the results from \code{method}.
 #' @export
 setGeneric("doMulti",
            function(object, top, method, ...) standardGeneric("doMulti")
@@ -84,9 +56,6 @@ setMethod("doMulti", "ExprsMulti",
           }
 )
 
-###########################################################
-### reRank to serialize "1 vs. all" feature selection
-
 #' Serialize "1 vs. all" Feature Selection
 #'
 #' This experimental function converts multiple feature rank lists,
@@ -115,18 +84,6 @@ setMethod("doMulti", "ExprsMulti",
 #'
 #' @param fss The result of a \code{doMulti} function call.
 #' @return A vector of re-ranked features. See Details.
-#'
-#' @seealso
-#' \code{\link{fs}}\cr
-#' \code{\link{build}}\cr
-#' \code{\link{doMulti}}\cr
-#' \code{\link{exprso-predict}}\cr
-#' \code{\link{plCV}}\cr
-#' \code{\link{plGrid}}\cr
-#' \code{\link{plGridMulti}}\cr
-#' \code{\link{plMonteCarlo}}\cr
-#' \code{\link{plNested}}
-#'
 #' @export
 reRank <- function(fss){
 
