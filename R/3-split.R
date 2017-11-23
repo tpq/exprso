@@ -48,8 +48,12 @@ splitSample <- function(object, percent.include = 67, ...){
     if(counter > 10) stop("splitSample could not find a solution. Check the supplied parameters.")
     random.train <- sample(1:ncol(object@exprs), size = size, ...)
     random.valid <- setdiff(1:ncol(object@exprs), random.train)
-    if(all(unique(object$defineCase) %in% object$defineCase[random.train]) &
-       all(unique(object$defineCase) %in% object$defineCase[random.valid])) all.in <- TRUE
+    if(class(object) == "RegrsArray"){
+      all.in <- TRUE
+    }else{
+      if(all(unique(object$defineCase) %in% object$defineCase[random.train]) &
+         all(unique(object$defineCase) %in% object$defineCase[random.valid])) all.in <- TRUE
+    }
   }
 
   return(list(
@@ -88,8 +92,8 @@ splitStratify <- function(object, percent.include = 67, colBy = NULL,
                           breaks = rep(list(NA), length(colBy)),
                           ...){
 
-  classCheck(object, "ExprsArray",
-             "This function is applied to the results of ?exprso.")
+  classCheck(object, c("ExprsBinary", "ExprsMulti"),
+             "This feature selection method only works for classification tasks.")
 
   if(percent.include < 1 | percent.include > 100){
     stop("Uh oh! Use an inclusion percentage between 1-100!")
