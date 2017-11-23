@@ -1,3 +1,20 @@
+## exprso 0.2.4
+---------------------
+* General changes
+    * Move `modHistory` into script with other mod modules
+    * Move `predict` and `calcStats` into separate files
+* Revise split modules
+    * Make `splitSample` work with `RegrsArray` objects
+    * Note `splitStratify` is classification only
+* Revise build modules
+    * Fix bug when making `RegrsModel` objects
+    * Note `buildLDA` is classification only
+    * Note `buildNB` is classification only
+* Revise predict
+    * New predict method for `RegrsModel` objects
+    * New calcStats method for `RegrsPredict` objects
+    * Trim documentation
+
 ## exprso 0.2.3
 ---------------------
 * Revise build modules

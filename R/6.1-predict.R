@@ -7,7 +7,7 @@
 #'
 #' @details
 #' Models can only get deployed on an object of the type used to build
-#'  the model. Binary classification and regression is handled natively
+#'  the model. Binary classification and regression are handled natively
 #'  by the machine learning algorithm chosen. Multi-class classification
 #'  is handled by \code{\link{doMulti}}. Note that a validation set
 #'  should never get modified once separated from the training set.
