@@ -6,6 +6,8 @@
 \description{
 The \code{exprso} package includes these data process modules:
 
+- \code{\link{modHistory}}
+
 - \code{\link{modSubset}}
 
 - \code{\link{modFilter}}
