@@ -38,7 +38,7 @@ build. <- function(object, top, uniqueFx, ...){
              preFilter = append(object@preFilter, list(top)),
              reductionModel = append(object@reductionModel, list(NA)),
              mach = model)
-  }else if(class(object) == "RegrsModel"){
+  }else if(class(object) == "RegrsArray"){
     data <- t(object@exprs[top, ])
     labels <- object@annot$defineCase
     model <- do.call("uniqueFx", list(data, labels, ...))
@@ -61,8 +61,8 @@ build. <- function(object, top, uniqueFx, ...){
 #' @export
 buildNB <- function(object, top = 0, ...){ # args to naiveBayes
 
-  classCheck(object, "ExprsArray",
-             "This function is applied to the results of ?exprso.")
+  classCheck(object, c("ExprsBinary", "ExprsMulti"),
+             "This feature selection method only works for classification tasks.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -85,8 +85,8 @@ buildNB <- function(object, top = 0, ...){ # args to naiveBayes
 #' @export
 buildLDA <- function(object, top = 0, ...){ # args to lda
 
-  classCheck(object, "ExprsArray",
-             "This function is applied to the results of ?exprso.")
+  classCheck(object, c("ExprsBinary", "ExprsMulti"),
+             "This feature selection method only works for classification tasks.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
