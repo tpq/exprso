@@ -1,9 +1,6 @@
-###########################################################
-### High-throughput classification
-
-#' Perform High-Throughput Classification
+#' Perform High-Throughput Multi-Class Classification
 #'
-#' Trains and deploys multiple classifiers across a vast parameter search space.
+#' Trains and deploys multi-class classifiers across a vast parameter search space.
 #'
 #' Unlike \code{plGrid}, the \code{plGridMulti} function accepts a \code{ctrlFS}
 #'  argument, allowing for 1-vs-all classification with implicit feature selection.
@@ -20,20 +17,7 @@
 #' @param array.train Specifies the \code{ExprsMulti} object to use as training set.
 #' @param array.valid Specifies the \code{ExprsMulti} object to use as validation set.
 #' @param ctrlFS A list of arguments handled by \code{\link{ctrlFeatureSelect}}.
-#'
 #' @return An \code{\link{ExprsPipeline-class}} object.
-#'
-#' @seealso
-#' \code{\link{fs}}\cr
-#' \code{\link{build}}\cr
-#' \code{\link{doMulti}}\cr
-#' \code{\link{exprso-predict}}\cr
-#' \code{\link{plCV}}\cr
-#' \code{\link{plGrid}}\cr
-#' \code{\link{plGridMulti}}\cr
-#' \code{\link{plMonteCarlo}}\cr
-#' \code{\link{plNested}}
-#'
 #' @export
 plGridMulti <- function(array.train, array.valid = NULL, ctrlFS, top, how,
                         aucSkip = FALSE, verbose = TRUE, ...){

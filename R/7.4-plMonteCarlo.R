@@ -1,83 +1,3 @@
-###########################################################
-### Cross-validation argument handlers
-
-#' Manage \code{mod} Arguments
-#'
-#' This function organizes \code{mod} arguments passed to \code{pl} functions.
-#'
-#' @param func A character string. The \code{mod} function to call.
-#' @param ... Additional arguments passed to the \code{mod} function.
-#' @return A list of arguments.
-#'
-#' @export
-ctrlModSet <- function(func, ...){
-
-  list("func" = func,
-       ...)
-}
-
-#' Manage \code{split} Arguments
-#'
-#' This function organizes \code{split} arguments passed to \code{pl} functions.
-#'
-#' @param func A character string. The \code{split} function to call.
-#' @param percent.include Argument passed to the \code{split} function.
-#' @param ... Additional arguments passed to the \code{split} function.
-#' @return A list of arguments.
-#'
-#' @export
-ctrlSplitSet <- function(func, percent.include, ...){
-
-  list("func" = func,
-       "percent.include" = percent.include,
-       ...)
-}
-
-#' Manage \code{fs} Arguments
-#'
-#' This function organizes \code{fs} arguments passed to \code{pl} functions.
-#'
-#' @param func A character string. The \code{fs} function to call.
-#' @param top Argument passed to the \code{fs} function.
-#' @param ... Additional arguments passed to the \code{fs} function.
-#' @return A list of arguments.
-#'
-#' @export
-ctrlFeatureSelect <- function(func, top, ...){
-
-  list("func" = func,
-       "top" = top,
-       ...)
-}
-
-#' Manage \code{plGrid} Arguments
-#'
-#' This function organizes \code{plGrid} arguments passed to \code{pl} functions.
-#'
-#' @param func A character string. The \code{pl} function to call.
-#' @param top Argument passed to the \code{pl} function. Leave missing
-#'  when handling \code{plMonteCarlo} or \code{plNested} arguments.
-#' @param ... Additional arguments passed to the \code{pl} function.
-#' @return A list of arguments.
-#'
-#' @export
-ctrlGridSearch <- function(func, top, ...){
-
-  if(missing(top)){
-
-    list("func" = func,
-         ...)
-  }else{
-
-    list("func" = func,
-         "top" = top,
-         ...)
-  }
-}
-
-###########################################################
-### Monte Carlo cross-validation
-
 #' Monte Carlo Cross-Validation
 #'
 #' Perform Monte Carlo style cross-validation.
@@ -99,7 +19,7 @@ ctrlGridSearch <- function(func, top, ...){
 #'  function \code{\link{calcMonteCarlo}}.
 #'
 #' When embedding another \code{plMonteCarlo} or \code{plNested} call within
-#'  this function (i.e., via \code{ctrlGS}), outer-fold classifier performance
+#'  this function (i.e., via \code{ctrlGS}), outer-fold model performance
 #'  will force \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
@@ -110,19 +30,7 @@ ctrlGridSearch <- function(func, top, ...){
 #' @param ctrlMS Arguments handled by \code{\link{ctrlModSet}}. Optional.
 #' @param save A logical scalar. Toggles whether to save randomly split
 #'  training and validation sets.
-#'
 #' @return An \code{\link{ExprsPipeline-class}} object.
-#'
-#' @seealso
-#' \code{\link{fs}}\cr
-#' \code{\link{build}}\cr
-#' \code{\link{doMulti}}\cr
-#' \code{\link{exprso-predict}}\cr
-#' \code{\link{plCV}}\cr
-#' \code{\link{plGrid}}\cr
-#' \code{\link{plGridMulti}}\cr
-#' \code{\link{plMonteCarlo}}\cr
-#' \code{\link{plNested}}
 #'
 #' @examples
 #' \dontrun{
@@ -241,7 +149,7 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, ctrlMS = NULL, s
 #'
 #' @param pl Specifies the \code{ExprsPipeline} object returned by \code{plMonteCarlo}.
 #' @param colBy A character vector or string. Specifies column(s) to use when
-#'  summarizing classifier performance. Listing multiple columns will calculate
+#'  summarizing model performance. Listing multiple columns will calculate
 #'  performance as a product of those listed performances.
 #' @return A numeric scalar. The cross-validation accuracy.
 #'
