@@ -4,7 +4,7 @@
 \alias{doMulti}
 \title{Perform Multiple "1 vs. all" Tasks}
 \usage{
-doMulti(object, top, method, ...)
+doMulti(object, top = 0, method, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object. The training set.}

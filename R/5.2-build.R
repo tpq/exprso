@@ -70,7 +70,7 @@ build. <- function(object, top, uniqueFx, ...){
 #' @param method A character string. The method to apply.
 #' @return A list of the results from \code{method}.
 #' @export
-doMulti <- function(object, top, method, ...){
+doMulti <- function(object, top = 0, method, ...){
 
   classCheck(object, "ExprsMulti",
              "This method only works for multi-class classification tasks.")
