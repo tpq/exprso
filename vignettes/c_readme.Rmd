@@ -4,7 +4,7 @@ author: "Thomas Quinn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{4. Use Disclaimer, Please Read}
+  %\VignetteIndexEntry{3. Use Disclaimer, Please Read}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
