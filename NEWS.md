@@ -1,3 +1,10 @@
+## exprso 0.2.5
+---------------------
+* General changes
+    * Users can now deploy multi-class classifier ensembles
+    * Users can now deploy regression ensembles
+    * Trim documentation
+
 ## exprso 0.2.4
 ---------------------
 * General changes
