@@ -1,6 +1,7 @@
 ## exprso 0.2.5
 ---------------------
 * General changes
+    * Validate performance of regression `pl` pipelines
     * Users can now deploy multi-class classifier ensembles
     * Users can now deploy regression ensembles
     * Trim documentation

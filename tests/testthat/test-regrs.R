@@ -67,4 +67,11 @@ test_that("Continuous outcome pl modules work", {
     round(calcStats(pred)$acc, 4),
     .9286
   )
+
+  ens <- buildEnsemble(boot)
+  pred <- predict(ens, o)
+  expect_equal(
+    round(calcStats(pred)$acc, 4),
+    .9536
+  )
 })
