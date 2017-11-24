@@ -5,7 +5,7 @@
 \alias{ExprsModel-class}
 \alias{show,ExprsModel-method}
 \alias{getFeatures,ExprsModel-method}
-\title{An S4 class to store the classification model}
+\title{An S4 class to store the model}
 \usage{
 \S4method{show}{ExprsModel}(object)
 
@@ -15,7 +15,7 @@
 \item{object}{An object of class \code{ExprsModel}.}
 }
 \description{
-An S4 class to store the classification model
+An S4 class to store the model
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -31,7 +31,7 @@ An S4 class to store the classification model
 
 \item{\code{reductionModel}}{Typically a list. Stores dimension reduction history.}
 
-\item{\code{mach}}{Typically an S4 class. Stores the classification model.}
+\item{\code{mach}}{Typically an S4 class. Stores the model.}
 }}
 
 \seealso{
@@ -39,5 +39,6 @@ An S4 class to store the classification model
 \code{\link{ExprsModel-class}}\cr
 \code{\link{ExprsPipeline-class}}\cr
 \code{\link{ExprsEnsemble-class}}\cr
-\code{\link{ExprsPredict-class}}
+\code{\link{ExprsPredict-class}}\cr
+\code{\link{RegrsPredict-class}}
 }

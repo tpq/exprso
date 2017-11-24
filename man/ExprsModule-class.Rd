@@ -3,7 +3,7 @@
 \docType{class}
 \name{ExprsModule-class}
 \alias{ExprsModule-class}
-\title{An S4 class to store the classification model}
+\title{An S4 class to store the model}
 \description{
 An \code{ExprsModel} sub-class for multi-class models.
 }

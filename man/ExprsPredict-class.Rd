@@ -40,5 +40,6 @@ Used by \code{\link{calcStats}}.}
 \code{\link{ExprsModel-class}}\cr
 \code{\link{ExprsPipeline-class}}\cr
 \code{\link{ExprsEnsemble-class}}\cr
-\code{\link{ExprsPredict-class}}
+\code{\link{ExprsPredict-class}}\cr
+\code{\link{RegrsPredict-class}}
 }

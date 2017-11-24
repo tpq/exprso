@@ -3,7 +3,7 @@
 \docType{class}
 \name{ExprsMachine-class}
 \alias{ExprsMachine-class}
-\title{An S4 class to store the classification model}
+\title{An S4 class to store the model}
 \description{
 An \code{ExprsModel} sub-class for dichotomous models.
 }

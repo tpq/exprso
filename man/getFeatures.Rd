@@ -16,10 +16,3 @@ or \code{ExprsEnsemble} object.}
 \description{
 See the respective S4 class for method details.
 }
-\seealso{
-\code{\link{ExprsArray-class}}\cr
-\code{\link{ExprsModel-class}}\cr
-\code{\link{ExprsPipeline-class}}\cr
-\code{\link{ExprsEnsemble-class}}\cr
-\code{\link{ExprsPredict-class}}
-}

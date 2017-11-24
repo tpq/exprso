@@ -4,7 +4,6 @@
 \name{ExprsPipeline-class}
 \alias{ExprsPipeline-class}
 \alias{show,ExprsPipeline-method}
-\alias{[,ExprsPipeline,ANY,ANY-method}
 \alias{[,ExprsPipeline-method}
 \alias{$,ExprsPipeline-method}
 \alias{subset,ExprsPipeline-method}
@@ -14,7 +13,7 @@
 \usage{
 \S4method{show}{ExprsPipeline}(object)
 
-\S4method{[}{ExprsPipeline,ANY,ANY}(x, i, j)
+\S4method{[}{ExprsPipeline}(x, i, j)
 
 \S4method{$}{ExprsPipeline}(x, name)
 
@@ -55,7 +54,7 @@ An S4 class to store models built during high-throughput learning
 
 \item \code{subset}: Method to subset \code{ExprsPipeline} object.
 
-\item \code{summary}: Method to summarize \code{ExprsPipeline} classification results.
+\item \code{summary}: Method to summarize \code{ExprsPipeline} results.
 
 \item \code{getFeatures}: Method to return features within an \code{ExprsPredict} model.
 }}
@@ -64,9 +63,9 @@ An S4 class to store models built during high-throughput learning
 
 \describe{
 \item{\code{summary}}{Typically a data.frame. Stores the parameters and
-performances for classification models.}
+performances for the models.}
 
-\item{\code{machs}}{Typically a list. Stores the classification models
+\item{\code{machs}}{Typically a list. Stores the models
 referenced in \code{summary} slot.}
 }}
 
@@ -75,5 +74,6 @@ referenced in \code{summary} slot.}
 \code{\link{ExprsModel-class}}\cr
 \code{\link{ExprsPipeline-class}}\cr
 \code{\link{ExprsEnsemble-class}}\cr
-\code{\link{ExprsPredict-class}}
+\code{\link{ExprsPredict-class}}\cr
+\code{\link{RegrsPredict-class}}
 }

@@ -5,7 +5,7 @@
 \alias{ExprsEnsemble-class}
 \alias{show,ExprsEnsemble-method}
 \alias{getFeatures,ExprsEnsemble-method}
-\title{An S4 class to store multiple classification models}
+\title{An S4 class to store multiple models}
 \usage{
 \S4method{show}{ExprsEnsemble}(object)
 
@@ -19,7 +19,7 @@ or \code{ExprsEnsemble} object.}
 If missing, \code{getFeatures} will tabulate features across all models.}
 }
 \description{
-An S4 class to store multiple classification models
+An S4 class to store multiple models
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -31,7 +31,7 @@ An S4 class to store multiple classification models
 \section{Slots}{
 
 \describe{
-\item{\code{machs}}{Typically a list. Stores the classification models.}
+\item{\code{machs}}{Typically a list. Stores the models.}
 }}
 
 \seealso{
@@ -39,5 +39,6 @@ An S4 class to store multiple classification models
 \code{\link{ExprsModel-class}}\cr
 \code{\link{ExprsPipeline-class}}\cr
 \code{\link{ExprsEnsemble-class}}\cr
-\code{\link{ExprsPredict-class}}
+\code{\link{ExprsPredict-class}}\cr
+\code{\link{RegrsPredict-class}}
 }

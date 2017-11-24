@@ -10,12 +10,6 @@
 #' @param ... See \code{\link{ExprsPipeline-class}} or
 #'  \code{\link{ExprsEnsemble-class}}.
 #'
-#' @seealso
-#' \code{\link{ExprsArray-class}}\cr
-#' \code{\link{ExprsModel-class}}\cr
-#' \code{\link{ExprsPipeline-class}}\cr
-#' \code{\link{ExprsEnsemble-class}}\cr
-#' \code{\link{ExprsPredict-class}}
 #' @export
 setGeneric("getFeatures",
            function(object, ...) standardGeneric("getFeatures")
@@ -32,8 +26,15 @@ setGeneric("getFeatures",
 setMethod("show", "ExprsArray",
           function(object){
 
-            cat("##Number of classes:",
-                length(unique(object@annot$defineCase)), "\n")
+            if(class(object) == "ExprsBinary" | class(object) == "ExprsMulti"){
+              cat("##Number of classes:",
+                  length(unique(object@annot$defineCase)), "\n")
+            }else{
+              cat("##Average outcome: ",
+                  round(mean(object@annot$defineCase), 2), " [",
+                  round(min(object@annot$defineCase), 2), "-",
+                  round(max(object@annot$defineCase), 2), "]\n", sep = "")
+            }
 
             cat("@exprs summary:",
                 nrow(object@exprs), "features by", ncol(object@exprs), "subjects\n")
@@ -208,8 +209,12 @@ setMethod("getFeatures", "ExprsArray",
 setMethod("show", "ExprsModel",
           function(object){
 
-            cat("##Number of classes:",
-                ifelse(all(class(object@mach) == "list"), length(object@mach), 2), "\n")
+            if(class(object) == "ExprsMachine" | class(object) == "ExprsModule"){
+              cat("##Number of classes:",
+                  ifelse(all(class(object@mach) == "list"), length(object@mach), 2), "\n")
+            }else{
+              cat("##Continuous outcome model\n")
+            }
 
             cat("@preFilter summary:",
                 unlist(lapply(object@preFilter, length)), "\n")
@@ -332,7 +337,7 @@ setMethod("subset", signature(x = "ExprsPipeline"),
           }
 )
 
-#' @describeIn ExprsPipeline Method to summarize \code{ExprsPipeline} classification results.
+#' @describeIn ExprsPipeline Method to summarize \code{ExprsPipeline} results.
 #'
 #' @importFrom stats sd
 #' @export
@@ -438,9 +443,29 @@ setMethod("getFeatures", "ExprsEnsemble",
 setMethod("show", "ExprsPredict",
           function(object){
 
-            cat("@pred summary:", as.numeric(object@pred), "\n")
+            cat("@pred summary:", table(as.numeric(object@pred)), "\n")
             cat("@decision.values summary:", colnames(object@decision.values), "\n")
             cat("@probability summary:", colnames(object@probability), "\n")
+            cat("@actual summary:", table(as.numeric(object@actual)), "\n")
+          }
+)
+
+#' @describeIn RegrsPredict Method to show \code{RegrsPredict} object.
+#'
+#' @param object An object of class \code{RegrsPredict}.
+#'
+#' @export
+setMethod("show", "RegrsPredict",
+          function(object){
+
+            cat("@pred summary: ",
+                round(mean(object@pred), 2), " [",
+                round(min(object@pred), 2), "-",
+                round(max(object@pred), 2), "]\n", sep = "")
+            cat("@actual summary: ",
+                round(mean(object@actual), 2), " [",
+                round(min(object@actual), 2), "-",
+                round(max(object@actual), 2), "]\n", sep = "")
           }
 )
 

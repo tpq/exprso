@@ -3,7 +3,7 @@
 \docType{class}
 \name{RegrsModel-class}
 \alias{RegrsModel-class}
-\title{An S4 class to store the classification model}
+\title{An S4 class to store the model}
 \description{
 An \code{ExprsModel} sub-class for continuous outcome models.
 }
