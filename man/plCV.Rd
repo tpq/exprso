@@ -27,36 +27,22 @@ A numeric scalar. The cross-validation accuracy.
 }
 \description{
 Calculates v-fold or leave-one-out cross-validation without selecting a new
- set of features with each fold.
+ set of features with each fold. See Details.
 }
 \details{
-\code{plCV} performs v-fold or leave-one-out cross-validation for an
- \code{ExprsArray} object. The argument \code{fold} specifies the number
- of v-folds to use during cross-validation. Set \code{fold = 0} to perform
- leave-one-out cross-validation. This approach to cross-validation
- will work for \code{ExprsBinary} and \code{ExprsMulti} objects alike. The
- performance metric used to measure cross-validation accuracy is the
- \code{acc} slot returned by \code{\link{calcStats}}.
+\code{plCV} performs v-fold or leave-one-out cross-validation. The argument
+ \code{fold} specifies the number of v-folds to use during cross-validation.
+ Set \code{fold = 0} to perform leave-one-out cross-validation. Cross-validation
+ accuracy is defined as the average accuracy from \code{\link{calcStats}}.
 
-This type of cross-validation is most appropriate if the \code{ExprsArray}
- has not undergone any prior feature selection. However, it may also have a role
+This type of cross-validation is most appropriate if the data
+ has not undergone any prior feature selection. However, it can also serve
  as an unbiased guide to parameter selection when embedded in
  \code{\link{plGrid}}. If using cross-validation in lieu of an independent test
  set in the setting of one or more feature selection methods, consider using
  a more "sophisticated" form of cross-validation as implemented in
  \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
 
-When calculating classifier performance with \code{\link{calcStats}}, this
+When calculating model performance with \code{\link{calcStats}}, this
  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
-}
-\seealso{
-\code{\link{fs}}\cr
-\code{\link{build}}\cr
-\code{\link{doMulti}}\cr
-\code{\link{exprso-predict}}\cr
-\code{\link{plCV}}\cr
-\code{\link{plGrid}}\cr
-\code{\link{plGridMulti}}\cr
-\code{\link{plMonteCarlo}}\cr
-\code{\link{plNested}}
 }

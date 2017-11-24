@@ -42,11 +42,10 @@ To perform multiple feature selection tasks, supply a list of multiple
  you can feed the returned \code{ExprsPipeline} object through the helper
  function \code{\link{calcNested}}.
 
-When calculating classifier performance with \code{\link{calcStats}}, this
+When calculating model performance with \code{\link{calcStats}}, this
  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
-
-When embedding another \code{plMonteCarlo} or \code{plNested} call within
- this function (i.e., via \code{ctrlGS}), outer-fold classifier performance
+ When embedding another \code{plMonteCarlo} or \code{plNested} call within
+ this function (i.e., via \code{ctrlGS}), outer-fold model performance
  will force \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
 }
 \examples{
@@ -62,15 +61,4 @@ gs <- ctrlGridSearch(func = "plGrid", how = "buildANN", top = c(10, 20, 30),
                      size = 1:3, decay = c(0, .5, 1), fold = 0)
 nest <- plNested(arrays[[1]], fold = 10, ctrlFS = fs, ctrlGS = gs, save = FALSE)
 }
-}
-\seealso{
-\code{\link{fs}}\cr
-\code{\link{build}}\cr
-\code{\link{doMulti}}\cr
-\code{\link{exprso-predict}}\cr
-\code{\link{plCV}}\cr
-\code{\link{plGrid}}\cr
-\code{\link{plGridMulti}}\cr
-\code{\link{plMonteCarlo}}\cr
-\code{\link{plNested}}
 }

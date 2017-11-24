@@ -2,7 +2,7 @@
 % Please edit documentation in R/7.3-plGridMulti.R
 \name{plGridMulti}
 \alias{plGridMulti}
-\title{Perform High-Throughput Classification}
+\title{Perform High-Throughput Multi-Class Classification}
 \usage{
 plGridMulti(array.train, array.valid = NULL, ctrlFS, top, how,
   aucSkip = FALSE, verbose = TRUE, ...)
@@ -36,7 +36,7 @@ See Details.}
 An \code{\link{ExprsPipeline-class}} object.
 }
 \description{
-Trains and deploys multiple classifiers across a vast parameter search space.
+Trains and deploys multi-class classifiers across a vast parameter search space.
 }
 \details{
 Unlike \code{plGrid}, the \code{plGridMulti} function accepts a \code{ctrlFS}
@@ -48,15 +48,4 @@ Unlike \code{plGrid}, the \code{plGridMulti} function accepts a \code{ctrlFS}
 
 Take note, that \code{plGridMulti} does not have built-in \code{plCV} support.
  To use \code{plGridMulti} with cross-validation, use \code{plNested}.
-}
-\seealso{
-\code{\link{fs}}\cr
-\code{\link{build}}\cr
-\code{\link{doMulti}}\cr
-\code{\link{exprso-predict}}\cr
-\code{\link{plCV}}\cr
-\code{\link{plGrid}}\cr
-\code{\link{plGridMulti}}\cr
-\code{\link{plMonteCarlo}}\cr
-\code{\link{plNested}}
 }

@@ -6,16 +6,16 @@
 \alias{pipeFilter,ExprsPipeline-method}
 \title{Filter \code{ExprsPipeline} Object}
 \usage{
-pipeFilter(object, colBy, how = 0, gate = 0, top = 0)
+pipeFilter(object, colBy = "valid.acc", how = 0, gate = 0, top = 0)
 
-\S4method{pipeFilter}{ExprsPipeline}(object, colBy, how = 0, gate = 0,
-  top = 0)
+\S4method{pipeFilter}{ExprsPipeline}(object, colBy = "valid.acc", how = 0,
+  gate = 0, top = 0)
 }
 \arguments{
 \item{object}{An \code{\link{ExprsPipeline-class}} object.}
 
 \item{colBy}{A character vector or string. Specifies column(s) to use when
-filtering by classifier performance. Listing multiple columns will result
+filtering by model performance. Listing multiple columns will result
 in a filter based on a performance metric equal to the product of those
 listed columns.}
 
@@ -49,28 +49,17 @@ First, a threshold filter gets imposed. Any model with a performance
  than the ceiling filter, \code{gate}, gets excluded. Third, an
  arbitrary subset occurs. The top N models in the \code{ExprsPipeline}
  object get selected based on the argument \code{top}. However,
- in the case that the \code{@summary} slot contains the column
- "boot", \code{pipeFilter} selects the top N models for each unique
- bootstrap.
+ in the case that the \code{@summary} slot contains the column "boot",
+ \code{pipeFilter} selects the top N models per bootstrap.
 
 \code{pipeFilter} will apply this filter for one or more performance
  metrics listed in the \code{colBy} argument. Listing multiple columns
  will result in a filter based on a performance metric equal to the
  product of all listed performance metrics. To more heavily weigh
- one performance metric over another, consider listing that column
- more than once.
+ one metric over another, list that column more than once.
 }
 \section{Methods (by class)}{
 \itemize{
 \item \code{ExprsPipeline}: Method to filter \code{ExprsPipeline} objects.
 }}
 
-\seealso{
-\code{\link{pipeFilter}}\cr
-\code{\link{pipeUnboot}}\cr
-\code{\link{plCV}}\cr
-\code{\link{plGrid}}\cr
-\code{\link{plGridMulti}}\cr
-\code{\link{plMonteCarlo}}\cr
-\code{\link{plNested}}
-}

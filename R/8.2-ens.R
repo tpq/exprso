@@ -1,39 +1,22 @@
-###########################################################
-### Build Ensemble
-
 #' Build Ensemble
 #'
-#' Aggregates multiple classifiers into a single ensemble classifier.
+#' \code{buildEnsemble} builds an ensemble from \code{ExprsModel} or
+#'  \code{ExprsPipeline} objects. See Details.
 #'
-#' The \code{\link{ExprsModel-class}} method:
+#' This function can combine any number of model objects into an ensemble.
+#'  These models do not necessarily have to derive from the same \code{build}
+#'  method. In this way, it works like \code{\link{conjoin}} method.
 #'
-#' Combine any number of \code{ExprsModel} objects into an ensemble. These models
-#'  do not necessarily have to derive from the same \code{build} method. This
-#'  method works identically to the \code{\link{conjoin}} \code{ExprsModel} method.
+#' This function can also build an ensemble from pipeline objects. It does
+#'  this by calling \code{\link{pipeFilter}}, then aggregating those results
+#'  into an ensemble. As an adjunct to this method, consider first combining
+#'  multiple pipeline objects together with \code{\link{conjoin}}.
 #'
-#' The \code{\link{ExprsPipeline-class}} method:
-#'
-#' Build an ensemble from an \code{ExprsPipeline} object. This method works by
-#'  calling \code{\link{pipeFilter}}, then aggregating those results into an ensemble.
-#'  As an adjunct to this method, consider first combining multiple
-#'  \code{ExprsPipeline} objects together with \code{\link{conjoin}}.
-#'
-#' @param object An \code{\link{ExprsModel-class}} object.
+#' @param object An \code{ExprsModel} or \code{ExprsPipeline} object.
 #' @param ... Additional \code{ExprsModel} objects to use in the ensemble.
-#'  Argument applies to \code{\link{ExprsModel-class}} method only.
+#'  Argument applies to the \code{\link{ExprsModel-class}} method only.
 #' @inheritParams pipeFilter
-#'
 #' @return An \code{\link{ExprsEnsemble-class}} object.
-#'
-#' @seealso
-#' \code{\link{pipeFilter}}\cr
-#' \code{\link{pipeUnboot}}\cr
-#' \code{\link{plCV}}\cr
-#' \code{\link{plGrid}}\cr
-#' \code{\link{plGridMulti}}\cr
-#' \code{\link{plMonteCarlo}}\cr
-#' \code{\link{plNested}}
-#'
 #' @export
 setGeneric("buildEnsemble",
            function(object, ...) standardGeneric("buildEnsemble")
@@ -64,90 +47,84 @@ setMethod("buildEnsemble", "ExprsPipeline",
           }
 )
 
-###########################################################
-### Predict class labels using ExprsEnsemble
-
 #' @rdname exprso-predict
 #' @export
 setMethod("predict", "ExprsEnsemble",
           function(object, array, how = "probability", verbose = TRUE){
 
-            if(!inherits(array, "ExprsArray")){
-
-              stop("Uh oh! You can only use an ExprsEnsemble to predict on an ExprsArray object!")
-            }
+            classCheck(array, "ExprsArray",
+                       "You can only deploy a model on the results of ?exprso.")
 
             # Deploy each machine in @machs on the provided ExprsArray
             results <- lapply(object@machs, function(mach) predict(mach, array, verbose = verbose))
 
-            if("ExprsBinary" %in% class(array)){
+            if(class(array) == "ExprsMulti" |
+               (class(array) == "ExprsBinary" & how == "majority")){
 
-              if(how == "probability"){
+              # Cast a vote (1 for Case, -1 for Control)
+              votes <- lapply(results, function(result) ifelse(result@pred == "Case", 1, -1))
+              final <- rowSums(data.frame(votes, row.names = names(results[[1]]@pred)))
 
-                # Calculate average probabilities
-                pxs <- lapply(results, function(result) result@probability)
-                Case <- lapply(pxs, function(px) px[, "Case"])
-                Case <- rowMeans(as.data.frame(Case))
-                Control <- lapply(pxs, function(px) px[, "Control"])
-                Control <- rowMeans(as.data.frame(Control))
-                px <- cbind(Control, Case)
+              # Randomly assign ties as "Case" or "Control" based on the proportion of cases
+              case <- sum(array@annot$defineCase == "Case") / nrow(array@annot)
+              final[final == 0] <- sample(c(1, -1),
+                                          size = length(final[final == 0]),
+                                          replace = TRUE,
+                                          prob = c(case, 1 - case))
 
-                # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
-                px <- as.data.frame(px)
-                px <- px[, c("Control", "Case")]
-                dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
-                colnames(dv) <- "Case/Control"
+              # Clean up pred
+              pred <- factor(ifelse(final > 0, "Case", "Control"), levels = c("Control", "Case"))
+              px <- NULL
+              dv <- NULL
 
-                # Assign binary values based on probability
-                pred <- vector("character", nrow(px))
-                pred[px$Case > .5] <- "Case"
-                pred[px$Case < .5] <- "Control"
+              final <- new("ExprsPredict",
+                           pred = pred, decision.values = dv, probability = px,
+                           actual = array@annot$defineCase)
 
-                # Break ties randomly
-                case <- sum(array@annot$defineCase == "Case") / nrow(array@annot)
-                pred[px$Case == .5] <- sample(c("Case", "Control"),
-                                              size = sum(px$Case == .5),
-                                              replace = TRUE,
-                                              prob = c(case, 1 - case))
+            }else if(class(array) == "ExprsBinary" & how == "probability"){
 
-                # Clean up pred
-                pred <- factor(as.vector(pred), levels = c("Control", "Case"))
+              # Calculate average probabilities
+              pxs <- lapply(results, function(result) result@probability)
+              Case <- lapply(pxs, function(px) px[, "Case"])
+              Case <- rowMeans(as.data.frame(Case))
+              Control <- lapply(pxs, function(px) px[, "Control"])
+              Control <- rowMeans(as.data.frame(Control))
+              px <- cbind(Control, Case)
 
-              }else if(how == "majority"){
+              # Calculate 'decision.values' from 'probabilities' using inverse Platt scaling
+              px <- as.data.frame(px)
+              px <- px[, c("Control", "Case")]
+              dv <- as.matrix(log(1 / (1 - px[, "Case"]) - 1))
+              colnames(dv) <- "Case/Control"
 
-                # Cast a vote (1 for Case, -1 for Control)
-                votes <- lapply(results, function(result) ifelse(result@pred == "Case", 1, -1))
-                final <- rowSums(data.frame(votes, row.names = names(results[[1]]@pred)))
+              # Assign binary values based on probability
+              pred <- vector("character", nrow(px))
+              pred[px$Case > .5] <- "Case"
+              pred[px$Case < .5] <- "Control"
 
-                # Randomly assign ties as "Case" or "Control" based on the proportion of cases
-                case <- sum(array@annot$defineCase == "Case") / nrow(array@annot)
-                final[final == 0] <- sample(c(1, -1),
-                                            size = length(final[final == 0]),
+              # Break ties randomly
+              case <- sum(array@annot$defineCase == "Case") / nrow(array@annot)
+              pred[px$Case == .5] <- sample(c("Case", "Control"),
+                                            size = sum(px$Case == .5),
                                             replace = TRUE,
                                             prob = c(case, 1 - case))
 
-                # Clean up pred
-                pred <- factor(ifelse(final > 0, "Case", "Control"), levels = c("Control", "Case"))
-                px <- NULL
-                dv <- NULL
+              # Clean up pred
+              pred <- factor(as.vector(pred), levels = c("Control", "Case"))
 
-              }else{
+              final <- new("ExprsPredict",
+                           pred = pred, decision.values = dv, probability = px,
+                           actual = array@annot$defineCase)
 
-                stop("Uh oh! Provided 'how' argument not recognized!")
-              }
+            }else if(class(array) == "RegrsArray"){
 
-            }else if("ExprsMulti" %in% class(array)){
-
-              stop("Uh oh! predict.ExprsEnsemble not yet generalized to work for ExprsMulti objects!")
+              pred <- colMeans(do.call("rbind", lapply(results, function(x) x@pred)))
+              final <- new("RegrsPredict", pred = pred, actual = array@annot$defineCase)
 
             }else{
 
-              stop("Uh oh! You can only use an ExprsEnsemble to predict on an ExprsArray object!")
+              stop("Requested ensemble deployment method not available.")
             }
-
-            final <- new("ExprsPredict",
-                         pred = pred, decision.values = dv, probability = px,
-                         actual = array@annot$defineCase)
 
             if(verbose){
 

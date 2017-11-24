@@ -232,14 +232,12 @@ pl <- trainingSet(splitSets) %>%
   calcNested(colBy = "valid.acc")
 ```
 
-Note that exprso does not yet support multi-class classifier ensembles. Sorry!
+Note that exprso also supports multi-class classifier ensembles.
 
-```{r, eval = FALSE}
-testthat::expect_error(
-  pl %>% buildEnsemble %>%
-    predict(testSet(splitSets)) %>%
-    calcStats
-)
+```{r, results = "hide"}
+pl %>% buildEnsemble %>%
+  predict(testSet(splitSets)) %>%
+  calcStats
 ```
 
 A special `plGrid` variant, called `plGridMulti`, is also available for multi-class data. This variant uses *1-vs-all feature selection* instead of multi-class feature selection. In this implementation, 1-vs-all feature selection occurs just prior to 1-vs-all classifier construction. As such, each individual `ExprsMachine` within the `ExprsModule` will have its own unique feature selection history to pass on to the test set during classifier deployment. For `plGridMulti`, the 1-vs-all feature selection is managed just like the other `pl` functions, using the `ctrlFeatureSelect` argument handler.

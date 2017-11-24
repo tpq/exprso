@@ -15,13 +15,13 @@ buildEnsemble(object, ...)
   gate = 0, top = 0)
 }
 \arguments{
-\item{object}{An \code{\link{ExprsModel-class}} object.}
+\item{object}{An \code{ExprsModel} or \code{ExprsPipeline} object.}
 
 \item{...}{Additional \code{ExprsModel} objects to use in the ensemble.
-Argument applies to \code{\link{ExprsModel-class}} method only.}
+Argument applies to the \code{\link{ExprsModel-class}} method only.}
 
 \item{colBy}{A character vector or string. Specifies column(s) to use when
-filtering by classifier performance. Listing multiple columns will result
+filtering by model performance. Listing multiple columns will result
 in a filter based on a performance metric equal to the product of those
 listed columns.}
 
@@ -51,21 +51,18 @@ Set \code{top = 0} to skip this subset.}
 An \code{\link{ExprsEnsemble-class}} object.
 }
 \description{
-Aggregates multiple classifiers into a single ensemble classifier.
+\code{buildEnsemble} builds an ensemble from \code{ExprsModel} or
+ \code{ExprsPipeline} objects. See Details.
 }
 \details{
-The \code{\link{ExprsModel-class}} method:
+This function can combine any number of model objects into an ensemble.
+ These models do not necessarily have to derive from the same \code{build}
+ method. In this way, it works like \code{\link{conjoin}} method.
 
-Combine any number of \code{ExprsModel} objects into an ensemble. These models
- do not necessarily have to derive from the same \code{build} method. This
- method works identically to the \code{\link{conjoin}} \code{ExprsModel} method.
-
-The \code{\link{ExprsPipeline-class}} method:
-
-Build an ensemble from an \code{ExprsPipeline} object. This method works by
- calling \code{\link{pipeFilter}}, then aggregating those results into an ensemble.
- As an adjunct to this method, consider first combining multiple
- \code{ExprsPipeline} objects together with \code{\link{conjoin}}.
+This function can also build an ensemble from pipeline objects. It does
+ this by calling \code{\link{pipeFilter}}, then aggregating those results
+ into an ensemble. As an adjunct to this method, consider first combining
+ multiple pipeline objects together with \code{\link{conjoin}}.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -74,12 +71,3 @@ Build an ensemble from an \code{ExprsPipeline} object. This method works by
 \item \code{ExprsPipeline}: Method to build ensemble from \code{ExprsPipeline} objects.
 }}
 
-\seealso{
-\code{\link{pipeFilter}}\cr
-\code{\link{pipeUnboot}}\cr
-\code{\link{plCV}}\cr
-\code{\link{plGrid}}\cr
-\code{\link{plGridMulti}}\cr
-\code{\link{plMonteCarlo}}\cr
-\code{\link{plNested}}
-}
