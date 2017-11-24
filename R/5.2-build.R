@@ -3,8 +3,7 @@
 #' Used as a back-end wrapper for creating new build methods.
 #'
 #' @inheritParams fs.
-#' @param object Specifies the \code{ExprsArray} object to use as a training set
-#'  for classification.
+#' @param object An \code{ExprsArray} object. The training set.
 #' @return Returns an \code{ExprsModel} object.
 #' @export
 build. <- function(object, top, uniqueFx, ...){
@@ -51,6 +50,59 @@ build. <- function(object, top, uniqueFx, ...){
   return(m)
 }
 
+#' Perform Multiple "1 vs. all" Tasks
+#'
+#' A function to execute multiple "1 vs. all" binary tasks.
+#'
+#' \code{doMulti} runs once for each factor level in the
+#'  "defineCase" column. If a training set is missing any
+#'  one of the factor levels (e.g., owing to random cuts during
+#'  cross-validation), the \code{ExprsModule} component that
+#'  would refer to that class label gets replaced with an NA
+#'  placeholder. Note that this NA placeholder will prevent a
+#'  classifier from possibly predicting the NA class (i.e., a
+#'  classifier can only make predictions about class
+#'  labels that it "knows"). However, these "unknown" classes
+#'  still impact metrics of classifier performance.
+#'  Otherwise, see \code{\link{exprso-predict}}.
+#'
+#' @inheritParams build.
+#' @param method A character string. The method to apply.
+#' @return A list of the results from \code{method}.
+#' @export
+doMulti <- function(object, top, method, ...){
+
+  classCheck(object, "ExprsMulti",
+             "This method only works for multi-class classification tasks.")
+
+  # Perform N binary tasks
+  args <- getArgs(...)
+  multi <- vector("list", length(levels(object@annot$defineCase)))
+  for(i in 1:length(levels(object@annot$defineCase))){
+
+    # If the i-th ExprsMachine would not have any representative cases
+    if(all(as.numeric(object@annot$defineCase) != i)){
+
+      cat("Missing class ", i, ". Using a NA placeholder instead.\n", sep = "")
+      multi[[i]] <- NA
+
+    }else{
+
+      # Turn the ExprsMulti object into the i-th ExprsBinary object
+      temp <- object
+      temp@annot$defineCase <- ifelse(as.numeric(temp$defineCase) == i, "Case", "Control")
+      class(temp) <- "ExprsBinary"
+
+      # Perform the binary task
+      cat("Performing a one-vs-all binary task with class", i, "set as \"Case\".\n")
+      args.i <- append(list("object" = temp, "top" = top), args)
+      multi[[i]] <- do.call(method, args.i)
+    }
+  }
+
+  return(multi)
+}
+
 #' Build Naive Bayes Model
 #'
 #' \code{buildNB} builds a model using the \code{naiveBayes} function
@@ -62,7 +114,7 @@ build. <- function(object, top, uniqueFx, ...){
 buildNB <- function(object, top = 0, ...){ # args to naiveBayes
 
   classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This feature selection method only works for classification tasks.")
+             "This build method only works for classification tasks.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -86,7 +138,7 @@ buildNB <- function(object, top = 0, ...){ # args to naiveBayes
 buildLDA <- function(object, top = 0, ...){ # args to lda
 
   classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This feature selection method only works for classification tasks.")
+             "This build method only works for classification tasks.")
 
   build.(object, top,
          uniqueFx = function(data, labels, ...){
@@ -207,7 +259,7 @@ buildDNN <- function(object, top = 0, ...){ # args to h2o.deeplearning
            utils::write.csv(df, tempFile)
            h2o.data <- h2o::h2o.importFile(path = tempFile, destination_frame = "h2o.data")
 
-           # Prepare arguments and build classifier
+           # Prepare arguments and build model
            args <- getArgs(...)
            args <- append(list("x" = colnames(data), "y" = "defineCase",
                                "training_frame" = h2o.data), args)
