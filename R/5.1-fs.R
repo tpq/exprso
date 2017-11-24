@@ -7,7 +7,7 @@
 #'  uniqueFx returns a list, it is assumed that the fs method
 #'  is a reduction model method only.
 #'
-#' @param object Specifies the \code{ExprsArray} object to undergo feature selection.
+#' @param object An \code{ExprsArray} object to undergo feature selection.
 #' @param top A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
 #'  indicates specifically which features by name should undergo feature selection.

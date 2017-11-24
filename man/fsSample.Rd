@@ -7,7 +7,7 @@
 fsSample(object, top = 0, ...)
 }
 \arguments{
-\item{object}{Specifies the \code{ExprsArray} object to undergo feature selection.}
+\item{object}{An \code{ExprsArray} object to undergo feature selection.}
 
 \item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector

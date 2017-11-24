@@ -7,8 +7,7 @@
 #'  contain at least one subject for each class label. If this method finds no solution
 #'  after 10 iterations, the function will post an error. Set \code{percent.include = 100}
 #'  to skip random sampling and return a \code{NULL} validation set. Additional arguments
-#'  (e.g., \code{replace = TRUE}) passed along to \code{\link{sample}}. This method works well
-#'  for all (i.e., binary and multi-class) \code{ExprsArray} objects.
+#'  (e.g., \code{replace = TRUE}) passed along to \code{\link{sample}}.
 #'
 #' @param object An \code{ExprsArray} object to split.
 #' @param percent.include Specifies the percent of the total number

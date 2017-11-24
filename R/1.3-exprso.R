@@ -35,16 +35,13 @@
 #' @examples
 #' \dontrun{
 #' library(exprso)
-#' library(golubEsets)
-#' data(Golub_Merge)
-#' array <- arrayEset(Golub_Merge, colBy = "ALL.AML", include = list("ALL", "AML"))
-#' array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
-#' array <- modTransform(array) # lg transform
-#' array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
+#' data(iris)
+#' array <- exprso(iris[,1:4], iris[,5])
 #' arrays <- splitSample(array, percent.include = 67)
-#' array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
-#' array.train <- fsPrcomp(array.train, top = 50)
+#' array.train <- fsANOVA(arrays[[1]], top = 0)
+#' array.train <- fsPrcomp(array.train, top = 3)
 #' mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
+#' predict(mach, arrays[[2]])
 #' }
 #' @export
 exprso <- function(x, y){
@@ -160,14 +157,14 @@ NULL
 #'
 #' @details
 #' Considering the high-dimensionality of many datasets, it is prudent and
-#'  often necessary to prioritize which features to include during classifier
+#'  often necessary to prioritize which features to include during model
 #'  construction. This package provides functions for some of the most frequently
 #'  used feature selection methods. Each function works as a self-contained wrapper
 #'  that (1) pre-processes the \code{ExprsArray} input, (2) performs the feature
 #'  selection, and (3) returns an \code{ExprsArray} output with an updated feature
 #'  selection history. These histories get passed along at every step of the way
 #'  until they eventually get used to pre-process an unlabeled dataset during
-#'  classifier deployment (i.e., prediction).
+#'  model deployment (i.e., prediction).
 #'
 #' The argument \code{top} specifies either the names or the number of features
 #'  to supply TO the feature selection method, not what the user intends to
@@ -206,13 +203,13 @@ NULL
 #'  parameter space in a high-throughput manner, see \code{\link{pl}}.
 #'
 #' Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
-#'  which allows the user to specify which features to feed INTO the classifier
+#'  which allows the user to specify which features to feed INTO the model
 #'  build. This effectively provides the user with one last opportunity to subset
 #'  the feature space based on prior feature selection or dimension reduction.
 #'  For all build methods, \code{@@preFilter} and \code{@@reductionModel} will
 #'  get passed along to the resultant \code{ExprsModel} object, again ensuring
 #'  that any test or validation sets will undergo the same feature selection and
-#'  dimension reduction in the appropriate steps when deploying the classifier.
+#'  dimension reduction in the appropriate steps when deploying the model.
 #'  Set \code{top = 0} to pass all features through a \code{build} method.
 NULL
 

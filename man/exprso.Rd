@@ -45,15 +45,12 @@ See \code{\link{conjoin}} to merge objects.
 \examples{
 \dontrun{
 library(exprso)
-library(golubEsets)
-data(Golub_Merge)
-array <- arrayEset(Golub_Merge, colBy = "ALL.AML", include = list("ALL", "AML"))
-array <- modFilter(array, 20, 16000, 500, 5) # pre-filter Golub ala Deb 2003
-array <- modTransform(array) # lg transform
-array <- modNormalize(array, c(1, 2)) # normalize gene and subject vectors
+data(iris)
+array <- exprso(iris[,1:4], iris[,5])
 arrays <- splitSample(array, percent.include = 67)
-array.train <- fsStats(arrays[[1]], top = 0, how = "t.test")
-array.train <- fsPrcomp(array.train, top = 50)
+array.train <- fsANOVA(arrays[[1]], top = 0)
+array.train <- fsPrcomp(array.train, top = 3)
 mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
+predict(mach, arrays[[2]])
 }
 }

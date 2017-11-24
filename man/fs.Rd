@@ -30,14 +30,14 @@ The \code{exprso} package includes these feature selection modules:
 }
 \details{
 Considering the high-dimensionality of many datasets, it is prudent and
- often necessary to prioritize which features to include during classifier
+ often necessary to prioritize which features to include during model
  construction. This package provides functions for some of the most frequently
  used feature selection methods. Each function works as a self-contained wrapper
  that (1) pre-processes the \code{ExprsArray} input, (2) performs the feature
  selection, and (3) returns an \code{ExprsArray} output with an updated feature
  selection history. These histories get passed along at every step of the way
  until they eventually get used to pre-process an unlabeled dataset during
- classifier deployment (i.e., prediction).
+ model deployment (i.e., prediction).
 
 The argument \code{top} specifies either the names or the number of features
  to supply TO the feature selection method, not what the user intends to

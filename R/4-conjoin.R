@@ -30,19 +30,14 @@
 #'  \code{\link{pipeFilter}} and \code{\link{buildEnsemble}}.
 #'
 #' When applied to two or more \code{ExprsEnsemble} objects, this function returns one
-#'  \code{ExprsEnsemble} object as output. The resultant object contains all classification
-#'  models found within each of the supplied \code{ExprsEnsemble} objects.
+#'  \code{ExprsEnsemble} object as output. The resultant object contains all models
+#'  found within each of the supplied \code{ExprsEnsemble} objects.
 #'
 #' @param object An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline}, or
 #'  \code{ExprsEnsemble} object.
 #' @param ... Two or more objects of the same class.
-#'
-#' @seealso
-#' \code{\link{ExprsArray-class}}\cr
-#' \code{\link{ExprsModel-class}}\cr
-#' \code{\link{ExprsPipeline-class}}\cr
-#' \code{\link{ExprsEnsemble-class}}\cr
-#' \code{\link{ExprsPredict-class}}
+#' @return An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline}, or
+#'  \code{ExprsEnsemble} object.
 #' @export
 setGeneric("conjoin",
            function(object, ...) standardGeneric("conjoin")

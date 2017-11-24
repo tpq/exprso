@@ -25,6 +25,10 @@ conjoin(object, ...)
 
 \item{...}{Two or more objects of the same class.}
 }
+\value{
+An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline}, or
+ \code{ExprsEnsemble} object.
+}
 \description{
 \code{conjoin} combines two or more \code{exprso} objects based on their class.
 }
@@ -54,8 +58,8 @@ When applied to two or more \code{ExprsPipeline} objects, this function returns 
  \code{\link{pipeFilter}} and \code{\link{buildEnsemble}}.
 
 When applied to two or more \code{ExprsEnsemble} objects, this function returns one
- \code{ExprsEnsemble} object as output. The resultant object contains all classification
- models found within each of the supplied \code{ExprsEnsemble} objects.
+ \code{ExprsEnsemble} object as output. The resultant object contains all models
+ found within each of the supplied \code{ExprsEnsemble} objects.
 }
 \section{Methods (by class)}{
 \itemize{
@@ -68,10 +72,3 @@ When applied to two or more \code{ExprsEnsemble} objects, this function returns 
 \item \code{ExprsEnsemble}: Method to join \code{ExprsEnsemble} objects.
 }}
 
-\seealso{
-\code{\link{ExprsArray-class}}\cr
-\code{\link{ExprsModel-class}}\cr
-\code{\link{ExprsPipeline-class}}\cr
-\code{\link{ExprsEnsemble-class}}\cr
-\code{\link{ExprsPredict-class}}
-}

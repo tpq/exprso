@@ -27,12 +27,12 @@ In the case of multi-class classification, each \code{build} module can
  parameter space in a high-throughput manner, see \code{\link{pl}}.
 
 Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
- which allows the user to specify which features to feed INTO the classifier
+ which allows the user to specify which features to feed INTO the model
  build. This effectively provides the user with one last opportunity to subset
  the feature space based on prior feature selection or dimension reduction.
  For all build methods, \code{@preFilter} and \code{@reductionModel} will
  get passed along to the resultant \code{ExprsModel} object, again ensuring
  that any test or validation sets will undergo the same feature selection and
- dimension reduction in the appropriate steps when deploying the classifier.
+ dimension reduction in the appropriate steps when deploying the model.
  Set \code{top = 0} to pass all features through a \code{build} method.
 }
