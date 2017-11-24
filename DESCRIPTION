@@ -1,5 +1,5 @@
 Package: exprso
-Title: Rapid Implementation of Machine Learning Algorithms
+Title: Rapid Deployment of Machine Learning Algorithms
 Version: 0.2.5
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
@@ -8,11 +8,11 @@ Authors@R: c(
     person("Daniel", "Tylee", email = "dantylee@gmail.com", role = "ctb")
     )
 Description: Supervised machine learning has an increasingly important role in data
-    analysis. This package introduces a framework for rapidly implementing supervised
-    machine learning in a high-throughput manner. This package provides a user-friendly
-    interface that empowers investigators to execute state-of-the-art binary and
-    multi-class classification, including deep learning, with minimal programming
-    experience necessary.
+    analysis. This package introduces a framework for rapidly building and deploying
+    supervised machine learning in a high-throughput manner. This package provides a
+    user-friendly interface that empowers investigators to execute state-of-the-art
+    binary and multi-class classification, as well as regression, with minimal
+    programming experience necessary.
 License: GPL-2
 LazyData: TRUE
 VignetteBuilder: knitr
