@@ -13,12 +13,16 @@
 #'  should never get modified once separated from the training set.
 #'  See \code{\link{buildEnsemble}} to learn about ensembles.
 #'
-#' For classifier ensembles, when \code{how = "probability"}, outcomes are
-#'  based on the average class probability (via \code{@@probability})
+#' For binary classifier ensembles, when \code{how = "probability"}, outcomes
+#'  are based on the average class probability (via \code{@@probability})
 #'  estimated by each deployed model. When \code{how = "majority"}, outcomes
 #'  are based on consensus voting whereby each deployed model casts a single
 #'  (all-or-nothing) vote (via \code{@@pred}) in a winner takes all approach.
 #'  In both scenarios, ties get broken randomly (as weighted by class).
+#'
+#' For multi-class classifier ensembles, outcomes are based on the
+#'  \code{how = "majority"} method from above. For regression ensembles,
+#'  outcomes are based on the average predicted value.
 #'
 #' @param object An \code{ExprsModel} or \code{ExprsEnsemble} object.
 #' @param array An \code{ExprsArray} object. The target data.
