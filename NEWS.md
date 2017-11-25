@@ -1,3 +1,11 @@
+## exprso 0.2.6
+---------------------
+* General changes
+    * New `show` method for `RegrsArray` objects
+    * New `show` method for `RegrsModel` objects
+    * New `show` method for `RegrsPredict` objects
+    * Review all documentation
+
 ## exprso 0.2.5
 ---------------------
 * General changes
