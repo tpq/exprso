@@ -30,6 +30,7 @@ An \code{ExprsArray} object.
 }
 \description{
 A convenience function that builds an \code{ExprsArray} object.
+ This function is no longer supported. Please use \code{\link{exprso}} instead.
 }
 \details{
 Importing a \code{data.frame} object:

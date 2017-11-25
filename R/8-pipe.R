@@ -163,7 +163,7 @@ pipeUnboot <- function(object){
 #'  method. In this way, it works like \code{\link{conjoin}}.
 #'
 #' This function can also build an ensemble from pipeline objects. It does
-#'  this by calling \code{\link{pipeFilter}}, then aggregating those results
+#'  this by calling \code{\link{pipeFilter}}, then joining the remaining models
 #'  into an ensemble. As an adjunct to this method, consider first combining
 #'  multiple pipeline objects with \code{\link{conjoin}}.
 #'

@@ -4,6 +4,7 @@
 #' Import Data as ExprsArray
 #'
 #' A convenience function that builds an \code{ExprsArray} object.
+#'  This function is no longer supported. Please use \code{\link{exprso}} instead.
 #'
 #' Importing a \code{data.frame} object:
 #'
