@@ -1,3 +1,8 @@
+## exprso 0.2.7
+---------------------
+* General changes
+    * Fix bug in `show.ExprsPredict` method
+
 ## exprso 0.2.6
 ---------------------
 * General changes

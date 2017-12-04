@@ -446,7 +446,13 @@ setMethod("show", "ExprsPredict",
             cat("@pred summary:", table(as.numeric(object@pred)), "\n")
             cat("@decision.values summary:", colnames(object@decision.values), "\n")
             cat("@probability summary:", colnames(object@probability), "\n")
-            cat("@actual summary:", table(as.numeric(object@actual)), "\n")
+            if(length(levels(object@pred)) == 2){
+              cat("@actual summary:", table(as.numeric(
+                factor(object@actual, levels = levels(object@pred)))), "\n")
+            }else{
+              cat("@actual summary:", table(as.numeric(
+                object@actual)), "\n")
+            }
           }
 )
 
