@@ -1,3 +1,7 @@
+## exprso 0.2.8
+---------------------
+* New `modRatios` function recasts data as feature ratios
+
 ## exprso 0.2.7
 ---------------------
 * General changes

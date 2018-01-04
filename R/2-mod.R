@@ -183,3 +183,21 @@ modCLR <- function(object){
   object@exprs <- apply(logX, 2, function(x) x / mean(x))
   return(object)
 }
+
+#' Recast Data as Feature Ratios
+#'
+#' \code{modRatios} recasts a data set with N feature columns as a new
+#'  data set with N * (N - 1) / 2 feature ratio columns.
+#'
+#' @inheritParams modHistory
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modRatios <- function(object){
+
+  packageCheck("propr")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  object@exprs <- propr::ratios(object@exprs)
+  return(object)
+}
