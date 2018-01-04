@@ -194,17 +194,10 @@ modCLR <- function(object){
 #' @export
 modRatios <- function(object){
 
-<<<<<<< HEAD
   packageCheck("propr")
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
   object@exprs <- propr::ratios(object@exprs)
-=======
-  classCheck(object, "ExprsArray",
-             "This function is applied to the results of ?exprso.")
-
-  object@exprs <- ratios(object@exprs)
->>>>>>> 3d1b06fba706dc22b6ecb9f304b8a0aff3bf3b97
   return(object)
 }
