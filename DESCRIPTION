@@ -1,11 +1,12 @@
 Package: exprso
 Title: Rapid Deployment of Machine Learning Algorithms
-Version: 0.2.8
+Version: 0.2.8.9000
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
     person("Thomas", "Quinn", email = "contacttomquinn@gmail.com", role = c("aut", "cre")),
-    person("Daniel", "Tylee", email = "dantylee@gmail.com", role = "ctb")
+    person("Daniel", "Tylee", email = "dantylee@gmail.com", role = "ctb"),
+    person("Samuel", "Lee", email = "samleenz@me.com", role = "ctb")
     )
 Description: Supervised machine learning has an increasingly important role in data
     analysis. This package introduces a framework for rapidly building and deploying
@@ -25,10 +26,11 @@ Imports:
     methods,
     nnet,
     plyr,
-    stats,
     randomForest,
     ROCR,
-    sampling
+    rpart,
+    sampling,
+    stats
 Depends:
     R (>= 3.2.2),
     kernlab
