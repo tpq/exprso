@@ -210,6 +210,8 @@ modRatios <- function(object){
 #'  a uniform sequence ranging from 1 to the \code{to} argument.
 #'
 #' @inheritParams modHistory
+#' @param to A numeric scalar. The maximum scaling factor to apply
+#'  to a sample vector.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
 modScale <- function(object, to = 2){

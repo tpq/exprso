@@ -9,6 +9,9 @@ modScale(object, to = 2)
 \arguments{
 \item{object}{An \code{ExprsArray} object. The object that should undergo a
 replication of some feature selection and dimension reduction history.}
+
+\item{to}{A numeric scalar. The maximum scaling factor to apply
+to a sample vector.}
 }
 \value{
 A pre-processed \code{ExprsArray} object.
