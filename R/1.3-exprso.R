@@ -110,6 +110,10 @@ exprso <- function(x, y){
 #' - \code{\link{modAcomp}}
 #'
 #' - \code{\link{modCLR}}
+#'
+#' - \code{\link{modRatios}}
+#'
+#' - \code{\link{modScale}}
 NULL
 
 #' @name split
@@ -189,6 +193,8 @@ NULL
 #' - \code{\link{buildSVM}}
 #'
 #' - \code{\link{buildANN}}
+#'
+#' - \code{\link{buildDT}}
 #'
 #' - \code{\link{buildRF}}
 #'

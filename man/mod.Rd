@@ -21,4 +21,8 @@ The \code{exprso} package includes these data process modules:
 - \code{\link{modAcomp}}
 
 - \code{\link{modCLR}}
+
+- \code{\link{modRatios}}
+
+- \code{\link{modScale}}
 }

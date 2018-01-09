@@ -201,3 +201,31 @@ modRatios <- function(object){
   object@exprs <- t(propr::ratios(t(object@exprs)))
   return(object)
 }
+
+#' Rescale Data by Factor Range
+#'
+#' \code{modScale} rescales a data set by making all sample vectors
+#'  have the same total sum, then multiplying each sample vector by
+#'  a scaling factor. The scaling factor is randomly sampled from
+#'  a uniform sequence ranging from 1 to the \code{to} argument.
+#'
+#' @inheritParams modHistory
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modScale <- function(object, to = 2){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  # Make sample vectors sum to 1
+  object <- modAcomp(object)
+
+  # Shuffle scale factors from 1 to TO
+  scales <- sample(seq(1, to = to, length.out = ncol(object@exprs)))
+
+  # Apply scale to weigh samples
+  newdata <- apply(object@exprs, 1, function(x) x * scales)
+  object@exprs <- t(newdata)
+
+  return(object)
+}
