@@ -100,6 +100,24 @@ modTransform <- function(object){
   return(object)
 }
 
+#' Shuffle Feature Order
+#'
+#' \code{modShuffle} shuffles feature order by randomly sampling
+#'  features without replacement. Formally, this is equivalent
+#'  to \code{fsSample, top = 0}, but much quicker.
+#'
+#' @inheritParams modFilter
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modShuffle <- function(object){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  object@exprs <- object@exprs[sample(1:nrow(object@exprs)), ]
+  return(object)
+}
+
 #' Normalize Data
 #'
 #' \code{modNormalize} normalizes feature data.
@@ -219,15 +237,12 @@ modScale <- function(object, to = 2){
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  # Make sample vectors sum to 1
-  object <- modAcomp(object)
-
   # Shuffle scale factors from 1 to TO
   scales <- sample(seq(1, to = to, length.out = ncol(object@exprs)))
 
   # Apply scale to weigh samples
+  object <- modAcomp(object)
   newdata <- apply(object@exprs, 1, function(x) x * scales)
   object@exprs <- t(newdata)
-
   return(object)
 }
