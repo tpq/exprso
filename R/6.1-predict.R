@@ -64,6 +64,10 @@ setMethod("predict", "ExprsMachine",
               px <- cbind(px, 1 - px)
               colnames(px) <- c("Case", "Control") # do not delete this line!
 
+            }else if("rpart" %in% class(object@mach)){
+
+              px <- predict(object@mach, data)
+
             }else if("randomForest" %in% class(object@mach)){
 
               px <- unclass(predict(object@mach, data, type = "prob"))
@@ -225,7 +229,8 @@ setMethod("predict", "RegrsModel",
 
             if("svm" %in% class(object@mach) |
                "nnet" %in% class(object@mach) |
-               "randomForest" %in% class(object@mach)){
+               "randomForest" %in% class(object@mach) |
+               "rpart" %in% class(object@mach)){
 
               pred <- predict(object@mach, data)
 

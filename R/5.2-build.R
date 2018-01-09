@@ -205,6 +205,40 @@ buildANN <- function(object, top = 0, ...){ # args to nnet
          }, ...)
 }
 
+#' Build Decision Tree Model
+#'
+#' \code{buildDT} builds a model using the \code{rpart} function
+#'  from the \code{rpart} package.
+#'
+#' Provide \code{cp} as a numeric scalar to trim the \code{rpart} decision tree.
+#'  If provided, this argument is passed to the \code{rpart::prune} function.
+#'  Set \code{cp = 0} to skip pruning (default behavior).
+#'
+#' @inheritParams build.
+#' @return Returns an \code{ExprsModel} object.
+#' @export
+buildDT <- function(object, top = 0, ...){ # args to rpart
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  build.(object, top,
+         uniqueFx = function(data, labels, ...){
+
+           # Perform rpart via ~ method
+           args <- getArgs(...)
+           args <- defaultArg("cp", 0, args)
+           prune <- args$cp
+           args <- args[!"cp" == names(args)]
+
+           df <- data.frame(data, "defineCase" = labels)
+           args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+           tree <- do.call(rpart::rpart, args)
+           if(prune != 0) tree <- rpart::prune(tree, cp = prune) # optional pruning
+           tree
+         }, ...)
+}
+
 #' Build Random Forest Model
 #'
 #' \code{buildRF} builds a model using the \code{randomForest} function

@@ -75,6 +75,20 @@ test_that("built models can predict correct classes", {
     as.character(predict(mach, array.test)@pred),
     array.test$defineCase
   )
+
+  set.seed(12345)
+  mach <- buildDT(array, cp = .1)
+  expect_equal(
+    as.character(predict(mach, array)@pred),
+    array$defineCase
+  )
+
+  set.seed(12345)
+  mach <- buildRF(array.train)
+  expect_equal(
+    as.character(predict(mach, array.test)@pred),
+    array.test$defineCase
+  )
 })
 
 array.test@annot$defineCase[1] <- "Case"
@@ -105,6 +119,13 @@ test_that("built models can detect wrong classes", {
 
   set.seed(12345)
   mach <- buildANN(array.train, top = 2, size = 3, decay = 1)
+  expect_equal(
+    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
+    .9
+  )
+
+  set.seed(12345)
+  mach <- buildRF(array.train)
   expect_equal(
     calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
     .9

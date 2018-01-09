@@ -14,6 +14,8 @@ The \code{exprso} package includes these build modules:
 
 - \code{\link{buildANN}}
 
+- \code{\link{buildDT}}
+
 - \code{\link{buildRF}}
 
 - \code{\link{buildDNN}}
