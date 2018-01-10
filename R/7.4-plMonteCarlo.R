@@ -48,7 +48,7 @@
 #' boot <- plMonteCarlo(array, B = 3, ctrlSS = ss, ctrlFS = fs, ctrlGS = gs)
 #' }
 #' @export
-plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, ctrlMS = NULL, save = FALSE){
+plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS = NULL, ctrlGS, ctrlMS = NULL, save = FALSE){
 
   # For each bootstrap
   pls <- lapply(1:B,
@@ -57,9 +57,14 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, ctrlMS = NULL, s
                   # Optionally apply a mod function here
                   array.b <- array
                   if(!is.null(ctrlMS)){
-                    func <- ctrlMS$func
-                    args <- append(list("object" = array), ctrlMS[!ctrlMS %in% func])
-                    array.b <- do.call(what = func, args = args)
+
+                    if(!"list" %in% lapply(ctrlMS, class)) ctrlMS <- list(ctrlMS)
+                    for(i in 1:length(ctrlMS)){
+
+                      func <- ctrlMS[[i]]$func
+                      args <- append(list("object" = array.b), ctrlMS[[i]][!ctrlMS[[i]] %in% func])
+                      array.b <- do.call(what = func, args = args)
+                    }
                   }
 
                   # Perform some split function (e.g. splitStrat)
@@ -81,13 +86,16 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS, ctrlGS, ctrlMS = NULL, s
                                                    ") demi-holdout.RData"))
                   }
 
-                  # Perform fs_ function for each argument set in ctrlFS
-                  if(!"list" %in% lapply(ctrlFS, class)) ctrlFS <- list(ctrlFS)
-                  for(i in 1:length(ctrlFS)){
+                  # Optionally perform fs_ function for each argument set in ctrlFS
+                  if(!is.null(ctrlFS)){
 
-                    func <- ctrlFS[[i]]$func
-                    args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
-                    array.boot <- do.call(what = func, args = args)
+                    if(!"list" %in% lapply(ctrlFS, class)) ctrlFS <- list(ctrlFS)
+                    for(i in 1:length(ctrlFS)){
+
+                      func <- ctrlFS[[i]]$func
+                      args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
+                      array.boot <- do.call(what = func, args = args)
+                    }
                   }
 
                   # Perform some gridsearch function (e.g., plGrid)

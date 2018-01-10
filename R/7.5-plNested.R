@@ -47,7 +47,7 @@
 #' nest <- plNested(arrays[[1]], fold = 10, ctrlFS = fs, ctrlGS = gs, save = FALSE)
 #' }
 #' @export
-plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
+plNested <- function(array, fold = 10, ctrlFS = NULL, ctrlGS, save = FALSE){
 
   # Perform LOOCV if 0 fold
   if(fold == 0) fold <- nrow(array@annot)
@@ -97,13 +97,16 @@ plNested <- function(array, fold = 10, ctrlFS, ctrlGS, save = FALSE){
                                      ") demi-holdout.RData"))
     }
 
-    # Perform fs_ function for each argument set in ctrlFS
-    if(!"list" %in% lapply(ctrlFS, class)) ctrlFS <- list(ctrlFS)
-    for(i in 1:length(ctrlFS)){
+    # Optionally perform fs_ function for each argument set in ctrlFS
+    if(!is.null(ctrlFS)){
 
-      func <- ctrlFS[[i]]$func
-      args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
-      array.boot <- do.call(what = func, args = args)
+      if(!"list" %in% lapply(ctrlFS, class)) ctrlFS <- list(ctrlFS)
+      for(i in 1:length(ctrlFS)){
+
+        func <- ctrlFS[[i]]$func
+        args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
+        array.boot <- do.call(what = func, args = args)
+      }
     }
 
     # Perform some gridsearch function (e.g., plGrid)

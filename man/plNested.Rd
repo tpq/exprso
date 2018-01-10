@@ -4,7 +4,7 @@
 \alias{plNested}
 \title{Nested Cross-Validation}
 \usage{
-plNested(array, fold = 10, ctrlFS, ctrlGS, save = FALSE)
+plNested(array, fold = 10, ctrlFS = NULL, ctrlGS, save = FALSE)
 }
 \arguments{
 \item{array}{Specifies the \code{ExprsArray} object to undergo cross-validation.}
