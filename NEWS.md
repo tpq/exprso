@@ -1,3 +1,22 @@
+## exprso 0.2.9
+---------------------
+* Update `mod` modules
+    * New `modShuffle` function shuffles feature order by random sampling
+    * New `modScale` function rescales sample vectors by a factor range
+* Update `build` modules
+    * New `buildDT` function builds decision tree model
+        * Add `predict.ExprsMachine` and `predict.RegrsModel` support
+    * New `buildFRB` function builds fuzzy rule based model
+        * Add `predict.ExprsMachine` and `predict.RegrsModel` support
+    * New `buildLR` function builds logistic regression model
+        * Add `predict.ExprsMachine` support
+    * New `buildLM` and `buildGLM` functions
+        * Add `predict.RegrsModel` support
+* General changes
+    * `plMonteCarlo` now accepts a list of `ctrlModSet` handlers
+    * `plMonteCarlo` now skips `fs` if `ctrlFS = NULL`
+    * `plNested` now skips `fs` if `ctrlFS = NULL`
+
 ## exprso 0.2.8
 ---------------------
 * New `modRatios` function recasts data as feature ratios

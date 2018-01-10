@@ -1,6 +1,6 @@
 Package: exprso
 Title: Rapid Deployment of Machine Learning Algorithms
-Version: 0.2.8.9000
+Version: 0.2.9
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
@@ -22,6 +22,8 @@ Imports:
     cluster,
     MASS,
     e1071,
+    frbs,
+    gtools,
     lattice,
     methods,
     nnet,
