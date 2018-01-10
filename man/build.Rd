@@ -12,11 +12,19 @@ The \code{exprso} package includes these build modules:
 
 - \code{\link{buildSVM}}
 
+- \code{\link{buildLM}}
+
+- \code{\link{buildGLM}}
+
+- \code{\link{buildLR}}
+
 - \code{\link{buildANN}}
 
 - \code{\link{buildDT}}
 
 - \code{\link{buildRF}}
+
+- \code{\link{buildFRB}}
 
 - \code{\link{buildDNN}}
 }

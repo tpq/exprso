@@ -177,6 +177,76 @@ buildSVM <- function(object, top = 0, ...){ # args to svm
          }, ...)
 }
 
+#' Build Linear Model
+#'
+#' \code{buildLM} builds a model using the \code{lm} function.
+#'
+#' @inheritParams build.
+#' @return Returns an \code{ExprsModel} object.
+#' @export
+buildLM <- function(object, top = 0, ...){ # args to lm
+
+  classCheck(object, "RegrsArray",
+             "This feature selection method only works for continuous outcome tasks.")
+
+  build.(object, top,
+         uniqueFx = function(data, labels, ...){
+
+           # Perform LM via ~ method
+           args <- getArgs(...)
+           df <- data.frame(data, "defineCase" = as.numeric(labels))
+           args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+           do.call(stats::lm, args)
+         }, ...)
+}
+
+#' Build Generalized Linear Model
+#'
+#' \code{buildGLM} builds a model using the \code{glm} function.
+#'
+#' @inheritParams build.
+#' @return Returns an \code{ExprsModel} object.
+#' @export
+buildGLM <- function(object, top = 0, ...){ # args to glm
+
+  classCheck(object, "RegrsArray",
+             "This feature selection method only works for continuous outcome tasks.")
+
+  build.(object, top,
+         uniqueFx = function(data, labels, ...){
+
+           # Perform GLM via ~ method
+           args <- getArgs(...)
+           df <- data.frame(data, "defineCase" = as.numeric(labels))
+           args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+           do.call(stats::glm, args)
+         }, ...)
+}
+
+#' Build Logistic Regression Model
+#'
+#' \code{buildLR} builds a model using the \code{glm} function.
+#'
+#' @inheritParams build.
+#' @return Returns an \code{ExprsModel} object.
+#' @export
+buildLR <- function(object, top = 0, ...){ # args to glm
+
+  classCheck(object, c("ExprsBinary", "ExprsMulti"),
+             "This build method only works for classification tasks.")
+
+  build.(object, top,
+         uniqueFx = function(data, labels, ...){
+
+           # Perform GLM via ~ method
+           args <- getArgs(...)
+           args <- forceArg("family", "binomial", args)
+           df <- data.frame(data, "defineCase" = as.numeric(labels) - 1)
+           args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+           do.call(stats::glm, args)
+         }, ...)
+}
+
 #' Build Artificial Neural Network Model
 #'
 #' \code{buildANN} builds a model using the \code{nnet} function
@@ -260,6 +330,30 @@ buildRF <- function(object, top = 0, ...){ # args to randomForest
            df <- data.frame(data, "defineCase" = labels)
            args <- append(list("formula" = defineCase ~ ., "data" = df), args)
            do.call(randomForest::randomForest, args)
+         }, ...)
+}
+
+#' Build Fuzzy Rule Based Model
+#'
+#' \code{buildFRB} builds a model using the \code{frbs} function
+#'  from the \code{frbs} package.
+#'
+#' @inheritParams build.
+#' @return Returns an \code{ExprsModel} object.
+#' @export
+buildFRB <- function(object, top = 0, ...){ # args to frbs
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  build.(object, top,
+         uniqueFx = function(data, labels, ...){
+
+           # Perform frbs via df method
+           args <- getArgs(...)
+           df <- data.frame(data, "defineCase" = as.numeric(labels))
+           args <- append(list("data.train" = df), args)
+           do.call(frbs::frbs.learn, args)
          }, ...)
 }
 
