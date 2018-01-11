@@ -1,3 +1,7 @@
+## exprso 0.2.9.9000
+---------------------
+* Add `top` argument to `modShuffle`
+
 ## exprso 0.2.9
 ---------------------
 * Update `mod` modules

@@ -4,10 +4,13 @@
 \alias{modShuffle}
 \title{Shuffle Feature Order}
 \usage{
-modShuffle(object)
+modShuffle(object, top = 0)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}
+
+\item{top}{A numeric scalar. The number of randomly sampled features
+to include in the pre-processed \code{ExprsArray} object.}
 }
 \value{
 A pre-processed \code{ExprsArray} object.

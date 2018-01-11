@@ -107,14 +107,17 @@ modTransform <- function(object){
 #'  to \code{fsSample, top = 0}, but much quicker.
 #'
 #' @inheritParams modFilter
+#' @param top A numeric scalar. The number of randomly sampled features
+#'  to include in the pre-processed \code{ExprsArray} object.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
-modShuffle <- function(object){
+modShuffle <- function(object, top = 0){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  object@exprs <- object@exprs[sample(1:nrow(object@exprs)), ]
+  if(top == 0) top <- ncol(object@exprs)
+  object@exprs <- object@exprs[sample(1:nrow(object@exprs)), 1:top]
   return(object)
 }
 
