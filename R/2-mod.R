@@ -116,8 +116,9 @@ modShuffle <- function(object, top = 0){
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  if(top == 0) top <- ncol(object@exprs)
-  object@exprs <- object@exprs[sample(1:nrow(object@exprs)), 1:top]
+  if(top == 0) top <- nrow(object@exprs)
+  keep <- sample(1:nrow(object@exprs))[1:top]
+  object@exprs <- object@exprs[keep, ]
   return(object)
 }
 
