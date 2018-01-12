@@ -111,13 +111,13 @@ modTransform <- function(object){
 #'  to include in the pre-processed \code{ExprsArray} object.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
-modShuffle <- function(object, top = 0){
+modShuffle <- function(object, size = 0){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
   if(top == 0) top <- nrow(object@exprs)
-  keep <- sample(1:nrow(object@exprs))[1:top]
+  keep <- sample(1:nrow(object@exprs), size = size)
   object@exprs <- object@exprs[keep, ]
   return(object)
 }

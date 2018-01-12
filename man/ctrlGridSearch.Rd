@@ -4,7 +4,7 @@
 \alias{ctrlGridSearch}
 \title{Manage \code{plGrid} Arguments}
 \usage{
-ctrlGridSearch(func, top, ...)
+ctrlGridSearch(func, top = 0, ...)
 }
 \arguments{
 \item{func}{A character string. The \code{pl} function to call.}

@@ -1,6 +1,8 @@
 ## exprso 0.2.9.9000
 ---------------------
-* Add `top` argument to `modShuffle`
+* General changes
+    * Add default arguments to argument handler functions
+    * Add `size` argument to `modShuffle`
 
 ## exprso 0.2.9
 ---------------------

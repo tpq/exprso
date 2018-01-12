@@ -4,7 +4,7 @@
 \alias{ctrlFeatureSelect}
 \title{Manage \code{fs} Arguments}
 \usage{
-ctrlFeatureSelect(func, top, ...)
+ctrlFeatureSelect(func, top = 0, ...)
 }
 \arguments{
 \item{func}{A character string. The \code{fs} function to call.}

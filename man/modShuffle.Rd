@@ -4,7 +4,7 @@
 \alias{modShuffle}
 \title{Shuffle Feature Order}
 \usage{
-modShuffle(object, top = 0)
+modShuffle(object, size = 0)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}

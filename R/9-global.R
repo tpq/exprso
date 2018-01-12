@@ -153,7 +153,7 @@ ctrlModSet <- function(func, ...){
 #' @param ... Additional arguments passed to the \code{split} function.
 #' @return A list of arguments.
 #' @export
-ctrlSplitSet <- function(func, percent.include, ...){
+ctrlSplitSet <- function(func, percent.include = 67, ...){
 
   list("func" = func, "percent.include" = percent.include, ...)
 }
@@ -167,7 +167,7 @@ ctrlSplitSet <- function(func, percent.include, ...){
 #' @param ... Additional arguments passed to the \code{fs} function.
 #' @return A list of arguments.
 #' @export
-ctrlFeatureSelect <- function(func, top, ...){
+ctrlFeatureSelect <- function(func, top = 0, ...){
 
   list("func" = func, "top" = top, ...)
 }
@@ -182,7 +182,7 @@ ctrlFeatureSelect <- function(func, top, ...){
 #' @param ... Additional arguments passed to the \code{pl} function.
 #' @return A list of arguments.
 #' @export
-ctrlGridSearch <- function(func, top, ...){
+ctrlGridSearch <- function(func, top = 0, ...){
 
   if(missing(top)){ list("func" = func, ...)
   }else{ list("func" = func, "top" = top, ...) }

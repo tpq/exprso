@@ -4,7 +4,7 @@
 \alias{ctrlSplitSet}
 \title{Manage \code{split} Arguments}
 \usage{
-ctrlSplitSet(func, percent.include, ...)
+ctrlSplitSet(func, percent.include = 67, ...)
 }
 \arguments{
 \item{func}{A character string. The \code{split} function to call.}
