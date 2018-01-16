@@ -259,7 +259,7 @@ modScale <- function(object, alpha = 0, uniform = TRUE){
   }else{
 
     # Draw scaling factors from Normal distribution
-    lambda <- abs(stats::rnorm(ncol(object@exprs), mean = 0, sd = alpha) + 1)
+    lambda <- abs(stats::rnorm(ncol(object@exprs), mean = 0, sd = alpha)) + 1
   }
 
   # Apply scale to weigh samples
