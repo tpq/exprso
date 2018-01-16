@@ -266,12 +266,14 @@ buildANN <- function(object, top = 0, ...){ # args to nnet
            # Perform ANN via ~ method
            args <- getArgs(...)
            args <- defaultArg("size", 1, args)
-           args <- defaultArg("range", 1/max(abs(as.vector(data))), args)
-           args <- defaultArg("decay", 0.5, args)
+           args <- defaultArg("rang", 1/max(abs(as.vector(data))), args)
            args <- defaultArg("maxit", 1000, args)
            df <- data.frame(data, "defineCase" = labels)
            args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-           do.call(nnet::nnet, args)
+           sink(tempfile())
+           m <- do.call(nnet::nnet, args)
+           sink()
+           m
          }, ...)
 }
 
