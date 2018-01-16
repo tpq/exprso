@@ -4,7 +4,7 @@
 \alias{forceArg}
 \title{Force an args List Element to Value}
 \usage{
-forceArg(what, as, args)
+forceArg(what, as, args, verbose = TRUE)
 }
 \arguments{
 \item{what}{The name of the argument.}
@@ -12,6 +12,9 @@ forceArg(what, as, args)
 \item{as}{The value to set it as.}
 
 \item{args}{An args list. The result of \code{\link{getArgs}}.}
+
+\item{verbose}{A boolean. Toggles whether to alert
+the user that an argument is set.}
 }
 \description{
 Force an args List Element to Value

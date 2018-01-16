@@ -4,7 +4,7 @@
 \alias{defaultArg}
 \title{Set an args List Element to Default Value}
 \usage{
-defaultArg(what, as, args)
+defaultArg(what, as, args, verbose = TRUE)
 }
 \arguments{
 \item{what}{The name of the argument.}
@@ -12,6 +12,9 @@ defaultArg(what, as, args)
 \item{as}{The value to set it as.}
 
 \item{args}{An args list. The result of \code{\link{getArgs}}.}
+
+\item{verbose}{A boolean. Toggles whether to alert
+the user that an argument is set.}
 }
 \description{
 Set an args List Element to Default Value
