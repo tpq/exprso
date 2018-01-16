@@ -107,7 +107,7 @@ modTransform <- function(object){
 #'  to \code{fsSample, top = 0}, but much quicker.
 #'
 #' @inheritParams modFilter
-#' @param top A numeric scalar. The number of randomly sampled features
+#' @param size A numeric scalar. The number of randomly sampled features
 #'  to include in the pre-processed \code{ExprsArray} object.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
@@ -116,7 +116,7 @@ modShuffle <- function(object, size = 0){
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  if(top == 0) top <- nrow(object@exprs)
+  if(size == 0) size <- nrow(object@exprs)
   keep <- sample(1:nrow(object@exprs), size = size)
   object@exprs <- object@exprs[keep, ]
   return(object)
@@ -228,25 +228,43 @@ modRatios <- function(object){
 #'
 #' \code{modScale} rescales a data set by making all sample vectors
 #'  have the same total sum, then multiplying each sample vector by
-#'  a scaling factor. The scaling factor is randomly sampled from
-#'  a uniform sequence ranging from 1 to the \code{to} argument.
+#'  a scaling factor.
+#'
+#' If \code{uniform = TRUE}, scaling factors are randomly sampled from
+#'  the uniform distribution \code{(0, alpha) + 1}. Otherwise, scaling
+#'  factors are randomly sampled from the normal distribution with
+#'  a mean of 0 and standard deviation of \code{alpha}. When using
+#'  the normal distribution, these scaling factors are transformed by
+#'  taking the absolute value then adding one. For this reason,
+#'  data are always unscaled when \code{alpha = 0}.
 #'
 #' @inheritParams modHistory
-#' @param to A numeric scalar. The maximum scaling factor to apply
-#'  to a sample vector.
+#' @param alpha An integer. The maximum range of scaling factors used
+#'  for scaling if \code{uniform = TRUE}. The standard deviation
+#'  of the scaling factors if \code{uniform = FALSE}. See Details.
+#' @param uniform A boolean. Toggles whether to draw scaling factors
+#'  from a uniform distribution or a normal distribution.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
-modScale <- function(object, to = 2){
+modScale <- function(object, alpha = 0, uniform = TRUE){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  # Shuffle scale factors from 1 to TO
-  scales <- sample(seq(1, to = to, length.out = ncol(object@exprs)))
+  if(uniform){
+
+    # Draw scaling factors from Uniform distribution
+    lambda <- stats::runif(ncol(object@exprs), min = 0, max = alpha) + 1
+
+  }else{
+
+    # Draw scaling factors from Normal distribution
+    lambda <- abs(stats::rnorm(ncol(object@exprs), mean = 0, sd = alpha) + 1)
+  }
 
   # Apply scale to weigh samples
   object <- modAcomp(object)
-  newdata <- apply(object@exprs, 1, function(x) x * scales)
+  newdata <- apply(object@exprs, 1, function(x) x * lambda)
   object@exprs <- t(newdata)
   return(object)
 }

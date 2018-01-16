@@ -4,14 +4,18 @@
 \alias{modScale}
 \title{Rescale Data by Factor Range}
 \usage{
-modScale(object, to = 2)
+modScale(object, alpha = 0, uniform = TRUE)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object. The object that should undergo a
 replication of some feature selection and dimension reduction history.}
 
-\item{to}{A numeric scalar. The maximum scaling factor to apply
-to a sample vector.}
+\item{alpha}{An integer. The maximum range of scaling factors used
+for scaling if \code{uniform = TRUE}. The standard deviation
+of the scaling factors if \code{uniform = FALSE}. See Details.}
+
+\item{uniform}{A boolean. Toggles whether to draw scaling factors
+from a uniform distribution or a normal distribution.}
 }
 \value{
 A pre-processed \code{ExprsArray} object.
@@ -19,6 +23,14 @@ A pre-processed \code{ExprsArray} object.
 \description{
 \code{modScale} rescales a data set by making all sample vectors
  have the same total sum, then multiplying each sample vector by
- a scaling factor. The scaling factor is randomly sampled from
- a uniform sequence ranging from 1 to the \code{to} argument.
+ a scaling factor.
+}
+\details{
+If \code{uniform = TRUE}, scaling factors are randomly sampled from
+ the uniform distribution \code{(0, alpha) + 1}. Otherwise, scaling
+ factors are randomly sampled from the normal distribution with
+ a mean of 0 and standard deviation of \code{alpha}. When using
+ the normal distribution, these scaling factors are transformed by
+ taking the absolute value then adding one. For this reason,
+ data are always unscaled when \code{alpha = 0}.
 }

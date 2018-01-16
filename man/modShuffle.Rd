@@ -9,7 +9,7 @@ modShuffle(object, size = 0)
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}
 
-\item{top}{A numeric scalar. The number of randomly sampled features
+\item{size}{A numeric scalar. The number of randomly sampled features
 to include in the pre-processed \code{ExprsArray} object.}
 }
 \value{

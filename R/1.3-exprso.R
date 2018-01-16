@@ -159,6 +159,8 @@ NULL
 #'
 #' - \code{\link{fsMrmre}}
 #'
+#' - \code{\link{fsRankProd}}
+#'
 #' - \code{\link{fsPropd}}
 #'
 #' @details
