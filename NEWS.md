@@ -1,8 +1,25 @@
-## exprso 0.2.9.9000
+## exprso 0.3.0
 ---------------------
-* General changes
-    * Add default arguments to argument handler functions
+* Update `mod` modules
+    * Replace `modScale` with a new procedure that uses `runif`
+    * Extend `modScale` with another method that uses `rnorm`
     * Add `size` argument to `modShuffle`
+* Update `fs` modules
+    * New `fsRankProd` method ranks features using `RankProd` package
+    * Extend `fsStats` to use `wilcox.test` and `f.test`
+    * Add `suppressMessages` to `fsPropd` module
+* Update `build` modules
+    * Sink printed output from `nnet` function
+    * Tweak default `buildANN` arguments
+* Major `verbose = FALSE` update
+    * Add `verbose` to toggle `defaultArg` and `forceArg` messages
+    * Force `verbose = FALSE` for `calcStats` calls from `plCV`
+    * Make `verbose = FALSE` the default for `plGrid`
+* General changes
+    * Add `progress` function to list of global functions
+    * Add `suppressMessages` to `plMonteCarlo` and `plNested` calls
+    * Embed `progress` bar in `plMonteCarlo` and `plNested` calls
+    * Add default arguments to argument handler functions
 
 ## exprso 0.2.9
 ---------------------
