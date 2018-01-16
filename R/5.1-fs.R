@@ -150,15 +150,15 @@ fsANOVA <- function(object, top = 0, ...){ # args to aov
 
 #' Select Features by Statistical Testing
 #'
-#' \code{fsStats} selects features using the \code{t.test} or \code{ks.test}
+#' \code{fsStats} selects features using a base R statistics
 #'  function (toggled by the \code{how} argument).
 #'
 #' @inheritParams fs.
-#' @param how A character string. Toggles between the "t.test" and
-#'  "ks.test" method. Argument for \code{fsStats} only.
+#' @param how A character string. Toggles between the "t.test", "ks.test",
+#'  "wilcox.test", and "var.test" methods.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args to t.test or ks.test
+fsStats <- function(object, top = 0, how = c("t.test", "ks.test", "wilcox.test", "var.test"), ...){ # args to base R function
 
   classCheck(object, "ExprsBinary",
              "This feature selection method only works for binary classification tasks.")
@@ -193,6 +193,44 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test"), ...){ # args 
           for(i in 1:ncol(data)){
             tryCatch({
               p[i] <- ks.test(dca[, i], dco[, i], ...)$p.value
+            }, error = function(e){
+              cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
+              p[i] <- 1
+            })
+          }
+          top[order(p)]
+        }, ...)
+
+  }else if(how[1] == "wilcox.test"){
+
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
+
+          dca <- data[outcome == "Case", ]
+          dco <- data[outcome == "Control", ]
+          p <- vector("numeric", length(top))
+          for(i in 1:ncol(data)){
+            tryCatch({
+              p[i] <- wilcox.test(dca[, i], dco[, i], ...)$p.value
+            }, error = function(e){
+              cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
+              p[i] <- 1
+            })
+          }
+          top[order(p)]
+        }, ...)
+
+  }else if(how[1] == "var.test"){
+
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
+
+          dca <- data[outcome == "Case", ]
+          dco <- data[outcome == "Control", ]
+          p <- vector("numeric", length(top))
+          for(i in 1:ncol(data)){
+            tryCatch({
+              p[i] <- var.test(dca[, i], dco[, i], ...)$p.value
             }, error = function(e){
               cat("fsStats failed for feature: ", top[i], ". Setting p(x)=1...\n")
               p[i] <- 1
@@ -395,6 +433,38 @@ fsMrmre <- function(object, top = 0, ...){ # args to mRMR.classic
       }, ...)
 }
 
+#' Select Features by Rank Product Analysis
+#'
+#' \code{fsRankProd} selects features using the \code{RankProducts} function
+#'  from the \code{RankProd} package.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsRankProd <- function(object, top = 0, ...){ # args to RankProducts
+
+  packageCheck("RankProd")
+  classCheck(object, "ExprsBinary",
+             "This feature selection method only works for binary classification tasks.")
+
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
+
+        args <- getArgs(...)
+        args <- defaultArg("logged", FALSE, args)
+
+        cl <- ifelse(outcome == "Control", 0, 1)
+        args <- append(list("data" = t(data), "cl" = cl), args)
+        sink(tempfile())
+        final <- do.call(RankProd::RankProducts, args)
+        sink()
+
+        # Get two-tailed p-value
+        p <- apply(final$pval, 1, min)
+        top[order(p)]
+      }, ...)
+}
+
 #' Select Features by Differential Proportionality Analysis
 #'
 #' \code{fsPropd} selects features using the \code{propd} function
@@ -413,7 +483,7 @@ fsPropd <- function(object, top = 0, ...){ # args to propd
       uniqueFx = function(data, outcome, top, ...){
 
         # Order pairs by theta
-        pd <- propr::propd(data, outcome)
+        pd <- suppressMessages(propr::propd(data, outcome))
         pd@theta <- pd@theta[order(pd@theta$theta),]
 
         # Index features by when they first appear

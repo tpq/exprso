@@ -26,6 +26,8 @@ The \code{exprso} package includes these feature selection modules:
 
 - \code{\link{fsMrmre}}
 
+- \code{\link{fsRankProd}}
+
 - \code{\link{fsPropd}}
 }
 \details{
