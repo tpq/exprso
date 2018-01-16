@@ -22,21 +22,25 @@
 #'  receiver operating characteristic curve. See Details.
 #' @param plotSkip A logical scalar. Toggles whether to plot the receiver
 #'  operating characteristic curve. See Details.
+#' @param verbose A logical scalar. Toggles whether to print the results
+#'  of model performance to console.
 #' @return Returns a \code{data.frame} of performance metrics.
 #' @export
 setGeneric("calcStats",
-           function(object, aucSkip = FALSE, plotSkip = FALSE) standardGeneric("calcStats")
+           function(object, aucSkip = FALSE, plotSkip = FALSE, verbose = TRUE) standardGeneric("calcStats")
 )
 
 #' @describeIn calcStats Method to calculate performance for classification models.
 #' @export
 setMethod("calcStats", "ExprsPredict",
-          function(object, aucSkip, plotSkip){
+          function(object, aucSkip, plotSkip, verbose){
 
             # If predicted set contains only two classes, ExprsPredict has @probability, and aucSkip = FALSE
             if(all(c("Case", "Control") %in% object@actual) & !is.null(object@probability) & !aucSkip){
 
-              cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+              if(verbose){
+                cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+              }
 
               p <- ROCR::prediction(object@probability[, "Case"], as.numeric(object@actual == "Case"))
 
@@ -57,7 +61,9 @@ setMethod("calcStats", "ExprsPredict",
 
             }else{
 
-              cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
+              if(verbose){
+                cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
+              }
 
               # Turn ExprsBinary $defineCase into factor
               if(any(c("Control", "Case") %in% object@actual)){
@@ -67,7 +73,9 @@ setMethod("calcStats", "ExprsPredict",
 
               # Build confusion table
               table <- table("predicted" = object@pred, "actual" = object@actual)
-              cat("Classification confusion table:\n"); print(table)
+              if(verbose){
+                cat("Classification confusion table:\n"); print(table)
+              }
 
               # Compute per-class performance
               for(class in 1:nrow(table)){
@@ -82,7 +90,9 @@ setMethod("calcStats", "ExprsPredict",
 
                 if(length(levels(object@actual)) > 2){
 
-                  cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec), "\n")
+                  if(verbose){
+                    cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec), "\n")
+                  }
 
                 }else{
 
@@ -102,7 +112,9 @@ setMethod("calcStats", "ExprsPredict",
               fn <- sum(table[row(table) != col(table)])
               acc <- (tp + tn) / (tp + tn + fp + fn)
 
-              cat("Total accuracy of ExprsModule:", acc, "\n")
+              if(verbose){
+                cat("Total accuracy of ExprsModule:", acc, "\n")
+              }
 
               df <- data.frame(acc)
               df[is.na(df)] <- 0
@@ -114,13 +126,18 @@ setMethod("calcStats", "ExprsPredict",
 #' @describeIn calcStats Method to calculate performance for continuous outcome models.
 #' @export
 setMethod("calcStats", "RegrsPredict",
-          function(object, aucSkip, plotSkip){
+          function(object, aucSkip, plotSkip, verbose){
 
             mse <- mean((object@pred - object@actual)^2)
             rmse <- sqrt(mse)
             mae <- mean(abs(object@pred - object@actual))
             acc <- 1 - mse / (1 + mse) # default for pl calls
             df <- data.frame(acc, mse, rmse, mae)
+
+            if(verbose){
+              cat("Total accuracy of RegrsModel:", acc, "\n")
+            }
+
             return(df)
           }
 )

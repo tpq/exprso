@@ -33,7 +33,7 @@
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #' @export
 plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
-                   aucSkip = FALSE, verbose = TRUE, ...){
+                   aucSkip = FALSE, verbose = FALSE, ...){
 
   if(missing(how)){
 
@@ -47,8 +47,10 @@ plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
   models <- vector("list", nrow(grid))
   for(i in 1:nrow(grid)){
 
-    cat("Now building machine at gridpoint:\n")
-    print(grid[i, , drop = FALSE])
+    if(verbose){
+      cat("Now building machine at gridpoint:\n")
+      print(grid[i, , drop = FALSE])
+    }
 
     # Format gridpoint args to pass along to build do.call
     args <- append(list("object" = array.train), as.list(grid[i, , drop = FALSE]))
@@ -60,7 +62,7 @@ plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
 
     # Predict class labels using the provided training set and calculate accuracy
     pred.train <- predict(model, array.train, verbose = verbose)
-    stats <- calcStats(pred.train, aucSkip = aucSkip, plotSkip = TRUE)
+    stats <- calcStats(pred.train, aucSkip = aucSkip, plotSkip = TRUE, verbose = FALSE)
     colnames(stats) <- paste0("train.", colnames(stats))
     acc <- stats
 
@@ -69,7 +71,7 @@ plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
 
       # Predict class labels using the provided validation set and calculate accuracy
       pred.valid <- predict(model, array.valid, verbose = verbose)
-      stats <- calcStats(pred.valid, aucSkip = aucSkip, plotSkip = TRUE)
+      stats <- calcStats(pred.valid, aucSkip = aucSkip, plotSkip = TRUE, verbose = FALSE)
       colnames(stats) <- paste0("valid.", colnames(stats))
       acc <- data.frame(acc, stats)
     }

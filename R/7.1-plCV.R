@@ -74,9 +74,7 @@ plCV <- function(array, top, how, fold, ...){
     # Build machine and deploy
     mach <- do.call(what = how, args = args.v)
     pred <- predict(mach, array.valid, verbose = FALSE)
-    accs[v] <- calcStats(pred, aucSkip = TRUE, plotSkip = TRUE)$acc
-
-    cat("plCV", v, "accuracy:", accs[v], "\n")
+    accs[v] <- calcStats(pred, aucSkip = TRUE, plotSkip = TRUE, verbose = FALSE)$acc
   }
 
   acc <- mean(accs)

@@ -5,7 +5,7 @@
 \title{Perform High-Throughput Machine Learning}
 \usage{
 plGrid(array.train, array.valid = NULL, top, how, fold = 10,
-  aucSkip = FALSE, verbose = TRUE, ...)
+  aucSkip = FALSE, verbose = FALSE, ...)
 }
 \arguments{
 \item{array.train}{Specifies the \code{ExprsArray} object to use as training set.}

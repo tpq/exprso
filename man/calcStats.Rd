@@ -7,13 +7,13 @@
 \alias{calcStats,RegrsPredict-method}
 \title{Calculate Model Performance}
 \usage{
-calcStats(object, aucSkip = FALSE, plotSkip = FALSE)
+calcStats(object, aucSkip = FALSE, plotSkip = FALSE, verbose = TRUE)
 
 \S4method{calcStats}{ExprsPredict}(object, aucSkip = FALSE,
-  plotSkip = FALSE)
+  plotSkip = FALSE, verbose = TRUE)
 
 \S4method{calcStats}{RegrsPredict}(object, aucSkip = FALSE,
-  plotSkip = FALSE)
+  plotSkip = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{object}{An \code{ExprsPredict} or \code{RegrsPredict} object.}
@@ -23,6 +23,9 @@ receiver operating characteristic curve. See Details.}
 
 \item{plotSkip}{A logical scalar. Toggles whether to plot the receiver
 operating characteristic curve. See Details.}
+
+\item{verbose}{A logical scalar. Toggles whether to print the results
+of model performance to console.}
 }
 \value{
 Returns a \code{data.frame} of performance metrics.
