@@ -51,6 +51,7 @@
 plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS = NULL, ctrlGS, ctrlMS = NULL, save = FALSE){
 
   # For each bootstrap
+  numTicks <- 0
   pls <- lapply(1:B,
                 function(boot){
 
@@ -94,18 +95,21 @@ plMonteCarlo <- function(array, B = 10, ctrlSS, ctrlFS = NULL, ctrlGS, ctrlMS = 
 
                       func <- ctrlFS[[i]]$func
                       args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
-                      array.boot <- do.call(what = func, args = args)
+                      array.boot <- suppressMessages(do.call(what = func, args = args))
                     }
                   }
 
                   # Perform some gridsearch function (e.g., plGrid)
                   if(ctrlGS$func %in% c("plGrid", "plGridMulti")){
 
+                    # Update progress bar for inner plGrid gridsearch
+                    numTicks <<- progress(boot, B, numTicks)
+
                     func <- ctrlGS$func
                     args <- append(list("array.train" = array.boot,
                                         "array.valid" = array.demi),
                                    ctrlGS[!ctrlGS %in% func])
-                    pl <- do.call(what = func, args = args)
+                    pl <- suppressMessages(do.call(what = func, args = args))
 
                   }else if(ctrlGS$func %in% c("plMonteCarlo", "plNested")){
 

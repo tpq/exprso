@@ -70,6 +70,7 @@ plNested <- function(array, fold = 10, ctrlFS = NULL, ctrlGS, save = FALSE){
 
   # Perform nested cross-validation
   pls <- vector("list", fold)
+  numTicks <- 0
   for(v in 1:length(subjects)){
 
     # The v-th fold
@@ -105,19 +106,22 @@ plNested <- function(array, fold = 10, ctrlFS = NULL, ctrlGS, save = FALSE){
 
         func <- ctrlFS[[i]]$func
         args <- append(list("object" = array.boot), ctrlFS[[i]][!ctrlFS[[i]] %in% func])
-        array.boot <- do.call(what = func, args = args)
+        array.boot <- suppressMessages(do.call(what = func, args = args))
       }
     }
 
     # Perform some gridsearch function (e.g., plGrid)
     if(ctrlGS$func %in% c("plGrid", "plGridMulti")){
 
+      # Update progress bar for inner plGrid gridsearch
+      numTicks <- progress(v, fold, numTicks)
+
       args <- append(list("array.train" = array.boot,
                           "array.valid" = array.demi),
                      ctrlGS)
       args <- check.ctrlGS(args)
       func <- ctrlGS$func
-      pl <- do.call(what = func, args = args[!args %in% func])
+      pl <- suppressMessages(do.call(what = func, args = args[!args %in% func]))
 
     }else if(ctrlGS$func %in% c("plMonteCarlo", "plNested")){
 
