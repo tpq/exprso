@@ -179,3 +179,30 @@ splitStratify <- function(object, percent.include = 67, colBy = NULL,
     "array.valid" = object[setdiff(rownames(object@annot), rownames(s)), , drop = FALSE])
   )
 }
+
+#' Split by User-defined Group
+#'
+#' \code{splitBy} builds a training set and validation set by placing
+#'  all samples that have the \code{include} annotation in the specified
+#'  \code{colBy} column in the training set. The remaining samples get
+#'  placed in the validation set. This \code{split} is not random.
+#'
+#' @inheritParams splitSample
+#' @param colBy A character string. Specifies the column used to split the data.
+#' @param include A character vector. Specifies which annotations in \code{colBy}
+#'  to include in the training set.
+#' @return Returns a list of two \code{ExprsArray} objects.
+#' @export
+splitBy <- function(object, colBy, include){
+
+  classCheck(object, c("ExprsBinary", "ExprsMulti"),
+             "This feature selection method only works for classification tasks.")
+
+  array.train <- subset(object, subset = object[, colBy] %in% include)
+  array.valid <- subset(object, subset = ! object[, colBy] %in% include)
+
+  return(list(
+    "array.train" = array.train,
+    "array.valid" = array.valid)
+  )
+}

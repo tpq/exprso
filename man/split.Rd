@@ -9,4 +9,6 @@ The \code{exprso} package includes these split modules:
 - \code{\link{splitSample}}
 
 - \code{\link{splitStratify}}
+
+- \code{\link{splitBy}}
 }

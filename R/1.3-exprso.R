@@ -129,6 +129,8 @@ NULL
 #' - \code{\link{splitSample}}
 #'
 #' - \code{\link{splitStratify}}
+#'
+#' - \code{\link{splitBy}}
 NULL
 
 #' @name fs
