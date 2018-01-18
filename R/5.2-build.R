@@ -12,11 +12,20 @@ build. <- function(object, top, uniqueFx, ...){
   if(class(top) == "numeric"){
     if(length(top) == 1){
       if(top > nrow(object@exprs)) top <- 0
-      if(top == 0) top <- nrow(object@exprs)
-      top <- rownames(object@exprs[1:top, ])
+      if(top == 0){
+        top <- rownames(object@exprs) # keep for uniqueFx
+        if(class(object) != "ExprsMulti") data <- t(object@exprs)
+      }else{
+        top <- rownames(object@exprs)[1:top]
+        if(class(object) != "ExprsMulti") data <- t(object@exprs[top, , drop = FALSE])
+      }
     }else{
-      top <- rownames(object@exprs[top, ])
+      top <- rownames(object@exprs)[top] # when top is numeric vector
+      if(class(object) != "ExprsMulti") data <- t(object@exprs[top, , drop = FALSE])
     }
+  }else{
+    # top <- top # feature names already specified
+    if(class(object) != "ExprsMulti") data <- t(object@exprs[top, , drop = FALSE])
   }
 
   # Carry through and append fs history as stored in the ExprsArray object
@@ -30,15 +39,13 @@ build. <- function(object, top, uniqueFx, ...){
              reductionModel = append(object@reductionModel, list(NA)),
              mach = machs)
   }else if(class(object) == "ExprsBinary"){
-    data <- t(object@exprs[top, ])
-    labels <- factor(object@annot[rownames(data), "defineCase"], levels = c("Control", "Case"))
+    labels <- factor(object@annot$defineCase, levels = c("Control", "Case"))
     model <- do.call("uniqueFx", list(data, labels, ...))
     m <- new("ExprsMachine",
              preFilter = append(object@preFilter, list(top)),
              reductionModel = append(object@reductionModel, list(NA)),
              mach = model)
   }else if(class(object) == "RegrsArray"){
-    data <- t(object@exprs[top, ])
     labels <- object@annot$defineCase
     model <- do.call("uniqueFx", list(data, labels, ...))
     m <- new("RegrsModel",

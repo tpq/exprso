@@ -1,3 +1,11 @@
+## exprso 0.3.0.9000
+---------------------
+* Update `split` modules
+    * Add `splitBy` function to split data by user-defined group
+* General changes
+    * Improve performance by making fewer subsets with `fs.` and `build.`
+    * [Improve performance by making fewer subsets with `modHistory`]
+
 ## exprso 0.3.0
 ---------------------
 * Update `mod` modules

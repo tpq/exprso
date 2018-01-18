@@ -23,15 +23,23 @@ fs. <- function(object, top, uniqueFx, ...){
   if(class(top) == "numeric"){
     if(length(top) == 1){
       if(top > nrow(object@exprs)) top <- 0
-      if(top == 0) top <- nrow(object@exprs)
-      top <- rownames(object@exprs[1:top, ])
+      if(top == 0){
+        top <- rownames(object@exprs) # keep for uniqueFx
+        data <- t(object@exprs)
+      }else{
+        top <- rownames(object@exprs)[1:top]
+        data <- t(object@exprs[top, , drop = FALSE])
+      }
     }else{
-      top <- rownames(object@exprs[top, ])
+      top <- rownames(object@exprs)[top] # when top is numeric vector
+      data <- t(object@exprs[top, , drop = FALSE])
     }
+  }else{
+    # top <- top # feature names already specified
+    data <- t(object@exprs[top, , drop = FALSE])
   }
 
   # Build data from top subset for uniqueFx
-  data <- t(object@exprs[top, ])
   outcome <- object@annot$defineCase
   final <- do.call("uniqueFx", list(data, outcome, top, ...))
 
