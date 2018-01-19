@@ -22,22 +22,33 @@ modHistory <- function(object, reference){
   }
 
   # Duplicate starting with first non-overlapping history
+  unsortedFeatures <- rownames(object@exprs)
   index <- length(object@reductionModel) + 1
-  for(i in index:length(reference@reductionModel)){
+  for(i in index:length(reference@reductionModel)){ # for every fs in reference...
 
-    if(any(is.na(reference@reductionModel[[i]]))){ # apply fs only
-      exprs.i <- object@exprs[reference@preFilter[[i]], , drop = FALSE]
-    }else{ # apply fs and dimension reduction
-      data <- data.frame(t(object@exprs[reference@preFilter[[i]], , drop = FALSE]))
-      if("prcomp" %in% class(reference@reductionModel[[i]])){
-        exprs.i <- t(predict(reference@reductionModel[[i]], data))
-      }else{ stop("Reduction model class not recognized.") }
+    indexedFeatures <- reference@preFilter[[i]]
+    indexedModel <- reference@reductionModel[[i]]
+    if(any(is.na(indexedModel))){ # apply fs (via top) only
+
+      if(identical(indexedFeatures, unsortedFeatures)){
+        exprs.i <- object@exprs # avoid unnecessary subsets
+      }else{
+        exprs.i <- object@exprs[indexedFeatures, , drop = FALSE]
+      }
+
+    }else{ # apply fs (via top) and dimension reduction
+
+      data <- data.frame(t(object@exprs[indexedFeatures, , drop = FALSE]))
+      if("prcomp" %in% class(indexedModel)){
+        exprs.i <- t(predict(indexedModel, data))
+      }else{
+        stop("Reduction model not recognized.")
+      }
     }
 
     object <- new(class(object), exprs = exprs.i, annot = object@annot,
-                  preFilter = append(object@preFilter, list(reference@preFilter[[i]])),
-                  reductionModel = append(object@reductionModel,
-                                          list(reference@reductionModel[[i]])))
+                  preFilter = append(object@preFilter, list(indexedFeatures)),
+                  reductionModel = append(object@reductionModel, list(indexedModel)))
   }
 
   return(object)
@@ -86,17 +97,18 @@ modFilter <- function(object, threshold, maximum, beta1, beta2){
 
 #' Log Transform Data
 #'
-#' \code{modTransform} log (base 2) transforms feature data.
+#' \code{modTransform} log transforms feature data.
 #'
 #' @inheritParams modFilter
+#' @param base A numeric scalar. The base of the logarithm.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
-modTransform <- function(object){
+modTransform <- function(object, base = exp(1)){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  object@exprs <- log(object@exprs, base = 2)
+  object@exprs <- log(object@exprs, base = base)
   return(object)
 }
 

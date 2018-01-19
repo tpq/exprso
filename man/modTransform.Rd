@@ -4,14 +4,16 @@
 \alias{modTransform}
 \title{Log Transform Data}
 \usage{
-modTransform(object)
+modTransform(object, base = exp(1))
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}
+
+\item{base}{A numeric scalar. The base of the logarithm.}
 }
 \value{
 A pre-processed \code{ExprsArray} object.
 }
 \description{
-\code{modTransform} log (base 2) transforms feature data.
+\code{modTransform} log transforms feature data.
 }
