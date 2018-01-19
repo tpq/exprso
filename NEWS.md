@@ -1,10 +1,14 @@
-## exprso 0.3.0.9000
+## exprso 0.3.1
 ---------------------
+* Update `mod` modules
+    * Add `base = exp(1)` argument as default for `modTransform` method
+* Update `fs` modules
+    * Add `modRatios` argument to `fsPropd` for data provided as ratios
 * Update `split` modules
     * Add `splitBy` function to split data by user-defined group
 * General changes
     * Improve performance by making fewer subsets with `fs.` and `build.`
-    * [Improve performance by making fewer subsets with `modHistory`]
+    * Improve performance by making fewer subsets with `modHistory`
 
 ## exprso 0.3.0
 ---------------------

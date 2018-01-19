@@ -1,6 +1,6 @@
 Package: exprso
 Title: Rapid Deployment of Machine Learning Algorithms
-Version: 0.3.0
+Version: 0.3.1
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(

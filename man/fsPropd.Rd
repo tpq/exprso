@@ -4,7 +4,7 @@
 \alias{fsPropd}
 \title{Select Features by Differential Proportionality Analysis}
 \usage{
-fsPropd(object, top = 0, ...)
+fsPropd(object, top = 0, modRatios = FALSE, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo feature selection.}
@@ -14,6 +14,11 @@ the number of top features that should undergo feature selection. A character ve
 indicates specifically which features by name should undergo feature selection.
 Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
+
+\item{modRatios}{A logical scalar. Toggles whether to compute theta from
+the feature ratios as provided. Set \code{modRatios = TRUE} if data were
+recasted by a prior \code{modRatios} call. If \code{TRUE}, the \code{alpha}
+and \code{weighted} arguments will not work.}
 
 \item{...}{Arguments passed to the detailed function.}
 }

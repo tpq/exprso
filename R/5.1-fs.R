@@ -479,31 +479,60 @@ fsRankProd <- function(object, top = 0, ...){ # args to RankProducts
 #'  from the \code{propr} package.
 #'
 #' @inheritParams fs.
+#' @param modRatios A logical scalar. Toggles whether to compute theta from
+#'  the feature ratios as provided. Set \code{modRatios = TRUE} if data were
+#'  recasted by a prior \code{modRatios} call. If \code{TRUE}, the \code{alpha}
+#'  and \code{weighted} arguments will not work.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsPropd <- function(object, top = 0, ...){ # args to propd
+fsPropd <- function(object, top = 0, modRatios = FALSE, ...){ # args to propd
 
   packageCheck("propr")
   classCheck(object, "ExprsBinary",
              "This feature selection method only works for binary classification tasks.")
 
-  fs.(object, top,
-      uniqueFx = function(data, outcome, top, ...){
+  if(modRatios){
 
-        # Order pairs by theta
-        pd <- suppressMessages(propr::propd(data, outcome))
-        pd@theta <- pd@theta[order(pd@theta$theta),]
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
 
-        # Index features by when they first appear
-        nrows <- nrow(pd@theta)
-        index <- floor(seq(1, nrows+.5, .5))
-        odds <- as.logical(1:(nrows*2) %% 2)
-        index[odds] <- index[odds] + nrows
-        join <- c(pd@theta$Partner, pd@theta$Pair)
-        join <- join[index]
+          # Set up groups and sizes
+          grp1 <- as.character(outcome) == "Control"
+          p1 <- sum(grp1) - 1
+          grp2 <- !grp1
+          p2 <- sum(grp2) - 1
+          p <- p1 + p2 + 1
 
-        # Rank features by first appearance
-        rankedfeats <- unique(join)
-        top[rankedfeats]
-      }, ...)
+          # Calculate theta
+          thetas <- apply(data, 2, function(x){
+            (p1 * stats::var(x[grp1]) + p2 * stats::var(x[grp2])) / (p * stats::var(x))
+          })
+
+          # Sort results
+          top <- names(thetas[order(thetas)])
+          top
+        }, ...)
+
+  }else{
+
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
+
+          # Order pairs by theta
+          pd <- suppressMessages(propr::propd(data, outcome))
+          pd@theta <- pd@theta[order(pd@theta$theta),]
+
+          # Index features by when they first appear
+          nrows <- nrow(pd@theta)
+          index <- floor(seq(1, nrows+.5, .5))
+          odds <- as.logical(1:(nrows*2) %% 2)
+          index[odds] <- index[odds] + nrows
+          join <- c(pd@theta$Partner, pd@theta$Pair)
+          join <- join[index]
+
+          # Rank features by first appearance
+          rankedfeats <- unique(join)
+          top[rankedfeats]
+        }, ...)
+  }
 }
