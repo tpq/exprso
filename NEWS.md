@@ -1,3 +1,9 @@
+## exprso 0.3.2
+---------------------
+* Update `fs` modules
+    * Add `keep` argument to subset features after performing selection
+    * Use of `keep` can speed up model deployment for lage data sets
+
 ## exprso 0.3.1
 ---------------------
 * Update `mod` modules

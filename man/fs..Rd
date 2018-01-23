@@ -4,7 +4,7 @@
 \alias{fs.}
 \title{Workhorse for fs Methods}
 \usage{
-fs.(object, top, uniqueFx, ...)
+fs.(object, top, uniqueFx, keep, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo feature selection.}
@@ -16,6 +16,10 @@ Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
 \item{uniqueFx}{A function call unique to the method.}
+
+\item{keep}{A numeric scalar. Specifies the number of top features that should get
+returned by the feature selection method. Use of \code{keep} is generally not
+recommended, but can speed up analyses of large data.}
 
 \item{...}{Arguments passed to the detailed function.}
 }

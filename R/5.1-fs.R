@@ -14,10 +14,13 @@
 #'  Set \code{top = 0} to include all features. A numeric vector can also be used
 #'  to indicate specific features by location, similar to a character vector.
 #' @param uniqueFx A function call unique to the method.
+#' @param keep A numeric scalar. Specifies the number of top features that should get
+#'  returned by the feature selection method. Use of \code{keep} is generally not
+#'  recommended, but can speed up analyses of large data.
 #' @param ... Arguments passed to the detailed function.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fs. <- function(object, top, uniqueFx, ...){
+fs. <- function(object, top, uniqueFx, keep, ...){
 
   # Convert top input to explicit feature reference
   if(class(top) == "numeric"){
@@ -42,6 +45,7 @@ fs. <- function(object, top, uniqueFx, ...){
   # Build data from top subset for uniqueFx
   outcome <- object@annot$defineCase
   final <- do.call("uniqueFx", list(data, outcome, top, ...))
+  if(keep != 0) final <- final[1:keep]
 
   # Append uniqueFx results to object
   if(class(final) == "character"){ # fill @preFilter slot
@@ -64,7 +68,7 @@ fs. <- function(object, top, uniqueFx, ...){
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsSample <- function(object, top = 0, ...){ # args to sample
+fsSample <- function(object, top = 0, keep = 0, ...){ # args to sample
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
@@ -73,7 +77,7 @@ fsSample <- function(object, top = 0, ...){ # args to sample
       uniqueFx = function(data, outcome, top, ...){
 
         sample(top, ...)
-      }, ...)
+      }, keep, ...)
 }
 
 #' Null Feature Selection
@@ -83,7 +87,7 @@ fsSample <- function(object, top = 0, ...){ # args to sample
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsNULL <- function(object, top = 0, ...){ # args to NULL
+fsNULL <- function(object, top = 0, keep = 0, ...){ # args to NULL
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
@@ -92,7 +96,7 @@ fsNULL <- function(object, top = 0, ...){ # args to NULL
       uniqueFx = function(data, outcome, top, ...){
 
         top
-      }, ...)
+      }, keep, ...)
 }
 
 #' Select Features by Explicit Reference
@@ -105,7 +109,7 @@ fsNULL <- function(object, top = 0, ...){ # args to NULL
 #'  This preserves the feature order otherwise. Argument for \code{fsInclude} only.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsInclude <- function(object, top = 0, include){
+fsInclude <- function(object, top = 0, keep = 0, include){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
@@ -123,7 +127,7 @@ fsInclude <- function(object, top = 0, include){
 
         index <- colnames(data) %in% include
         c(include, colnames(data)[!index])
-      }, include)
+      }, keep, include)
 }
 
 #' Select Features by ANOVA
@@ -134,7 +138,7 @@ fsInclude <- function(object, top = 0, include){
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsANOVA <- function(object, top = 0, ...){ # args to aov
+fsANOVA <- function(object, top = 0, keep = 0, ...){ # args to aov
 
   classCheck(object, c("ExprsBinary", "ExprsMulti"),
              "This feature selection method only works for classification tasks.")
@@ -153,7 +157,7 @@ fsANOVA <- function(object, top = 0, ...){ # args to aov
         }
 
         top[order(p)]
-      }, ...)
+      }, keep, ...)
 }
 
 #' Select Features by Statistical Testing
@@ -166,7 +170,8 @@ fsANOVA <- function(object, top = 0, ...){ # args to aov
 #'  "wilcox.test", and "var.test" methods.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsStats <- function(object, top = 0, how = c("t.test", "ks.test", "wilcox.test", "var.test"), ...){ # args to base R function
+fsStats <- function(object, top = 0, keep = 0,
+                    how = c("t.test", "ks.test", "wilcox.test", "var.test"), ...){ # args to base R function
 
   classCheck(object, "ExprsBinary",
              "This feature selection method only works for binary classification tasks.")
@@ -188,7 +193,7 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test", "wilcox.test",
             })
           }
           top[order(p)]
-        }, ...)
+        }, keep, ...)
 
   }else if(how[1] == "ks.test"){
 
@@ -207,7 +212,7 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test", "wilcox.test",
             })
           }
           top[order(p)]
-        }, ...)
+        }, keep, ...)
 
   }else if(how[1] == "wilcox.test"){
 
@@ -226,7 +231,7 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test", "wilcox.test",
             })
           }
           top[order(p)]
-        }, ...)
+        }, keep, ...)
 
   }else if(how[1] == "var.test"){
 
@@ -245,7 +250,7 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test", "wilcox.test",
             })
           }
           top[order(p)]
-        }, ...)
+        }, keep, ...)
 
   }else{
 
@@ -261,7 +266,7 @@ fsStats <- function(object, top = 0, how = c("t.test", "ks.test", "wilcox.test",
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsCor <- function(object, top = 0, ...){ # args to cor
+fsCor <- function(object, top = 0, keep = 0, ...){ # args to cor
 
   classCheck(object, "RegrsArray",
              "This feature selection method only works for continuous outcome tasks.")
@@ -274,7 +279,7 @@ fsCor <- function(object, top = 0, ...){ # args to cor
           r[i] <- cor(data[,i], outcome)
         }
         top[rev(order(r))]
-      }, ...)
+      }, keep, ...)
 }
 
 #' Reduce Dimensions by PCA
@@ -286,7 +291,7 @@ fsCor <- function(object, top = 0, ...){ # args to cor
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsPrcomp <- function(object, top = 0, ...){ # args to prcomp
+fsPrcomp <- function(object, top = 0, keep = 0, ...){ # args to prcomp
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
@@ -303,7 +308,7 @@ fsPrcomp <- function(object, top = 0, ...){ # args to prcomp
         #  when calling modHistory
         list(t(reductionModel$x),
              reductionModel)
-      }, ...)
+      }, keep, ...)
 }
 
 #' Select Features by Recursive Feature Elimination
@@ -314,7 +319,7 @@ fsPrcomp <- function(object, top = 0, ...){ # args to prcomp
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsPathClassRFE <- function(object, top = 0, ...){ # args to fit.rfe
+fsPathClassRFE <- function(object, top = 0, keep = 0, ...){ # args to fit.rfe
 
   packageCheck("pathClass")
   classCheck(object, "ExprsBinary",
@@ -336,7 +341,7 @@ fsPathClassRFE <- function(object, top = 0, ...){ # args to fit.rfe
         final <- merge(data.frame("new" = rfe$features), key, sort = FALSE)$old
         if(length(final) < 2) stop("Uh oh! fsPathClassRFE did not find enough features!")
         as.character(final)
-      }, ...)
+      }, keep, ...)
 }
 
 #' Select Features by Moderated t-test
@@ -348,7 +353,7 @@ fsPathClassRFE <- function(object, top = 0, ...){ # args to fit.rfe
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsEbayes <- function(object, top = 0, ...){ # args to ebayes
+fsEbayes <- function(object, top = 0, keep = 0, ...){ # args to ebayes
 
   packageCheck("limma")
   classCheck(object, c("ExprsBinary", "ExprsMulti"),
@@ -362,7 +367,7 @@ fsEbayes <- function(object, top = 0, ...){ # args to ebayes
         ebaye <- limma::eBayes(fit)
         tt <- limma::topTableF(ebaye, number = ncol(data))
         rownames(tt)
-      }, ...)
+      }, keep, ...)
 }
 
 #' Selects Features by Exact Test
@@ -379,7 +384,7 @@ fsEbayes <- function(object, top = 0, ...){ # args to ebayes
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsEdger <- function(object, top = 0, ...){ # args to exactTest
+fsEdger <- function(object, top = 0, keep = 0, ...){ # args to exactTest
 
   packageCheck("edgeR")
   classCheck(object, "ExprsBinary",
@@ -394,7 +399,7 @@ fsEdger <- function(object, top = 0, ...){ # args to exactTest
         et <- edgeR::exactTest(y)
         tt <- as.data.frame(edgeR::topTags(et, n = nrow(et)))
         rownames(tt)
-      }, ...)
+      }, keep, ...)
 }
 
 #' Select Features by mRMR
@@ -408,7 +413,7 @@ fsEdger <- function(object, top = 0, ...){ # args to exactTest
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsMrmre <- function(object, top = 0, ...){ # args to mRMR.classic
+fsMrmre <- function(object, top = 0, keep = 0, ...){ # args to mRMR.classic
 
   packageCheck("mRMRe")
   classCheck(object, "ExprsBinary",
@@ -438,7 +443,7 @@ fsMrmre <- function(object, top = 0, ...){ # args to mRMR.classic
         # Use "make.names" key to return to original row.names
         final <- merge(data.frame("new" = final), key, sort = FALSE)$old
         as.character(final)
-      }, ...)
+      }, keep, ...)
 }
 
 #' Select Features by Rank Product Analysis
@@ -449,7 +454,7 @@ fsMrmre <- function(object, top = 0, ...){ # args to mRMR.classic
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsRankProd <- function(object, top = 0, ...){ # args to RankProducts
+fsRankProd <- function(object, top = 0, keep = 0, ...){ # args to RankProducts
 
   packageCheck("RankProd")
   classCheck(object, "ExprsBinary",
@@ -470,7 +475,7 @@ fsRankProd <- function(object, top = 0, ...){ # args to RankProducts
         # Get two-tailed p-value
         p <- apply(final$pval, 1, min)
         top[order(p)]
-      }, ...)
+      }, keep, ...)
 }
 
 #' Select Features by Differential Proportionality Analysis
@@ -485,7 +490,7 @@ fsRankProd <- function(object, top = 0, ...){ # args to RankProducts
 #'  and \code{weighted} arguments will not work.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsPropd <- function(object, top = 0, modRatios = FALSE, ...){ # args to propd
+fsPropd <- function(object, top = 0, keep = 0, modRatios = FALSE, ...){ # args to propd
 
   packageCheck("propr")
   classCheck(object, "ExprsBinary",
@@ -511,7 +516,7 @@ fsPropd <- function(object, top = 0, modRatios = FALSE, ...){ # args to propd
           # Sort results
           top <- names(thetas[order(thetas)])
           top
-        }, ...)
+        }, keep, ...)
 
   }else{
 
@@ -533,6 +538,6 @@ fsPropd <- function(object, top = 0, modRatios = FALSE, ...){ # args to propd
           # Rank features by first appearance
           rankedfeats <- unique(join)
           top[rankedfeats]
-        }, ...)
+        }, keep, ...)
   }
 }
