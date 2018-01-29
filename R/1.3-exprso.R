@@ -65,7 +65,13 @@ exprso <- function(x, y){
     if(length(unique(y)) == 2){
       print("Preparing data for binary classification.")
       class(array) <- "ExprsBinary"
-      array@annot$defineCase <- ifelse(labels == unique(labels)[1], "Control", "Case")
+      if(all(unique(labels) %in% c("Control", "Case"))){
+        print("Using labels provided as CONTROL / CASE.")
+        array@annot$defineCase <- as.character(labels)
+      }else{
+        print("Converting labels to CONTROL / CASE.")
+        array@annot$defineCase <- ifelse(labels == unique(labels)[1], "Control", "Case")
+      }
     }else{
       print("Preparing data for multi-class classification.")
       class(array) <- "ExprsMulti"

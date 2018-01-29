@@ -1,3 +1,11 @@
+## exprso 0.3.3
+---------------------
+* General changes
+    * `exprso` no longer alters labels already called "Control" and "Case"
+* Update `split` modules
+    * `splitStratify` now runs quietly
+    * `splitSample` NULL validation set `cat` changed to a warning
+
 ## exprso 0.3.2
 ---------------------
 * Update `fs` modules

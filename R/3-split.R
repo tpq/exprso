@@ -30,7 +30,7 @@ splitSample <- function(object, percent.include = 67, ...){
   size <- round((ncol(object@exprs) * percent.include)/100, digits = 0)
   if(size == ncol(object@exprs)){
 
-    cat("Building a NULL validation set...\n\n")
+    warning("splitSample built an empty validation set...\n\n")
     return(list(
       "array.train" = object,
       "array.valid" = NULL)
@@ -129,8 +129,8 @@ splitStratify <- function(object, percent.include = 67, colBy = NULL,
     index.NAs <- apply(df, 1, function(row) !NA %in% row)
     df <- df[index.NAs, ]
 
-    cat("\nPre-stratification table:\n")
-    print(table(df))
+    # cat("\nPre-stratification table:\n")
+    # print(table(df))
 
     # Manipulate order of apply(df) so that size vector matches strata expectations
     sizes <- apply(table(df[, c("defineCase", rev(colBy))]), MARGIN = -1, FUN = min)
@@ -144,8 +144,8 @@ splitStratify <- function(object, percent.include = 67, colBy = NULL,
     s <- sampling::strata(df, stratanames = colnames(df), size = sizes, method = "srswor")
     if(!identical(rownames(s), rownames(df)[s$ID_unit])) stop("Uh oh! DEBUG ERROR: 001")
 
-    cat("\nWeighted stratification results:\n")
-    print(table(s[, colnames(df)]))
+    # cat("\nWeighted stratification results:\n")
+    # print(table(s[, colnames(df)]))
   }
 
   if(is.null(colBy)){
@@ -155,8 +155,8 @@ splitStratify <- function(object, percent.include = 67, colBy = NULL,
                      row.names = rownames(object@annot),
                      stringsAsFactors = FALSE)
 
-    cat("\nPre-stratification table:\n")
-    print(table(df))
+    # cat("\nPre-stratification table:\n")
+    # print(table(df))
 
     # Compute strata sizes
     sizes <- min(table(df))
@@ -170,8 +170,8 @@ splitStratify <- function(object, percent.include = 67, colBy = NULL,
     s <- sampling::strata(df, stratanames = colnames(df), size = sizes, method = "srswor")
     rownames(s) <- rownames(df)[s$ID_unit]
 
-    cat("\nWeighted stratification results:\n")
-    print(table(s[, colnames(df)]))
+    # cat("\nWeighted stratification results:\n")
+    # print(table(s[, colnames(df)]))
   }
 
   return(list(
