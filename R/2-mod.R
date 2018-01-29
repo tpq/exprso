@@ -112,25 +112,44 @@ modTransform <- function(object, base = exp(1)){
   return(object)
 }
 
-#' Shuffle Feature Order
+#' Sample Features from Data
 #'
-#' \code{modShuffle} shuffles feature order by randomly sampling
-#'  features without replacement. Formally, this is equivalent
-#'  to \code{fsSample, top = 0}, but much quicker.
+#' \code{modSample} samples features from a data set randomly without
+#'  replacement. When \code{size = 0}, this is equivalent to
+#'  \code{fsSample, top = 0}, but much quicker.
 #'
 #' @inheritParams modFilter
 #' @param size A numeric scalar. The number of randomly sampled features
 #'  to include in the pre-processed \code{ExprsArray} object.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
-modShuffle <- function(object, size = 0){
+modSample <- function(object, size = 0){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
   if(size == 0) size <- nrow(object@exprs)
   keep <- sample(1:nrow(object@exprs), size = size)
-  object@exprs <- object@exprs[keep, ]
+  object@exprs <- object@exprs[keep,,drop = FALSE]
+  return(object)
+}
+
+#' Select Features from Data
+#'
+#' \code{modSelect} selects specific features from a data set. Unlike
+#'  \code{fsInclude}, this function does not update \code{@@preFilter}
+#'  and returns only those features stated by \code{include}.
+#'
+#' @inheritParams modFilter
+#' @param include A character vector. The names of features to include.
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modInclude <- function(object, include = rownames(object@exprs)){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  object@exprs <- object@exprs[include,,drop = FALSE]
   return(object)
 }
 
