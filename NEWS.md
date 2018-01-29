@@ -1,3 +1,9 @@
+## exprso 0.3.4
+---------------------
+* Update `mod` modules
+    * Add `modInclude` function to select specific features from a data set
+    * Rename `modShuffle` to `modSample`
+
 ## exprso 0.3.3
 ---------------------
 * General changes

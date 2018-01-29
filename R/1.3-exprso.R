@@ -109,7 +109,9 @@ exprso <- function(x, y){
 #'
 #' - \code{\link{modTransform}}
 #'
-#' - \code{\link{modShuffle}}
+#' - \code{\link{modSample}}
+#'
+#' - \code{\link{modInclude}}
 #'
 #' - \code{\link{modNormalize}}
 #'
