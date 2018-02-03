@@ -180,6 +180,29 @@ splitStratify <- function(object, percent.include = 67, colBy = NULL,
   )
 }
 
+#' Split by Balanced Sampling
+#'
+#' \code{splitBalance} is a wrapper that calls \code{splitStratify}
+#'  twice. In the first call, \code{splitStratify} is used to create a
+#'  balanced training set from the total data. In the second call,
+#'  \code{splitStratify} is used to create a balanced validation set
+#'  from the leftover data. This function ensures that there are always
+#'  an equal number of samples from each class in the split.
+#'
+#' @inheritParams splitSample
+#' @param ... Arguments passed to both \code{splitStratify} calls.
+#' @return Returns a list of two \code{ExprsArray} objects.
+#' @export
+splitBalanced <- function(object, percent.include = 67, ...){
+
+  sets1 <- splitStratify(object, percent.include = percent.include, ...)
+  sets2 <- splitStratify(sets1[[2]], percent.include = 100, ...)
+  list(
+    "array.train" = sets1$array.train,
+    "array.valid" = sets2$array.train
+  )
+}
+
 #' Split by User-defined Group
 #'
 #' \code{splitBy} builds a training set and validation set by placing

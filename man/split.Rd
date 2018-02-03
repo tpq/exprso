@@ -10,5 +10,7 @@ The \code{exprso} package includes these split modules:
 
 - \code{\link{splitStratify}}
 
+- \code{\link{splitBalanced}}
+
 - \code{\link{splitBy}}
 }

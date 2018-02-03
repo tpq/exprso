@@ -138,6 +138,8 @@ NULL
 #'
 #' - \code{\link{splitStratify}}
 #'
+#' - \code{\link{splitBalanced}}
+#'
 #' - \code{\link{splitBy}}
 NULL
 

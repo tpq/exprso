@@ -1,3 +1,8 @@
+## exprso 0.3.5
+---------------------
+* Update `split` modules
+    * Add `splitBalanced` to balance both the training and validation sets
+
 ## exprso 0.3.4
 ---------------------
 * Update `mod` modules
@@ -388,7 +393,7 @@
 * 5.1-fs-binary.R
     * `fsStats` has tryCatch to address rare error
 
-## exprso 1.0.1
+## exprso 0.1.1
 ---------------------
 * 1.2-methods.R
     * `summary` method now accommodates lists of vector arguments
