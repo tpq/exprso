@@ -1,3 +1,10 @@
+## exprso 0.3.6
+---------------------
+* General changes
+    * `exprso` can now swap "Control" and "Case" labels with `switch` argument
+    * `exprso` no longer gives error when importing tabular annotations
+    * `exprso` can now predict any column from tabular annotations
+
 ## exprso 0.3.5
 ---------------------
 * Update `split` modules

@@ -4,7 +4,7 @@
 \alias{exprso}
 \title{The \code{exprso} Package}
 \usage{
-exprso(x, y)
+exprso(x, y, label = 1, switch = FALSE)
 }
 \arguments{
 \item{x}{A matrix of feature data for all samples. Rows should
@@ -14,7 +14,13 @@ contain samples and columns should contain features.}
 \code{class(y) == "character"} or \code{class(y) == "factor"},
 \code{exprso} prepares data for binary or multi-class classification.
 Else, \code{exprso} prepares data for regression. If \code{y} is a
-matrix, the program assumes the first column is the outcome.}
+matrix, the program uses the column in \code{label}.}
+
+\item{label}{A numeric scalar or character string. The column to
+use as the label if \code{y} is a matrix.}
+
+\item{switch}{A logical scalar. Toggles which class label is
+called Control in binary classification.}
 }
 \value{
 An \code{ExprsArray} object.
