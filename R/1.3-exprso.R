@@ -67,7 +67,7 @@ exprso <- function(x, y, label = 1, switch = FALSE){
   if(length(labels) != nrow(x)) stop("Incorrect number of outcomes.")
   if(class(labels) == "logical") stop("Boolean outcomes not supported.")
   if(class(labels) == "character" | class(labels) == "factor"){
-    if(length(unique(y)) == 2){
+    if(length(unique(labels)) == 2){
       print("Preparing data for binary classification.")
       class(array) <- "ExprsBinary"
       print("Converting binary labels to CONTROL / CASE.")

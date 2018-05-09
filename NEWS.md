@@ -1,3 +1,8 @@
+## exprso 0.3.7
+---------------------
+* Update `exprso` import
+    * Fix bug caused by importing an annotation table
+
 ## exprso 0.3.6
 ---------------------
 * General changes
