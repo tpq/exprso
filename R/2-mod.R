@@ -255,25 +255,25 @@ modRatios <- function(object){
   return(object)
 }
 
-#' Rescale Data by Factor Range
+#' Scale Data by Factor Range
 #'
-#' \code{modScale} rescales a data set by making all sample vectors
+#' \code{modScale} scales a data set by making all sample vectors
 #'  have the same total sum, then multiplying each sample vector by
-#'  a scaling factor.
+#'  a scale factor.
 #'
-#' If \code{uniform = TRUE}, scaling factors are randomly sampled from
-#'  the uniform distribution \code{(0, alpha) + 1}. Otherwise, scaling
+#' If \code{uniform = TRUE}, scale factors are randomly sampled from
+#'  the uniform distribution \code{(0, alpha) + 1}. Otherwise, scale
 #'  factors are randomly sampled from the normal distribution with
 #'  a mean of 0 and standard deviation of \code{alpha}. When using
-#'  the normal distribution, these scaling factors are transformed by
+#'  the normal distribution, these scale factors are transformed by
 #'  taking the absolute value then adding one. For this reason,
 #'  data are always unscaled when \code{alpha = 0}.
 #'
 #' @inheritParams modHistory
-#' @param alpha An integer. The maximum range of scaling factors used
+#' @param alpha An integer. The maximum range of scale factors used
 #'  for scaling if \code{uniform = TRUE}. The standard deviation
-#'  of the scaling factors if \code{uniform = FALSE}. See Details.
-#' @param uniform A boolean. Toggles whether to draw scaling factors
+#'  of the scale factors if \code{uniform = FALSE}. See Details.
+#' @param uniform A boolean. Toggles whether to draw scale factors
 #'  from a uniform distribution or a normal distribution.
 #' @return A pre-processed \code{ExprsArray} object.
 #' @export
@@ -284,12 +284,12 @@ modScale <- function(object, alpha = 0, uniform = TRUE){
 
   if(uniform){
 
-    # Draw scaling factors from Uniform distribution
+    # Draw scale factors from Uniform distribution
     lambda <- stats::runif(ncol(object@exprs), min = 0, max = alpha) + 1
 
   }else{
 
-    # Draw scaling factors from Normal distribution
+    # Draw scale factors from Normal distribution
     lambda <- abs(stats::rnorm(ncol(object@exprs), mean = 0, sd = alpha)) + 1
   }
 
@@ -297,5 +297,55 @@ modScale <- function(object, alpha = 0, uniform = TRUE){
   object <- modAcomp(object)
   newdata <- apply(object@exprs, 1, function(x) x * lambda)
   object@exprs <- t(newdata)
+  return(object)
+}
+
+#' Skew Data by Factor Range
+#'
+#' \code{modSkew} skews a data set by making all sample vectors
+#'  have the same total sum, introducing a new feature, and then
+#'  making all sample vectors again have the same total sum.
+#'
+#' If \code{uniform = TRUE}, skew factors are randomly sampled from
+#'  the uniform distribution \code{(0, alpha) + 1}. Otherwise, skew
+#'  factors are randomly sampled from the normal distribution with
+#'  a mean of 0 and standard deviation of \code{alpha}. When using
+#'  the normal distribution, these skew factors are transformed by
+#'  taking the absolute value then adding one. For this reason,
+#'  data are always unskewed when \code{alpha = 0}.
+#'
+#' @inheritParams modHistory
+#' @param alpha An integer. The maximum range of skew factors used
+#'  for skewing if \code{uniform = TRUE}. The standard deviation
+#'  of the skew factors if \code{uniform = FALSE}. See Details.
+#' @param uniform A boolean. Toggles whether to draw skew factors
+#'  from a uniform distribution or a normal distribution.
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modSkew <- function(object, alpha = 0, uniform = TRUE){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  if(uniform){
+
+    # Draw skew factors from Uniform distribution
+    lambda <- stats::runif(ncol(object@exprs), min = 0, max = alpha) + 1
+
+  }else{
+
+    # Draw skew factors from Normal distribution
+    lambda <- abs(stats::rnorm(ncol(object@exprs), mean = 0, sd = alpha)) + 1
+  }
+
+  # Apply scale to weigh samples
+  object <- modAcomp(object)
+
+  # Calculate gamma and join to sub-composition
+  gamma <- 1 / lambda - 1
+
+  # Join gamma and close data
+  object@exprs <- rbind(object@exprs, gamma)
+  object <- modAcomp(object)
   return(object)
 }

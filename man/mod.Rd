@@ -29,4 +29,6 @@ The \code{exprso} package includes these data process modules:
 - \code{\link{modRatios}}
 
 - \code{\link{modScale}}
+
+- \code{\link{modSkew}}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/2-mod.R
 \name{modScale}
 \alias{modScale}
-\title{Rescale Data by Factor Range}
+\title{Scale Data by Factor Range}
 \usage{
 modScale(object, alpha = 0, uniform = TRUE)
 }
@@ -10,27 +10,27 @@ modScale(object, alpha = 0, uniform = TRUE)
 \item{object}{An \code{ExprsArray} object. The object that should undergo a
 replication of some feature selection and dimension reduction history.}
 
-\item{alpha}{An integer. The maximum range of scaling factors used
+\item{alpha}{An integer. The maximum range of scale factors used
 for scaling if \code{uniform = TRUE}. The standard deviation
-of the scaling factors if \code{uniform = FALSE}. See Details.}
+of the scale factors if \code{uniform = FALSE}. See Details.}
 
-\item{uniform}{A boolean. Toggles whether to draw scaling factors
+\item{uniform}{A boolean. Toggles whether to draw scale factors
 from a uniform distribution or a normal distribution.}
 }
 \value{
 A pre-processed \code{ExprsArray} object.
 }
 \description{
-\code{modScale} rescales a data set by making all sample vectors
+\code{modScale} scales a data set by making all sample vectors
  have the same total sum, then multiplying each sample vector by
- a scaling factor.
+ a scale factor.
 }
 \details{
-If \code{uniform = TRUE}, scaling factors are randomly sampled from
- the uniform distribution \code{(0, alpha) + 1}. Otherwise, scaling
+If \code{uniform = TRUE}, scale factors are randomly sampled from
+ the uniform distribution \code{(0, alpha) + 1}. Otherwise, scale
  factors are randomly sampled from the normal distribution with
  a mean of 0 and standard deviation of \code{alpha}. When using
- the normal distribution, these scaling factors are transformed by
+ the normal distribution, these scale factors are transformed by
  taking the absolute value then adding one. For this reason,
  data are always unscaled when \code{alpha = 0}.
 }

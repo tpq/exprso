@@ -1,3 +1,8 @@
+## exprso 0.3.8
+---------------------
+* Update `mod` modules
+    * New `modSkew` function skews sample vectors by a factor range
+
 ## exprso 0.3.7
 ---------------------
 * Update `exprso` import
@@ -74,7 +79,7 @@
 ---------------------
 * Update `mod` modules
     * New `modShuffle` function shuffles feature order by random sampling
-    * New `modScale` function rescales sample vectors by a factor range
+    * New `modScale` function scales sample vectors by a factor range
 * Update `build` modules
     * New `buildDT` function builds decision tree model
         * Add `predict.ExprsMachine` and `predict.RegrsModel` support

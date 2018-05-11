@@ -126,6 +126,8 @@ exprso <- function(x, y, label = 1, switch = FALSE){
 #' - \code{\link{modRatios}}
 #'
 #' - \code{\link{modScale}}
+#'
+#' - \code{\link{modSkew}}
 NULL
 
 #' @name split
