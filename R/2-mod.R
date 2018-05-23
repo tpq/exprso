@@ -341,11 +341,8 @@ modSkew <- function(object, alpha = 0, uniform = TRUE){
   # Apply scale to weigh samples
   object <- modAcomp(object)
 
-  # Calculate gamma and join to sub-composition
-  gamma <- 1 / lambda - 1
-
   # Join gamma and close data
-  object@exprs <- rbind(object@exprs, gamma)
+  object@exprs <- rbind(object@exprs, lambda)
   object <- modAcomp(object)
   return(object)
 }

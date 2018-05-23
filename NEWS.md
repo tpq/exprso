@@ -1,3 +1,8 @@
+## exprso 0.3.9
+---------------------
+* Update `mod` modules
+    * Simplify `modSkew` function to add feature based only on `alpha`
+
 ## exprso 0.3.8
 ---------------------
 * Update `mod` modules
