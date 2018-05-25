@@ -2,6 +2,8 @@
 ---------------------
 * Update `mod` modules
     * Simplify `modSkew` function to add feature based only on `alpha`
+* Update `fs` modules
+    * Add `fsPathClassRFE` to the `?fs` help file
 
 ## exprso 0.3.8
 ---------------------

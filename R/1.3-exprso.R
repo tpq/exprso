@@ -175,6 +175,8 @@ NULL
 #'
 #' - \code{\link{fsMrmre}}
 #'
+#' - \code{\link{fsPathClassRFE}}
+#'
 #' - \code{\link{fsRankProd}}
 #'
 #' - \code{\link{fsPropd}}
