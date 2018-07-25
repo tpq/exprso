@@ -525,14 +525,14 @@ fsPropd <- function(object, top = 0, keep = 0, modRatios = FALSE, ...){ # args t
 
           # Order pairs by theta
           pd <- suppressMessages(propr::propd(data, outcome))
-          pd@theta <- pd@theta[order(pd@theta$theta),]
+          pd@results <- pd@results[order(pd@results$theta),]
 
           # Index features by when they first appear
-          nrows <- nrow(pd@theta)
+          nrows <- nrow(pd@results)
           index <- floor(seq(1, nrows+.5, .5))
           odds <- as.logical(1:(nrows*2) %% 2)
           index[odds] <- index[odds] + nrows
-          join <- c(pd@theta$Partner, pd@theta$Pair)
+          join <- c(pd@results$Partner, pd@results$Pair)
           join <- join[index]
 
           # Rank features by first appearance

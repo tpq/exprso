@@ -1,6 +1,9 @@
 ## exprso 0.4.0
 ---------------------
-* Clean up message dump within vignettes
+* Package maintenance
+    * Clean up message dump within vignettes
+    * Update `fsPropd` for compatibility with `propr` version 4.0
+    * Remove the `gtools` import
 
 ## exprso 0.3.9
 ---------------------

@@ -23,7 +23,6 @@ Imports:
     MASS,
     e1071,
     frbs,
-    gtools,
     lattice,
     methods,
     nnet,
