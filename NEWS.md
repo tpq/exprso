@@ -3,6 +3,7 @@
 * Package maintenance
     * Clean up message dump within vignettes
     * Update `fsPropd` for compatibility with `propr` version 4.0
+    * Update tests for compatibility with `e1071` version 1.7
     * Remove the `gtools` import
 
 ## exprso 0.3.9
