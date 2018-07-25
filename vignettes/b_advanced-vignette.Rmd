@@ -38,7 +38,7 @@ splitSets <- array %>%
 
 Next, we use the `%>%` function to pull the training set from the `split` method result (via the `trainingSet` function) and pipe it through a chain of feature selection and classifier construction methods. Similar to `trainingSet`, the `testSet` function (or, equivalently, the `validationSet` function) will extract the test set from the `split` method result.
 
-```{r, results = "hide"}
+```{r, results = "hide", message = FALSE}
 pred <- trainingSet(splitSets) %>%
   fsStats(how = "t.test") %>%
   fsPrcomp(top = 2) %T>%
@@ -242,7 +242,7 @@ pl %>% buildEnsemble %>%
 
 A special `plGrid` variant, called `plGridMulti`, is also available for multi-class data. This variant uses *1-vs-all feature selection* instead of multi-class feature selection. In this implementation, 1-vs-all feature selection occurs just prior to 1-vs-all classifier construction. As such, each individual `ExprsMachine` within the `ExprsModule` will have its own unique feature selection history to pass on to the test set during classifier deployment. For `plGridMulti`, the 1-vs-all feature selection is managed just like the other `pl` functions, using the `ctrlFeatureSelect` argument handler.
 
-```{r, results = "hide"}
+```{r, results = "hide", message = FALSE}
 fs <- ctrlFeatureSelect(func = "fsStats", top = 0, how = "t.test")
 
 pl <- plGridMulti(trainingSet(splitSets), testSet(splitSets),

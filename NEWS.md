@@ -1,3 +1,7 @@
+## exprso 0.4.0
+---------------------
+* Clean up message dump within vignettes
+
 ## exprso 0.3.9
 ---------------------
 * Update `mod` modules

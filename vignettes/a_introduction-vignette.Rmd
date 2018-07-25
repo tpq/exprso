@@ -109,7 +109,7 @@ array.train <-
 
 The argument `top` specifies either the names or the number of features to supply *to* the feature selection method, not what the user intends to retrieve *from* the feature selection method. When calling the first feature selection method (or the first build method, if skipping feature selection), a numeric `top` argument will select a "top ranked" feature set according to their default order in the `ExprsArray` input. Then, because each feature selection method returns an `ExprsArray` object with the features implicitly (re-)ranked, all subsequent numeric `top` arguments will select a "top ranked" feature set according to the results of the previous feature selection method. For example, the third feature selection call draws the top features from the second feature ranking. The user may deploy, in tandem, any number of these functions in whatever order they choose.
 
-Another feature selection function is `fsPrcomp`. This performs dimension reduction by way of principal components analysis (**PCA**). Like the feature selection steps, all dimension reduction models get saved in the `ExprsArray` history to deploy later on a test set. Below, we use the top 50 features (as selected by `fsStats`) for PCA.
+Another feature selection function is `fsPrcomp`. This performs dimension reduction by way of principal components analysis (**PCA**). Like the feature selection steps, all dimension reduction models get saved in the `ExprsArray` history to deploy later on a test set. Below, we use the top 50 features for PCA.
 
 ```{r}
 array.train <-
@@ -118,7 +118,7 @@ array.train <-
 
 The other feature selection methods included in this package all follow the same use pattern. Below, we plot the first three components of the training set in 3-dimensional space.
 
-```{r, results = "hide"}
+```{r, results = "hide", message = FALSE}
 plot(array.train)
 ```
 
@@ -160,7 +160,7 @@ The `plGrid` function can also calculate $v$-fold cross-validation accuracy at e
 
 Below, we run through a few different support vector machine builds, calculating leave-one-out cross-validation accuracy (i.e., via `fold = 0`) at each step.
 
-```{r, results = "hide", warning = FALSE}
+```{r, results = "hide", warning = FALSE, message = FALSE}
 gs <-
   plGrid(array.train = array.train,
          array.valid = array.test,
