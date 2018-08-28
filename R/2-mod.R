@@ -254,7 +254,7 @@ modRatios <- function(object, alpha = NA){
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  object@exprs <- t(propr::ratios(t(object@exprs, alpha = NA)))
+  object@exprs <- t(propr::ratios(t(object@exprs), alpha = NA))
   return(object)
 }
 

@@ -39,12 +39,6 @@ test_that("modCluster and modSubset work without any error", {
 
   expect_equal(
 
-    array.train %>% modCluster(how = "agnes", k = 3) %>% modSubset(colBy = "cluster", include = 3),
-    array.train %>% modCluster(how = "clara", k = 3) %>% modSubset(colBy = "cluster", include = 3)
-  )
-
-  expect_equal(
-
     array.train %>% modCluster(how = "diana"),
     array.train %>% modCluster(how = "fanny")
   )
