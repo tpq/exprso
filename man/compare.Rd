@@ -6,7 +6,8 @@
 \alias{compare,ExprsArray-method}
 \title{Compare \code{ExprsArray} Objects}
 \usage{
-compare(object, array.valid = NULL, colBy = "defineCase", cutoff = 0.05)
+compare(object, array.valid = NULL, colBy = "defineCase",
+  cutoff = 0.05)
 
 \S4method{compare}{ExprsArray}(object, array.valid = NULL,
   colBy = "defineCase", cutoff = 0.05)

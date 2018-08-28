@@ -4,8 +4,9 @@
 \alias{splitStratify}
 \title{Split by Stratified Sampling}
 \usage{
-splitStratify(object, percent.include = 67, colBy = NULL, bin = rep(FALSE,
-  length(colBy)), breaks = rep(list(NA), length(colBy)), ...)
+splitStratify(object, percent.include = 67, colBy = NULL,
+  bin = rep(FALSE, length(colBy)), breaks = rep(list(NA),
+  length(colBy)), ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to split.}

@@ -4,7 +4,6 @@
 \name{ExprsArray-class}
 \alias{ExprsArray-class}
 \alias{show,ExprsArray-method}
-\alias{[,ExprsArray,ANY,ANY-method}
 \alias{[,ExprsArray-method}
 \alias{$,ExprsArray-method}
 \alias{subset,ExprsArray-method}
@@ -15,7 +14,7 @@
 \usage{
 \S4method{show}{ExprsArray}(object)
 
-\S4method{[}{ExprsArray,ANY,ANY}(x, i, j)
+\S4method{[}{ExprsArray}(x, i, j)
 
 \S4method{$}{ExprsArray}(x, name)
 

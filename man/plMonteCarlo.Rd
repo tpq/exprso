@@ -4,8 +4,8 @@
 \alias{plMonteCarlo}
 \title{Monte Carlo Cross-Validation}
 \usage{
-plMonteCarlo(array, B = 10, ctrlSS, ctrlFS = NULL, ctrlGS, ctrlMS = NULL,
-  save = FALSE)
+plMonteCarlo(array, B = 10, ctrlSS, ctrlFS = NULL, ctrlGS,
+  ctrlMS = NULL, save = FALSE)
 }
 \arguments{
 \item{array}{Specifies the \code{ExprsArray} object to undergo cross-validation.}
