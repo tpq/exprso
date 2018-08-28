@@ -1,3 +1,8 @@
+## exprso 0.4.1
+---------------------
+* Update `mod` modules
+    * Add `alpha` argument to `modRatios` function
+
 ## exprso 0.4.0
 ---------------------
 * Package maintenance

@@ -2,18 +2,22 @@
 % Please edit documentation in R/2-mod.R
 \name{modRatios}
 \alias{modRatios}
-\title{Recast Data as Feature Ratios}
+\title{Recast Data as Feature (Log-)Ratios}
 \usage{
-modRatios(object)
+modRatios(object, alpha = NA)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object. The object that should undergo a
 replication of some feature selection and dimension reduction history.}
+
+\item{alpha}{A numeric scalar. This argument guides
+a Box-Cox transformation to approximate log-ratios in the
+presence of zeros. Skip with \code{NA}.}
 }
 \value{
 A pre-processed \code{ExprsArray} object.
 }
 \description{
 \code{modRatios} recasts a data set with N feature columns as a new
- data set with N * (N - 1) / 2 feature ratio columns.
+ data set with N * (N - 1) / 2 feature (log-)ratio columns.
 }
