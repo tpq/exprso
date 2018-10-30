@@ -18,6 +18,8 @@ The \code{exprso} package includes these build modules:
 
 - \code{\link{buildLR}}
 
+- \code{\link{buildLASSO}}
+
 - \code{\link{buildANN}}
 
 - \code{\link{buildDT}}
