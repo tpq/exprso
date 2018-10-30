@@ -1,3 +1,9 @@
+## exprso 0.4.2
+---------------------
+* Update `build` modules
+    * Extend `buildGLM` to work for any outcome (continuous and factor)
+    * New `buildLASSO` module for LASSO and Ridge regression
+
 ## exprso 0.4.1
 ---------------------
 * Update `mod` modules
