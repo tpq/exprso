@@ -64,6 +64,12 @@ setMethod("predict", "ExprsMachine",
               px <- cbind(px, 1 - px)
               colnames(px) <- c("Case", "Control") # do not delete this line!
 
+            }else if("cv.glmnet" %in% class(object@mach)){ # LASSO
+
+              px <- stats::plogis(predict(object@mach, as.matrix(data)))
+              px <- cbind(px, 1 - px)
+              colnames(px) <- c("Case", "Control") # do not delete this line!
+
             }else if("nnet" %in% class(object@mach)){
 
               px <- predict(object@mach, data, type = "raw")
@@ -247,6 +253,10 @@ setMethod("predict", "RegrsModel",
                "lm" %in% class(object@mach)){
 
               pred <- predict(object@mach, data)
+
+            }else if("cv.glmnet" %in% class(object@mach)){
+
+              pred <- predict(object@mach, as.matrix(data))
 
             }else if("frbs" %in% class(object@mach)){
 

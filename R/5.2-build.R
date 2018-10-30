@@ -216,18 +216,34 @@ buildLM <- function(object, top = 0, ...){ # args to lm
 #' @export
 buildGLM <- function(object, top = 0, ...){ # args to glm
 
-  classCheck(object, "RegrsArray",
-             "This feature selection method only works for continuous outcome tasks.")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
 
-  build.(object, top,
-         uniqueFx = function(data, labels, ...){
+  if(class(object) == "RegrsArray"){
 
-           # Perform GLM via ~ method
-           args <- getArgs(...)
-           df <- data.frame(data, "defineCase" = as.numeric(labels))
-           args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-           do.call(stats::glm, args)
-         }, ...)
+    build.(object, top,
+           uniqueFx = function(data, labels, ...){
+
+             # Perform GLM via ~ method
+             args <- getArgs(...)
+             df <- data.frame(data, "defineCase" = as.numeric(labels))
+             args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+             do.call(stats::glm, args)
+           }, ...)
+
+  }else if(class(object) %in% c("ExprsBinary", "ExprsMulti")){
+
+    build.(object, top,
+           uniqueFx = function(data, labels, ...){
+
+             # Perform GLM via ~ method
+             args <- getArgs(...)
+             args <- forceArg("family", "binomial", args)
+             df <- data.frame(data, "defineCase" = as.numeric(labels) - 1)
+             args <- append(list("formula" = defineCase ~ ., "data" = df), args)
+             do.call(stats::glm, args)
+           }, ...)
+  }
 }
 
 #' Build Logistic Regression Model
@@ -242,16 +258,47 @@ buildLR <- function(object, top = 0, ...){ # args to glm
   classCheck(object, c("ExprsBinary", "ExprsMulti"),
              "This build method only works for classification tasks.")
 
-  build.(object, top,
-         uniqueFx = function(data, labels, ...){
+  buildGLM(object, top, ...)
+}
 
-           # Perform GLM via ~ method
-           args <- getArgs(...)
-           args <- forceArg("family", "binomial", args)
-           df <- data.frame(data, "defineCase" = as.numeric(labels) - 1)
-           args <- append(list("formula" = defineCase ~ ., "data" = df), args)
-           do.call(stats::glm, args)
-         }, ...)
+#' Build LASSO or Ridge Model
+#'
+#' \code{buildLASSO} builds a model using the \code{cv.glmnet} function
+#'  from the \code{glmnet} package.
+#'
+#' @inheritParams build.
+#' @return Returns an \code{ExprsModel} object.
+#' @export
+buildLASSO <- function(object, top = 0, ...){ # args to cv.glmnet
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  if(class(object) == "RegrsArray"){
+
+    build.(object, top,
+           uniqueFx = function(data, labels, ...){
+
+             # Perform LASSO GLM
+             args <- getArgs(...)
+             args <- defaultArg("nfolds", 5, args)
+             args <- append(list("x" = data, "y" = labels), args)
+             do.call(glmnet::cv.glmnet, args)
+           }, ...)
+
+  }else if(class(object) %in% c("ExprsBinary", "ExprsMulti")){
+
+    build.(object, top,
+           uniqueFx = function(data, labels, ...){
+
+             # Perform LASSO GLM
+             args <- getArgs(...)
+             args <- defaultArg("nfolds", 5, args)
+             args <- forceArg("family", "binomial", args)
+             args <- append(list("x" = data, "y" = as.numeric(labels) - 1), args)
+             do.call(glmnet::cv.glmnet, args)
+           }, ...)
+  }
 }
 
 #' Build Artificial Neural Network Model
