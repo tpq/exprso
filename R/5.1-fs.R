@@ -570,7 +570,15 @@ fsBalance <- function(object, top = 0, keep = 0, sbp.how = "sbp.fromPBA",
   fs.(object, top,
       uniqueFx = function(data, outcome, top, sbp.how, ternary, ratios, ...){
 
-        sbp <- do.call(get(sbp.how, asNamespace("balance")), list(data, ...))
+        args <- getArgs(...)
+        args <- append(list("x" = data), args)
+
+        if(sbp.how == "sbp.fromPropd"){
+          message("Setting group (forced behavior, cannot override)...\n")
+          args <- suppressMessages(forceArg("group", outcome, args))
+        }
+
+        sbp <- do.call(get(sbp.how, asNamespace("balance")), args)
         sbp <- balance::sbp.subset(sbp, ternary, ratios)
         balances <- t(balance::balance.fromSBP(data, sbp))
         colnames(balances) <- rownames(data)

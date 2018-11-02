@@ -1,3 +1,8 @@
+## exprso 0.4.5
+---------------------
+* Update `fs` modules
+    * Extend `fsBalance` to support `sbp.fromPropd`
+
 ## exprso 0.4.4
 ---------------------
 * Update `mod` modules
