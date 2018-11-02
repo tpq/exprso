@@ -1,3 +1,8 @@
+## exprso 0.4.3
+---------------------
+* New `getWeights` method
+    * New method gets LASSO weights for `ExprsModel` and related objects
+
 ## exprso 0.4.2
 ---------------------
 * Update `build` modules

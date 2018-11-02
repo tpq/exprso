@@ -4,16 +4,18 @@
 \name{ExprsPipeline-class}
 \alias{ExprsPipeline-class}
 \alias{show,ExprsPipeline-method}
+\alias{[,ExprsPipeline,ANY,ANY,ANY-method}
 \alias{[,ExprsPipeline-method}
 \alias{$,ExprsPipeline-method}
 \alias{subset,ExprsPipeline-method}
 \alias{summary,ExprsPipeline-method}
 \alias{getFeatures,ExprsPipeline-method}
+\alias{getWeights,ExprsPipeline-method}
 \title{An S4 class to store models built during high-throughput learning}
 \usage{
 \S4method{show}{ExprsPipeline}(object)
 
-\S4method{[}{ExprsPipeline}(x, i, j)
+\S4method{[}{ExprsPipeline,ANY,ANY,ANY}(x, i, j)
 
 \S4method{$}{ExprsPipeline}(x, name)
 
@@ -22,6 +24,8 @@
 \S4method{summary}{ExprsPipeline}(object)
 
 \S4method{getFeatures}{ExprsPipeline}(object, index)
+
+\S4method{getWeights}{ExprsPipeline}(object, index, ...)
 }
 \arguments{
 \item{object, x}{An object of class \code{ExprsPipeline}.}
@@ -38,8 +42,11 @@ argument \code{i} is missing.}
 \item{select}{Subsets entire \code{ExprsPipeline} object via
 \code{object@summary[, select]}. Can be used to rearrange summary table.}
 
-\item{index}{A numeric scalar. The i-th model from which to retrieve features.
-If missing, \code{getFeatures} will tabulate features across all models.}
+\item{index}{A numeric scalar. The i-th model from which to retrieve features or weights.
+If missing, function will tabulate features or weights across all models.}
+
+\item{...}{For \code{getWeights}, optional arguments passed to
+\code{glmnet::coef.cv.glmnet}.}
 }
 \description{
 An S4 class to store models built during high-throughput learning
@@ -57,6 +64,8 @@ An S4 class to store models built during high-throughput learning
 \item \code{summary}: Method to summarize \code{ExprsPipeline} results.
 
 \item \code{getFeatures}: Method to return features within an \code{ExprsPredict} model.
+
+\item \code{getWeights}: Method to return LASSO weights.
 }}
 
 \section{Slots}{

@@ -5,14 +5,20 @@
 \alias{ExprsModel-class}
 \alias{show,ExprsModel-method}
 \alias{getFeatures,ExprsModel-method}
+\alias{getWeights,ExprsModel-method}
 \title{An S4 class to store the model}
 \usage{
 \S4method{show}{ExprsModel}(object)
 
 \S4method{getFeatures}{ExprsModel}(object)
+
+\S4method{getWeights}{ExprsModel}(object, ...)
 }
 \arguments{
 \item{object}{An object of class \code{ExprsModel}.}
+
+\item{...}{For \code{getWeights}, optional arguments passed to
+\code{glmnet::coef.cv.glmnet}.}
 }
 \description{
 An S4 class to store the model
@@ -22,6 +28,8 @@ An S4 class to store the model
 \item \code{show}: Method to show \code{ExprsModel} object.
 
 \item \code{getFeatures}: Method to return features within an \code{ExprsModel} object.
+
+\item \code{getWeights}: Method to return LASSO weights.
 }}
 
 \section{Slots}{

@@ -363,8 +363,8 @@ setMethod("summary", "ExprsPipeline",
 
 #' @describeIn ExprsPipeline Method to return features within an \code{ExprsPredict} model.
 #'
-#' @param index A numeric scalar. The i-th model from which to retrieve features.
-#'  If missing, \code{getFeatures} will tabulate features across all models.
+#' @param index A numeric scalar. The i-th model from which to retrieve features or weights.
+#'  If missing, function will tabulate features or weights across all models.
 #'
 #' @export
 setMethod("getFeatures", "ExprsPipeline",
@@ -388,8 +388,8 @@ setMethod("getFeatures", "ExprsPipeline",
 
 #' @describeIn ExprsEnsemble Method to show \code{ExprsEnsemble} object.
 #'
-#' @param index A numeric scalar. The i-th model from which to retrieve features.
-#'  If missing, \code{getFeatures} will tabulate features across all models.
+#' @param index A numeric scalar. The i-th model from which to retrieve features or weights.
+#'  If missing, function will tabulate features or weights across all models.
 #'
 #' @export
 setMethod("show", "ExprsEnsemble",
@@ -546,3 +546,85 @@ pipeSubset <- function(object, colBy, include){
 
   modSubset(object, colBy, include)
 }
+
+###########################################################
+### getWeights LASSO methods
+
+#' Retrieve LASSO Weights
+#'
+#' See the respective S4 class for method details.
+#'
+#' @param object An \code{ExprsModel}, \code{ExprsPipeline},
+#'  or \code{ExprsEnsemble} object.
+#' @param ... Arguments passed to \code{glmnet::coef.cv.glmnet}.
+#'
+#' @export
+setGeneric("getWeights",
+           function(object, ...) standardGeneric("getWeights")
+)
+
+#' @describeIn ExprsModel Method to return LASSO weights.
+#'
+#' @param ... For \code{getWeights}, optional arguments passed to
+#'  \code{glmnet::coef.cv.glmnet}.
+#'
+#' @export
+setMethod("getWeights", "ExprsModel",
+          function(object, ...){
+
+            if(class(object@mach) != "cv.glmnet"){
+
+              stop("This method only works for 'cv.glmnet' objects.")
+            }
+
+            df <- t(as.matrix(glmnet::coef.cv.glmnet(object@mach, ...)))
+            df <- data.frame(df)
+            colnames(df)[1] <- "Intercept"
+            return(df)
+          }
+)
+
+#' @describeIn ExprsPipeline Method to return LASSO weights.
+#'
+#' @param ... For \code{getWeights}, optional arguments passed to
+#'  \code{glmnet::coef.cv.glmnet}.
+#'
+#' @export
+setMethod("getWeights", "ExprsPipeline",
+          function(object, index, ...){
+
+            if(!missing(index)){
+
+              getWeights(object@machs[[index]])
+
+            }else{
+
+              weights <- lapply(object@machs, getWeights)
+              weights.df <- do.call(plyr::rbind.fill, weights)
+              final <- cbind(object@summary, weights.df)
+              return(final)
+            }
+          }
+)
+
+#' @describeIn ExprsEnsemble Method to return LASSO weights.
+#'
+#' @param ... For \code{getWeights}, optional arguments passed to
+#'  \code{glmnet::coef.cv.glmnet}.
+#'
+#' @export
+setMethod("getWeights", "ExprsEnsemble",
+          function(object, index, ...){
+
+            if(!missing(index)){
+
+              getWeights(object@machs[[index]])
+
+            }else{
+
+              weights <- lapply(object@machs, getWeights)
+              weights.df <- do.call(plyr::rbind.fill, weights)
+              return(weights.df)
+            }
+          }
+)

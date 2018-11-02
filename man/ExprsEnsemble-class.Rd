@@ -5,18 +5,24 @@
 \alias{ExprsEnsemble-class}
 \alias{show,ExprsEnsemble-method}
 \alias{getFeatures,ExprsEnsemble-method}
+\alias{getWeights,ExprsEnsemble-method}
 \title{An S4 class to store multiple models}
 \usage{
 \S4method{show}{ExprsEnsemble}(object)
 
 \S4method{getFeatures}{ExprsEnsemble}(object, index)
+
+\S4method{getWeights}{ExprsEnsemble}(object, index, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline},
 or \code{ExprsEnsemble} object.}
 
-\item{index}{A numeric scalar. The i-th model from which to retrieve features.
-If missing, \code{getFeatures} will tabulate features across all models.}
+\item{index}{A numeric scalar. The i-th model from which to retrieve features or weights.
+If missing, function will tabulate features or weights across all models.}
+
+\item{...}{For \code{getWeights}, optional arguments passed to
+\code{glmnet::coef.cv.glmnet}.}
 }
 \description{
 An S4 class to store multiple models
@@ -26,6 +32,8 @@ An S4 class to store multiple models
 \item \code{show}: Method to show \code{ExprsEnsemble} object.
 
 \item \code{getFeatures}: Method to return features within an \code{ExprsEnsemble} model.
+
+\item \code{getWeights}: Method to return LASSO weights.
 }}
 
 \section{Slots}{
