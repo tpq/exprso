@@ -573,6 +573,7 @@ fsBalance <- function(object, top = 0, keep = 0, sbp.how = "sbp.fromPBA",
         sbp <- do.call(get(sbp.how, asNamespace("balance")), list(data, ...))
         sbp <- balance::sbp.subset(sbp, ternary, ratios)
         balances <- balance::balance.fromSBP(data, sbp)
+        colnames(balances) <- make.names(colnames(balances))
         class(sbp) <- "SBP"
 
         list(t(balances),
