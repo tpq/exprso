@@ -541,3 +541,41 @@ fsPropd <- function(object, top = 0, keep = 0, modRatios = FALSE, ...){ # args t
         }, keep, ...)
   }
 }
+
+#' Convert Features into Balances
+#'
+#' \code{fsBalance} converts features into balances.
+#'
+#' @inheritParams fs.
+#' @param sbp.how A character string. The method used to build
+#'  the serial binary partition matrix of balances. Any
+#'  \code{balance::sbp.from*} function will work.
+#' @param ternary A boolean. Toggles whether to return balances
+#'  representing three components. Argument passed to
+#'  \code{balance::sbp.subset}. Set \code{ternary = FALSE} and
+#'  \code{ratios = FALSE} to skip subset.
+#' @param ratios A boolean. Toggles whether to return balances
+#'  representing two components. Argument passed to
+#'  \code{balance::sbp.subset}. Set \code{ternary = FALSE} and
+#'  \code{ratios = FALSE} to skip subset.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsBalance <- function(object, top = 0, keep = 0, sbp.how = "sbp.fromPBA",
+                      ternary = FALSE, ratios = FALSE, ...){ # args to sbp.how
+
+  packageCheck("balance")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, sbp.how, ternary, ratios, ...){
+
+        sbp <- do.call(get(sbp.how, asNamespace("balance")), list(data, ...))
+        sbp <- balance::sbp.subset(sbp, ternary, ratios)
+        balances <- balance::balance.fromSBP(data, sbp)
+        class(sbp) <- "SBP"
+
+        list(t(balances),
+             sbp)
+      }, keep, sbp.how, ternary, ratios, ...)
+}
