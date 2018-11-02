@@ -41,6 +41,9 @@ modHistory <- function(object, reference){
       data <- data.frame(t(object@exprs[indexedFeatures, , drop = FALSE]))
       if("prcomp" %in% class(indexedModel)){
         exprs.i <- t(predict(indexedModel, data))
+      }else if("SBP" %in% class(indexedModel)){
+        packageCheck("balance")
+        exprs.i <- t(balance::balance.fromSBP(data, indexedModel))
       }else{
         stop("Reduction model not recognized.")
       }
