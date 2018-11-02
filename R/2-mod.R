@@ -44,6 +44,7 @@ modHistory <- function(object, reference){
       }else if("SBP" %in% class(indexedModel)){
         packageCheck("balance")
         exprs.i <- t(balance::balance.fromSBP(data, indexedModel))
+        colnames(exprs.i) <- rownames(data)
       }else{
         stop("Reduction model not recognized.")
       }
