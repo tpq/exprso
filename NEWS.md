@@ -1,3 +1,13 @@
+## exprso 0.4.4
+---------------------
+* Update `mod` modules
+    * Extend `modHistory` to support balance deployment
+* Update `fs` modules
+    * New `fsBalance` to convert features into balances
+    * Uses `sbp.subset` if `ternary` or `ratios` argument is provided
+* Package maintenance
+    * Turn README into FAQ vignette
+
 ## exprso 0.4.3
 ---------------------
 * New `getWeights` method

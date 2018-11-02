@@ -1,17 +1,13 @@
 ---
-title: "Use Disclaimer, Please Read"
+title: "Frequently Asked Questions"
 author: "Thomas Quinn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{3. Use Disclaimer, Please Read}
+  %\VignetteIndexEntry{Frequently Asked Questions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-## Disclaimer
-
-This is a stable release of a work-in-progress under active development. We make no guarantees about the quality of this software. To the best of our knowledge, we have followed the machine learning "best practices" when developing this software, but if you know better than us, please let us know on [GitHub](http://www.github.com/tpq/exprso/issues).
 
 ## Warnings against improper use
 

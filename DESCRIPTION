@@ -1,6 +1,6 @@
 Package: exprso
 Title: Rapid Deployment of Machine Learning Algorithms
-Version: 0.4.3
+Version: 0.4.4
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
@@ -38,6 +38,7 @@ Depends:
     R (>= 3.2.2),
     kernlab
 Suggests:
+    balance,
     Biobase,
     edgeR,
     GEOquery,
