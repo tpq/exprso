@@ -138,6 +138,27 @@ modSample <- function(object, size = 0){
   return(object)
 }
 
+#' Permute Features in Data
+#'
+#' \code{modPermute} randomly samples each feature in the data
+#'  without replacement. This method helps establish a null
+#'  model for the purpose of testing the significance of
+#'  observed prediction error estimates.
+#'
+#' @inheritParams modFilter
+#' @return A pre-processed \code{ExprsArray} object.
+#' @export
+modPermute <- function(object){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  oldnames <- colnames(object@exprs)
+  object@exprs <- t(apply(object@exprs, 1, sample))
+  colnames(object@exprs) <- oldnames
+  return(object)
+}
+
 #' Select Features from Data
 #'
 #' \code{modSelect} selects specific features from a data set. Unlike

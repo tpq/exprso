@@ -16,6 +16,8 @@ The \code{exprso} package includes these data process modules:
 
 - \code{\link{modSample}}
 
+- \code{\link{modPermute}}
+
 - \code{\link{modInclude}}
 
 - \code{\link{modNormalize}}

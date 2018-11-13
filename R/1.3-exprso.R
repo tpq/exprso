@@ -113,6 +113,8 @@ exprso <- function(x, y, label = 1, switch = FALSE){
 #'
 #' - \code{\link{modSample}}
 #'
+#' - \code{\link{modPermute}}
+#'
 #' - \code{\link{modInclude}}
 #'
 #' - \code{\link{modNormalize}}
