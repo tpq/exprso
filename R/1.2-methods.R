@@ -584,7 +584,7 @@ setMethod("getWeights", "ExprsModel",
               catch <- randomForest::importance(object@mach, ...)
               how <- colnames(catch)
               df <- t(catch[,1])
-              df <- data.frame("how" = how, df)
+              df <- data.frame("importance" = how, df)
               return(df)
 
             }else{
