@@ -572,15 +572,25 @@ setGeneric("getWeights",
 setMethod("getWeights", "ExprsModel",
           function(object, ...){
 
-            if(class(object@mach) != "cv.glmnet"){
+            if("cv.glmnet" %in% class(object@mach)){
 
-              stop("This method only works for 'cv.glmnet' objects.")
+              df <- t(as.matrix(glmnet::coef.cv.glmnet(object@mach, ...)))
+              df <- data.frame(df)
+              colnames(df)[1] <- "Intercept"
+              return(df)
+
+            }else if("randomForest" %in% class(object@mach)){
+
+              catch <- randomForest::importance(object@mach, ...)
+              how <- colnames(catch)
+              df <- t(catch[,1])
+              df <- data.frame("how" = how, df)
+              return(df)
+
+            }else{
+
+              stop("This method only works for 'cv.glmnet' or 'randomForest' objects.")
             }
-
-            df <- t(as.matrix(glmnet::coef.cv.glmnet(object@mach, ...)))
-            df <- data.frame(df)
-            colnames(df)[1] <- "Intercept"
-            return(df)
           }
 )
 
