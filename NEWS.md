@@ -1,3 +1,10 @@
+## exprso 0.4.6
+---------------------
+* Update `mod` modules
+    * New `modPermute` will permute predictor variables
+* Update `getWeights` method
+    * Extend support to `randomForest` objects
+
 ## exprso 0.4.5
 ---------------------
 * Update `fs` modules
