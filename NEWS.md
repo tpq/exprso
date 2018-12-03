@@ -1,3 +1,8 @@
+## exprso 0.4.7
+---------------------
+* Update `exprso` import
+    * Correctly apply `make.names` to feature names
+
 ## exprso 0.4.6
 ---------------------
 * Update `mod` modules

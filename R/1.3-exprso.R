@@ -59,7 +59,7 @@ exprso <- function(x, y, label = 1, switch = FALSE){
 
   # Prepare ExprsArray object using x and y input
   colnames(array@exprs) <- paste0("x", 1:ncol(array@exprs))
-  colnames(array@exprs) <- make.names(colnames(array@exprs), unique = TRUE)
+  rownames(array@exprs) <- make.names(rownames(array@exprs), unique = TRUE)
   rownames(array@annot) <- colnames(array@exprs)
   labels <- array@annot[,label]
 
