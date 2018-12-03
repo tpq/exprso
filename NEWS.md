@@ -2,6 +2,8 @@
 ---------------------
 * Update `exprso` import
     * Correctly apply `make.names` to feature names
+* Improvements to `calcStats`
+    * Add correlation and R-squared measures
 
 ## exprso 0.4.6
 ---------------------

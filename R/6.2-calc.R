@@ -132,7 +132,9 @@ setMethod("calcStats", "RegrsPredict",
             rmse <- sqrt(mse)
             mae <- mean(abs(object@pred - object@actual))
             acc <- 1 - mse / (1 + mse) # default for pl calls
-            df <- data.frame(acc, mse, rmse, mae)
+            cor <- stats::cor(object@pred, object@actual, method = "pearson")
+            R2 <- cor^2
+            df <- data.frame(acc, mse, rmse, mae, cor, R2)
 
             if(verbose){
               cat("Total accuracy of RegrsModel:", acc, "\n")
