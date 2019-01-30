@@ -1,3 +1,8 @@
+## exprso 0.4.8
+---------------------
+* Update `mod` modules
+    * Fix a `modCLR` bug
+
 ## exprso 0.4.7
 ---------------------
 * Update `exprso` import

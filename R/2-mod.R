@@ -258,7 +258,7 @@ modCLR <- function(object){
              "This function is applied to the results of ?exprso.")
 
   logX <- log(object@exprs)
-  object@exprs <- apply(logX, 2, function(x) x / mean(x))
+  object@exprs <- apply(logX, 2, function(x) x - mean(x))
   return(object)
 }
 
