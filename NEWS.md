@@ -1,6 +1,7 @@
 ## exprso 0.4.9
 ---------------------
 * Update `build` modules
+    * Set default LASSO argument `intercept = FALSE`
     * Set default SVM argument `kernel = "linear"`
 
 ## exprso 0.4.8
