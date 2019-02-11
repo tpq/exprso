@@ -3,6 +3,8 @@
 * Update `build` modules
     * Set default LASSO argument `intercept = FALSE`
     * Set default SVM argument `kernel = "linear"`
+* Update `calcStats`
+    * Use R-squared for `RegrsPredict` accuracy
 
 ## exprso 0.4.8
 ---------------------

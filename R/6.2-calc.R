@@ -13,8 +13,8 @@
 #'  optimize sensitivity and specificity. This threshold is automatically chosen as the
 #'  point along the ROC which minimizes the Euclidean distance from (0, 1).
 #'
-#' For regression, accuracy is defined as (1 - MSE / (1 + MSE)). This allows MSE to
-#'  range from 0 to 1 for use with \code{\link{pl}} and \code{\link{pipe}}. Note that
+#' For regression, accuracy is defined the R-squared of the fitted regression. This
+#'  ranges from 0 to 1 for use with \code{\link{pl}} and \code{\link{pipe}}. Note that
 #'  the \code{aucSkip} and \code{plotSkip} arguments are ignored for regression.
 #'
 #' @param object An \code{ExprsPredict} or \code{RegrsPredict} object.
@@ -131,9 +131,9 @@ setMethod("calcStats", "RegrsPredict",
             mse <- mean((object@pred - object@actual)^2)
             rmse <- sqrt(mse)
             mae <- mean(abs(object@pred - object@actual))
-            acc <- 1 - mse / (1 + mse) # default for pl calls
             cor <- stats::cor(object@pred, object@actual, method = "pearson")
             R2 <- cor^2
+            acc <- R2
             df <- data.frame(acc, mse, rmse, mae, cor, R2)
 
             if(verbose){

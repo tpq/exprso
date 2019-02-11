@@ -45,8 +45,8 @@ For classification, if the argument \code{aucSkip = FALSE} AND the \code{ExprsAr
  optimize sensitivity and specificity. This threshold is automatically chosen as the
  point along the ROC which minimizes the Euclidean distance from (0, 1).
 
-For regression, accuracy is defined as (1 - MSE / (1 + MSE)). This allows MSE to
- range from 0 to 1 for use with \code{\link{pl}} and \code{\link{pipe}}. Note that
+For regression, accuracy is defined the R-squared of the fitted regression. This
+ ranges from 0 to 1 for use with \code{\link{pl}} and \code{\link{pipe}}. Note that
  the \code{aucSkip} and \code{plotSkip} arguments are ignored for regression.
 }
 \section{Methods (by class)}{
