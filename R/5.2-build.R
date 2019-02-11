@@ -176,6 +176,7 @@ buildSVM <- function(object, top = 0, ...){ # args to svm
 
            # Perform SVM via ~ method (permits plotting)
            args <- getArgs(...)
+           args <- defaultArg("kernel", "linear", args)
            args <- forceArg("probability", TRUE, args)
            args <- forceArg("cross", 0, args)
            df <- data.frame(data, "defineCase" = labels)

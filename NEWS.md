@@ -1,3 +1,8 @@
+## exprso 0.4.9
+---------------------
+* Update `build` modules
+    * Set default SVM argument `kernel = "linear"`
+
 ## exprso 0.4.8
 ---------------------
 * Update `mod` modules
