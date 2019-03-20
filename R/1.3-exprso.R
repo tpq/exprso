@@ -146,6 +146,8 @@ NULL
 #'
 #' - \code{\link{splitBalanced}}
 #'
+#' - \code{\link{splitBoost}}
+#'
 #' - \code{\link{splitBy}}
 NULL
 
@@ -171,6 +173,10 @@ NULL
 #'
 #' - \code{\link{fsPrcomp}}
 #'
+#' - \code{\link{fsPCA}}
+#'
+#' - \code{\link{fsRDA}}
+#'
 #' - \code{\link{fsEbayes}}
 #'
 #' - \code{\link{fsEdger}}
@@ -181,7 +187,9 @@ NULL
 #'
 #' - \code{\link{fsRankProd}}
 #'
-#' - \code{\link{fsPropd}}
+#' - \code{\link{fsBalance}}
+#'
+#' - \code{\link{fsSelbal}}
 #'
 #' @details
 #' Considering the high-dimensionality of many datasets, it is prudent and

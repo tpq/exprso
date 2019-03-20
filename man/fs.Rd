@@ -20,6 +20,10 @@ The \code{exprso} package includes these feature selection modules:
 
 - \code{\link{fsPrcomp}}
 
+- \code{\link{fsPCA}}
+
+- \code{\link{fsRDA}}
+
 - \code{\link{fsEbayes}}
 
 - \code{\link{fsEdger}}
@@ -30,7 +34,9 @@ The \code{exprso} package includes these feature selection modules:
 
 - \code{\link{fsRankProd}}
 
-- \code{\link{fsPropd}}
+- \code{\link{fsBalance}}
+
+- \code{\link{fsSelbal}}
 }
 \details{
 Considering the high-dimensionality of many datasets, it is prudent and
