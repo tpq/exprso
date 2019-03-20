@@ -1,5 +1,5 @@
 library(exprso)
-context("split")
+suppressWarnings(RNGversion("3.5.0"))
 
 ###########################################################
 ### Test ExprsBinary and ExprsMulti imports

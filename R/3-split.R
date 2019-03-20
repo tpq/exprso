@@ -197,9 +197,48 @@ splitBalanced <- function(object, percent.include = 67, ...){
 
   sets1 <- splitStratify(object, percent.include = percent.include, ...)
   sets2 <- splitStratify(sets1[[2]], percent.include = 100, ...)
+
   list(
     "array.train" = sets1$array.train,
     "array.valid" = sets2$array.train
+  )
+}
+
+#' Sample by Boosting
+#'
+#' \code{splitBoost} builds a training and validation set by randomly up-sampling
+#'  (with replacement) the smaller of two classes. This results in an equal
+#'  representation of each class in the training set. For example, given 30 cases and
+#'  3 controls, a 2/3 split would place 20 cases and 20 controls in the training set.
+#'  Of these 20 controls, only 2 are unique. The test set is not boosted. In this
+#'  example, the test set would contain 10 cases and 1 control.
+#'
+#' @param object An \code{ExprsArray} object to split.
+#' @param percent.include Specifies the percent of the total number
+#'  of subjects to include in the training set (i.e., based on the larger group).
+#'  Subjects from the smaller group are up-sampled to match this number.
+#' @export
+splitBoost <- function(object, percent.include = 67){
+
+  classCheck(object, c("ExprsBinary"),
+             "This feature selection method only works for binary classification tasks.")
+
+  controls <- splitStratify(object[object@annot$defineCase == "Control",])
+  cases <- splitStratify(object[object@annot$defineCase == "Case",])
+
+  if(nsamps(trainingSet(controls)) > nsamps(trainingSet(cases))){
+    bigger <- trainingSet(controls)
+    smaller <- trainingSet(cases)
+  }else{
+    smaller <- trainingSet(controls)
+    bigger <- trainingSet(cases)
+  }
+
+  boost <- sample(sample.int(nsamps(smaller), replace = TRUE, size = nsamps(bigger)))
+
+  return(list(
+    "array.train" = conjoin(smaller[boost,], bigger),
+    "array.valid" = conjoin(testSet(controls), testSet(cases)))
   )
 }
 
