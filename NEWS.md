@@ -1,3 +1,16 @@
+## exprso 0.5.0
+---------------------
+* Add helper functions
+    * New `nfeats` returns number of features in object
+    * New `nsamps` returns number of samples in object
+* Add `split` modules
+    * New `splitBoost` up-samples the smaller of two classes
+* Add `fs` modules
+    * New `fsSelbal` performs balance selection using `selbal::selbal`
+    * New `fsRDA` performs dimension reduction using `vegan::rda`
+    * Remove `fsPropd` module
+* Add `suppressWarnings(RNGversion("3.5.0"))` to tests
+
 ## exprso 0.4.9
 ---------------------
 * Update `build` modules
