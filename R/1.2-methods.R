@@ -478,6 +478,32 @@ setMethod("show", "RegrsPredict",
 ###########################################################
 ### Tidy wrappers
 
+#' Get Number of Features
+#'
+#' This function returns the number of features in an \code{ExprsArray} object.
+#' @param object An \code{ExprsArray} object.
+#' @export
+nfeats <- function(object){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  nrow(object@exprs)
+}
+
+#' Get Number of Samples
+#'
+#' This function returns the number of samples in an \code{ExprsArray} object.
+#' @param object An \code{ExprsArray} object.
+#' @export
+nsamps <- function(object){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  nrow(object@annot)
+}
+
 #' Extract Training Set
 #'
 #' This function extracts the training set from the result of a
