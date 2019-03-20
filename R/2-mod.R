@@ -45,6 +45,10 @@ modHistory <- function(object, reference){
         packageCheck("balance")
         exprs.i <- t(balance::balance.fromSBP(data, indexedModel))
         colnames(exprs.i) <- rownames(data)
+      }else if("rda" %in% class(indexedModel)){
+        packageCheck("vegan")
+        exprs.i <- t(predict(indexedModel, data, type = "wa"))
+        colnames(exprs.i) <- rownames(data)
       }else{
         stop("Reduction model not recognized.")
       }
