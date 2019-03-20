@@ -311,6 +311,48 @@ fsPrcomp <- function(object, top = 0, keep = 0, ...){ # args to prcomp
       }, keep, ...)
 }
 
+#' Reduce Dimensions by PCA
+#'
+#' \code{fsPCA} reduces dimensions using the \code{prcomp} function.
+#'  The reduction model is saved and deployed automatically on any new
+#'  data during model validation.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsPCA <- function(object, top = 0, keep = 0, ...){ # args to prcomp
+
+  fsPrcomp(object, top = top, keep = keep, ...)
+}
+
+#' Reduce Dimensions by RDA
+#'
+#' \code{fsRDA} reduces dimensions using the \code{rda} function
+#'  from the \code{vegan} package. The reduction model is saved and
+#'  deployed automatically on any new data during model validation.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsRDA <- function(object, top = 0, keep = 0, ...){ # args to rda
+
+  packageCheck("vegan")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
+
+        # ATTENTION: We want dependent variables as columns
+        # NOTE: as.data.frame will not rename columns
+        reductionModel <- vegan::rda(data.frame(data), ...)
+
+        # ATTENTION: predict(reductionModel, data, type = "wa") equals $CA$u
+        list(t(reductionModel$CA$u),
+             reductionModel)
+      }, keep, ...)
+}
+
 #' Select Features by Recursive Feature Elimination
 #'
 #' \code{fsPathClassRFE} selects features using the \code{fit.rfe} function
@@ -478,70 +520,6 @@ fsRankProd <- function(object, top = 0, keep = 0, ...){ # args to RankProducts
       }, keep, ...)
 }
 
-#' Select Features by Differential Proportionality Analysis
-#'
-#' \code{fsPropd} selects features using the \code{propd} function
-#'  from the \code{propr} package.
-#'
-#' @inheritParams fs.
-#' @param modRatios A logical scalar. Toggles whether to compute theta from
-#'  the feature ratios as provided. Set \code{modRatios = TRUE} if data were
-#'  recasted by a prior \code{modRatios} call. If \code{TRUE}, the \code{alpha}
-#'  and \code{weighted} arguments will not work.
-#' @return Returns an \code{ExprsArray} object.
-#' @export
-fsPropd <- function(object, top = 0, keep = 0, modRatios = FALSE, ...){ # args to propd
-
-  packageCheck("propr")
-  classCheck(object, "ExprsBinary",
-             "This feature selection method only works for binary classification tasks.")
-
-  if(modRatios){
-
-    fs.(object, top,
-        uniqueFx = function(data, outcome, top, ...){
-
-          # Set up groups and sizes
-          grp1 <- as.character(outcome) == "Control"
-          p1 <- sum(grp1) - 1
-          grp2 <- !grp1
-          p2 <- sum(grp2) - 1
-          p <- p1 + p2 + 1
-
-          # Calculate theta
-          thetas <- apply(data, 2, function(x){
-            (p1 * stats::var(x[grp1]) + p2 * stats::var(x[grp2])) / (p * stats::var(x))
-          })
-
-          # Sort results
-          top <- names(thetas[order(thetas)])
-          top
-        }, keep, ...)
-
-  }else{
-
-    fs.(object, top,
-        uniqueFx = function(data, outcome, top, ...){
-
-          # Order pairs by theta
-          pd <- suppressMessages(propr::propd(data, outcome))
-          pd@results <- pd@results[order(pd@results$theta),]
-
-          # Index features by when they first appear
-          nrows <- nrow(pd@results)
-          index <- floor(seq(1, nrows+.5, .5))
-          odds <- as.logical(1:(nrows*2) %% 2)
-          index[odds] <- index[odds] + nrows
-          join <- c(pd@results$Partner, pd@results$Pair)
-          join <- join[index]
-
-          # Rank features by first appearance
-          rankedfeats <- unique(join)
-          top[rankedfeats]
-        }, keep, ...)
-  }
-}
-
 #' Convert Features into Balances
 #'
 #' \code{fsBalance} converts features into balances.
@@ -587,4 +565,83 @@ fsBalance <- function(object, top = 0, keep = 0, sbp.how = "sbp.fromPBA",
         list(balances,
              sbp)
       }, keep, sbp.how, ternary, ratios, ...)
+}
+
+#' Select a Discriminative Balance
+#'
+#' \code{fsSelbal} selects features using the \code{selbal} function
+#'  from the \code{selbal} package.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsSelbal <- function(object, top = 0, keep = 0, ...){ # args to selbal
+
+  packageCheck("balance")
+  packageCheck("selbal")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  if(class(object) == "RegrsArray"){
+
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
+
+          args <- as.list(substitute(list(...)))[-1]
+          args <- append(list("x" = data,
+                              "y" = outcome),
+                         args)
+
+          # Run selbal on data
+          res <- do.call(selbal::selbal, args)
+
+          # Build an SBP from selbal object
+          n <- as.character(res[[6]]$NUMERATOR)
+          d <- as.character(res[[6]]$DENOMINATOR)
+          sbp <- matrix(0, ncol(data), 1)
+          rownames(sbp) <- colnames(data)
+          sbp[n[n!="-"],] <- 1
+          sbp[d[d!="-"],] <- -1
+          colnames(sbp) <- "z1"
+          class(sbp) <- "SBP"
+
+          # Compute balances
+          balances <- t(balance::balance.fromSBP(data, sbp))
+          colnames(balances) <- rownames(data)
+
+          list(balances,
+               sbp)
+        }, keep, ...)
+
+  }else if(class(object) %in% c("ExprsBinary", "ExprsMulti")){
+
+    fs.(object, top,
+        uniqueFx = function(data, outcome, top, ...){
+
+          args <- as.list(substitute(list(...)))[-1]
+          args <- append(list("x" = data,
+                              "y" = factor(outcome, levels = c("Control", "Case"))),
+                         args)
+
+          # Run selbal on data
+          res <- do.call(selbal::selbal, args)
+
+          # Build an SBP from selbal object
+          n <- as.character(res[[6]]$NUMERATOR)
+          d <- as.character(res[[6]]$DENOMINATOR)
+          sbp <- matrix(0, ncol(data), 1)
+          rownames(sbp) <- colnames(data)
+          sbp[n[n!="-"],] <- 1
+          sbp[d[d!="-"],] <- -1
+          colnames(sbp) <- "z1"
+          class(sbp) <- "SBP"
+
+          # Compute balances
+          balances <- t(balance::balance.fromSBP(data, sbp))
+          colnames(balances) <- rownames(data)
+
+          list(balances,
+               sbp)
+        }, keep, ...)
+  }
 }
