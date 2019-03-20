@@ -1,5 +1,5 @@
 library(exprso)
-context("plGridMulti")
+suppressWarnings(RNGversion("3.5.0"))
 
 ###########################################################
 ### Test plGridMulti

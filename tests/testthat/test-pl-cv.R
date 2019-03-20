@@ -1,6 +1,5 @@
 library(exprso)
-context("plMonteCarlo")
-context("plNested")
+suppressWarnings(RNGversion("3.5.0"))
 
 ###########################################################
 ### Check plMonteCarlo

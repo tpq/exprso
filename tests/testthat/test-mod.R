@@ -1,6 +1,6 @@
 library(exprso)
 library(magrittr)
-context("mod")
+suppressWarnings(RNGversion("3.5.0"))
 
 ###########################################################
 ### Check modSwap, modSubset, and modCluster

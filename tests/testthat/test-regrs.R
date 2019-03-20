@@ -1,4 +1,6 @@
 library(exprso)
+suppressWarnings(RNGversion("3.5.0"))
+
 o <- exprso(iris[,1:3], iris[,4])
 set.seed(1)
 arrays <- splitSample(o)

@@ -1,5 +1,5 @@
 library(exprso)
-context("ens")
+suppressWarnings(RNGversion("3.5.0"))
 
 ###########################################################
 ### Check plMonteCarlo

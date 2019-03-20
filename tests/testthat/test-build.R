@@ -1,5 +1,5 @@
 library(exprso)
-context("build")
+suppressWarnings(RNGversion("3.5.0"))
 
 ###########################################################
 ### Build and predict ExprsMachine objects

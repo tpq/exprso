@@ -1,6 +1,5 @@
 library(exprso)
-context("plGrid")
-context("plCV")
+suppressWarnings(RNGversion("3.5.0"))
 
 ###########################################################
 ### Check plGrid
