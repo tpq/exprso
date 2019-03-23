@@ -183,13 +183,9 @@ NULL
 #'
 #' - \code{\link{fsMrmre}}
 #'
-#' - \code{\link{fsPathClassRFE}}
-#'
 #' - \code{\link{fsRankProd}}
 #'
 #' - \code{\link{fsBalance}}
-#'
-#' - \code{\link{fsSelbal}}
 #'
 #' @details
 #' Considering the high-dimensionality of many datasets, it is prudent and

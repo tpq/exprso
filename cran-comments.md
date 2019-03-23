@@ -5,15 +5,11 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 2 notes
+0 errors | 0 warnings | 1 note
 
 * Possibly mis-spelled words in DESCRIPTION:
 
 I have reviewed the DESCRIPTION and attest it does not contain any mis-spellings.
-
-* Suggests or Enhances not in mainstream repositories: pathClass, selbal
-
-pathClass remains supported for backwards compatability, while selbal is supported in anticipation of a future official release.
 
 ## Reverse dependencies
 

@@ -48,11 +48,11 @@ pred <- trainingSet(splitSets) %>%
   calcStats
 ```
 
-Piping can expedite ensemble classifier construction as well. Here, we use the `%>%` function in conjunction with `plMonteCarlo` to (a) split the *training set* across 10 bootstraps, (b) perform recursive feature elimination on each *training subset*, (c) construct an LDA classifier, and (d) deploy the classifier on an *internal validation set*. Then, we select the best three performing classifiers, regardless of the bootstrap origin, by passing the results through `pipeUnboot` and `pipeFilter` (see `?pipeUnboot` and `?pipeFilter` to learn more about how the "boot" column changes `pipeFilter` behavior). Last, we build a classifier ensemble and deploy it on the *test set*. For code clarity, we define the argument handler functions `ctrlSplitSet`, `ctrlFeatureSelect`, and `ctrlGridSearch` outside of the pipe cascade.
+Piping can expedite ensemble classifier construction as well. Here, we use the `%>%` function in conjunction with `plMonteCarlo` to (a) split the *training set* across 10 bootstraps, (b) perform a feature selection on each *training subset*, (c) construct an LDA classifier, and (d) deploy the classifier on an *internal validation set*. Then, we select the best three performing classifiers, regardless of the bootstrap origin, by passing the results through `pipeUnboot` and `pipeFilter` (see `?pipeUnboot` and `?pipeFilter` to learn more about how the "boot" column changes `pipeFilter` behavior). Last, we build a classifier ensemble and deploy it on the *test set*. For code clarity, we define the argument handler functions `ctrlSplitSet`, `ctrlFeatureSelect`, and `ctrlGridSearch` outside of the pipe cascade.
 
 ```{r, results = "hide", eval = FALSE}
 ss <- ctrlSplitSet(func = "splitSample", percent.include = 67, replace = TRUE)
-fs <- ctrlFeatureSelect(func = "fsPathClassRFE", top = 0)
+fs <- ctrlFeatureSelect(func = "fsStats", top = 0)
 gs <- ctrlGridSearch(func = "plGrid", top = 0, how = "buildLDA")
 
 pred <- trainingSet(splitSets) %>%

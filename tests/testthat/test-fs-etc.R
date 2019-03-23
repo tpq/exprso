@@ -35,11 +35,6 @@ if(requireNamespace("limma", quietly = TRUE) &
       rownames(fsMrmre(array, top = 0)@exprs),
       c("feat4", "feat2", "feat1", "feat3")
     )
-
-    expect_equal(
-      rownames(fsPathClassRFE(array, top = 0)@exprs),
-      c("feat2", "feat4")
-    )
   })
 }
 

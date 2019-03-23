@@ -1,3 +1,7 @@
+## exprso 0.5.1
+---------------------
+* Remove `fsPathClassRFE` and `fsSelbal`
+
 ## exprso 0.5.0
 ---------------------
 * Add helper functions
