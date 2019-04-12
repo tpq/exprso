@@ -3,9 +3,7 @@ context("fs")
 
 if(requireNamespace("limma", quietly = TRUE) &
    requireNamespace("edgeR", quietly = TRUE) &
-   requireNamespace("mRMRe", quietly = TRUE) &
-   requireNamespace("pathClass", quietly = TRUE) &
-   requireNamespace("propr", quietly = TRUE)){
+   requireNamespace("mRMRe", quietly = TRUE)){
 
   load(file.path("data.RData"))
 

@@ -26,6 +26,37 @@ test_that("top argument to fs ExprsBinary method works", {
   )
 })
 
+test_that("@preFilter sorts features in correct order", {
+
+  data(iris)
+  y <- iris[1:100,5]
+  e <- exprso(iris[1:100, 1:4], y)
+
+  ttest <- names(
+    sort(
+      apply(iris[1:100,1:4], 2, function(x)
+        t.test(x[y == "setosa"], x[y == "versicolor"])$p.value)
+    )
+  )
+
+  expect_equal(
+    fsStats(e, how = "t.test")@preFilter[[1]],
+    ttest
+  )
+
+  wilcoxtest <- names(
+    sort(
+      apply(iris[1:100,1:4], 2, function(x)
+        wilcox.test(x[y == "setosa"], x[y == "versicolor"])$p.value)
+    )
+  )
+
+  expect_equal(
+    fsStats(e, how = "wilcox.test")@preFilter[[1]],
+    wilcoxtest
+  )
+})
+
 test_that("fsANOVA matches fsStats for ExprsBinary objects", {
 
   expect_equal(

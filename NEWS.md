@@ -1,3 +1,13 @@
+## exprso 0.5.2
+---------------------
+* Update `fs` modules
+    * New `colBy` argument for `fsRDA` triggers constrained RDA
+    * Note that `fsRDA` always returns the unconstrained part of an RDA
+    * Remove `...` for `fsRDA`
+* Update `mod` modules
+    * Note that `modHistory` always returns the unconstrained part of an RDA
+    * This allows `colBy` to act as the conditioning matrix
+
 ## exprso 0.5.1
 ---------------------
 * Remove `fsPathClassRFE` and `fsSelbal`

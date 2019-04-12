@@ -121,12 +121,12 @@ fsInclude <- function(object, top = 0, keep = 0, include){
           stop("Uh oh! 'include' requires features specified by name.")
         }
 
-        if(!all(include %in% colnames(data))){
+        if(!all(include %in% top)){
           stop("Uh oh! Not all 'include' found in data.")
         }
 
-        index <- colnames(data) %in% include
-        c(include, colnames(data)[!index])
+        index <- top %in% include
+        c(include, top[!index])
       }, keep, include)
 }
 
@@ -331,26 +331,44 @@ fsPCA <- function(object, top = 0, keep = 0, ...){ # args to prcomp
 #'  from the \code{vegan} package. The reduction model is saved and
 #'  deployed automatically on any new data during model validation.
 #'
+#' When \code{colBy} is provided, this function uses the \code{colBy}
+#'  columns in \code{@@annot} as the constraining matrix. When deploying
+#'  the RDA model, \code{\link{modHistory}} will compute the unconstrained
+#'  scores. This will partial out the contribution of \code{colBy},
+#'  allowing \code{colBy} to act as the conditioning matrix.
+#'
 #' @inheritParams fs.
+#' @param colBy A character vector. Lists the columns in \code{@@annot}
+#'  to use as the constraining matrix. Passed to \code{vegan::rda}.
+#'  Optional argument. Skip with \code{colBy = NULL}.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsRDA <- function(object, top = 0, keep = 0, ...){ # args to rda
+fsRDA <- function(object, top = 0, keep = 0, colBy = NULL){ # args to rda
 
   packageCheck("vegan")
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  fs.(object, top,
-      uniqueFx = function(data, outcome, top, ...){
+  if(is.null(colBy)){
+    Y <- NULL
+  }else{
+    Y <- object@annot[, colBy, drop = FALSE]
+  }
 
-        # ATTENTION: We want dependent variables as columns
-        # NOTE: as.data.frame will not rename columns
-        reductionModel <- vegan::rda(data.frame(data), ...)
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, Y){
+
+        # NOTE: If colBy provided, run constrained RDA
+        if(is.null(colBy)){
+          reductionModel <- vegan::rda(data.frame(data))
+        }else{
+          reductionModel <- vegan::rda(data.frame(data), Y = Y)
+        }
 
         # ATTENTION: predict(reductionModel, data, type = "wa") equals $CA$u
         list(t(reductionModel$CA$u),
              reductionModel)
-      }, keep, ...)
+      }, keep, Y)
 }
 
 #' Select Features by Moderated t-test

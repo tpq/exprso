@@ -47,7 +47,7 @@ modHistory <- function(object, reference){
         colnames(exprs.i) <- rownames(data)
       }else if("rda" %in% class(indexedModel)){
         packageCheck("vegan")
-        exprs.i <- t(predict(indexedModel, data, type = "wa"))
+        exprs.i <- t(predict(indexedModel, data, model = "CA", type = "wa"))
         colnames(exprs.i) <- rownames(data)
       }else{
         stop("Reduction model not recognized.")
