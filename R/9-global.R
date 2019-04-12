@@ -25,7 +25,7 @@ NULL
 packageCheck <- function(package){
 
   if(!requireNamespace(package, quietly = TRUE)){
-    stop("Uh oh! This propr method depends on ", package, ".")
+    stop("Uh oh! This exprso method depends on ", package, ".")
   }
 }
 
