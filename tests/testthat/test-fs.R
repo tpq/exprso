@@ -16,7 +16,7 @@ test_that("top argument to fs ExprsBinary method works", {
   )
 
   expect_equal(
-    rownames(fsInclude(fsStats(array, top = 0), include = "feat2")@exprs),
+    rownames(fsInclude(fsStats(array), include = "feat2")@exprs),
     c("feat2", "feat4", "feat1", "feat3")
   )
 
@@ -118,19 +118,6 @@ test_that("doMulti performs 1 vs. all fs", {
 
   expect_equal(
     rownames(fsStats.multi[[3]]@exprs)[4],
-    "feat3"
-  )
-})
-
-test_that("reRank does not yield egregious error", {
-
-  expect_equal(
-    reRank(fsStats.multi)[1],
-    "feat4"
-  )
-
-  expect_equal(
-    reRank(fsStats.multi)[4],
     "feat3"
   )
 })
