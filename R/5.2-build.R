@@ -28,6 +28,14 @@ build. <- function(object, top, uniqueFx, ...){
     if(class(object) != "ExprsMulti") data <- t(object@exprs[top, , drop = FALSE])
   }
 
+  # If a reduction model has never been used, there is no reason to store old history
+  # (helps to reduce RAM overhead and to improve run-time)
+  if(!is.null(object@reductionModel)){
+    if(all(unlist(lapply(object@reductionModel, is.na)))){
+      object@preFilter <- lapply(object@preFilter, function(x) 0)
+    }
+  }
+
   # Carry through and append fs history as stored in the ExprsArray object
   # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
   if(class(object) == "ExprsMulti"){
