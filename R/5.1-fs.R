@@ -13,7 +13,7 @@
 #'  indicates specifically which features by name should undergo feature selection.
 #'  Set \code{top = 0} to include all features. A numeric vector can also be used
 #'  to indicate specific features by location, similar to a character vector.
-#' @param uniqueFx A function call unique to the method.
+#' @param uniqueFx A function call unique to the method. See Details.
 #' @param keep A numeric scalar. Specifies the number of top features that should get
 #'  returned by the feature selection method. Use of \code{keep} is generally not
 #'  recommended, but can speed up analyses of large data.
@@ -27,36 +27,42 @@ fs. <- function(object, top, uniqueFx, keep, ...){
     if(length(top) == 1){
       if(top > nrow(object@exprs)) top <- 0
       if(top == 0){
-        top <- rownames(object@exprs) # keep for uniqueFx
-        data <- t(object@exprs)
+        topChar <- rownames(object@exprs) # keep for uniqueFx
       }else{
-        top <- rownames(object@exprs)[1:top]
-        data <- t(object@exprs[top, , drop = FALSE])
+        topChar <- rownames(object@exprs)[1:top] # when top is numeric scalar
       }
     }else{
-      top <- rownames(object@exprs)[top] # when top is numeric vector
-      data <- t(object@exprs[top, , drop = FALSE])
+      topChar <- rownames(object@exprs)[top] # when top is numeric vector
     }
   }else{
-    # top <- top # feature names already specified
-    data <- t(object@exprs[top, , drop = FALSE])
+    topChar <- top # else top is row names
   }
 
-  # Build data from top subset for uniqueFx
-  outcome <- object@annot$defineCase
-  final <- do.call("uniqueFx", list(data, outcome, top, ...))
-  if(keep != 0) final <- final[1:keep]
+  # Run uniqueFx on top data
+  if(!identical(top, 0)){
+    x <- t(object@exprs[topChar, , drop = FALSE])
+  }else{
+    x <- t(object@exprs) # runs faster
+  }
+  y <- object@annot$defineCase
+  final <- do.call("uniqueFx", list(data = x, outcome = y, top = topChar, ...))
 
   # Append uniqueFx results to object
   if(class(final) == "character"){ # fill @preFilter slot
+
+    if(!identical(keep, 0)) final <- final[1:keep]
     array <- new(class(object), exprs = object@exprs[final,], annot = object@annot,
                  preFilter = append(object@preFilter, list(final)),
                  reductionModel = append(object@reductionModel, list(NA)))
+
   }else if(class(final) == "list"){ # fill @reductionModel slot
+
+    if(!identical(keep, 0)) stop("Reduction models do not support the 'keep' argument.")
     array <- new(class(object), exprs = final[[1]], annot = object@annot,
-                 preFilter = append(object@preFilter, list(top)),
+                 preFilter = append(object@preFilter, list(topChar)),
                  reductionModel = append(object@reductionModel, list(final[[2]])))
-  }else{ stop("Uh oh! DEBUG ERROR: 002")}
+
+  }else{ stop("Uh oh! DEBUG ERROR: FS1")}
 
   return(array)
 }
@@ -82,7 +88,8 @@ fsSample <- function(object, top = 0, keep = 0, ...){ # args to sample
 
 #' Null Feature Selection
 #'
-#' \code{fsNULL} selects features by passing along the \code{top} argument.
+#' \code{fsNULL} does not select features. However, it will handle the
+#'  \code{top} and \code{keep} arguments if provided.
 #'
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
@@ -101,20 +108,20 @@ fsNULL <- function(object, top = 0, keep = 0, ...){ # args to NULL
 
 #' Select Features by Explicit Reference
 #'
-#' \code{fsInclude} selects features passed to the \code{include} argument.
-#'  Ranks features by the provided order.
+#' \code{fsInclude} moves features named by the \code{include} argument
+#'  to the top of the ranked features list. Otherwise, the relative order
+#'  of the features does not change.
 #'
 #' @inheritParams fs.
 #' @param include A character vector. The names of features to rank above all others.
-#'  This preserves the feature order otherwise. Argument for \code{fsInclude} only.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsInclude <- function(object, top = 0, keep = 0, include){
+fsInclude <- function(object, include){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  fs.(object, top,
+  fs.(object, top = 0,
       uniqueFx = function(data, outcome, top, include){
 
         if(class(include) != "character"){
@@ -127,13 +134,14 @@ fsInclude <- function(object, top = 0, keep = 0, include){
 
         index <- top %in% include
         c(include, top[!index])
-      }, keep, include)
+      }, keep = 0, include)
 }
 
 #' Select Features by ANOVA
 #'
 #' \code{fsANOVA} selects features using the \code{aov} function.
-#'  Note that ANOVA assumes equal variances.
+#'  Note that the ANOVA assumes equal variances, so will differ from
+#'  the \code{fsStats} t-test in the two-group setting.
 #'
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
@@ -278,20 +286,21 @@ fsCor <- function(object, top = 0, keep = 0, ...){ # args to cor
         for(i in 1:ncol(data)){
           r[i] <- cor(data[,i], outcome)
         }
-        top[rev(order(r))]
+        r <- abs(r)
+        top[order(r, decreasing = TRUE)]
       }, keep, ...)
 }
 
 #' Reduce Dimensions by PCA
 #'
-#' \code{fsPrcomp} reduces dimensions using the \code{prcomp} function.
-#'  The reduction model is saved and deployed automatically on any new
-#'  data during model validation.
+#' \code{fsPrcomp} runs a PCA using the \code{prcomp} function.
+#'  The PCA model is saved and deployed automatically by the
+#'  \code{predict} method during test set validation.
 #'
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsPrcomp <- function(object, top = 0, keep = 0, ...){ # args to prcomp
+fsPrcomp <- function(object, top = 0, ...){ # args to prcomp
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
@@ -308,34 +317,35 @@ fsPrcomp <- function(object, top = 0, keep = 0, ...){ # args to prcomp
         #  when calling modHistory
         list(t(reductionModel$x),
              reductionModel)
-      }, keep, ...)
+      }, keep = 0, ...)
 }
 
 #' Reduce Dimensions by PCA
 #'
-#' \code{fsPCA} reduces dimensions using the \code{prcomp} function.
-#'  The reduction model is saved and deployed automatically on any new
-#'  data during model validation.
+#' \code{fsPrcomp} runs a PCA using the \code{prcomp} function.
+#'  The PCA model is saved and deployed automatically by the
+#'  \code{predict} method during test set validation.
 #'
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsPCA <- function(object, top = 0, keep = 0, ...){ # args to prcomp
+fsPCA <- function(object, top = 0, ...){ # args to prcomp
 
-  fsPrcomp(object, top = top, keep = keep, ...)
+  fsPrcomp(object, top = top, ...)
 }
 
 #' Reduce Dimensions by RDA
 #'
-#' \code{fsRDA} reduces dimensions using the \code{rda} function
-#'  from the \code{vegan} package. The reduction model is saved and
-#'  deployed automatically on any new data during model validation.
+#' \code{fsRDA} runs an RDA using the \code{rda} function
+#'  from the \code{vegan} package, partialling out \code{colBy}.
+#'  The RDA model is saved and deployed automatically by the
+#'  \code{predict} method during test set validation.
 #'
-#' When \code{colBy} is provided, this function uses the \code{colBy}
-#'  columns in \code{@@annot} as the constraining matrix. When deploying
-#'  the RDA model, \code{\link{modHistory}} will compute the unconstrained
-#'  scores. This will partial out the contribution of \code{colBy},
-#'  allowing \code{colBy} to act as the conditioning matrix.
+#' When \code{colBy} is provided, it serves as the constraining matrix.
+#'  However, \code{fsRDA} always returns the unconstrained scores.
+#'  As such, \code{fsRDA} effectively partials out the contribution
+#'  of \code{colBy} to the training set, then uses this rule
+#'  to partial out the contribution to the test set too.
 #'
 #' @inheritParams fs.
 #' @param colBy A character vector. Lists the columns in \code{@@annot}
@@ -343,7 +353,7 @@ fsPCA <- function(object, top = 0, keep = 0, ...){ # args to prcomp
 #'  Optional argument. Skip with \code{colBy = NULL}.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsRDA <- function(object, top = 0, keep = 0, colBy = NULL){ # args to rda
+fsRDA <- function(object, top = 0, colBy = NULL){ # args to rda
 
   packageCheck("vegan")
   classCheck(object, "ExprsArray",
@@ -368,7 +378,7 @@ fsRDA <- function(object, top = 0, keep = 0, colBy = NULL){ # args to rda
         # ATTENTION: predict(reductionModel, data, type = "wa") equals $CA$u
         list(t(reductionModel$CA$u),
              reductionModel)
-      }, keep, Y)
+      }, keep = 0, Y)
 }
 
 #' Select Features by Moderated t-test
@@ -508,6 +518,8 @@ fsRankProd <- function(object, top = 0, keep = 0, ...){ # args to RankProducts
 #' Convert Features into Balances
 #'
 #' \code{fsBalance} converts features into balances.
+#'  The balance rule is saved and deployed automatically by the
+#'  \code{predict} method during test set validation.
 #'
 #' @inheritParams fs.
 #' @param sbp.how A character string. The method used to build
@@ -523,7 +535,7 @@ fsRankProd <- function(object, top = 0, keep = 0, ...){ # args to RankProducts
 #'  \code{ratios = FALSE} to skip subset.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsBalance <- function(object, top = 0, keep = 0, sbp.how = "sbp.fromPBA",
+fsBalance <- function(object, top = 0, sbp.how = "sbp.fromPBA",
                       ternary = FALSE, ratios = FALSE, ...){ # args to sbp.how
 
   packageCheck("balance")
@@ -549,5 +561,37 @@ fsBalance <- function(object, top = 0, keep = 0, sbp.how = "sbp.fromPBA",
 
         list(balances,
              sbp)
-      }, keep, sbp.how, ternary, ratios, ...)
+      }, keep = 0, sbp.how, ternary, ratios, ...)
+}
+
+#' Use Annotations as Features
+#'
+#' \code{fsAnnot} moves annotations named by the \code{colBy} argument
+#'  to the top of the ranked features list. Otherwise, the relative order
+#'  of the features does not change.
+#'
+#' @inheritParams fs.
+#' @param colBy A character vector. The names of annotations to rank above all others.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsAnnot <- function(object, colBy = NULL){
+
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  if("defineCase" %in% colBy) stop("You can't use the outcome as a feature!")
+
+  Y <- object@annot[, colBy, drop = FALSE]
+  for(col in 1:ncol(Y)){ Y[,col] <- as.numeric(Y[,col]) }
+
+  fs.(object, top = 0,
+      uniqueFx = function(data, outcome, top, Y){
+
+        model.output <- cbind(Y, data)
+        model.rule <- colBy
+        class(model.rule) <- "fsAnnot"
+
+        list(t(model.output),
+             model.rule)
+      }, keep = 0, Y)
 }

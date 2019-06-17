@@ -39,17 +39,31 @@ modHistory <- function(object, reference){
     }else{ # apply fs (via top) and dimension reduction
 
       data <- data.frame(t(object@exprs[indexedFeatures, , drop = FALSE]))
+
       if("prcomp" %in% class(indexedModel)){
+
         exprs.i <- t(predict(indexedModel, data))
+
       }else if("SBP" %in% class(indexedModel)){
+
         packageCheck("balance")
         exprs.i <- t(balance::balance.fromSBP(data, indexedModel))
         colnames(exprs.i) <- rownames(data)
+
       }else if("rda" %in% class(indexedModel)){
+
         packageCheck("vegan")
         exprs.i <- t(predict(indexedModel, data, model = "CA", type = "wa"))
         colnames(exprs.i) <- rownames(data)
+
+      }else if("fsAnnot" %in% class(indexedModel)){
+
+        Y <- object@annot[, indexedModel, drop = FALSE]
+        for(col in 1:ncol(Y)){ Y[,col] <- as.numeric(Y[,col]) }
+        exprs.i <- t(cbind(Y, data))
+
       }else{
+
         stop("Reduction model not recognized.")
       }
     }
