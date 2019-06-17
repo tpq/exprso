@@ -85,16 +85,6 @@ clusteredCases <- trainingSet(splitSets) %>%
             modSubset(colBy = "defineCase", include = "Control"))
 ```
 
-## Importing GSE files
-
-The NCBI GEO hosts files in GSE or GDS format, the latter being a curated version the former. These GDS data files easily convert to an `ExpressionSet` (abbreviated `eSet`) object using the `GDS2eSet` function from the GEOquery package. However, not all GSE data files have a corresponding GDS data file available. Instead, we can use the `GSE2eSet` function to build an `eSet` object from any GSE data file. The `arrayExprs` function imports an `eSet` object into exprso.
-
-```{r, eval = FALSE}
-data.gse <- GEOquery::getGEO("GSE5847", GSEMatrix = FALSE)
-data.eset <- GSE2eSet(data.gse)
-data.eset@phenoData@data
-```
-
 ## Deep learning
 
 Deep learning in exprso does not differ much from the other approaches to classification. However, supplying arguments can get cumbersome.
