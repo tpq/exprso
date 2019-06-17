@@ -59,9 +59,17 @@ exprso <- function(x, y, label = 1, switch = FALSE){
 
   # Prepare ExprsArray object using x and y input
   colnames(array@exprs) <- paste0("x", 1:ncol(array@exprs))
-  rownames(array@exprs) <- make.names(rownames(array@exprs), unique = TRUE)
   rownames(array@annot) <- colnames(array@exprs)
+  rownames(array@exprs) <- make.names(rownames(array@exprs), unique = TRUE)
+  colnames(array@annot) <- make.names(colnames(array@annot), unique = TRUE)
   labels <- array@annot[,label]
+
+  # Force stringsAsFactors for all annot columns
+  for(col in 1:ncol(array@annot)){
+    if(is.character(array@annot[,col])){
+      array@annot[,col] <- factor(array@annot[,col])
+    }
+  }
 
   # Set sub-class to guide fs and build modules
   if(length(labels) != nrow(x)) stop("Incorrect number of outcomes.")
@@ -186,6 +194,8 @@ NULL
 #' - \code{\link{fsRankProd}}
 #'
 #' - \code{\link{fsBalance}}
+#'
+#' - \code{\link{fsAnnot}}
 #'
 #' @details
 #' Considering the high-dimensionality of many datasets, it is prudent and
