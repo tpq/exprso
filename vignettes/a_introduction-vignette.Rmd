@@ -96,6 +96,18 @@ balance <-
 array.test <- balance[[1]]
 ```
 
+This procedure is now automated by the `splitBalanced` module.
+
+```{r}
+arrays <-
+  splitBalanced(array,
+                percent.include = 67,
+                colBy = NULL)
+
+array.train <- arrays[[1]]
+array.test <- arrays[[2]]
+```
+
 ## Selecting features
 
 Considering the high-dimensionality of many datasets, it is prudent and often necessary to prioritize which features to include during classifier construction. This package provides functions for some of the most frequently used feature selection methods. Each function works as a self-contained wrapper that (1) pre-processes the `ExprsArray` input, (2) performs the feature selection, and (3) returns an `ExprsArray` output with an updated feature selection history. These histories get passed along at every step of the way until they eventually get used to pre-process an unlabeled dataset during classifier deployment (i.e., prediction).
