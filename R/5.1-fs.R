@@ -14,13 +14,10 @@
 #'  Set \code{top = 0} to include all features. A numeric vector can also be used
 #'  to indicate specific features by location, similar to a character vector.
 #' @param uniqueFx A function call unique to the method. See Details.
-#' @param keep A numeric scalar. Specifies the number of top features that should get
-#'  returned by the feature selection method. Use of \code{keep} is generally not
-#'  recommended, but can speed up analyses of large data.
 #' @param ... Arguments passed to the detailed function.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fs. <- function(object, top, uniqueFx, keep, ...){
+fs. <- function(object, top, uniqueFx, ...){
 
   # Convert top input to explicit feature reference
   if(class(top) == "numeric"){
@@ -47,24 +44,34 @@ fs. <- function(object, top, uniqueFx, keep, ...){
   y <- object@annot$defineCase
   final <- do.call("uniqueFx", list(data = x, outcome = y, top = topChar, ...))
 
+  # If a reduction model has never been used, there is no reason to store old history
+  # (helps to reduce RAM overhead and to improve run-time)
+  if(!is.null(object@reductionModel)){
+    if(all(unlist(lapply(object@reductionModel, is.na)))){
+      object@preFilter <- lapply(object@preFilter, function(x) 0)
+    }
+  }
+
   # Append uniqueFx results to object
   if(class(final) == "character"){ # fill @preFilter slot
 
-    if(!identical(keep, 0)) final <- final[1:keep]
-    array <- new(class(object), exprs = object@exprs[final,], annot = object@annot,
-                 preFilter = append(object@preFilter, list(final)),
-                 reductionModel = append(object@reductionModel, list(NA)))
+    output <- object
+    output@exprs <- object@exprs[final,]
+    output@annot <- object@annot
+    output@preFilter <- append(object@preFilter, list(final))
+    output@reductionModel <- append(object@reductionModel, list(NA))
 
   }else if(class(final) == "list"){ # fill @reductionModel slot
 
-    if(!identical(keep, 0)) stop("Reduction models do not support the 'keep' argument.")
-    array <- new(class(object), exprs = final[[1]], annot = object@annot,
-                 preFilter = append(object@preFilter, list(topChar)),
-                 reductionModel = append(object@reductionModel, list(final[[2]])))
+    output <- object
+    output@exprs <- final[[1]]
+    output@annot <- object@annot
+    output@preFilter <- append(object@preFilter, list(topChar))
+    output@reductionModel <- append(object@reductionModel, list(final[[2]]))
 
   }else{ stop("Uh oh! DEBUG ERROR: FS1")}
 
-  return(array)
+  return(output)
 }
 
 #' Select Features by Random Sampling
@@ -74,7 +81,7 @@ fs. <- function(object, top, uniqueFx, keep, ...){
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsSample <- function(object, top = 0, keep = 0, ...){ # args to sample
+fsSample <- function(object, top = 0, ...){ # args to sample
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
@@ -83,7 +90,7 @@ fsSample <- function(object, top = 0, keep = 0, ...){ # args to sample
       uniqueFx = function(data, outcome, top, ...){
 
         sample(top, ...)
-      }, keep, ...)
+      }, ...)
 }
 
 #' Null Feature Selection
@@ -94,7 +101,7 @@ fsSample <- function(object, top = 0, keep = 0, ...){ # args to sample
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsNULL <- function(object, top = 0, keep = 0, ...){ # args to NULL
+fsNULL <- function(object, top = 0, ...){ # args to NULL
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
@@ -103,7 +110,7 @@ fsNULL <- function(object, top = 0, keep = 0, ...){ # args to NULL
       uniqueFx = function(data, outcome, top, ...){
 
         top
-      }, keep, ...)
+      }, ...)
 }
 
 #' Select Features by Explicit Reference
@@ -134,7 +141,7 @@ fsInclude <- function(object, include){
 
         index <- top %in% include
         c(include, top[!index])
-      }, keep = 0, include)
+      }, include)
 }
 
 #' Select Features by ANOVA
@@ -146,7 +153,7 @@ fsInclude <- function(object, include){
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsANOVA <- function(object, top = 0, keep = 0, ...){ # args to aov
+fsANOVA <- function(object, top = 0, ...){ # args to aov
 
   classCheck(object, c("ExprsBinary", "ExprsMulti"),
              "This feature selection method only works for classification tasks.")
@@ -165,7 +172,7 @@ fsANOVA <- function(object, top = 0, keep = 0, ...){ # args to aov
         }
 
         top[order(p)]
-      }, keep, ...)
+      }, ...)
 }
 
 #' Select Features by Statistical Testing
@@ -178,7 +185,7 @@ fsANOVA <- function(object, top = 0, keep = 0, ...){ # args to aov
 #'  "wilcox.test", and "var.test" methods.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsStats <- function(object, top = 0, keep = 0,
+fsStats <- function(object, top = 0,
                     how = c("t.test", "ks.test", "wilcox.test", "var.test"), ...){ # args to base R function
 
   classCheck(object, "ExprsBinary",
@@ -201,7 +208,7 @@ fsStats <- function(object, top = 0, keep = 0,
             })
           }
           top[order(p)]
-        }, keep, ...)
+        }, ...)
 
   }else if(how[1] == "ks.test"){
 
@@ -220,7 +227,7 @@ fsStats <- function(object, top = 0, keep = 0,
             })
           }
           top[order(p)]
-        }, keep, ...)
+        }, ...)
 
   }else if(how[1] == "wilcox.test"){
 
@@ -239,7 +246,7 @@ fsStats <- function(object, top = 0, keep = 0,
             })
           }
           top[order(p)]
-        }, keep, ...)
+        }, ...)
 
   }else if(how[1] == "var.test"){
 
@@ -258,7 +265,7 @@ fsStats <- function(object, top = 0, keep = 0,
             })
           }
           top[order(p)]
-        }, keep, ...)
+        }, ...)
 
   }else{
 
@@ -274,7 +281,7 @@ fsStats <- function(object, top = 0, keep = 0,
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsCor <- function(object, top = 0, keep = 0, ...){ # args to cor
+fsCor <- function(object, top = 0, ...){ # args to cor
 
   classCheck(object, "RegrsArray",
              "This feature selection method only works for continuous outcome tasks.")
@@ -288,7 +295,7 @@ fsCor <- function(object, top = 0, keep = 0, ...){ # args to cor
         }
         r <- abs(r)
         top[order(r, decreasing = TRUE)]
-      }, keep, ...)
+      }, ...)
 }
 
 #' Reduce Dimensions by PCA
@@ -317,7 +324,7 @@ fsPrcomp <- function(object, top = 0, ...){ # args to prcomp
         #  when calling modHistory
         list(t(reductionModel$x),
              reductionModel)
-      }, keep = 0, ...)
+      }, ...)
 }
 
 #' Reduce Dimensions by PCA
@@ -378,7 +385,7 @@ fsRDA <- function(object, top = 0, colBy = NULL){ # args to rda
         # ATTENTION: predict(reductionModel, data, type = "wa") equals $CA$u
         list(t(reductionModel$CA$u),
              reductionModel)
-      }, keep = 0, Y)
+      }, Y)
 }
 
 #' Select Features by Moderated t-test
@@ -390,7 +397,7 @@ fsRDA <- function(object, top = 0, colBy = NULL){ # args to rda
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsEbayes <- function(object, top = 0, keep = 0, ...){ # args to ebayes
+fsEbayes <- function(object, top = 0, ...){ # args to ebayes
 
   packageCheck("limma")
   classCheck(object, c("ExprsBinary", "ExprsMulti"),
@@ -404,7 +411,7 @@ fsEbayes <- function(object, top = 0, keep = 0, ...){ # args to ebayes
         ebaye <- limma::eBayes(fit)
         tt <- limma::topTableF(ebaye, number = ncol(data))
         rownames(tt)
-      }, keep, ...)
+      }, ...)
 }
 
 #' Selects Features by Exact Test
@@ -421,7 +428,7 @@ fsEbayes <- function(object, top = 0, keep = 0, ...){ # args to ebayes
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsEdger <- function(object, top = 0, keep = 0, ...){ # args to exactTest
+fsEdger <- function(object, top = 0, ...){ # args to exactTest
 
   packageCheck("edgeR")
   classCheck(object, "ExprsBinary",
@@ -436,7 +443,7 @@ fsEdger <- function(object, top = 0, keep = 0, ...){ # args to exactTest
         et <- edgeR::exactTest(y)
         tt <- as.data.frame(edgeR::topTags(et, n = nrow(et)))
         rownames(tt)
-      }, keep, ...)
+      }, ...)
 }
 
 #' Select Features by mRMR
@@ -450,7 +457,7 @@ fsEdger <- function(object, top = 0, keep = 0, ...){ # args to exactTest
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsMrmre <- function(object, top = 0, keep = 0, ...){ # args to mRMR.classic
+fsMrmre <- function(object, top = 0, ...){ # args to mRMR.classic
 
   packageCheck("mRMRe")
   classCheck(object, "ExprsBinary",
@@ -480,7 +487,7 @@ fsMrmre <- function(object, top = 0, keep = 0, ...){ # args to mRMR.classic
         # Use "make.names" key to return to original row.names
         final <- merge(data.frame("new" = final), key, sort = FALSE)$old
         as.character(final)
-      }, keep, ...)
+      }, ...)
 }
 
 #' Select Features by Rank Product Analysis
@@ -491,7 +498,7 @@ fsMrmre <- function(object, top = 0, keep = 0, ...){ # args to mRMR.classic
 #' @inheritParams fs.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsRankProd <- function(object, top = 0, keep = 0, ...){ # args to RankProducts
+fsRankProd <- function(object, top = 0, ...){ # args to RankProducts
 
   packageCheck("RankProd")
   classCheck(object, "ExprsBinary",
@@ -512,7 +519,7 @@ fsRankProd <- function(object, top = 0, keep = 0, ...){ # args to RankProducts
         # Get two-tailed p-value
         p <- apply(final$pval, 1, min)
         top[order(p)]
-      }, keep, ...)
+      }, ...)
 }
 
 #' Convert Features into Balances
@@ -561,7 +568,7 @@ fsBalance <- function(object, top = 0, sbp.how = "sbp.fromPBA",
 
         list(balances,
              sbp)
-      }, keep = 0, sbp.how, ternary, ratios, ...)
+      }, sbp.how, ternary, ratios, ...)
 }
 
 #' Use Annotations as Features
@@ -593,5 +600,5 @@ fsAnnot <- function(object, colBy = NULL){
 
         list(t(model.output),
              model.rule)
-      }, keep = 0, Y)
+      }, Y)
 }
