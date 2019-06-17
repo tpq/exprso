@@ -1,3 +1,14 @@
+## exprso 0.5.4
+---------------------
+* Update `mod` modules
+    * When using `modHistory`, preFilter = 0 will skip the subset (to speed up model deployment)
+    * `modHistory` now checks for equivalent dimension reduction history
+* Update `fs` modules
+    * Reduce amount of history recorded after repeat steps (to reduce RAM overhead)
+    * Remove `keep` argument entirely
+* Update `build` modules
+    * Reduce amount of history recorded after repeat steps (to reduce RAM overhead)
+
 ## exprso 0.5.3
 ---------------------
 * Update `exprso` module
