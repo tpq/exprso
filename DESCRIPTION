@@ -1,6 +1,6 @@
 Package: exprso
 Title: Rapid Deployment of Machine Learning Algorithms
-Version: 0.5.2
+Version: 0.5.3
 URL: http://github.com/tpq/exprso
 BugReports: http://github.com/tpq/exprso/issues
 Authors@R: c(
@@ -17,7 +17,7 @@ Description: Supervised machine learning has an increasingly important role in d
 License: GPL-2
 LazyData: TRUE
 VignetteBuilder: knitr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Encoding: UTF-8
 Imports:
     cluster,

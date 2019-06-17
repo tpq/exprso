@@ -1,3 +1,16 @@
+## exprso 0.5.3
+---------------------
+* Update `exprso` module
+    * Now apply `make.names` to annotation columns too
+    * Force stringsAsFactors for all annot columns
+    * This is needed for `fsAnnot` to work
+* Update `fs` modules
+    * New `fsAnnot` pulls in an annotation column as a feature
+    * Fix `fsCor` bug that did not rank by absolute value of correlation
+    * Improve documentation for a few modules
+* Remove modules
+    * Completely remove `reRank` module
+
 ## exprso 0.5.2
 ---------------------
 * Update `fs` modules
