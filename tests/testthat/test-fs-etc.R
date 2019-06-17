@@ -39,6 +39,7 @@ if(requireNamespace("limma", quietly = TRUE) &
 obj1 <- exprso(iris[1:100, 1:4], iris[1:100, 5])
 obj2 <- exprso(iris[,1:4], iris[,5])
 obj3 <- exprso(iris[,1:3], iris[,4])
+obj4 <- exprso(-1 * iris[,1:3], iris[,4])
 
 test_that("fsANOVA works", {
 
@@ -69,6 +70,11 @@ test_that("fsCor works", {
 
   expect_equal(
     fsCor(obj3)@preFilter[[1]],
+    c("Petal.Length", "Sepal.Length", "Sepal.Width")
+  )
+
+  expect_equal(
+    fsCor(obj4)@preFilter[[1]], # negative cor is just as important
     c("Petal.Length", "Sepal.Length", "Sepal.Width")
   )
 })
