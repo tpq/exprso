@@ -14,23 +14,24 @@ modHistory <- function(object, reference){
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
 
-  if(!is.null(object@preFilter)){
-    if(length(reference@preFilter) <= length(object@preFilter)){
+  # Make sure both objects have the same reduction model series
+  if(!is.null(object@reductionModel)){
+    if(length(reference@reductionModel) <= length(object@reductionModel)){
       stop("The object has more history than the provided reference.") }
-    if(!identical(object@preFilter, reference@preFilter[1:length(object@preFilter)])){
+    if(!identical(object@reductionModel, reference@reductionModel[1:length(object@reductionModel)])){
       stop("The object history does not match the reference history.") }
   }
 
   # Duplicate starting with first non-overlapping history
-  unsortedFeatures <- rownames(object@exprs)
   index <- length(object@reductionModel) + 1
   for(i in index:length(reference@reductionModel)){ # for every fs in reference...
 
     indexedFeatures <- reference@preFilter[[i]]
     indexedModel <- reference@reductionModel[[i]]
+
     if(any(is.na(indexedModel))){ # apply fs (via top) only
 
-      if(identical(indexedFeatures, unsortedFeatures)){
+      if(identical(indexedFeatures, 0)){
         exprs.i <- object@exprs # avoid unnecessary subsets
       }else{
         exprs.i <- object@exprs[indexedFeatures, , drop = FALSE]
