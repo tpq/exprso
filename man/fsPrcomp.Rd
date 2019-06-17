@@ -4,7 +4,7 @@
 \alias{fsPrcomp}
 \title{Reduce Dimensions by PCA}
 \usage{
-fsPrcomp(object, top = 0, keep = 0, ...)
+fsPrcomp(object, top = 0, ...)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo feature selection.}
@@ -15,17 +15,13 @@ indicates specifically which features by name should undergo feature selection.
 Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
-\item{keep}{A numeric scalar. Specifies the number of top features that should get
-returned by the feature selection method. Use of \code{keep} is generally not
-recommended, but can speed up analyses of large data.}
-
 \item{...}{Arguments passed to the detailed function.}
 }
 \value{
 Returns an \code{ExprsArray} object.
 }
 \description{
-\code{fsPrcomp} reduces dimensions using the \code{prcomp} function.
- The reduction model is saved and deployed automatically on any new
- data during model validation.
+\code{fsPrcomp} runs a PCA using the \code{prcomp} function.
+ The PCA model is saved and deployed automatically by the
+ \code{predict} method during test set validation.
 }

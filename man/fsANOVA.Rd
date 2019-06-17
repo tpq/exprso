@@ -26,5 +26,6 @@ Returns an \code{ExprsArray} object.
 }
 \description{
 \code{fsANOVA} selects features using the \code{aov} function.
- Note that ANOVA assumes equal variances.
+ Note that the ANOVA assumes equal variances, so will differ from
+ the \code{fsStats} t-test in the two-group setting.
 }

@@ -33,6 +33,8 @@ The \code{exprso} package includes these feature selection modules:
 - \code{\link{fsRankProd}}
 
 - \code{\link{fsBalance}}
+
+- \code{\link{fsAnnot}}
 }
 \details{
 Considering the high-dimensionality of many datasets, it is prudent and

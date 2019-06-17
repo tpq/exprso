@@ -4,7 +4,7 @@
 \alias{fsRDA}
 \title{Reduce Dimensions by RDA}
 \usage{
-fsRDA(object, top = 0, keep = 0, colBy = NULL)
+fsRDA(object, top = 0, colBy = NULL)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object to undergo feature selection.}
@@ -15,10 +15,6 @@ indicates specifically which features by name should undergo feature selection.
 Set \code{top = 0} to include all features. A numeric vector can also be used
 to indicate specific features by location, similar to a character vector.}
 
-\item{keep}{A numeric scalar. Specifies the number of top features that should get
-returned by the feature selection method. Use of \code{keep} is generally not
-recommended, but can speed up analyses of large data.}
-
 \item{colBy}{A character vector. Lists the columns in \code{@annot}
 to use as the constraining matrix. Passed to \code{vegan::rda}.
 Optional argument. Skip with \code{colBy = NULL}.}
@@ -27,14 +23,15 @@ Optional argument. Skip with \code{colBy = NULL}.}
 Returns an \code{ExprsArray} object.
 }
 \description{
-\code{fsRDA} reduces dimensions using the \code{rda} function
- from the \code{vegan} package. The reduction model is saved and
- deployed automatically on any new data during model validation.
+\code{fsRDA} runs an RDA using the \code{rda} function
+ from the \code{vegan} package, partialling out \code{colBy}.
+ The RDA model is saved and deployed automatically by the
+ \code{predict} method during test set validation.
 }
 \details{
-When \code{colBy} is provided, this function uses the \code{colBy}
- columns in \code{@annot} as the constraining matrix. When deploying
- the RDA model, \code{\link{modHistory}} will compute the unconstrained
- scores. This will partial out the contribution of \code{colBy},
- allowing \code{colBy} to act as the conditioning matrix.
+When \code{colBy} is provided, it serves as the constraining matrix.
+ However, \code{fsRDA} always returns the unconstrained scores.
+ As such, \code{fsRDA} effectively partials out the contribution
+ of \code{colBy} to the training set, then uses this rule
+ to partial out the contribution to the test set too.
 }

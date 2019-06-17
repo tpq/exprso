@@ -25,5 +25,6 @@ recommended, but can speed up analyses of large data.}
 Returns an \code{ExprsArray} object.
 }
 \description{
-\code{fsNULL} selects features by passing along the \code{top} argument.
+\code{fsNULL} does not select features. However, it will handle the
+ \code{top} and \code{keep} arguments if provided.
 }
