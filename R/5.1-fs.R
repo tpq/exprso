@@ -123,10 +123,14 @@ fsNULL <- function(object, top = 0, ...){ # args to NULL
 #' @param include A character vector. The names of features to rank above all others.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsInclude <- function(object, include){
+fsInclude <- function(object, top = 0, include){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
+
+  if(!identical(top, 0)){
+    stop("fsInclude must have top = 0!")
+  }
 
   fs.(object, top = 0,
       uniqueFx = function(data, outcome, top, include){
@@ -581,10 +585,14 @@ fsBalance <- function(object, top = 0, sbp.how = "sbp.fromPBA",
 #' @param colBy A character vector. The names of annotations to rank above all others.
 #' @return Returns an \code{ExprsArray} object.
 #' @export
-fsAnnot <- function(object, colBy = NULL){
+fsAnnot <- function(object, top = 0, colBy){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
+
+  if(!identical(top, 0)){
+    stop("fsAnnot must have top = 0!")
+  }
 
   if("defineCase" %in% colBy) stop("You can't use the outcome as a feature!")
 

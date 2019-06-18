@@ -1,3 +1,8 @@
+## exprso 0.5.5
+---------------------
+* Update `fs` modules
+    * Add `top` argument to `fsInclude` and `fsAnnot` (needed for `ctrlFeatureSelect`)
+
 ## exprso 0.5.4
 ---------------------
 * Update `mod` modules
