@@ -83,7 +83,7 @@ nest <- plNested(array, fold = 10, ctrlFS = fs, ctrlGS = gs)
 
 # Perform cross-validation with plCV
 set.seed(12345)
-cv <- plCV(array, top = 0, fold = 10, how = "buildLDA", method = "mle")
+cv <- plCV(array, top = 0, fold = 10, aucSkip = TRUE, plCV.acc = "acc", how = "buildLDA", method = "mle")
 
 test_that("plNested without fs matches plCV", {
 

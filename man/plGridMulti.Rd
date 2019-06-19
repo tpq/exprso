@@ -22,11 +22,11 @@ for the \code{top} argument will have \code{plGrid} search across multiple
 top features. However, by providing a list of numeric vectors as the \code{top}
 argument, the user can force the default handling of numeric vectors.}
 
-\item{how}{A character string. Specifies the \code{\link{build}} method to iterate.}
+\item{how}{A character string. The \code{\link{build}} method to iterate.}
 
 \item{aucSkip}{A logical scalar. Argument passed to \code{\link{calcStats}}.}
 
-\item{verbose}{A logical scalar. Argument passed to \code{\link{exprso-predict}}.}
+\item{verbose}{A logical scalar. Toggles whether to print to console.}
 
 \item{...}{Arguments passed to the \code{how} method. Unlike the \code{build} method,
 \code{plGrid} allows multiple parameters for each argument, supplied as a vector.

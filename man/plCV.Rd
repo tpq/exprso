@@ -4,7 +4,7 @@
 \alias{plCV}
 \title{Perform Simple Cross-Validation}
 \usage{
-plCV(array, top, how, fold, ...)
+plCV(array, top, how, fold, aucSkip, plCV.acc, ...)
 }
 \arguments{
 \item{array}{Specifies the \code{ExprsArray} object to undergo cross-validation.}
@@ -12,18 +12,29 @@ plCV(array, top, how, fold, ...)
 \item{top}{A numeric scalar or character vector. A numeric scalar indicates
 the number of top features that should undergo feature selection. A character vector
 indicates specifically which features by name should undergo feature selection.
-Set \code{top = 0} to include all features. A numeric vector can also be used
-to indicate specific features by location, similar to a character vector.}
+Set \code{top = 0} to include all features. Note that providing a numeric vector
+for the \code{top} argument will have \code{plGrid} search across multiple
+top features. However, by providing a list of numeric vectors as the \code{top}
+argument, the user can force the default handling of numeric vectors.}
 
-\item{how}{A character string. Specifies the \code{\link{build}} method to iterate.}
+\item{how}{A character string. The \code{\link{build}} method to iterate.}
 
-\item{fold}{A numeric scalar. Specifies the number of folds for cross-validation.
-Set \code{fold = 0} to perform leave-one-out cross-validation.}
+\item{fold}{A numeric scalar. The number of folds for cross-validation.
+Set \code{fold = 0} to perform leave-one-out cross-validation. Argument passed
+to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogether.}
 
-\item{...}{Arguments passed to the \code{how} method.}
+\item{aucSkip}{A logical scalar. Argument passed to \code{\link{calcStats}}.}
+
+\item{plCV.acc}{A string. The performance metric to use. For example,
+choose from "acc", "sens", "spec", "prec", "f1", "auc", or any of the
+regression specific measures. Argument passed to \code{\link{plCV}}.}
+
+\item{...}{Arguments passed to the \code{how} method. Unlike the \code{build} method,
+\code{plGrid} allows multiple parameters for each argument, supplied as a vector.
+See Details.}
 }
 \value{
-A numeric scalar. The cross-validation accuracy.
+The average inner-fold cross-validation accuracy.
 }
 \description{
 Calculates v-fold or leave-one-out cross-validation without selecting a new
@@ -32,17 +43,14 @@ Calculates v-fold or leave-one-out cross-validation without selecting a new
 \details{
 \code{plCV} performs v-fold or leave-one-out cross-validation. The argument
  \code{fold} specifies the number of v-folds to use during cross-validation.
- Set \code{fold = 0} to perform leave-one-out cross-validation. Cross-validation
- accuracy is defined as the average accuracy from \code{\link{calcStats}}.
+ Set \code{fold = 0} to perform leave-one-out cross-validation.
 
 This type of cross-validation is most appropriate if the data
- has not undergone any prior feature selection. However, it can also serve
- as an unbiased guide to parameter selection when embedded in
- \code{\link{plGrid}}. If using cross-validation in lieu of an independent test
- set in the setting of one or more feature selection methods, consider using
- a more "sophisticated" form of cross-validation as implemented in
- \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
+ has not undergone any prior feature selection. However, it is also useful
+ as an unbiased guide to parameter selection within another
+ \code{\link{pl}} workflow.
 
-When calculating model performance with \code{\link{calcStats}}, this
- function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
+Users should never need to call this function directly. Instead, they
+ should use \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
+ There, \code{plCV} handles inner-fold cross-validation.
 }

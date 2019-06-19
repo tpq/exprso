@@ -59,12 +59,12 @@ arrays <- splitStratify(array, percent.include = 100, colBy = NULL)
 array.train <- arrays[[1]]
 array.test <- arrays[[2]]
 
-acc <- plCV(array.train, top = 0, how = "buildLDA", fold = 10, method = "mle")
+acc <- plCV(array, top = 0, fold = 10, aucSkip = TRUE, plCV.acc = "acc", how = "buildLDA", method = "mle")
 
 array.train@annot$defineCase[c(1:2)] <- "Case"
 array.train@annot$defineCase[c(19:20)] <- "Control"
 
-acc.off <- plCV(array.train, top = 0, how = "buildLDA", fold = 0, method = "mle")
+acc.off <- plCV(array.train, top = 0, fold = 0, aucSkip = TRUE, plCV.acc = "acc", how = "buildLDA", method = "mle")
 pl <- plGrid(array.train,
              array.test,
              top = 0,
