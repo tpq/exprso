@@ -5,76 +5,50 @@
 #'
 #' \code{plCV} performs v-fold or leave-one-out cross-validation. The argument
 #'  \code{fold} specifies the number of v-folds to use during cross-validation.
-#'  Set \code{fold = 0} to perform leave-one-out cross-validation. Cross-validation
-#'  accuracy is defined as the average accuracy from \code{\link{calcStats}}.
+#'  Set \code{fold = 0} to perform leave-one-out cross-validation.
 #'
 #' This type of cross-validation is most appropriate if the data
-#'  has not undergone any prior feature selection. However, it can also serve
-#'  as an unbiased guide to parameter selection when embedded in
-#'  \code{\link{plGrid}}. If using cross-validation in lieu of an independent test
-#'  set in the setting of one or more feature selection methods, consider using
-#'  a more "sophisticated" form of cross-validation as implemented in
-#'  \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
+#'  has not undergone any prior feature selection. However, it is also useful
+#'  as an unbiased guide to parameter selection within another
+#'  \code{\link{pl}} workflow.
 #'
-#' When calculating model performance with \code{\link{calcStats}}, this
-#'  function forces \code{aucSkip = TRUE} and \code{plotSkip = TRUE}.
+#' Users should never need to call this function directly. Instead, they
+#'  should use \code{\link{plMonteCarlo}} or \code{\link{plNested}}.
+#'  There, \code{plCV} handles inner-fold cross-validation.
 #'
 #' @param array Specifies the \code{ExprsArray} object to undergo cross-validation.
-#' @inheritParams fs.
-#' @param how A character string. Specifies the \code{\link{build}} method to iterate.
-#' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
-#'  Set \code{fold = 0} to perform leave-one-out cross-validation.
-#' @param ... Arguments passed to the \code{how} method.
-#' @return A numeric scalar. The cross-validation accuracy.
+#' @inheritParams plGrid
+#' @return The average inner-fold cross-validation accuracy.
 #' @export
-plCV <- function(array, top, how, fold, ...){
+plCV <- function(array, top, how, fold, aucSkip, plCV.acc, ...){
 
-  args <- as.list(substitute(list(...)))[-1]
+  args.how <- getArgs(...)
 
   # Perform LOOCV if 0 fold
-  if(fold == 0) fold <- nrow(array@annot)
-
-  if(fold > nrow(array@annot)){
+  if(fold == 0) fold <- nsamps(array)
+  if(fold > nsamps(array)){
 
     warning("Insufficient subjects for plCV v-fold cross-validation. Performing LOOCV instead.")
-    fold <- nrow(array@annot)
+    fold <- nsamps(array)
   }
 
   # Add the ith subject ID to the vth fold
-  subjects <- vector("list", fold)
   ids <- sample(rownames(array@annot))
-  i <- 1
-  while(i <= nrow(array@annot)){
-
-    subjects[[i %% fold + 1]] <- c(subjects[[i %% fold + 1]], ids[i])
-    i <- i + 1
-  }
+  splits <- suppressWarnings(split(ids, 1:fold)) # warns that some splits are bigger than others
 
   # Build a machine against the vth fold
   accs <- vector("numeric", fold)
-  for(v in 1:length(subjects)){
+  for(v in 1:length(splits)){
 
-    # The leave one out
-    array.train <- new(class(array),
-                       exprs = array@exprs[, !colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
-                       annot = array@annot[!rownames(array@annot) %in% subjects[[v]], ],
-                       preFilter = array@preFilter,
-                       reductionModel = array@reductionModel)
-
-    # The left out one
-    array.valid <- new(class(array),
-                       exprs = array@exprs[, colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
-                       annot = array@annot[rownames(array@annot) %in% subjects[[v]], ],
-                       preFilter = array@preFilter,
-                       reductionModel = array@reductionModel)
-
-    # Prepare args for do.call
-    args.v <- append(list("object" = array.train, "top" = top), args)
+    holdout <- colnames(array@exprs) %in% splits[[v]]
+    array.train <- array[!holdout,]
+    array.valid <- array[holdout,]
 
     # Build machine and deploy
-    mach <- do.call(what = how, args = args.v)
-    pred <- predict(mach, array.valid, verbose = FALSE)
-    accs[v] <- calcStats(pred, aucSkip = TRUE, plotSkip = TRUE, verbose = FALSE)$acc
+    args.v <- append(list("object" = array.train, "top" = top), args.how)
+    mach.v <- do.call(what = how, args = args.v)
+    pred.v <- predict(mach.v, array.valid, verbose = FALSE)
+    accs[v] <- calcStats(pred.v, aucSkip = aucSkip, plotSkip = TRUE, verbose = FALSE)[, plCV.acc]
   }
 
   acc <- mean(accs)
