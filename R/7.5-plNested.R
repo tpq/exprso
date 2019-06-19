@@ -58,32 +58,26 @@ plNested <- function(array, fold = 10, ctrlFS = NULL, ctrlGS, save = FALSE){
     fold <- nrow(array@annot)
   }
 
-  # Add the ith random subject ID to the vth fold
-  subjects <- vector("list", fold)
+  # Add the ith subject ID to the vth fold
   ids <- sample(rownames(array@annot))
-  i <- 1
-  while(i <= nrow(array@annot)){
-
-    subjects[[i %% fold + 1]] <- c(subjects[[i %% fold + 1]], ids[i])
-    i <- i + 1
-  }
+  splits <- suppressWarnings(split(ids, 1:fold)) # warns that some splits are bigger than others
 
   # Perform nested cross-validation
   pls <- vector("list", fold)
   numTicks <- 0
-  for(v in 1:length(subjects)){
+  for(v in 1:length(splits)){
 
     # The v-th fold
     array.boot <- new(class(array),
-                      exprs = array@exprs[, !colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
-                      annot = array@annot[!rownames(array@annot) %in% subjects[[v]], ],
+                      exprs = array@exprs[, !colnames(array@exprs) %in% splits[[v]], drop = FALSE],
+                      annot = array@annot[!rownames(array@annot) %in% splits[[v]], ],
                       preFilter = array@preFilter,
                       reductionModel = array@reductionModel)
 
     # The leave out
     array.demi <- new(class(array),
-                      exprs = array@exprs[, colnames(array@exprs) %in% subjects[[v]], drop = FALSE],
-                      annot = array@annot[rownames(array@annot) %in% subjects[[v]], ],
+                      exprs = array@exprs[, colnames(array@exprs) %in% splits[[v]], drop = FALSE],
+                      annot = array@annot[rownames(array@annot) %in% splits[[v]], ],
                       preFilter = array@preFilter,
                       reductionModel = array@reductionModel)
 
