@@ -1,3 +1,14 @@
+## exprso 0.5.7
+---------------------
+* Update `calc` modules
+    * Now shows the optimal cutoff point on the ROCR plot
+* Update `pl` modules
+    * `plCV`: New `plCV.acc` argument allows user to select inner-CV performance metric
+    * `plCV`: New `aucSkip` argument allows user to calculate ROCR performance
+    * `plGrid`: Arguments `aucSkip` and `plCV.acc` now passed to `plCV`
+    * `plNested`: Simplify code
+    * `plCV`: Simplify code
+
 ## exprso 0.5.6
 ---------------------
 * Update `calc` modules
