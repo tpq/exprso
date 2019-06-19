@@ -9,6 +9,7 @@ load(file.path("data.RData"))
 arrays <- splitStratify(array, percent.include = 50, colBy = NULL)
 array.train <- arrays[[1]]
 array.test <- arrays[[2]]
+array.test@annot$defineCase[1] <- "Case"
 
 pl <- plGrid(array.train,
              array.test,
@@ -38,13 +39,13 @@ test_that("@summary match expectations", {
 
   mach <- buildLDA(array.train, top = 0, method = "mle")
   expect_equal(
-    matrix(pl@summary[1, c("valid.acc", "valid.sens", "valid.spec", "valid.auc")]),
+    matrix(pl@summary[1, c("valid.acc", "valid.sens", "valid.spec", "valid.prec", "valid.f1", "valid.auc")]),
     matrix(calcStats(predict(mach, array.test)))
   )
 
   mach <- buildLDA(array.train, top = 0, method = "mve")
   expect_equal(
-    matrix(pl@summary[2, c("valid.acc", "valid.sens", "valid.spec", "valid.auc")]),
+    matrix(pl@summary[2, c("valid.acc", "valid.sens", "valid.spec", "valid.prec", "valid.f1", "valid.auc")]),
     matrix(calcStats(predict(mach, array.test)))
   )
 })

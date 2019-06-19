@@ -53,9 +53,11 @@ setMethod("calcStats", "ExprsPredict",
               acc <- ROCR::performance(p, "acc")@y.values[[1]][index]
               sens <- ROCR::performance(p, "sens")@y.values[[1]][index]
               spec <- ROCR::performance(p, "spec")@y.values[[1]][index]
+              prec <- ROCR::performance(p, "prec")@y.values[[1]][index]
+              f1 <- 2 * (prec * sens) / (prec + sens)
               auc <- ROCR::performance(p, "auc")@y.values[[1]]
 
-              df <- data.frame(acc, sens, spec, auc)
+              df <- data.frame(acc, sens, spec, prec, f1, auc)
               df[is.na(df)] <- 0
               return(df)
 
@@ -80,13 +82,17 @@ setMethod("calcStats", "ExprsPredict",
               # Compute per-class performance
               for(class in 1:nrow(table)){
 
-                tp <- sum(table[row(table) == col(table)][class])
-                tn <- sum(table[row(table) == col(table)][-class])
-                fp <- sum(table[row(table) == class & col(table) != class]) # called class but not
-                fn <- sum(table[row(table) != class & col(table) == class]) # is but not called
+                predicted <- row(table)
+                actual <- col(table)
+                tp <- sum(table[predicted == class & actual == class]) # part of diagonal with double true
+                tn <- sum(table[predicted != class & actual != class]) # part of diagonal with double false
+                fp <- sum(table[predicted == class & actual != class]) # called class but not
+                fn <- sum(table[predicted != class & actual == class]) # is but not called
                 acc <- (tp + tn) / (tp + tn + fp + fn)
                 sens <- tp / (tp + fn)
                 spec <- tn / (fp + tn)
+                prec <- tp / (tp + fp)
+                f1 <- 2 * (prec * sens) / (prec + sens)
 
                 if(length(levels(object@actual)) > 2){
 
@@ -98,7 +104,7 @@ setMethod("calcStats", "ExprsPredict",
 
                   # NOTE: class == 2 refers to "Case"
                   if(class == 2){
-                    df <- data.frame(acc, sens, spec)
+                    df <- data.frame(acc, sens, spec, prec, f1)
                     df[is.na(df)] <- 0
                     return(df)
                   }

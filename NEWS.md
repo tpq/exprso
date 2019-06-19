@@ -1,3 +1,8 @@
+## exprso 0.5.6
+---------------------
+* Update `calc` modules
+    * Add precision and F1-score to `calcStats`
+
 ## exprso 0.5.5
 ---------------------
 * Update `fs` modules
