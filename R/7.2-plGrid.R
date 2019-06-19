@@ -6,14 +6,17 @@
 #'  each combination of parameters provided as additional arguments (\code{...}).
 #'  When using \code{plGrid}, supplying a numeric vector as the \code{top}
 #'  argument will train and deploy a model of each mentioned size for
-#'  each combination of parameters provided in \code{...}. To skip validation set
-#'  prediction, use \code{array.valid = NULL}. Either way, this function returns an
-#'  \code{\link{ExprsPipeline-class}} object which contains a summary of the build
-#'  parameters and the models themselves. The argument \code{fold} controls
-#'  cross-validation via \code{\link{plCV}}.
+#'  each combination of parameters provided.
 #'
-#' @param array.train Specifies the \code{ExprsArray} object to use as training set.
-#' @param array.valid Specifies the \code{ExprsArray} object to use as validation set.
+#' To skip validation set prediction, use \code{array.valid = NULL}.
+#'  Either way, this function returns an \code{\link{ExprsPipeline-class}}
+#'  object which contains a summary of the build parameters and the models
+#'  themselves. The argument \code{fold} controls inner-fold
+#'  cross-validation via \code{\link{plCV}}. Use this to
+#'  select the best model unbiasedly.
+#'
+#' @param array.train The \code{ExprsArray} object to use as training set.
+#' @param array.valid The \code{ExprsArray} object to use as validation set.
 #' @param top A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
 #'  indicates specifically which features by name should undergo feature selection.
@@ -21,19 +24,23 @@
 #'  for the \code{top} argument will have \code{plGrid} search across multiple
 #'  top features. However, by providing a list of numeric vectors as the \code{top}
 #'  argument, the user can force the default handling of numeric vectors.
-#' @param how A character string. Specifies the \code{\link{build}} method to iterate.
-#' @param fold A numeric scalar. Specifies the number of folds for cross-validation.
+#' @param how A character string. The \code{\link{build}} method to iterate.
+#' @param fold A numeric scalar. The number of folds for cross-validation.
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation. Argument passed
 #'  to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogether.
 #' @param aucSkip A logical scalar. Argument passed to \code{\link{calcStats}}.
-#' @param verbose A logical scalar. Argument passed to \code{\link{exprso-predict}}.
+#' @param plCV.acc A string. The performance metric to use. For example,
+#'  choose from "acc", "sens", "spec", "prec", "f1", "auc", or any of the
+#'  regression specific measures. Argument passed to \code{\link{plCV}}.
+#' @param verbose A logical scalar. Toggles whether to print to console.
 #' @param ... Arguments passed to the \code{how} method. Unlike the \code{build} method,
 #'  \code{plGrid} allows multiple parameters for each argument, supplied as a vector.
 #'  See Details.
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #' @export
 plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
-                   aucSkip = FALSE, verbose = FALSE, ...){
+                   aucSkip = FALSE, plCV.acc = "acc",
+                   verbose = FALSE, ...){
 
   if(missing(how)){
 
@@ -80,7 +87,7 @@ plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
     if(!is.null(fold)){
 
       # Perform leave-one-out or v-fold cross-validation
-      args <- append(list("how" = how, "fold" = fold), args)
+      args <- append(list("how" = how, "fold" = fold, "aucSkip" = aucSkip, "plCV.acc" = plCV.acc), args)
       names(args)[names(args) == "object"] <- "array"
       cv <- do.call(what = plCV, args = args[!is.na(args)])
       acc <- data.frame("fold" = fold, "train.plCV" = cv, acc)
