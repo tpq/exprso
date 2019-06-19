@@ -39,17 +39,17 @@ setMethod("calcStats", "ExprsPredict",
             if(all(c("Case", "Control") %in% object@actual) & !is.null(object@probability) & !aucSkip){
 
               if(verbose){
-                cat("Calculating accuracy using ROCR based on prediction probabilities...\n")
+                cat("Calculating accuracy using optimal ROCR cutoff...\n")
               }
 
+              # Find optimal cutoff based on distance from top-left corner
               p <- ROCR::prediction(object@probability[, "Case"], as.numeric(object@actual == "Case"))
-
-              # Plot AUC curve and index optimal cutoff based on Euclidean distance
               perf <- ROCR::performance(p, measure = "tpr", x.measure = "fpr")
-              if(!plotSkip) plot(perf, col = rainbow(10))
               index <- which.min(sqrt((1 - perf@y.values[[1]])^2 + (0 - perf@x.values[[1]])^2))
+              if(!plotSkip) plot(perf, col = rainbow(10))
+              if(!plotSkip) graphics::points(perf@x.values[[1]][index], perf@y.values[[1]][index], col = "blue")
 
-              # Calculate performance metrics
+              # Get performance for optimal cutoff
               acc <- ROCR::performance(p, "acc")@y.values[[1]][index]
               sens <- ROCR::performance(p, "sens")@y.values[[1]][index]
               spec <- ROCR::performance(p, "spec")@y.values[[1]][index]
@@ -64,7 +64,7 @@ setMethod("calcStats", "ExprsPredict",
             }else{
 
               if(verbose){
-                cat("Arguments not provided in an ROCR AUC format. Calculating accuracy outside of ROCR...\n")
+                cat("Arguments not provided in an ROCR AUC format. Calculating accuracy without ROCR...\n")
               }
 
               # Turn ExprsBinary $defineCase into factor
