@@ -1,3 +1,23 @@
+## exprso 0.5.8
+---------------------
+* Update OOP framework
+    * New `MultiPredict` object handles multi-class prediction
+* Update `build` modules
+    * Try to make `fs.` and `build.` more similar
+    * Extend `build` modules to true multi-class learning
+* Update `predict` modules
+    * `predict.ExprsMulti` now handles true multi-class learning
+    * `predict.ExprsEnsemble` now handles true multi-class learning
+* Update `pl` modules
+    * `plCV`: Use `plCV.acc = 'acc'` when requested value not found
+* Update `pipe` modules
+    * `pipeSubset`: Remove default `colBy` argument to guard against improper use
+* Remove modules
+    * Completely remove `plGridMulti` module
+    * Completely remove `doMulti` module
+* Revised documentation
+    * Reviewed 1.1, 1.2, and 1.3
+
 ## exprso 0.5.7
 ---------------------
 * Update `calc` modules
