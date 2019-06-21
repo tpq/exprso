@@ -48,7 +48,13 @@ plCV <- function(array, top, how, fold, aucSkip, plCV.acc, ...){
     args.v <- append(list("object" = array.train, "top" = top), args.how)
     mach.v <- do.call(what = how, args = args.v)
     pred.v <- predict(mach.v, array.valid, verbose = FALSE)
-    accs[v] <- calcStats(pred.v, aucSkip = aucSkip, plotSkip = TRUE, verbose = FALSE)[, plCV.acc]
+    perfs <- calcStats(pred.v, aucSkip = aucSkip, plotSkip = TRUE, verbose = FALSE)
+    if(plCV.acc %in% colnames(perfs)){
+      accs[v] <- perfs[, plCV.acc]
+    }else{
+      warning("plCV.acc not available: using plCV.acc = 'acc' instead.")
+      accs[v] <- perfs[, "acc"]
+    }
   }
 
   acc <- mean(accs)
