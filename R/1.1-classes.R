@@ -11,6 +11,7 @@
 #' \code{\link{ExprsPipeline-class}}\cr
 #' \code{\link{ExprsEnsemble-class}}\cr
 #' \code{\link{ExprsPredict-class}}\cr
+#' \code{\link{MultiPredict-class}}\cr
 #' \code{\link{RegrsPredict-class}}
 #' @export
 setClass("ExprsArray",
@@ -61,6 +62,7 @@ setClass("RegrsArray",
 #' \code{\link{ExprsPipeline-class}}\cr
 #' \code{\link{ExprsEnsemble-class}}\cr
 #' \code{\link{ExprsPredict-class}}\cr
+#' \code{\link{MultiPredict-class}}\cr
 #' \code{\link{RegrsPredict-class}}
 #' @export
 setClass("ExprsModel",
@@ -73,7 +75,7 @@ setClass("ExprsModel",
 
 #' An S4 class to store the model
 #'
-#' An \code{ExprsModel} sub-class for dichotomous models.
+#' An \code{ExprsModel} sub-class for binary classification models.
 #'
 #' @export
 setClass("ExprsMachine",
@@ -82,7 +84,7 @@ setClass("ExprsMachine",
 
 #' An S4 class to store the model
 #'
-#' An \code{ExprsModel} sub-class for multi-class models.
+#' An \code{ExprsModel} sub-class for multi-class classification models.
 #'
 #' @export
 setClass("ExprsModule",
@@ -111,6 +113,7 @@ setClass("RegrsModel",
 #' \code{\link{ExprsPipeline-class}}\cr
 #' \code{\link{ExprsEnsemble-class}}\cr
 #' \code{\link{ExprsPredict-class}}\cr
+#' \code{\link{MultiPredict-class}}\cr
 #' \code{\link{RegrsPredict-class}}
 #' @export
 setClass("ExprsPipeline",
@@ -129,6 +132,7 @@ setClass("ExprsPipeline",
 #' \code{\link{ExprsPipeline-class}}\cr
 #' \code{\link{ExprsEnsemble-class}}\cr
 #' \code{\link{ExprsPredict-class}}\cr
+#' \code{\link{MultiPredict-class}}\cr
 #' \code{\link{RegrsPredict-class}}
 #' @export
 setClass("ExprsEnsemble",
@@ -154,6 +158,7 @@ setClass("ExprsEnsemble",
 #' \code{\link{ExprsPipeline-class}}\cr
 #' \code{\link{ExprsEnsemble-class}}\cr
 #' \code{\link{ExprsPredict-class}}\cr
+#' \code{\link{MultiPredict-class}}\cr
 #' \code{\link{RegrsPredict-class}}
 #' @export
 setClass("ExprsPredict",
@@ -177,6 +182,29 @@ setClass("ExprsPredict",
 #' \code{\link{ExprsPipeline-class}}\cr
 #' \code{\link{ExprsEnsemble-class}}\cr
 #' \code{\link{ExprsPredict-class}}\cr
+#' \code{\link{MultiPredict-class}}\cr
+#' \code{\link{RegrsPredict-class}}
+#' @export
+setClass("MultiPredict",
+         slots = c(
+           pred = "ANY",
+           actual = "ANY"
+         )
+)
+
+#' An S4 class to store model predictions
+#'
+#' @slot pred Any. Stores predicted outcome.
+#' @slot actual Any. Stores actual outcome.
+#'  Used by \code{\link{calcStats}}.
+#'
+#' @seealso
+#' \code{\link{ExprsArray-class}}\cr
+#' \code{\link{ExprsModel-class}}\cr
+#' \code{\link{ExprsPipeline-class}}\cr
+#' \code{\link{ExprsEnsemble-class}}\cr
+#' \code{\link{ExprsPredict-class}}\cr
+#' \code{\link{MultiPredict-class}}\cr
 #' \code{\link{RegrsPredict-class}}
 #' @export
 setClass("RegrsPredict",
