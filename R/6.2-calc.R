@@ -24,7 +24,9 @@
 #'  operating characteristic curve. See Details.
 #' @param verbose A logical scalar. Toggles whether to print the results
 #'  of model performance to console.
+#'
 #' @return Returns a \code{data.frame} of performance metrics.
+#'
 #' @export
 setGeneric("calcStats",
            function(object, aucSkip = FALSE, plotSkip = FALSE, verbose = TRUE) standardGeneric("calcStats")
@@ -35,12 +37,9 @@ setGeneric("calcStats",
 setMethod("calcStats", "ExprsPredict",
           function(object, aucSkip, plotSkip, verbose){
 
-            # If predicted set contains only two classes, ExprsPredict has @probability, and aucSkip = FALSE
             if(all(c("Case", "Control") %in% object@actual) & !is.null(object@probability) & !aucSkip){
 
-              if(verbose){
-                cat("Calculating accuracy using optimal ROCR cutoff...\n")
-              }
+              if(verbose) cat("Calculating accuracy based on optimal AUC cutoff...\n")
 
               # Find optimal cutoff based on distance from top-left corner
               p <- ROCR::prediction(object@probability[, "Case"], as.numeric(object@actual == "Case"))
@@ -63,76 +62,65 @@ setMethod("calcStats", "ExprsPredict",
 
             }else{
 
-              if(verbose){
-                cat("Arguments not provided in an ROCR AUC format. Calculating accuracy without ROCR...\n")
-              }
+              if(verbose) cat("Calculating accuracy without AUC support...\n")
 
-              # Turn ExprsBinary $defineCase into factor
-              if(any(c("Control", "Case") %in% object@actual)){
-
-                object@actual <- factor(object@actual, levels = c("Control", "Case"))
-              }
-
-              # Build confusion table
+              # Build confusion table from factor
+              object@actual <- factor(object@actual, levels = c("Control", "Case"))
               table <- table("predicted" = object@pred, "actual" = object@actual)
               if(verbose){
                 cat("Classification confusion table:\n"); print(table)
               }
 
-              # Compute per-class performance
-              for(class in 1:nrow(table)){
+              tn <- table[1,1]
+              fp <- table[2,1]
+              fn <- table[1,2]
+              tp <- table[2,2]
 
-                predicted <- row(table)
-                actual <- col(table)
-                tp <- sum(table[predicted == class & actual == class]) # part of diagonal with double true
-                tn <- sum(table[predicted != class & actual != class]) # part of diagonal with double false
-                fp <- sum(table[predicted == class & actual != class]) # called class but not
-                fn <- sum(table[predicted != class & actual == class]) # is but not called
-                acc <- (tp + tn) / (tp + tn + fp + fn)
-                sens <- tp / (tp + fn)
-                spec <- tn / (fp + tn)
-                prec <- tp / (tp + fp)
-                f1 <- 2 * (prec * sens) / (prec + sens)
-
-                if(length(levels(object@actual)) > 2){
-
-                  if(verbose){
-                    cat("Class", class, "performance (acc, sens, spec):", paste0(acc,", ",sens,", ", spec), "\n")
-                  }
-
-                }else{
-
-                  # NOTE: class == 2 refers to "Case"
-                  if(class == 2){
-                    df <- data.frame(acc, sens, spec, prec, f1)
-                    df[is.na(df)] <- 0
-                    return(df)
-                  }
-                }
-              }
-
-              # Compute total accuracy
-              tp <- sum(table[row(table) == col(table)])
-              tn <- sum(table[row(table) == col(table)])
-              fp <- sum(table[row(table) != col(table)])
-              fn <- sum(table[row(table) != col(table)])
               acc <- (tp + tn) / (tp + tn + fp + fn)
+              sens <- tp / (tp + fn)
+              spec <- tn / (fp + tn)
+              prec <- tp / (tp + fp)
+              f1 <- 2 * (prec * sens) / (prec + sens)
+
+              df <- data.frame(acc, sens, spec, prec, f1)
+              df[is.na(df)] <- 0
 
               if(verbose){
-                cat("Total accuracy of ExprsModule:", acc, "\n")
+                cat("Classification confusion table:\n"); print(table)
+                cat("Classifier model performance:\n"); print(df)
               }
 
-              df <- data.frame(acc)
-              df[is.na(df)] <- 0
               return(df)
             }
+          }
+)
+
+
+#' @describeIn calcStats Method to calculate performance for multi-class models.
+#' @export
+setMethod("calcStats", "MultiPredict",
+          function(object, verbose){
+
+            mat <- table("predicted" = object@pred, "actual" = object@actual) # predicted as rows
+            acc <- sum(diag(mat)) / sum(mat)
+            prec <- diag(mat) / rowSums(mat)
+            sens <- diag(mat) / colSums(mat)
+            df <- data.frame(acc, "sens" = t(sens), "prec" = t(prec)) # ensures 1 row
+            df[is.na(df)] <- 0
+
+            if(verbose){
+              cat("Classification confusion table:\n"); print(mat)
+              cat("Classifier model performance:\n"); print(df)
+            }
+
+            return(df)
           }
 )
 
 #' @describeIn calcStats Method to calculate performance for continuous outcome models.
 #' @export
 setMethod("calcStats", "RegrsPredict",
-          function(object, aucSkip, plotSkip, verbose){
+          function(object, verbose){
 
             mse <- mean((object@pred - object@actual)^2)
             rmse <- sqrt(mse)
@@ -141,9 +129,10 @@ setMethod("calcStats", "RegrsPredict",
             R2 <- cor^2
             acc <- R2
             df <- data.frame(acc, mse, rmse, mae, cor, R2)
+            df[is.na(df)] <- 0
 
             if(verbose){
-              cat("Total accuracy of RegrsModel:", acc, "\n")
+              cat("Regression model performance:\n"); print(df)
             }
 
             return(df)
