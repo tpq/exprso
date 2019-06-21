@@ -14,7 +14,7 @@ contain samples and columns should contain features.}
 \code{class(y) == "character"} or \code{class(y) == "factor"},
 \code{exprso} prepares data for binary or multi-class classification.
 Else, \code{exprso} prepares data for regression. If \code{y} is a
-matrix, the program uses the column in \code{label}.}
+matrix, the program uses the outcome in \code{label}.}
 
 \item{label}{A numeric scalar or character string. The column to
 use as the label if \code{y} is a matrix.}
@@ -49,14 +49,15 @@ See \code{\link{exprso-predict}} to deploy models.
 See \code{\link{conjoin}} to merge objects.
 }
 \examples{
-\dontrun{
 library(exprso)
 data(iris)
 array <- exprso(iris[,1:4], iris[,5])
 arrays <- splitSample(array, percent.include = 67)
-array.train <- fsANOVA(arrays[[1]], top = 0)
-array.train <- fsPrcomp(array.train, top = 3)
-mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
-predict(mach, arrays[[2]])
-}
+train <- trainingSet(arrays)
+test <- testSet(arrays)
+train <- fsANOVA(train, top = 0)
+train <- fsPrcomp(train, top = 3)
+mach <- buildSVM(train, top = 5, kernel = "linear", cost = 1)
+pred <- predict(mach, test)
+calcStats(pred)
 }

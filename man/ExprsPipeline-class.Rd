@@ -84,5 +84,6 @@ referenced in \code{summary} slot.}
 \code{\link{ExprsPipeline-class}}\cr
 \code{\link{ExprsEnsemble-class}}\cr
 \code{\link{ExprsPredict-class}}\cr
+\code{\link{MultiPredict-class}}\cr
 \code{\link{RegrsPredict-class}}
 }

@@ -4,7 +4,7 @@
 \alias{pipeFilter}
 \title{Filter \code{ExprsPipeline} Object}
 \usage{
-pipeFilter(object, colBy = "valid.acc", how = 0, gate = 0, top = 0)
+pipeFilter(object, colBy, how = 0, gate = 0, top = 0)
 }
 \arguments{
 \item{object}{An \code{\link{ExprsPipeline-class}} object.}

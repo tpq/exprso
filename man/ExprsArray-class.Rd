@@ -37,10 +37,10 @@ argument \code{i} is missing.}
 \item{name}{Returns \code{object@annot[, name]}.}
 
 \item{subset}{Subsets entire \code{ExprsArray} object via
-\code{object@annot[subset, ]}. Can be used to rearrange feature order.}
+\code{object@annot[subset, ]}. Can be used to rearrange subject order.}
 
 \item{select}{Subsets entire \code{ExprsArray} object via
-\code{object@annot[, select]}. Can be used to rearrange subject order.}
+\code{object@annot[, select]}. Can be used to rearrange label order.}
 
 \item{y}{Leave missing. Argument exists because of \code{\link{plot}} generic definition.}
 
@@ -87,5 +87,6 @@ An S4 class to store feature and annotation data
 \code{\link{ExprsPipeline-class}}\cr
 \code{\link{ExprsEnsemble-class}}\cr
 \code{\link{ExprsPredict-class}}\cr
+\code{\link{MultiPredict-class}}\cr
 \code{\link{RegrsPredict-class}}
 }

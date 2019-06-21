@@ -10,8 +10,6 @@ The \code{exprso} package includes these automated pipeline modules:
 
 - \code{\link{plGrid}}
 
-- \code{\link{plGridMulti}}
-
 - \code{\link{plMonteCarlo}}
 
 - \code{\link{plNested}}

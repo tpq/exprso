@@ -31,14 +31,8 @@ The \code{exprso} package includes these build modules:
 - \code{\link{buildDNN}}
 }
 \details{
-In the case of multi-class classification, each \code{build} module can
- harness the \code{\link{doMulti}} function to perform "1 vs. all" classifier
- construction. In the setting of four class labels, a single \code{build} call
- will return four classifiers that work in concert to make a single prediction
- of an unlabelled subject. For building multiple classifiers across a vast
- parameter space in a high-throughput manner, see \code{\link{pl}}.
-
-Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
+Build a binary classifier, multi-class classifier, or regression model.
+ Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
  which allows the user to specify which features to feed INTO the model
  build. This effectively provides the user with one last opportunity to subset
  the feature space based on prior feature selection or dimension reduction.

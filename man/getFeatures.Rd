@@ -14,5 +14,5 @@ or \code{ExprsEnsemble} object.}
 \code{\link{ExprsEnsemble-class}}.}
 }
 \description{
-See the respective S4 class for method details.
+See the object class for method details.
 }
