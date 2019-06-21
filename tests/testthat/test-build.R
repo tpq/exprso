@@ -1,256 +1,83 @@
 library(exprso)
-suppressWarnings(RNGversion("3.5.0"))
 
-###########################################################
-### Build and predict ExprsMachine objects
+binary <- exprso(iris[1:100,1:4], iris[1:100,5])
+multi <- exprso(iris[,1:4], iris[,5])
+cont <- exprso(iris[,1:3], iris[,4])
 
-load(file.path("data.RData"))
+checkBuild <- function(input, classifier, should){
 
-set.seed(12345)
+  if(should == "error"){
+    print(should)
+    expect_error(
+      do.call(classifier, list("object" = input))
+    )
+  }else{
+    print(should)
+    m <- do.call(classifier, list("object" = input))
+    expect_equal(
+      round(calcStats(predict(m, input))$acc, 3),
+      round(should, 3)
+    )
+  }
+}
 
-arrays <- splitStratify(array, percent.include = 50, colBy = NULL)
-array.train <- fsStats(arrays[[1]], top = 0)
-array.test <- arrays[[2]]
+test_that("build modules work for each data type", {
 
-mach <- buildSVM(array.train, top = 0, kernel = "linear", cost = 1)
-pred.train <- predict(mach, array.train)
-pred.test <- predict(mach, array.test)
+  # NAIVE BAYES
+  set.seed(1)
+  checkBuild(binary, buildNB, should = 1)
+  checkBuild(multi, buildNB, should = .96)
+  checkBuild(cont, buildNB, should = "error")
 
-test_that("ExprsBinary models predict only on ExprsBinary datasets", {
+  # LINEAR DISCRIMINANT ANALYSIS
+  set.seed(1)
+  checkBuild(binary, buildLDA, should = 1)
+  checkBuild(multi, buildLDA, should = .98)
+  checkBuild(cont, buildLDA, should = "error")
 
-  expect_error(
-    predict(mach, arrayMulti)
-  )
-})
+  # SUPPORT VECTOR MACHINE
+  set.seed(1)
+  checkBuild(binary, buildSVM, should = 1)
+  checkBuild(multi, buildSVM, should = .9667)
+  checkBuild(cont, buildSVM, should = .9378)
 
-test_that("ExprsPredict slots make sense", {
+  # LM / GLM / LR
+  set.seed(1)
+  checkBuild(binary, buildLM, should = "error")
+  checkBuild(multi, buildLM, should = "error")
+  checkBuild(cont, buildLM, should = .9379)
+  set.seed(1)
+  checkBuild(binary, buildGLM, should = 1)
+  checkBuild(multi, buildGLM, should = "error")
+  checkBuild(cont, buildGLM, should = .9379)
 
-  expect_equal(
-    as.character(pred.train@pred),
-    array.train$defineCase
-  )
+  # LASSO
+  set.seed(1)
+  checkBuild(binary, buildLASSO, should = 1)
+  checkBuild(multi, buildLASSO, should = .953)
+  checkBuild(cont, buildLASSO, should = .6690)
 
-  expect_equal(
-    as.character(pred.test@pred),
-    array.test$defineCase
-  )
+  # NEURAL NETS
+  set.seed(1)
+  checkBuild(binary, buildANN, should = 1)
+  checkBuild(multi, buildANN, should = .6667)
+  #checkBuild(cont, buildANN, should = NA)
 
-  expect_equal(
-    ifelse(as.vector(pred.test@decision.values) > 0, "Case", "Control"),
-    array.test$defineCase
-  )
+  # DECISION TREES
+  set.seed(1)
+  checkBuild(binary, buildDT, should = 1)
+  checkBuild(multi, buildDT, should = .96)
+  checkBuild(cont, buildDT, should = .9336)
 
-  expect_equal(
-    ifelse(as.vector(pred.test@probability[,"Case"]) > .5, "Case", "Control"),
-    array.test$defineCase
-  )
-})
+  # RANDOM FORESTS
+  set.seed(1)
+  checkBuild(binary, buildRF, should = 1)
+  checkBuild(multi, buildRF, should = 1)
+  checkBuild(cont, buildRF, should = .9778)
 
-test_that("built models can predict correct classes", {
-
-  set.seed(12345)
-  mach <- buildNB(array.train, top = 2)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildLDA(array.train, top = 2)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildSVM(array.train, top = 2, kernel = "linear", cost = 1)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildANN(array.train, top = 2)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildDT(array, cp = .1)
-  expect_equal(
-    as.character(predict(mach, array)@pred),
-    array$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildRF(array.train)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildFRB(array.train)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildLR(array.train)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildGLM(array.train)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-
-  set.seed(12345)
-  mach <- buildLASSO(array.train, nfolds = 3)
-  expect_equal(
-    as.character(predict(mach, array.test)@pred),
-    array.test$defineCase
-  )
-})
-
-array.test@annot$defineCase[1] <- "Case"
-array.test@annot$defineCase[10] <- "Control"
-
-test_that("built models can detect wrong classes", {
-
-  set.seed(12345)
-  mach <- buildNB(array.train, top = 2)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildLDA(array.train, top = 2)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildSVM(array.train, top = 2, kernel = "linear", cost = 1)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildANN(array.train, top = 2)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildRF(array.train)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildFRB(array.train)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildLR(array.train)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildGLM(array.train)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-
-  set.seed(12345)
-  mach <- buildLASSO(array.train)
-  expect_equal(
-    calcStats(predict(mach, array.test), aucSkip = TRUE)$acc,
-    .9
-  )
-})
-
-###########################################################
-### Build and predict ExprsModule objects
-
-set.seed(12345)
-
-arraysMulti <- splitStratify(arrayMulti, percent.include = 80, colBy = NULL)
-arrayMulti.train <- fsSample(arraysMulti[[1]], top = 0)
-arrayMulti.test <- arraysMulti[[2]]
-
-set.seed(12345)
-
-mach <- buildSVM(arrayMulti.train, top = 0, kernel = "linear", cost = 1)
-pred.train <- predict(mach, arrayMulti.train)
-pred.test <- predict(mach, arrayMulti.test)
-
-test_that("ExprsMulti models predict only on ExprsMulti datasets", {
-
-  expect_error(
-    predict(mach, array.train)
-  )
-})
-
-mach.multi <- doMulti(arrayMulti.train, top = 0, method = "buildSVM", kernel = "radial")
-
-test_that("doMulti performs 1 vs. all build", {
-
-  i <- 1
-  array.i <- arrayMulti.train
-  array.i@annot$defineCase <- ifelse(as.numeric(array.i@annot$defineCase) == i, "Case", "Control")
-  class(array.i) <- "ExprsBinary"
-  expect_equal(
-    calcStats(predict(mach.multi[[i]], array.i))$acc,
-    1
-  )
-
-  i <- 2
-  array.i <- arrayMulti.train
-  array.i@annot$defineCase <- ifelse(as.numeric(array.i@annot$defineCase) == i, "Case", "Control")
-  class(array.i) <- "ExprsBinary"
-  expect_equal(
-    calcStats(predict(mach.multi[[i]], array.i))$acc,
-    1
-  )
-
-  i <- 3
-  array.i <- arrayMulti.train
-  array.i@annot$defineCase <- ifelse(as.numeric(array.i@annot$defineCase) == i, "Case", "Control")
-  class(array.i) <- "ExprsBinary"
-  expect_equal(
-    calcStats(predict(mach.multi[[i]], array.i))$acc,
-    1
-  )
-})
-
-test_that("ExprsMulti build and predict is grossly intact", {
-
-  expect_equal(
-    calcStats(predict(mach, arrayMulti.train))$acc,
-    1
-  )
-
-  expect_equal(
-    calcStats(predict(mach, arrayMulti.test))$acc,
-    1
-  )
+  # FRB
+  set.seed(1)
+  checkBuild(binary, buildFRB, should = 1)
+  checkBuild(multi, buildFRB, should = .953)
+  checkBuild(cont, buildFRB, should = .932)
 })
