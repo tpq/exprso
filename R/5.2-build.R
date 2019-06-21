@@ -8,26 +8,6 @@
 #' @export
 build. <- function(object, top, uniqueFx, ...){
 
-  # Convert top input to explicit feature reference
-  if(class(top) == "numeric"){
-    if(length(top) == 1){
-      if(top > nrow(object@exprs)) top <- 0
-      if(top == 0){
-        top <- rownames(object@exprs) # keep for uniqueFx
-        if(class(object) != "ExprsMulti") data <- t(object@exprs)
-      }else{
-        top <- rownames(object@exprs)[1:top]
-        if(class(object) != "ExprsMulti") data <- t(object@exprs[top, , drop = FALSE])
-      }
-    }else{
-      top <- rownames(object@exprs)[top] # when top is numeric vector
-      if(class(object) != "ExprsMulti") data <- t(object@exprs[top, , drop = FALSE])
-    }
-  }else{
-    # top <- top # feature names already specified
-    if(class(object) != "ExprsMulti") data <- t(object@exprs[top, , drop = FALSE])
-  }
-
   # If a reduction model has never been used, there is no reason to store old history
   # (helps to reduce RAM overhead and to improve run-time)
   if(!is.null(object@reductionModel)){
@@ -36,86 +16,55 @@ build. <- function(object, top, uniqueFx, ...){
     }
   }
 
-  # Carry through and append fs history as stored in the ExprsArray object
-  # NOTE: length(ExprsMachine@preFilter) > length(ExprsArray@preFilter)
-  if(class(object) == "ExprsMulti"){
-    args <- getArgs(...)
-    args <- append(args, list("object" = object, "top" = top, "method" = "build.", "uniqueFx" = uniqueFx))
-    machs <- do.call("doMulti", args)
-    m <- new("ExprsModule",
-             preFilter = append(object@preFilter, list(top)),
-             reductionModel = append(object@reductionModel, list(NA)),
-             mach = machs)
-  }else if(class(object) == "ExprsBinary"){
-    labels <- factor(object@annot$defineCase, levels = c("Control", "Case"))
-    model <- do.call("uniqueFx", list(data, labels, ...))
-    m <- new("ExprsMachine",
-             preFilter = append(object@preFilter, list(top)),
-             reductionModel = append(object@reductionModel, list(NA)),
-             mach = model)
-  }else if(class(object) == "RegrsArray"){
-    labels <- object@annot$defineCase
-    model <- do.call("uniqueFx", list(data, labels, ...))
-    m <- new("RegrsModel",
-             preFilter = append(object@preFilter, list(top)),
-             reductionModel = append(object@reductionModel, list(NA)),
-             mach = model)
-  }else{ stop("Uh oh! DEBUG ERROR: 003")}
-
-  return(m)
-}
-
-#' Perform Multiple "1 vs. all" Tasks
-#'
-#' A function to execute multiple "1 vs. all" binary tasks.
-#'
-#' \code{doMulti} runs once for each factor level in the
-#'  "defineCase" column. If a training set is missing any
-#'  one of the factor levels (e.g., owing to random cuts during
-#'  cross-validation), the \code{ExprsModule} component that
-#'  would refer to that class label gets replaced with an NA
-#'  placeholder. Note that this NA placeholder will prevent a
-#'  classifier from possibly predicting the NA class (i.e., a
-#'  classifier can only make predictions about class
-#'  labels that it "knows"). However, these "unknown" classes
-#'  still impact metrics of classifier performance.
-#'  Otherwise, see \code{\link{exprso-predict}}.
-#'
-#' @inheritParams build.
-#' @param method A character string. The method to apply.
-#' @return A list of the results from \code{method}.
-#' @export
-doMulti <- function(object, top = 0, method, ...){
-
-  classCheck(object, "ExprsMulti",
-             "This method only works for multi-class classification tasks.")
-
-  # Perform N binary tasks
-  args <- getArgs(...)
-  multi <- vector("list", length(levels(object@annot$defineCase)))
-  for(i in 1:length(levels(object@annot$defineCase))){
-
-    # If the i-th ExprsMachine would not have any representative cases
-    if(all(as.numeric(object@annot$defineCase) != i)){
-
-      cat("Missing class ", i, ". Using a NA placeholder instead.\n", sep = "")
-      multi[[i]] <- NA
-
+  # Convert top input to explicit feature reference
+  if(class(top) == "numeric"){
+    if(length(top) == 1){
+      if(top > nrow(object@exprs)) top <- 0
+      if(top == 0){
+        topChar <- rownames(object@exprs) # keep for uniqueFx
+      }else{
+        topChar <- rownames(object@exprs)[1:top] # when top is numeric scalar
+      }
     }else{
-
-      # Turn the ExprsMulti object into the i-th ExprsBinary object
-      temp <- object
-      temp@annot$defineCase <- ifelse(as.numeric(temp$defineCase) == i, "Case", "Control")
-      class(temp) <- "ExprsBinary"
-
-      # Perform the binary task
-      cat("Performing a one-vs-all binary task with class", i, "set as \"Case\".\n")
-      args.i <- append(list("object" = temp, "top" = top), args)
-      multi[[i]] <- do.call(method, args.i)
+      topChar <- rownames(object@exprs)[top] # when top is numeric vector
     }
+  }else{
+    topChar <- top # else top is row names
   }
 
-  return(multi)
+  # Run uniqueFx on top data
+  if(!identical(top, 0)){
+    x <- t(object@exprs[topChar, , drop = FALSE])
+  }else{
+    x <- t(object@exprs) # runs faster
+  }
+
+  # Prepare model
+  if(class(object) == "ExprsMulti"){
+
+    y <- object@annot$defineCase
+    modelType <- "ExprsModule"
+
+  }else if(class(object) == "ExprsBinary"){
+
+    y <- factor(object@annot$defineCase, levels = c("Control", "Case"))
+    modelType <- "ExprsMachine"
+
+  }else if(class(object) == "RegrsArray"){
+
+    y <- object@annot$defineCase
+    modelType <- "RegrsModel"
+
+  }else{ stop("Uh oh! DEBUG ERROR: 003")}
+
+  # Carry through and append fs history as stored in the ExprsArray object
+  model <- do.call("uniqueFx", list(data = x, labels = y, ...))
+  m <- new(modelType,
+           preFilter = append(object@preFilter, list(topChar)),
+           reductionModel = append(object@reductionModel, list(NA)),
+           mach = model)
+
+  return(m)
 }
 
 #' Build Naive Bayes Model
@@ -240,7 +189,7 @@ buildGLM <- function(object, top = 0, ...){ # args to glm
              do.call(stats::glm, args)
            }, ...)
 
-  }else if(class(object) %in% c("ExprsBinary", "ExprsMulti")){
+  }else if(class(object) == "ExprsBinary"){
 
     build.(object, top,
            uniqueFx = function(data, labels, ...){
@@ -252,6 +201,10 @@ buildGLM <- function(object, top = 0, ...){ # args to glm
              args <- append(list("formula" = defineCase ~ ., "data" = df), args)
              do.call(stats::glm, args)
            }, ...)
+
+  }else if(class(object) == "ExprsMulti"){
+
+    stop("This build method does not work for multi-class classification tasks.")
   }
 }
 
@@ -264,8 +217,8 @@ buildGLM <- function(object, top = 0, ...){ # args to glm
 #' @export
 buildLR <- function(object, top = 0, ...){ # args to glm
 
-  classCheck(object, c("ExprsBinary", "ExprsMulti"),
-             "This build method only works for classification tasks.")
+  classCheck(object, "ExprsBinary",
+             "This build method only works for binary classification tasks.")
 
   buildGLM(object, top, ...)
 }
@@ -297,7 +250,7 @@ buildLASSO <- function(object, top = 0, ...){ # args to cv.glmnet
              do.call(glmnet::cv.glmnet, args)
            }, ...)
 
-  }else if(class(object) %in% c("ExprsBinary", "ExprsMulti")){
+  }else if(class(object) == "ExprsBinary"){
 
     build.(object, top,
            uniqueFx = function(data, labels, ...){
@@ -309,6 +262,21 @@ buildLASSO <- function(object, top = 0, ...){ # args to cv.glmnet
              args <- defaultArg("alpha", 1, args)
              args <- forceArg("family", "binomial", args)
              args <- append(list("x" = data, "y" = as.numeric(labels) - 1), args)
+             do.call(glmnet::cv.glmnet, args)
+           }, ...)
+
+  }else if(class(object) == "ExprsMulti"){
+
+    build.(object, top,
+           uniqueFx = function(data, labels, ...){
+
+             # Perform LASSO GLM
+             args <- getArgs(...)
+             args <- defaultArg("nfolds", 5, args)
+             args <- defaultArg("intercept", FALSE, args)
+             args <- defaultArg("alpha", 1, args)
+             args <- forceArg("family", "multinomial", args)
+             args <- append(list("x" = data, "y" = labels), args)
              do.call(glmnet::cv.glmnet, args)
            }, ...)
   }

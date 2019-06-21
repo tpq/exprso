@@ -19,6 +19,14 @@
 #' @export
 fs. <- function(object, top, uniqueFx, ...){
 
+  # If a reduction model has never been used, there is no reason to store old history
+  # (helps to reduce RAM overhead and to improve run-time)
+  if(!is.null(object@reductionModel)){
+    if(all(unlist(lapply(object@reductionModel, is.na)))){
+      object@preFilter <- lapply(object@preFilter, function(x) 0)
+    }
+  }
+
   # Convert top input to explicit feature reference
   if(class(top) == "numeric"){
     if(length(top) == 1){
@@ -43,14 +51,6 @@ fs. <- function(object, top, uniqueFx, ...){
   }
   y <- object@annot$defineCase
   final <- do.call("uniqueFx", list(data = x, outcome = y, top = topChar, ...))
-
-  # If a reduction model has never been used, there is no reason to store old history
-  # (helps to reduce RAM overhead and to improve run-time)
-  if(!is.null(object@reductionModel)){
-    if(all(unlist(lapply(object@reductionModel, is.na)))){
-      object@preFilter <- lapply(object@preFilter, function(x) 0)
-    }
-  }
 
   # Append uniqueFx results to object
   if(class(final) == "character"){ # fill @preFilter slot
