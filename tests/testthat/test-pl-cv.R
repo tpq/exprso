@@ -103,7 +103,7 @@ nest <- plNested(array, fold = 10, ctrlFS = fs, ctrlGS = gs)
 test_that("calcMonteCarlo picks best CV", {
 
   expect_equal(
-    calcNested(nest, colBy = "train.plCV"),
-    mean(nest$train.plCV[seq(2, 20, 2)])
+    calcNested(nest, colBy = "valid.f1"),
+    calcNested(pipeFilter(nest, colBy = "train.plCV"), colBy = "valid.f1")
   )
 })

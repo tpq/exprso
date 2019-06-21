@@ -86,38 +86,3 @@ test_that("fsANOVA works for ExprsMulti objects", {
     "feat3"
   )
 })
-
-fsStats.multi <- doMulti(arrayMulti, top = 0, method = "fsStats")
-
-test_that("doMulti performs 1 vs. all fs", {
-
-  expect_equal(
-    rownames(fsStats.multi[[1]]@exprs)[1],
-    "feat4"
-  )
-
-  expect_equal(
-    rownames(fsStats.multi[[1]]@exprs)[4],
-    "feat3"
-  )
-
-  expect_equal(
-    rownames(fsStats.multi[[2]]@exprs)[1],
-    "feat4"
-  )
-
-  expect_equal(
-    rownames(fsStats.multi[[2]]@exprs)[4],
-    "feat3"
-  )
-
-  expect_equal(
-    rownames(fsStats.multi[[3]]@exprs)[1],
-    "feat4"
-  )
-
-  expect_equal(
-    rownames(fsStats.multi[[3]]@exprs)[4],
-    "feat3"
-  )
-})
