@@ -33,7 +33,7 @@
 #'  this selects the top N models for each unique bootstrap.
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #' @export
-pipeFilter <- function(object, colBy = "valid.acc", how = 0, gate = 0, top = 0){
+pipeFilter <- function(object, colBy, how = 0, gate = 0, top = 0){
 
   classCheck(object, "ExprsPipeline",
              "This function is applied to the results of ?pl.")
