@@ -3,7 +3,7 @@
 
 #' Retrieve Feature Set
 #'
-#' See the respective S4 class for method details.
+#' See the object class for method details.
 #'
 #' @param object An \code{ExprsArray}, \code{ExprsModel}, \code{ExprsPipeline},
 #'  or \code{ExprsEnsemble} object.
@@ -91,9 +91,9 @@ setMethod('$', signature(x = "ExprsArray"),
 #' @describeIn ExprsArray Method to subset \code{ExprsArray} object.
 #'
 #' @param subset Subsets entire \code{ExprsArray} object via
-#'  \code{object@annot[subset, ]}. Can be used to rearrange feature order.
+#'  \code{object@annot[subset, ]}. Can be used to rearrange subject order.
 #' @param select Subsets entire \code{ExprsArray} object via
-#'  \code{object@annot[, select]}. Can be used to rearrange subject order.
+#'  \code{object@annot[, select]}. Can be used to rearrange label order.
 #'
 #' @export
 setMethod("subset", signature(x = "ExprsArray"),
@@ -211,7 +211,7 @@ setMethod("show", "ExprsModel",
 
             if(class(object) == "ExprsMachine" | class(object) == "ExprsModule"){
               cat("##Number of classes:",
-                  ifelse(all(class(object@mach) == "list"), length(object@mach), 2), "\n")
+                  length(unique(object$defineCase)))
             }else{
               cat("##Continuous outcome model\n")
             }
@@ -446,13 +446,21 @@ setMethod("show", "ExprsPredict",
             cat("@pred summary:", table(as.numeric(object@pred)), "\n")
             cat("@decision.values summary:", colnames(object@decision.values), "\n")
             cat("@probability summary:", colnames(object@probability), "\n")
-            if(length(levels(object@pred)) == 2){
-              cat("@actual summary:", table(as.numeric(
-                factor(object@actual, levels = levels(object@pred)))), "\n")
-            }else{
-              cat("@actual summary:", table(as.numeric(
-                object@actual)), "\n")
-            }
+            cat("@actual summary:", table(as.numeric(
+              factor(object@actual, levels = levels(object@pred)))), "\n")
+          }
+)
+
+#' @describeIn MultiPredict Method to show \code{MultiPredict} object.
+#'
+#' @param object An object of class \code{MultiPredict}.
+#'
+#' @export
+setMethod("show", "MultiPredict",
+          function(object){
+
+            cat("@pred summary:", table(as.numeric(object@pred)), "\n")
+            cat("@actual summary:", table(as.numeric(object@actual)), "\n")
           }
 )
 
