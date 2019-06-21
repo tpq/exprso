@@ -29,7 +29,7 @@
 #'  \code{class(y) == "character"} or \code{class(y) == "factor"},
 #'  \code{exprso} prepares data for binary or multi-class classification.
 #'  Else, \code{exprso} prepares data for regression. If \code{y} is a
-#'  matrix, the program uses the column in \code{label}.
+#'  matrix, the program uses the outcome in \code{label}.
 #' @param label A numeric scalar or character string. The column to
 #'  use as the label if \code{y} is a matrix.
 #' @param switch A logical scalar. Toggles which class label is
@@ -37,16 +37,17 @@
 #' @return An \code{ExprsArray} object.
 #'
 #' @examples
-#' \dontrun{
 #' library(exprso)
 #' data(iris)
 #' array <- exprso(iris[,1:4], iris[,5])
 #' arrays <- splitSample(array, percent.include = 67)
-#' array.train <- fsANOVA(arrays[[1]], top = 0)
-#' array.train <- fsPrcomp(array.train, top = 3)
-#' mach <- buildSVM(array.train, top = 5, kernel = "linear", cost = 1)
-#' predict(mach, arrays[[2]])
-#' }
+#' train <- trainingSet(arrays)
+#' test <- testSet(arrays)
+#' train <- fsANOVA(train, top = 0)
+#' train <- fsPrcomp(train, top = 3)
+#' mach <- buildSVM(train, top = 5, kernel = "linear", cost = 1)
+#' pred <- predict(mach, test)
+#' calcStats(pred)
 #' @export
 exprso <- function(x, y, label = 1, switch = FALSE){
 
@@ -249,14 +250,9 @@ NULL
 #' - \code{\link{buildDNN}}
 #'
 #' @details
-#' In the case of multi-class classification, each \code{build} module can
-#'  harness the \code{\link{doMulti}} function to perform "1 vs. all" classifier
-#'  construction. In the setting of four class labels, a single \code{build} call
-#'  will return four classifiers that work in concert to make a single prediction
-#'  of an unlabelled subject. For building multiple classifiers across a vast
-#'  parameter space in a high-throughput manner, see \code{\link{pl}}.
 #'
-#' Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
+#' Build a binary classifier, multi-class classifier, or regression model.
+#'  Like \code{\link{fs}} methods, \code{build} methods have a \code{top} argument
 #'  which allows the user to specify which features to feed INTO the model
 #'  build. This effectively provides the user with one last opportunity to subset
 #'  the feature space based on prior feature selection or dimension reduction.
@@ -278,8 +274,6 @@ NULL
 #' - \code{\link{plCV}}
 #'
 #' - \code{\link{plGrid}}
-#'
-#' - \code{\link{plGridMulti}}
 #'
 #' - \code{\link{plMonteCarlo}}
 #'
