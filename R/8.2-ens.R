@@ -1,3 +1,45 @@
+#' Build Ensemble
+#'
+#' \code{buildEnsemble} builds an ensemble from \code{ExprsModel} or
+#'  \code{ExprsPipeline} objects. See Details.
+#'
+#' This function can combine any number of model objects into an ensemble.
+#'  These models do not necessarily have to derive from the same \code{build}
+#'  method. In this way, it works like \code{\link{conjoin}}.
+#'
+#' This function can also build an ensemble from pipeline objects. It does
+#'  this by calling \code{\link{pipeFilter}}, then joining the remaining models
+#'  into an ensemble. As an adjunct to this method, consider first combining
+#'  multiple pipeline objects with \code{\link{conjoin}}.
+#'
+#' @inheritParams pipeFilter
+#' @param ... Additional \code{ExprsModel} objects to use in the ensemble.
+#'  Argument applies to the \code{\link{ExprsModel-class}} method only.
+#' @return An \code{\link{ExprsEnsemble-class}} object.
+#' @export
+setGeneric("buildEnsemble",
+           function(object, ...) standardGeneric("buildEnsemble")
+)
+
+#' @describeIn buildEnsemble Method to build ensemble from \code{ExprsModel} objects.
+#' @export
+setMethod("buildEnsemble", "ExprsModel",
+          function(object, ...){ # args to include additional ExprsMachine objects
+
+            conjoin(object, ...)
+          }
+)
+
+#' @describeIn buildEnsemble Method to build ensemble from \code{ExprsPipeline} objects.
+#' @export
+setMethod("buildEnsemble", "ExprsPipeline",
+          function(object, colBy = 0, how = 0, gate = 0, top = 0){
+
+            object <- pipeFilter(object, colBy = colBy, how = how, gate = gate, top = top)
+            new("ExprsEnsemble", machs = unlist(object@machs))
+          }
+)
+
 #' @rdname exprso-predict
 #'
 #' @details
@@ -63,11 +105,10 @@ setMethod("predict", "ExprsEnsemble",
               # Majority vote on best outcome
               votes <- data.frame(lapply(results, function(result) result@pred))
               pred <- apply(votes, 1, function(x) names(table(x))[nnet::which.is.max(table(x))])
-              final <- new("MultiPredict", pred = pred, actual = array$defineCase)
 
               # Clean up pred
-              levels <- levels(array$defineCase)
-              pred <- factor(pred, levels = 1:length(levels), labels = levels)
+              pred <- factor(pred, levels = levels(array$defineCase))
+              final <- new("MultiPredict", pred = pred, actual = array$defineCase)
 
             }else if(class(array) == "RegrsArray"){
 
