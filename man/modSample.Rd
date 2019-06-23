@@ -10,13 +10,13 @@ modSample(object, size = 0)
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}
 
 \item{size}{A numeric scalar. The number of randomly sampled features
-to include in the pre-processed \code{ExprsArray} object.}
+to include in the result.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modSample} samples features from a data set randomly without
  replacement. When \code{size = 0}, this is equivalent to
- \code{fsSample, top = 0}, but much quicker.
+ \code{fsSample, top = 0}, but probably quicker.
 }

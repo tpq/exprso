@@ -16,7 +16,7 @@ Provide \code{MARGIN = c(1, 2)} to normalize by the subject vector
 and then by the feature vector.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modNormalize} normalizes feature data.

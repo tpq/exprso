@@ -12,7 +12,7 @@ modInclude(object, include = rownames(object@exprs))
 \item{include}{A character vector. The names of features to include.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modSelect} selects specific features from a data set. Unlike

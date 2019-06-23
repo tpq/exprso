@@ -20,7 +20,7 @@ include the feature. Inclusive with \code{beta2}.}
 include the feature. Inclusive with \code{beta1}.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modFilter} imposes a hard filter for (gene expression) feature data.

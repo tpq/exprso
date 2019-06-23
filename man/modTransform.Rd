@@ -12,7 +12,7 @@ modTransform(object, base = exp(1))
 \item{base}{A numeric scalar. The base of the logarithm.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modTransform} log transforms feature data.

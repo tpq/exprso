@@ -10,7 +10,7 @@ modCLR(object)
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modCLR} applies a centered log-ratio transformation to the data.

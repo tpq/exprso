@@ -8,15 +8,15 @@ modHistory(object, reference)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object. The object that should undergo a
-replication of some feature selection and dimension reduction history.}
+replication of the feature selection history.}
 
 \item{reference}{An \code{ExprsArray} or \code{ExprsModel} object. The object
-containing the history to use as a template.}
+containing the reference history.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
-\code{modHistory} replicates the \code{fs} history of a reference object.
- Used by \code{predict} to prepare validation set for model deployment.
+\code{modHistory} replicates the feature selection history of a reference.
+ Used by \code{predict} to prepare test set for model deployment.
 }

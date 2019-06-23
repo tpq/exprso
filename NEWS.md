@@ -1,3 +1,13 @@
+## exprso 0.5.9
+---------------------
+* Update OOP framework
+    * Fix bug where printing the model triggers an error
+* Update `predict` modules
+    * Fix bug where the ensemble does not save predictions as a factor
+* Revised documentation
+    * Reviewed 2-mod and 4-conjoin
+    * New `ens` test
+
 ## exprso 0.5.8
 ---------------------
 * Update OOP framework
@@ -17,6 +27,7 @@
     * Completely remove `doMulti` module
 * Revised documentation
     * Reviewed 1.1, 1.2, and 1.3
+    * New `build` test
 
 ## exprso 0.5.7
 ---------------------

@@ -13,7 +13,7 @@ modTMM(object, method = "TMM")
 Defaults to the "TMM" method.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modTMM} normalizes feature data.

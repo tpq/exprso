@@ -10,11 +10,13 @@ modPermute(object)
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
-\code{modPermute} randomly samples each feature in the data
- without replacement. This method helps establish a null
- model for the purpose of testing the significance of
- observed prediction error estimates.
+\code{modPermute} randomly shuffles each feature across
+ all samples in the data. Using permuted data can establish
+ a null model for testing the significance of prediction
+ error estimates. This approach preserves the univariate
+ distributions, but will change the multivariate
+ distribution.
 }

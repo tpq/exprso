@@ -10,7 +10,7 @@ modAcomp(object)
 \item{object}{An \code{ExprsArray} object to undergo pre-processing.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modAcomp} makes it so that all sample vectors have the same total sum.

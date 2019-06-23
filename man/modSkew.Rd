@@ -8,7 +8,7 @@ modSkew(object, alpha = 0, uniform = TRUE)
 }
 \arguments{
 \item{object}{An \code{ExprsArray} object. The object that should undergo a
-replication of some feature selection and dimension reduction history.}
+replication of the feature selection history.}
 
 \item{alpha}{An integer. The maximum range of skew factors used
 for skewing if \code{uniform = TRUE}. The standard deviation
@@ -18,7 +18,7 @@ of the skew factors if \code{uniform = FALSE}. See Details.}
 from a uniform distribution or a normal distribution.}
 }
 \value{
-A pre-processed \code{ExprsArray} object.
+An \code{ExprsArray} object.
 }
 \description{
 \code{modSkew} skews a data set by making all sample vectors
