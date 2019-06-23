@@ -1,13 +1,13 @@
 #' Replicate Data Process History
 #'
-#' \code{modHistory} replicates the \code{fs} history of a reference object.
-#'  Used by \code{predict} to prepare validation set for model deployment.
+#' \code{modHistory} replicates the feature selection history of a reference.
+#'  Used by \code{predict} to prepare test set for model deployment.
 #'
 #' @param object An \code{ExprsArray} object. The object that should undergo a
-#'  replication of some feature selection and dimension reduction history.
+#'  replication of the feature selection history.
 #' @param reference An \code{ExprsArray} or \code{ExprsModel} object. The object
-#'  containing the history to use as a template.
-#' @return A pre-processed \code{ExprsArray} object.
+#'  containing the reference history.
+#' @return An \code{ExprsArray} object.
 #' @export
 modHistory <- function(object, reference){
 
@@ -97,7 +97,7 @@ modHistory <- function(object, reference){
 #'  include the feature. Inclusive with \code{beta2}.
 #' @param beta2 A numeric scalar. The \code{max / min} ratio above which to
 #'  include the feature. Inclusive with \code{beta1}.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modFilter <- function(object, threshold, maximum, beta1, beta2){
 
@@ -124,7 +124,7 @@ modFilter <- function(object, threshold, maximum, beta1, beta2){
 #'
 #' @inheritParams modFilter
 #' @param base A numeric scalar. The base of the logarithm.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modTransform <- function(object, base = exp(1)){
 
@@ -139,12 +139,12 @@ modTransform <- function(object, base = exp(1)){
 #'
 #' \code{modSample} samples features from a data set randomly without
 #'  replacement. When \code{size = 0}, this is equivalent to
-#'  \code{fsSample, top = 0}, but much quicker.
+#'  \code{fsSample, top = 0}, but probably quicker.
 #'
 #' @inheritParams modFilter
 #' @param size A numeric scalar. The number of randomly sampled features
-#'  to include in the pre-processed \code{ExprsArray} object.
-#' @return A pre-processed \code{ExprsArray} object.
+#'  to include in the result.
+#' @return An \code{ExprsArray} object.
 #' @export
 modSample <- function(object, size = 0){
 
@@ -159,13 +159,15 @@ modSample <- function(object, size = 0){
 
 #' Permute Features in Data
 #'
-#' \code{modPermute} randomly samples each feature in the data
-#'  without replacement. This method helps establish a null
-#'  model for the purpose of testing the significance of
-#'  observed prediction error estimates.
+#' \code{modPermute} randomly shuffles each feature across
+#'  all samples in the data. Using permuted data can establish
+#'  a null model for testing the significance of prediction
+#'  error estimates. This approach preserves the univariate
+#'  distributions, but will change the multivariate
+#'  distribution.
 #'
 #' @inheritParams modFilter
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modPermute <- function(object){
 
@@ -186,7 +188,7 @@ modPermute <- function(object){
 #'
 #' @inheritParams modFilter
 #' @param include A character vector. The names of features to include.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modInclude <- function(object, include = rownames(object@exprs)){
 
@@ -210,7 +212,7 @@ modInclude <- function(object, include = rownames(object@exprs)){
 #'  Provide \code{MARGIN = 2} to normalize the subject vector.
 #'  Provide \code{MARGIN = c(1, 2)} to normalize by the subject vector
 #'  and then by the feature vector.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modNormalize <- function(object, MARGIN = c(1, 2)){
 
@@ -235,7 +237,7 @@ modNormalize <- function(object, MARGIN = c(1, 2)){
 #' @inheritParams modFilter
 #' @param method A character string. The method used by \code{calcNormFactors}.
 #'  Defaults to the "TMM" method.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modTMM <- function(object, method = "TMM"){
 
@@ -253,7 +255,7 @@ modTMM <- function(object, method = "TMM"){
 #' \code{modAcomp} makes it so that all sample vectors have the same total sum.
 #'
 #' @inheritParams modFilter
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modAcomp <- function(object){
 
@@ -269,12 +271,16 @@ modAcomp <- function(object){
 #' \code{modCLR} applies a centered log-ratio transformation to the data.
 #'
 #' @inheritParams modFilter
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modCLR <- function(object){
 
   classCheck(object, "ExprsArray",
              "This function is applied to the results of ?exprso.")
+
+  if(any(object@exprs == 0)){
+    stop("modCLR does work with zero-laden data.")
+  }
 
   logX <- log(object@exprs)
   object@exprs <- apply(logX, 2, function(x) x - mean(x))
@@ -290,7 +296,7 @@ modCLR <- function(object){
 #' @param alpha A numeric scalar. This argument guides
 #'  a Box-Cox transformation to approximate log-ratios in the
 #'  presence of zeros. Skip with \code{NA}.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modRatios <- function(object, alpha = NA){
 
@@ -322,7 +328,7 @@ modRatios <- function(object, alpha = NA){
 #'  of the scale factors if \code{uniform = FALSE}. See Details.
 #' @param uniform A boolean. Toggles whether to draw scale factors
 #'  from a uniform distribution or a normal distribution.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modScale <- function(object, alpha = 0, uniform = TRUE){
 
@@ -330,12 +336,9 @@ modScale <- function(object, alpha = 0, uniform = TRUE){
              "This function is applied to the results of ?exprso.")
 
   if(uniform){
-
     # Draw scale factors from Uniform distribution
     lambda <- stats::runif(ncol(object@exprs), min = 0, max = alpha) + 1
-
   }else{
-
     # Draw scale factors from Normal distribution
     lambda <- abs(stats::rnorm(ncol(object@exprs), mean = 0, sd = alpha)) + 1
   }
@@ -367,7 +370,7 @@ modScale <- function(object, alpha = 0, uniform = TRUE){
 #'  of the skew factors if \code{uniform = FALSE}. See Details.
 #' @param uniform A boolean. Toggles whether to draw skew factors
 #'  from a uniform distribution or a normal distribution.
-#' @return A pre-processed \code{ExprsArray} object.
+#' @return An \code{ExprsArray} object.
 #' @export
 modSkew <- function(object, alpha = 0, uniform = TRUE){
 
@@ -375,12 +378,9 @@ modSkew <- function(object, alpha = 0, uniform = TRUE){
              "This function is applied to the results of ?exprso.")
 
   if(uniform){
-
     # Draw skew factors from Uniform distribution
     lambda <- stats::runif(ncol(object@exprs), min = 0, max = alpha) + 1
-
   }else{
-
     # Draw skew factors from Normal distribution
     lambda <- abs(stats::rnorm(ncol(object@exprs), mean = 0, sd = alpha)) + 1
   }
