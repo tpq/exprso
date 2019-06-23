@@ -1,53 +1,51 @@
 library(exprso)
-suppressWarnings(RNGversion("3.5.0"))
 
-###########################################################
-### Check plMonteCarlo
+binary <- exprso(iris[1:100,1:4], iris[1:100,5])
+multi <- exprso(iris[,1:4], iris[,5])
+cont <- exprso(iris[,1:3], iris[,4])
 
-load(file.path("data.RData"))
+checkEnsemble <- function(ens, data, should){
 
-array@annot$defineCase[1:2] <- "Case"
-array@annot$defineCase[29:30] <- "Control"
-
-set.seed(12345)
-arrays <- splitStratify(array, percent.include = 50, colBy = NULL)
-
-# Build ensemble with plGrid
-set.seed(12345)
-pl <- plGrid(arrays[[1]], top = 0, how = "buildSVM", fold = NULL,
-             kernel = "linear", cost = 10^(c(-3, 1, 3)))
-ens1 <- buildEnsemble(pl)
-
-# Build ensemble manually
-set.seed(12345)
-mach1 <- buildSVM(arrays[[1]], top = 0, kernel = "linear", cost = 10^-3)
-mach2 <- buildSVM(arrays[[1]], top = 0, kernel = "linear", cost = 10^1)
-mach3 <- buildSVM(arrays[[1]], top = 0, kernel = "linear", cost = 10^3)
-ens2 <- buildEnsemble(mach1, mach2, mach3, "notMachine")
-
-test_that("buildEnsemble and conjoin work the same", {
-
+  print(should)
   expect_equal(
-    conjoin(mach1, mach2, mach3, "NOTmachine"),
-    ens2
+    round(calcStats(predict(ens, data))$acc, 3),
+    round(should, 3)
   )
+}
+
+test_that("buildEnsemble is actually the same as conjoin", {
+
+  set.seed(1); b <- buildEnsemble(buildSVM(binary), buildLASSO(binary), buildRF(binary))
+  set.seed(1); j <- conjoin(buildSVM(binary), buildLASSO(binary), buildRF(binary))
+  expect_equal(b, j)
 })
 
-test_that("buildEnsemble methods for pl and model match", {
+test_that("buildEnsemble from argument works for each data type", {
 
-  expect_equal(
-    predict(ens1, arrays[[2]]),
-    predict(ens2, arrays[[2]])
-  )
+  set.seed(1)
+  ens.binary <- buildEnsemble(buildSVM(binary), buildLASSO(binary), buildRF(binary))
+  checkEnsemble(ens.binary, binary, should = 1)
+
+  set.seed(1)
+  ens.multi <- buildEnsemble(buildSVM(multi), buildLASSO(multi), buildRF(multi))
+  checkEnsemble(ens.multi, multi, should = .9733)
+
+  set.seed(1)
+  ens.cont <- buildEnsemble(buildSVM(cont), buildLASSO(cont), buildRF(cont))
+  checkEnsemble(ens.cont, cont, should = .9649)
 })
 
-ens3 <- buildEnsemble(pl, colBy = "train.acc", how = .75)
-ens4 <- buildEnsemble(mach3, mach2)
+test_that("buildEnsemble from pl works for each data type", {
 
-test_that("buildEnsemble calls pipeFilter correctly", {
+  set.seed(1)
+  ens.binary <- buildEnsemble(plGrid(binary, how = "buildSVM", top = c(1, 2, 3)))
+  checkEnsemble(ens.binary, binary, should = 1)
 
-  expect_equal(
-    predict(ens3, arrays[[2]]),
-    predict(ens4, arrays[[2]])
-  )
+  set.seed(1)
+  ens.multi <- buildEnsemble(plGrid(multi, how = "buildSVM", top = c(1, 2, 3)))
+  checkEnsemble(ens.multi, multi, should = .8333)
+
+  set.seed(1)
+  ens.cont <- buildEnsemble(plGrid(cont, how = "buildSVM", top = c(1, 2, 3)))
+  checkEnsemble(ens.cont, cont, should = .8472)
 })

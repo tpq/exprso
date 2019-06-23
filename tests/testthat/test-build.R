@@ -61,7 +61,7 @@ test_that("build modules work for each data type", {
   set.seed(1)
   checkBuild(binary, buildANN, should = 1)
   checkBuild(multi, buildANN, should = .6667)
-  #checkBuild(cont, buildANN, should = NA)
+  checkBuild(cont, buildANN, should = 0)
 
   # DECISION TREES
   set.seed(1)
