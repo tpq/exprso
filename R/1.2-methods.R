@@ -209,11 +209,14 @@ setMethod("getFeatures", "ExprsArray",
 setMethod("show", "ExprsModel",
           function(object){
 
-            if(class(object) == "ExprsMachine" | class(object) == "ExprsModule"){
-              cat("##Number of classes:",
-                  length(unique(object$defineCase)))
-            }else{
+            if(class(object) == "ExprsMachine"){
+              cat("##Binary classification model\n")
+            }else if(class(object) == "ExprsModule"){
+              cat("##Multi-class classification model\n")
+            }else if(class(object) == "RegrsModel"){
               cat("##Continuous outcome model\n")
+            }else{
+              stop("Uh oh! DEBUG ERROR: METH01")
             }
 
             cat("@preFilter summary:",
