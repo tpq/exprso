@@ -17,6 +17,7 @@
 #'
 #' @param array.train The \code{ExprsArray} object to use as training set.
 #' @param array.valid The \code{ExprsArray} object to use as validation set.
+#' @param how A character string. The \code{\link{build}} method to iterate.
 #' @param top A numeric scalar or character vector. A numeric scalar indicates
 #'  the number of top features that should undergo feature selection. A character vector
 #'  indicates specifically which features by name should undergo feature selection.
@@ -24,7 +25,6 @@
 #'  for the \code{top} argument will have \code{plGrid} search across multiple
 #'  top features. However, by providing a list of numeric vectors as the \code{top}
 #'  argument, the user can force the default handling of numeric vectors.
-#' @param how A character string. The \code{\link{build}} method to iterate.
 #' @param fold A numeric scalar. The number of folds for cross-validation.
 #'  Set \code{fold = 0} to perform leave-one-out cross-validation. Argument passed
 #'  to \code{\link{plCV}}. Set \code{fold = NULL} to skip cross-validation altogether.
@@ -38,7 +38,7 @@
 #'  See Details.
 #' @return An \code{\link{ExprsPipeline-class}} object.
 #' @export
-plGrid <- function(array.train, array.valid = NULL, top, how, fold = 10,
+plGrid <- function(array.train, array.valid = NULL, how, top = 0, fold = 10,
                    aucSkip = FALSE, plCV.acc = "acc",
                    verbose = FALSE, ...){
 
