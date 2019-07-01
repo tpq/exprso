@@ -52,54 +52,54 @@
 exprso <- function(x, y, label = 1, switch = FALSE){
 
   if(length(label) > 1) stop("More than one label specified.")
-  array <-
-    new("ExprsArray",
-        exprs = t(as.data.frame(x)), annot = as.data.frame(y),
-        preFilter = NULL, reductionModel = NULL
-    )
+  x <- t(as.data.frame(x))
+  y <- as.data.frame(y)
 
   # Prepare ExprsArray object using x and y input
-  colnames(array@exprs) <- paste0("x", 1:ncol(array@exprs))
-  rownames(array@annot) <- colnames(array@exprs)
-  rownames(array@exprs) <- make.names(rownames(array@exprs), unique = TRUE)
-  colnames(array@annot) <- make.names(colnames(array@annot), unique = TRUE)
-  labels <- array@annot[,label]
+  colnames(x) <- paste0("x", 1:ncol(x))
+  rownames(y) <- colnames(x)
+  rownames(x) <- make.names(rownames(x), unique = TRUE)
+  colnames(y) <- make.names(colnames(y), unique = TRUE)
+  labels <- y[,label]
 
   # Force stringsAsFactors for all annot columns
-  for(col in 1:ncol(array@annot)){
-    if(is.character(array@annot[,col])){
-      array@annot[,col] <- factor(array@annot[,col])
+  for(col in 1:ncol(y)){
+    if(is.character(y[,col])){
+      y[,col] <- factor(y[,col])
     }
   }
 
   # Set sub-class to guide fs and build modules
-  if(length(labels) != nrow(x)) stop("Incorrect number of outcomes.")
+  if(length(labels) != ncol(x)) stop("Incorrect number of outcomes.")
   if(class(labels) == "logical") stop("Boolean outcomes not supported.")
   if(class(labels) == "character" | class(labels) == "factor"){
     if(length(unique(labels)) == 2){
       print("Preparing data for binary classification.")
-      class(array) <- "ExprsBinary"
+      class <- "ExprsBinary"
       print("Converting binary labels to CONTROL / CASE.")
       control <- unique(labels)[as.numeric(switch) + 1]
       print(paste("CONTROL:", control, "(override with 'switch')"))
-      array@annot$defineCase <- ifelse(labels == control, "Control", "Case")
+      y$defineCase <- ifelse(labels == control, "Control", "Case")
     }else{
       print("Preparing data for multi-class classification.")
-      class(array) <- "ExprsMulti"
-      array@annot$defineCase <- factor(labels)
+      class <- "ExprsMulti"
+      y$defineCase <- factor(labels)
     }
   }else{
     print("Preparing data for regression.")
-    class(array) <- "RegrsArray"
-    array@annot$defineCase <- labels
+    class <- "RegrsArray"
+    y$defineCase <- labels
   }
 
   # Remove features with any NA values
-  if(any(is.na(array@exprs))){
+  if(any(is.na(x))){
     print("Removing features with NA values.")
-    noNAs <- apply(array@exprs, 1, function(x) !any(is.na(x)))
-    array@exprs <- array@exprs[noNAs, ]
+    noNAs <- apply(x, 1, function(row) !any(is.na(row)))
+    x <- x[noNAs, ]
   }
+
+  array <- new(class, exprs = x, annot = y,
+               preFilter = NULL, reductionModel = NULL)
 
   return(array)
 }
