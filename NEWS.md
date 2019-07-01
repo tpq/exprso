@@ -1,3 +1,11 @@
+## exprso 0.6.0
+---------------------
+* Update OOP framework
+    * Have `exprso` import function make S4 object at very end
+    * Allow `[.ExprsPipeline` operator to re-order models
+* Revised documentation
+    * New `class`, `conjoin`, and `fs` tests
+
 ## exprso 0.5.9
 ---------------------
 * Update OOP framework
@@ -5,7 +13,7 @@
 * Update `predict` modules
     * Fix bug where the ensemble does not save predictions as a factor
 * Revised documentation
-    * Reviewed 2-mod and 4-conjoin
+    * Reviewed 2-conjoin and 3-mod
     * New `ens` test
 
 ## exprso 0.5.8
