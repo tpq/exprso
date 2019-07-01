@@ -68,9 +68,9 @@ setMethod('[', signature(x = "ExprsArray", i = "ANY", j = "ANY"),
 
             }else{
 
-              x@annot <- as.data.frame(x@annot[i, j, drop = FALSE])
+              x@annot <- as.data.frame(x@annot[i, , drop = FALSE])
               x@exprs <- x@exprs[, i, drop = FALSE]
-              colnames(x@exprs) <- rownames(x@annot)
+              colnames(x@exprs) <- rownames(x@annot) # <-- keep for splitSample(x, replace = TRUE)
               return(x)
             }
           }
@@ -299,9 +299,9 @@ setMethod('[', signature(x = "ExprsPipeline", i = "ANY", j = "ANY"),
 
             }else{
 
-              index <- which(rownames(x@summary) %in% rownames(x@summary[i, j, drop = FALSE]))
-              x@summary <- x@summary[index, j, drop = FALSE]
-              x@machs <- x@machs[index]
+              x@summary <- x@summary[i, , drop = FALSE]
+              rownames(x@summary) <- NULL
+              x@machs <- x@machs[i]
               return(x)
             }
           }
