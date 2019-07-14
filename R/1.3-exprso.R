@@ -196,6 +196,8 @@ NULL
 #'
 #' - \code{\link{fsBalance}}
 #'
+#' - \code{\link{fsAmalgam}}
+#'
 #' - \code{\link{fsAnnot}}
 #'
 #' @details

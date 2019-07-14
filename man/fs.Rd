@@ -34,6 +34,8 @@ The \code{exprso} package includes these feature selection modules:
 
 - \code{\link{fsBalance}}
 
+- \code{\link{fsAmalgam}}
+
 - \code{\link{fsAnnot}}
 }
 \details{

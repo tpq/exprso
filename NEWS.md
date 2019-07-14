@@ -1,3 +1,10 @@
+## exprso 0.6.1
+---------------------
+* Add support for the `amalgam` package
+    * New `fsAmalgam` function finds amalgams for training set
+    * Amalgams now supported by `modHistory`
+    * Support `asSLR = TRUE`
+
 ## exprso 0.6.0
 ---------------------
 * Update OOP framework
