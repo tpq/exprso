@@ -51,6 +51,19 @@ modHistory <- function(object, reference){
         exprs.i <- t(balance::balance.fromSBP(data, indexedModel))
         colnames(exprs.i) <- rownames(data)
 
+      }else if("amalg-clr" %in% class(indexedModel)){
+
+        exprs.i <- as.matrix(data) %*% indexedModel$weights # = original %*% weights
+        exprs.i <- apply(exprs.i, 1, function(x) log(x) - mean(log(x))) # clr-transform && transpose
+        colnames(exprs.i) <- rownames(data)
+
+      }else if("amalg-slr" %in% class(indexedModel)){
+
+        packageCheck("balance")
+        exprs.i <- as.matrix(data) %*% indexedModel$weights # = original %*% weights
+        exprs.i <- t(amalgam::as.slr(exprs.i))
+        colnames(exprs.i) <- rownames(data)
+
       }else if("rda" %in% class(indexedModel)){
 
         packageCheck("vegan")
