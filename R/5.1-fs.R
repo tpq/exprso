@@ -575,6 +575,56 @@ fsBalance <- function(object, top = 0, sbp.how = "sbp.fromPBA",
       }, sbp.how, ternary, ratios, ...)
 }
 
+#' Reduce Dimensions by Amalgamation
+#'
+#' \code{fsAmalgam} finds a set of explanatory "amalgams" using
+#'  the \code{amalgam::amalgam} function. This function expects
+#'  a compositional data set that can be reduced by amalgamation.
+#'  The resultant "amalgams" are clr- or slr-transformed.
+#'  The amalgamation rule is saved and deployed automatically by the
+#'  \code{predict} method during test set validation.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsAmalgam <- function(object, top = 0, ...){ # args to amalgam
+
+  packageCheck("amalgam")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
+
+        args <- getArgs(...)
+        args <- append(list("x" = data), args)
+
+        # Run the amalgam genetic algorithm
+        model <- do.call(amalgam::amalgam, args)
+
+        if(is.null(model$SLR)){
+
+          # If not using SLRs, then CLR the data
+          reducedData <- model$amalgams # = original %*% weights
+          reducedData <- t(apply(reducedData, 1, function(x) log(x) - mean(log(x)))) # clr-transform
+          class(model) <- "amalg-clr"
+
+        }else{
+
+          # Else use the SLRS directly
+          reducedData <- model$SLR
+          class(model) <- "amalg-slr"
+        }
+
+        # Make sure sample names carry through...
+        reducedData <- t(reducedData)
+        colnames(reducedData) <- rownames(data)
+
+        list(reducedData,
+             model)
+      }, ...)
+}
+
 #' Use Annotations as Features
 #'
 #' \code{fsAnnot} moves annotations named by the \code{colBy} argument
