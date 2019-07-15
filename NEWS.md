@@ -1,3 +1,10 @@
+## exprso 0.6.2
+---------------------
+* Add support for the `propr::pra` method
+    * New `fsPRA` function performs pairwise log-ratio selection
+    * Log-ratio selection now supported by `modHistory`
+    * Add assocaited tests
+
 ## exprso 0.6.1
 ---------------------
 * Add support for the `amalgam` package
