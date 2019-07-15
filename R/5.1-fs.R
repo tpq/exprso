@@ -660,3 +660,38 @@ fsAnnot <- function(object, top = 0, colBy){
              model.rule)
       }, Y)
 }
+
+#' Reduce Dimensions by Log-Ratio Selection
+#'
+#' \code{fsPRA} finds the most explanatory pairwise log-ratios
+#'  using the variable selection method proposed by Michael Greenacre
+#'  in "Variable Selection in Compositional Data Analysis Using
+#'  Pairwise Logratios", modified to run faster.
+#'
+#' @inheritParams fs.
+#' @return Returns an \code{ExprsArray} object.
+#' @export
+fsPRA <- function(object, top = 0, ...){ # args to pra
+
+  packageCheck("propr")
+  classCheck(object, "ExprsArray",
+             "This function is applied to the results of ?exprso.")
+
+  fs.(object, top,
+      uniqueFx = function(data, outcome, top, ...){
+
+        args <- as.list(substitute(list(...)))[-1]
+        args <- append(list("counts" = data), args)
+
+        # Run pra on data
+        res <- do.call(propr::pra, args)
+        reducedData <- res$Y # note: log(pair / partner)
+        colnames(reducedData) <- paste0(res$best$Pair, ".vs.", res$best$Partner)
+        model <- as.matrix(res$best) # as.matrix needed to set class
+        class(model) <- "pra"
+
+        list(t(reducedData),
+             model)
+
+      }, ...)
+}

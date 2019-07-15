@@ -76,6 +76,19 @@ modHistory <- function(object, reference){
         for(col in 1:ncol(Y)){ Y[,col] <- as.numeric(Y[,col]) }
         exprs.i <- t(cbind(Y, data))
 
+      }else if("pra" %in% class(indexedModel)){
+
+        packageCheck("propr")
+        exprs.i <- matrix(0, nrow = nrow(data), ncol = nrow(indexedModel))
+        for(n in 1:nrow(indexedModel)){
+          i <- indexedModel[n,"Pair"]
+          j <- indexedModel[n,"Partner"]
+          exprs.i[,n] <- log(data[,i] / data[,j])
+        }
+        colnames(exprs.i) <- paste0(indexedModel[,"Pair"], ".vs.", indexedModel[,"Partner"])
+        rownames(exprs.i) <- rownames(data)
+        exprs.i <- t(exprs.i)
+
       }else{
 
         stop("Reduction model not recognized.")

@@ -47,4 +47,10 @@ test_that("modHistory reconstructs reduced dimensions", {
       modHistory(e, F)@exprs
     )
   }
+
+  G <- fsPRA(e, nclust = 3)
+  expect_equal(
+    G@exprs,
+    modHistory(e, G)@exprs
+  )
 })
