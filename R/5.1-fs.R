@@ -556,6 +556,10 @@ fsBalance <- function(object, top = 0, sbp.how = "sbp.fromPBA",
   fs.(object, top,
       uniqueFx = function(data, outcome, top, sbp.how, ternary, ratios, ...){
 
+        if(any(data <= 0)){
+          stop("This feature selection method does not work for non-positive values.")
+        }
+
         args <- getArgs(...)
         args <- append(list("x" = data), args)
 
@@ -596,11 +600,17 @@ fsAmalgam <- function(object, top = 0, ...){ # args to amalgam
   fs.(object, top,
       uniqueFx = function(data, outcome, top, ...){
 
+        if(any(data < 0)){
+          stop("This feature selection method does not work for negative values.")
+        }
+
         args <- getArgs(...)
         args <- append(list("x" = data), args)
 
         # Run the amalgam genetic algorithm
+        sink(tempfile())
         model <- do.call(amalgam::amalgam, args)
+        sink()
 
         if(is.null(model$SLR)){
 
@@ -619,6 +629,7 @@ fsAmalgam <- function(object, top = 0, ...){ # args to amalgam
         # Make sure sample names carry through...
         reducedData <- t(reducedData)
         colnames(reducedData) <- rownames(data)
+        rownames(reducedData) <- paste0("z", 1:nrow(reducedData))
 
         list(reducedData,
              model)
@@ -680,11 +691,18 @@ fsPRA <- function(object, top = 0, ...){ # args to pra
   fs.(object, top,
       uniqueFx = function(data, outcome, top, ...){
 
+        if(any(data <= 0)){
+          stop("This feature selection method does not work for non-positive values.")
+        }
+
         args <- as.list(substitute(list(...)))[-1]
         args <- append(list("counts" = data), args)
 
         # Run pra on data
+        sink(tempfile())
         res <- do.call(propr::pra, args)
+        sink()
+
         reducedData <- res$Y # note: log(pair / partner)
         colnames(reducedData) <- paste0(res$best$Pair, ".vs.", res$best$Partner)
         model <- as.matrix(res$best) # as.matrix needed to set class
