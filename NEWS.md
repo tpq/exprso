@@ -1,3 +1,11 @@
+## exprso 0.6.3
+---------------------
+* Update `fs` methods
+    * Sink progress notes for `fsAmalgam` and `fsPRA`
+    * Add pre-deployment zero check for `fsBalance` and `fsPRA`
+    * Add post-deployment zero check for `fsAmalgam`
+    * Fix `fsAmalgam` error due to missing names
+
 ## exprso 0.6.2
 ---------------------
 * Add support for the `propr::pra` method
