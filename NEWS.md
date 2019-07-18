@@ -5,6 +5,7 @@
     * Add pre-deployment zero check for `fsBalance` and `fsPRA`
     * Add post-deployment zero check for `fsAmalgam`
     * Fix `fsAmalgam` error due to missing names
+    * Now pass defineCase labels to `amalgam`
 
 ## exprso 0.6.2
 ---------------------

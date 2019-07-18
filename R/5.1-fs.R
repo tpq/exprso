@@ -605,6 +605,7 @@ fsAmalgam <- function(object, top = 0, ...){ # args to amalgam
         }
 
         args <- getArgs(...)
+        args <- suppressMessages(forceArg("z", outcome, args))
         args <- append(list("x" = data), args)
 
         # Run the amalgam genetic algorithm
