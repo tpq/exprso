@@ -1,3 +1,8 @@
+## exprso 0.6.4
+---------------------
+* Update `fs.` and `build.` methods
+    * Now save the intermediate data to debug
+
 ## exprso 0.6.3
 ---------------------
 * Update `fs` methods

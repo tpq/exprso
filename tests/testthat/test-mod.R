@@ -31,6 +31,7 @@ test_that("modSwap and subset work without any error", {
 
 test_that("modCluster and modSubset work without any error", {
 
+  set.seed(1)
   expect_equal(
 
     array.train %>% modCluster(how = "hclust") %>% modSubset(colBy = "cluster", include = 1),

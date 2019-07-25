@@ -8,63 +8,72 @@
 #' @export
 build. <- function(object, top, uniqueFx, ...){
 
-  # If a reduction model has never been used, there is no reason to store old history
-  # (helps to reduce RAM overhead and to improve run-time)
-  if(!is.null(object@reductionModel)){
-    if(all(unlist(lapply(object@reductionModel, is.na)))){
-      object@preFilter <- lapply(object@preFilter, function(x) 0)
-    }
-  }
+  tryCatch({
 
-  # Convert top input to explicit feature reference
-  if(class(top) == "numeric"){
-    if(length(top) == 1){
-      if(top > nrow(object@exprs)) top <- 0
-      if(top == 0){
-        topChar <- rownames(object@exprs) # keep for uniqueFx
+    # If a reduction model has never been used, there is no reason to store old history
+    # (helps to reduce RAM overhead and to improve run-time)
+    if(!is.null(object@reductionModel)){
+      if(all(unlist(lapply(object@reductionModel, is.na)))){
+        object@preFilter <- lapply(object@preFilter, function(x) 0)
+      }
+    }
+
+    # Convert top input to explicit feature reference
+    if(class(top) == "numeric"){
+      if(length(top) == 1){
+        if(top > nrow(object@exprs)) top <- 0
+        if(top == 0){
+          topChar <- rownames(object@exprs) # keep for uniqueFx
+        }else{
+          topChar <- rownames(object@exprs)[1:top] # when top is numeric scalar
+        }
       }else{
-        topChar <- rownames(object@exprs)[1:top] # when top is numeric scalar
+        topChar <- rownames(object@exprs)[top] # when top is numeric vector
       }
     }else{
-      topChar <- rownames(object@exprs)[top] # when top is numeric vector
+      topChar <- top # else top is row names
     }
-  }else{
-    topChar <- top # else top is row names
-  }
 
-  # Run uniqueFx on top data
-  if(!identical(top, 0)){
-    x <- t(object@exprs[topChar, , drop = FALSE])
-  }else{
-    x <- t(object@exprs) # runs faster
-  }
+    # Run uniqueFx on top data
+    if(!identical(top, 0)){
+      x <- t(object@exprs[topChar, , drop = FALSE])
+    }else{
+      x <- t(object@exprs) # runs faster
+    }
 
-  # Prepare model
-  if(class(object) == "ExprsMulti"){
+    # Prepare model
+    if(class(object) == "ExprsMulti"){
 
-    y <- object@annot$defineCase
-    modelType <- "ExprsModule"
+      y <- object@annot$defineCase
+      modelType <- "ExprsModule"
 
-  }else if(class(object) == "ExprsBinary"){
+    }else if(class(object) == "ExprsBinary"){
 
-    y <- factor(object@annot$defineCase, levels = c("Control", "Case"))
-    modelType <- "ExprsMachine"
+      y <- factor(object@annot$defineCase, levels = c("Control", "Case"))
+      modelType <- "ExprsMachine"
 
-  }else if(class(object) == "RegrsArray"){
+    }else if(class(object) == "RegrsArray"){
 
-    y <- object@annot$defineCase
-    modelType <- "RegrsModel"
+      y <- object@annot$defineCase
+      modelType <- "RegrsModel"
 
-  }else{ stop("Uh oh! DEBUG ERROR: 003")}
+    }else{ stop("Uh oh! DEBUG ERROR: 003")}
 
-  # Carry through and append fs history as stored in the ExprsArray object
-  model <- do.call("uniqueFx", list(data = x, labels = y, ...))
-  m <- new(modelType,
-           preFilter = append(object@preFilter, list(topChar)),
-           reductionModel = append(object@reductionModel, list(NA)),
-           mach = model)
+    # Carry through and append fs history as stored in the ExprsArray object
+    model <- do.call("uniqueFx", list(data = x, labels = y, ...))
+    m <- new(modelType,
+             preFilter = append(object@preFilter, list(topChar)),
+             reductionModel = append(object@reductionModel, list(NA)),
+             mach = model)
 
-  return(m)
+    return(m)
+
+  }, error = function(e){
+
+    save(object, file = "DEBUG.RData")
+    stop("Model build method failed.",
+         "\nData saved locally to debug.")
+  })
 }
 
 #' Build Naive Bayes Model
