@@ -55,7 +55,8 @@ modHistory <- function(object, reference){
 
         packageCheck("amalgam")
         exprs.i <- as.matrix(data) %*% indexedModel$weights # = original %*% weights
-        if(any(exprs.i == 0)) stop("Uh oh! fsAmalgam failed to find a general solution.")
+        if(any(exprs.i == 0)) stop("Uh oh! fsAmalgam failed to find a general solution.",
+                                   "\nThis happens when your data has too many zeros.")
         exprs.i <- apply(exprs.i, 1, function(x) log(x) - mean(log(x))) # clr-transform && transpose
         colnames(exprs.i) <- rownames(data)
         rownames(exprs.i) <- paste0("z", 1:nrow(exprs.i))
